@@ -1,0 +1,75 @@
+image:
+  registry: docker.io
+  repository: bitnami/redis
+  tag: 7.0.11-debian-11-r20
+
+architecture: replication
+auth:
+  enabled: true
+  password: "root"
+
+commonConfiguration: |-
+  # Enable AOF https://redis.io/topics/persistence#append-only-file
+  appendonly yes
+  # Disable RDB persistence, AOF persistence already enabled.
+  save ""
+
+master:
+  count: 1
+  configuration: ""
+  containerPorts:
+    redis: 6379
+  resources:
+    limits: {}
+    requests: {}
+  kind: StatefulSet
+  nodeAffinityPreset:
+    type: ""
+    key: ""
+    values: []
+  persistence:
+    enabled: true
+    path: /data
+    storageClass: nfs-client
+    accessModes:
+      - ReadWriteOnce
+    size: 3Gi
+
+  service:
+    type: ClusterIP
+    ports:
+      redis: 6379
+    loadBalancerIP: ""
+    annotations: {}
+  serviceAccount:
+    create: false
+
+replica:
+  replicaCount: 1
+  configuration: ""
+  externalMaster:
+    enabled: false
+    host: ""
+    port: 6379
+  containerPorts:
+    redis: 6379
+  persistence:
+    enabled: true
+    storageClass: nfs-client
+    accessModes:
+      - ReadWriteOnce
+    size: 3Gi
+  service:
+    type: ClusterIP
+    ports:
+      redis: 6379
+    loadBalancerIP: ""
+    annotations: {}
+  serviceAccount:
+    create: false
+
+sentinel:
+  enabled: false
+
+metrics:
+  enabled: false

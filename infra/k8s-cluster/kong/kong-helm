@@ -1,0 +1,9 @@
+helm repo add kong https://charts.konghq.com
+helm repo update
+
+# Helm v3+
+helm install kong/kong --generate-name \
+    -f kong-helm-values.yaml \
+    --set ingressController.installCRDs=false \
+    -n kong \
+    --create-namespace

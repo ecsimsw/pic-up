@@ -1,0 +1,12 @@
+apiVersion: networking.k8s.io/v1
+kind: IngressClass
+metadata:
+  name: kong
+spec:
+  controller: ingress-controllers.konghq.com/kong
+
+# if type == nodeport, nodeport = 32080
+# curl -i mymarket.ecsimsw.com:32080 --resolve mymarket.ecsimsw.com:32080:192.168.0.100
+
+# if type == loadbalancer, port 80, ip 192.168.0.121
+# curl -i mymarket.ecsimsw.com:80 --resolve mymarket.ecsimsw.com:80:192.168.0.121

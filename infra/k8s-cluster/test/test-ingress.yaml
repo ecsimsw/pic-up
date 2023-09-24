@@ -1,0 +1,22 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: test-nginx-ingress
+  namespace: test
+  annotations:
+    konghq.com/strip-path: 'true'
+spec:
+  ingressClassName: kong
+  rules:
+    - host: kube.ecsimsw.com
+      http:
+        paths:
+          - path: /nginx-test
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: nginx-svc-clusterip
+                port:
+                  number: 80
+
+# curl -i http://kube.ecsimsw.com/nginx-test --resolve kube.ecsimsw.com:80:192.168.52.21
