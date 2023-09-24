@@ -1,0 +1,9 @@
+rootProject.name = 'mymarket'
+
+include 'api-audits'
+include 'api-products'
+include 'api-email'
+include 'api-auth'
+include 'api-core'
+include 'api-pictures'
+

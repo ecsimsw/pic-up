@@ -1,0 +1,37 @@
+## Product server
+- [x] Module:Products Index page view
+- [x] Module:Products Product api
+- [x] Module:Products Order api
+- [x] Module:Products Kafka produce
+- [x] Module:Infra Mysql, Kafka docker env for dev
+- [x] Module:Products Actuator
+- [x] Module:Product Flyway
+- [x] Module:Infra
+- [ ] Module:Products Searching
+  - [x] Set limited pagination max size
+  - [x] Search specification
+  - [x] StaticMetamodel for type safety criteria api
+  - [x] Offset based pagination
+  - [x] Cursor based pagination
+  - [ ] Indexing
+  - [ ] Vertical partitioning
+  - [ ] Redis cache
+- [ ] Kube:Infra Deploy
+  - [x] Service yaml
+  - [x] Ingress
+  - [x] Environment configmap, Secrets
+  - [x] Pod anti affinity
+  - [x] Horizontal pod autoscaler
+  - [x] PodDisruptionBudget
+  - [ ] Kube:Infra Replication
+- [x] kube:Infra health check
+  - [x] Probes - startupProbe, readinessProbe, livenessProbe
+- [x] Kube:Infra Redis
+  - [x] Replication
+- [ ] Kube:Infra MySql
+  - [x] DataSource configuration
+  - [ ] Mysql Replication
+- [ ] Module:Infra Management
+  - [x] Graceful shutdown, downtime
+  - [ ] Hikari CP
+  - [ ] Module:Product Tomcat Thread pool

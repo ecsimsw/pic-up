@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Console name="ConsoleAppender" target="SYSTEM_OUT" xmlns:xi="http://www.w3.org/2001/XInclude">
+  <xi:include href="pattern-layout.xml"/>
+</Console>

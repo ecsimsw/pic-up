@@ -1,0 +1,1 @@
+ALTER TABLE product ADD price int DEFAULT 0;

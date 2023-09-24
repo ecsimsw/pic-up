@@ -1,0 +1,10 @@
+dependencies {
+    implementation project(':api-core')
+
+    implementation 'org.springframework.boot:spring-boot-starter-data-mongodb'
+    runtimeOnly 'com.h2database:h2:1.4.199'
+}
+
+test {
+    useJUnitPlatform()
+}
