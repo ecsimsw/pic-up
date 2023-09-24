@@ -1,32 +1,39 @@
 package ecsimsw.picup.utils;
 
-import ecsimsw.picup.dto.FileUploadResult;
-import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
-import java.nio.file.FileAlreadyExistsException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.io.InputStream;
 
 public class MultiPartFileUtils {
 
-    public static FileUploadResult upload(String rootDirectory, MultipartFile file) {
-        if (file == null) {
-            throw new IllegalArgumentException("File is empty");
-        }
+    public static FileWriteResult write(String path, MultipartFile image) {
         try {
-            final Path path = Paths.get(rootDirectory + File.separator + StringUtils.cleanPath(file.getOriginalFilename()));
-            final long uploadedBytes = Files.copy(file.getInputStream(), path);
-            return new FileUploadResult(uploadedBytes, path.toString());
-        } catch (FileAlreadyExistsException e) {
-            e.printStackTrace();
-            System.out.println("File already exists");
-            throw new IllegalArgumentException("File already existse : " + file.getOriginalFilename());
+            if (image == null) {
+                throw new IllegalArgumentException("File is empty");
+            }
+            final File file = new File(path);
+            image.transferTo(file);
+            return FileWriteResult.of(file);
         } catch (IOException e) {
-            throw new IllegalArgumentException("Could not store file : " + file.getOriginalFilename());
+            e.printStackTrace();
+            throw new IllegalArgumentException("Could not store image : " + image.getOriginalFilename());
+        }
+    }
+
+    public static FileReadResult read(String readPath) {
+        try (
+            final InputStream inputStream = new FileInputStream(readPath)
+        ) {
+            final File file = new File(readPath);
+            final byte[] binaryValue = new byte[(int) file.length()];
+            inputStream.read(binaryValue);
+            return FileReadResult.of(file, binaryValue);
+        } catch (IOException e) {
+            e.printStackTrace();
+            throw new IllegalArgumentException("Fail to read image");
         }
     }
 }
