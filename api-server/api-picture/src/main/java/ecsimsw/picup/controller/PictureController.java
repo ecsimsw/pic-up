@@ -30,8 +30,8 @@ public class PictureController {
     }
 
     @PostMapping("/api/picture")
-    public ResponseEntity<?> upload(MultipartFile file) {
-        final FileWriteResult fileUploadResult = pictureService.upload(file);
+    public ResponseEntity<?> upload(@RequestParam String path, MultipartFile file) {
+        final FileWriteResult fileUploadResult = pictureService.upload(path, file);
         return ResponseEntity.ok(fileUploadResult);
     }
 }

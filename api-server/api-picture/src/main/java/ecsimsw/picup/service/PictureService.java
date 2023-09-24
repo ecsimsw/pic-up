@@ -7,8 +7,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.nio.file.FileAlreadyExistsException;
-
 @Service
 public class PictureService {
 
@@ -18,7 +16,7 @@ public class PictureService {
         this.storageRootPath = storageRootPath;
     }
 
-    public FileWriteResult upload(MultipartFile multipartFile) {
+    public FileWriteResult upload(String userPath, MultipartFile multipartFile) {
         final String storagePath = storageRootPath + multipartFile.getName();
         return MultiPartFileUtils.write(storagePath, multipartFile);
     }
