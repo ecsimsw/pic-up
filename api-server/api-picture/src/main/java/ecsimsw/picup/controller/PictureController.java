@@ -1,8 +1,9 @@
 package ecsimsw.picup.controller;
 
+import ecsimsw.picup.domain.StoragePath;
+import ecsimsw.picup.dto.ImageLoadResponse;
+import ecsimsw.picup.dto.ImageUploadResponse;
 import ecsimsw.picup.service.PictureService;
-import ecsimsw.picup.utils.FileReadResult;
-import ecsimsw.picup.utils.FileWriteResult;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,18 +21,18 @@ public class PictureController {
         this.pictureService = pictureService;
     }
 
+    @PostMapping("/api/picture")
+    public ResponseEntity<ImageUploadResponse> upload(@RequestParam Long folderId, MultipartFile file) {
+        final ImageUploadResponse upload = pictureService.upload(folderId, file);
+        return ResponseEntity.ok(upload);
+    }
+
     @GetMapping(
         value = "/api/picture",
         produces = MediaType.IMAGE_JPEG_VALUE
     )
-    public ResponseEntity<byte[]> getImage(@RequestParam String path) {
-        final FileReadResult read = pictureService.read(path);
-        return ResponseEntity.ok(read.getBinaryValue());
-    }
-
-    @PostMapping("/api/picture")
-    public ResponseEntity<?> upload(@RequestParam String path, MultipartFile file) {
-        final FileWriteResult fileUploadResult = pictureService.upload(path, file);
-        return ResponseEntity.ok(fileUploadResult);
+    public ResponseEntity<ImageLoadResponse> getImage(@RequestParam StoragePath path) {
+        final ImageLoadResponse load = pictureService.load(path);
+        return ResponseEntity.ok(load);
     }
 }

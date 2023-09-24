@@ -1,27 +1,32 @@
 package ecsimsw.picup.service;
 
-import ecsimsw.picup.utils.FileReadResult;
-import ecsimsw.picup.utils.FileWriteResult;
-import ecsimsw.picup.utils.MultiPartFileUtils;
-import org.springframework.beans.factory.annotation.Value;
+import ecsimsw.picup.domain.ImageFile;
+import ecsimsw.picup.domain.StoragePath;
+import ecsimsw.picup.dto.ImageLoadResponse;
+import ecsimsw.picup.dto.ImageUploadResponse;
+import ecsimsw.picup.storage.ImageStorage;
+import ecsimsw.picup.storage.LocalImageStorage;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 @Service
 public class PictureService {
 
-    private final String storageRootPath;
+    private final ImageStorage imageStorage;
 
-    public PictureService(@Value("${file.root.directory:./}") String storageRootPath) {
-        this.storageRootPath = storageRootPath;
+    public PictureService(LocalImageStorage imageStorage) {
+        this.imageStorage = imageStorage;
     }
 
-    public FileWriteResult upload(String userPath, MultipartFile multipartFile) {
-        final String storagePath = storageRootPath + multipartFile.getName();
-        return MultiPartFileUtils.write(storagePath, multipartFile);
+    public ImageUploadResponse upload(Long folderId, MultipartFile multipartFile) {
+        final StoragePath path = StoragePath.of("username", folderId, multipartFile.getName());
+        final ImageFile imageFile = ImageFile.of(multipartFile);
+        imageStorage.create(path, imageFile);
+        return ImageUploadResponse.of(imageFile, folderId);
     }
 
-    public FileReadResult read(String path) {
-        return MultiPartFileUtils.read(storageRootPath + path);
+    public ImageLoadResponse load(StoragePath path) {
+        final ImageFile imageFile = imageStorage.read(path);
+        return ImageLoadResponse.of(imageFile);
     }
 }
