@@ -4,10 +4,11 @@ import ecsimsw.picup.domain.UserFileStoragePath;
 import ecsimsw.picup.domain.UserFileStoragePathRepository;
 import ecsimsw.picup.dto.PictureUploadRequest;
 import ecsimsw.picup.dto.PictureUploadResponse;
+import ecsimsw.picup.dto.StorageResourceResponse;
 import ecsimsw.picup.dto.StorageResourceUploadResponse;
 import ecsimsw.picup.dto.UserFileInfo;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class PictureService {
@@ -26,6 +27,7 @@ public class PictureService {
         this.userFileStoragePathRepository = userFileStoragePathRepository;
     }
 
+    @Transactional
     public PictureUploadResponse upload(Long folderId, PictureUploadRequest request) {
         final UserFileInfo userFile = userResourceService.createImage(folderId, request);
         final StorageResourceUploadResponse storageResource = fileStorageService.upload(request);
@@ -34,5 +36,11 @@ public class PictureService {
         userFileStoragePathRepository.save(userFileStoragePath);
 
         return PictureUploadResponse.of(userFile, storageResource);
+    }
+
+    public PictureDownloadResponse downLoad(Long imageId) {
+        final UserFileStoragePath userFileStoragePath = userFileStoragePathRepository.findByUserFileId(imageId).orElseThrow();
+        final StorageResourceResponse storageResource = fileStorageService.download(userFileStoragePath.getResourceKey());
+        return PictureDownloadResponse.of(storageResource);
     }
 }

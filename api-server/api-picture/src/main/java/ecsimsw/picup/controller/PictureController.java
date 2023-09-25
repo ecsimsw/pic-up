@@ -28,11 +28,11 @@ public class PictureController {
     }
 
     @GetMapping(
-        value = "/api/picture",
+        value = "/api/picture/{id}",
         produces = MediaType.IMAGE_JPEG_VALUE
     )
-    public ResponseEntity<StorageResourceResponse> getImage(@RequestParam StoragePath path) {
-
+    public ResponseEntity<StorageResourceResponse> getImage(@PathVariable Long id) {
+        pictureService.getImage(id);
 
     }
 
