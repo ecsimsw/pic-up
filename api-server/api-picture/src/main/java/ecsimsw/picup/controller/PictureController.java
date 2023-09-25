@@ -1,13 +1,9 @@
 package ecsimsw.picup.controller;
 
-import ecsimsw.picup.dto.PictureUploadResponse;
-import ecsimsw.picup.storage.StoragePath;
-import ecsimsw.picup.dto.StorageResourceResponse;
+import ecsimsw.picup.dto.PictureDownloadResponse;
 import ecsimsw.picup.dto.PictureUploadRequest;
-import ecsimsw.picup.dto.StorageResourceUploadResponse;
+import ecsimsw.picup.dto.PictureUploadResponse;
 import ecsimsw.picup.service.PictureService;
-import org.apache.kafka.common.resource.ResourceType;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -21,24 +17,24 @@ public class PictureController {
         this.pictureService = pictureService;
     }
 
-    @PostMapping("/api/picture")
-    public ResponseEntity<PictureUploadResponse> upload(@RequestParam Long folderId, PictureUploadRequest request) {
-        final PictureUploadResponse response = pictureService.upload(folderId, request);
+    @PostMapping("/api/file")
+    public ResponseEntity<PictureUploadResponse> uploadFile(@RequestParam Long folderId, PictureUploadRequest request) {
+        final PictureUploadResponse response = pictureService.uploadFile(folderId, request);
         return ResponseEntity.ok(response);
     }
 
     @GetMapping(
-        value = "/api/picture/{id}",
+        value = "/api/file/{userFileId}",
         produces = MediaType.IMAGE_JPEG_VALUE
     )
-    public ResponseEntity<StorageResourceResponse> getImage(@PathVariable Long id) {
-        pictureService.getImage(id);
-
+    public ResponseEntity<PictureDownloadResponse> downloadFile(@PathVariable Long userFileId) {
+        final PictureDownloadResponse response = pictureService.downLoadFile(userFileId);
+        return ResponseEntity.ok(response);
     }
 
-    @DeleteMapping("/api/picture/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Long id){
-
-
+    @DeleteMapping("/api/file/{userFileId}")
+    public ResponseEntity<Void> deleteFile(@PathVariable Long userFileId) {
+        pictureService.deleteFile(userFileId);
+        return ResponseEntity.ok().build();
     }
 }

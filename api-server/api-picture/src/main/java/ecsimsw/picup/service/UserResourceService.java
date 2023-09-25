@@ -35,11 +35,15 @@ public class UserResourceService {
     }
 
     @Transactional
-    public UserFileInfo createImage(Long folderId, PictureUploadRequest request) {
+    public UserFileInfo createFile(Long folderId, PictureUploadRequest request) {
         final UserFolder folder = userFolderRepository.findById(folderId).orElseThrow();
         // TODO :: user auth
         final UserFile userFile = new UserFile(folder, request.getFileName());
         userFileRepository.save(userFile);
         return UserFileInfo.of(userFile);
+    }
+
+    public void deleteFile(Long userFileId) {
+        userFileRepository.deleteById(userFileId);
     }
 }

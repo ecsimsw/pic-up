@@ -9,7 +9,7 @@ import lombok.Getter;
 
 @Getter
 @Entity
-public class UserFileStoragePath {
+public class ResourceKey {
 
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
@@ -19,20 +19,20 @@ public class UserFileStoragePath {
     private Long userFileId;
 
     @NotNull
-    private String resourceKey;
+    private String key;
 
     // TODO :: Storage type, file type
 
-    public UserFileStoragePath() {
+    public ResourceKey() {
     }
 
-    public UserFileStoragePath(Long id, Long userFileId, String resourceKey) {
+    public ResourceKey(Long id, Long userFileId, String key) {
         this.id = id;
         this.userFileId = userFileId;
-        this.resourceKey = resourceKey;
+        this.key = key;
     }
 
-    public UserFileStoragePath(Long userFileId, String resourceKey) {
-        this(null, userFileId, resourceKey);
+    public ResourceKey(Long userFileId, String key) {
+        this(null, userFileId, key);
     }
 }

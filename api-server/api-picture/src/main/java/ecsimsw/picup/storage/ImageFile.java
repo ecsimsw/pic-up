@@ -10,11 +10,11 @@ import java.io.IOException;
 public class ImageFile {
 
     private final long size;
-    private final byte[] binaryValue;
+    private final byte[] file;
 
-    public ImageFile(long size, byte[] binaryValue) {
+    public ImageFile(long size, byte[] file) {
         this.size = size;
-        this.binaryValue = binaryValue;
+        this.file = file;
     }
 
     public static ImageFile of(File file, byte[] binaryValue) {

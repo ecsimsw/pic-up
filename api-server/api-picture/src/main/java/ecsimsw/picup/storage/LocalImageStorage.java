@@ -8,7 +8,6 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 
 @Component
@@ -24,7 +23,7 @@ public class LocalImageStorage implements ImageStorage {
     public void create(String resourceKey, ImageFile imageFile) {
         try {
             final String storagePath = rootPath + resourceKey;
-            Files.write(Paths.get(storagePath), imageFile.getBinaryValue());
+            Files.write(Paths.get(storagePath), imageFile.getFile());
         } catch (IOException e) {
             e.printStackTrace();
             throw new IllegalArgumentException("Fail to save image file");

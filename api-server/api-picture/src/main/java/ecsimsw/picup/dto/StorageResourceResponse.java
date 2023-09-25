@@ -7,17 +7,17 @@ import lombok.Getter;
 public class StorageResourceResponse {
 
     private final long size;
-    private final byte[] binaryValue;
+    private final byte[] file;
 
-    public StorageResourceResponse(long size, byte[] binaryValue) {
+    public StorageResourceResponse(long size, byte[] file) {
         this.size = size;
-        this.binaryValue = binaryValue;
+        this.file = file;
     }
 
     public static StorageResourceResponse of(ImageFile imageFile) {
         return new StorageResourceResponse(
             imageFile.getSize(),
-            imageFile.getBinaryValue()
+            imageFile.getFile()
         );
     }
 }

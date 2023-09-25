@@ -19,7 +19,7 @@ public class UserFile {
     private UserFolder folder;
 
     @NotNull
-    private String name = "";
+    private String name;
 
     public UserFile() {
     }

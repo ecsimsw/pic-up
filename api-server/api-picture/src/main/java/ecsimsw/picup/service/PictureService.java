@@ -1,12 +1,8 @@
 package ecsimsw.picup.service;
 
-import ecsimsw.picup.domain.UserFileStoragePath;
-import ecsimsw.picup.domain.UserFileStoragePathRepository;
-import ecsimsw.picup.dto.PictureUploadRequest;
-import ecsimsw.picup.dto.PictureUploadResponse;
-import ecsimsw.picup.dto.StorageResourceResponse;
-import ecsimsw.picup.dto.StorageResourceUploadResponse;
-import ecsimsw.picup.dto.UserFileInfo;
+import ecsimsw.picup.domain.ResourceKey;
+import ecsimsw.picup.domain.ResourceKeyRepository;
+import ecsimsw.picup.dto.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,32 +11,43 @@ public class PictureService {
 
     private final FileStorageService fileStorageService;
     private final UserResourceService userResourceService;
-    private final UserFileStoragePathRepository userFileStoragePathRepository;
+    private final ResourceKeyRepository resourceKeyRepository;
 
     public PictureService(
         FileStorageService fileStorageService,
         UserResourceService userResourceService,
-        UserFileStoragePathRepository userFileStoragePathRepository
+        ResourceKeyRepository resourceKeyRepository
     ) {
         this.fileStorageService = fileStorageService;
         this.userResourceService = userResourceService;
-        this.userFileStoragePathRepository = userFileStoragePathRepository;
+        this.resourceKeyRepository = resourceKeyRepository;
     }
 
     @Transactional
-    public PictureUploadResponse upload(Long folderId, PictureUploadRequest request) {
-        final UserFileInfo userFile = userResourceService.createImage(folderId, request);
+    public PictureUploadResponse uploadFile(Long userFolderId, PictureUploadRequest request) {
+        final UserFileInfo userFile = userResourceService.createFile(userFolderId, request);
         final StorageResourceUploadResponse storageResource = fileStorageService.upload(request);
 
-        final UserFileStoragePath userFileStoragePath = new UserFileStoragePath(userFile.getId(), storageResource.getKey());
-        userFileStoragePathRepository.save(userFileStoragePath);
+        final ResourceKey resourceKey = new ResourceKey(userFile.getId(), storageResource.getKey());
+        resourceKeyRepository.save(resourceKey);
 
         return PictureUploadResponse.of(userFile, storageResource);
     }
 
-    public PictureDownloadResponse downLoad(Long imageId) {
-        final UserFileStoragePath userFileStoragePath = userFileStoragePathRepository.findByUserFileId(imageId).orElseThrow();
-        final StorageResourceResponse storageResource = fileStorageService.download(userFileStoragePath.getResourceKey());
-        return PictureDownloadResponse.of(storageResource);
+    @Transactional
+    public PictureDownloadResponse downLoadFile(Long userFileId) {
+        final ResourceKey resourceKey = resourceKeyRepository.findByUserFileId(userFileId).orElseThrow();
+        final StorageResourceResponse storageResource = fileStorageService.download(resourceKey.getKey());
+        return new PictureDownloadResponse(userFileId, storageResource.getSize(), storageResource.getFile());
+    }
+
+    // TODO :: Soft delete
+    // TODO :: Trash strategy
+    @Transactional
+    public void deleteFile(Long userFileId) {
+        userResourceService.deleteFile(userFileId);
+        final ResourceKey resourceKey = resourceKeyRepository.findByUserFileId(userFileId).orElseThrow();
+        fileStorageService.delete(resourceKey.getKey());
+        resourceKeyRepository.delete(resourceKey);
     }
 }
