@@ -24,8 +24,13 @@ public class LocalImageStorage implements ImageStorage {
 
     @Override
     public void create(StoragePath storagePath, ImageFile imageFile) {
+        create(storagePath.getValue(), imageFile);
+    }
+
+    @Override
+    public void create(String storagePath, ImageFile imageFile) {
         try {
-            final Path path = Paths.get(rootPath + storagePath.getValue());
+            final Path path = Paths.get(rootPath + storagePath);
             Files.write(path, imageFile.getBinaryValue());
         } catch (IOException e) {
             e.printStackTrace();
@@ -33,11 +38,15 @@ public class LocalImageStorage implements ImageStorage {
         }
     }
 
-    public ImageFile read(StoragePath path) {
+    public ImageFile read(StoragePath storagePath) {
+        return read(storagePath.getValue());
+    }
+
+    public ImageFile read(String storagePath) {
         try (
-            final InputStream inputStream = new FileInputStream(path.getValue())
+            final InputStream inputStream = new FileInputStream(storagePath)
         ) {
-            final File file = new File(path.getValue());
+            final File file = new File(storagePath);
             final byte[] binaryValue = new byte[(int) file.length()];
             inputStream.read(binaryValue);
             return ImageFile.of(file, binaryValue);
@@ -47,7 +56,16 @@ public class LocalImageStorage implements ImageStorage {
         }
     }
 
+    // TODO :: Soft delete
     public void delete(StoragePath storagePath) {
+        delete(storagePath.getValue());
+    }
 
+    public void delete(String storagePath) {
+        final File file = new File(storagePath);
+        if(!file.exists()) {
+            throw new IllegalArgumentException("File not exists");
+        }
+        file.delete();
     }
 }

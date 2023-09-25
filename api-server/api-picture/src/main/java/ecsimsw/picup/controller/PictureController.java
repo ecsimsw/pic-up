@@ -3,27 +3,24 @@ package ecsimsw.picup.controller;
 import ecsimsw.picup.domain.StoragePath;
 import ecsimsw.picup.dto.ImageLoadResponse;
 import ecsimsw.picup.dto.ImageUploadResponse;
-import ecsimsw.picup.service.PictureService;
+import ecsimsw.picup.service.ImageFileService;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 public class PictureController {
 
-    private final PictureService pictureService;
+    private final ImageFileService imageFileService;
 
-    public PictureController(PictureService pictureService) {
-        this.pictureService = pictureService;
+    public PictureController(ImageFileService imageFileService) {
+        this.imageFileService = imageFileService;
     }
 
     @PostMapping("/api/picture")
     public ResponseEntity<ImageUploadResponse> upload(@RequestParam Long folderId, MultipartFile file) {
-        final ImageUploadResponse upload = pictureService.upload(folderId, file);
+        final ImageUploadResponse upload = imageFileService.upload(folderId, file);
         return ResponseEntity.ok(upload);
     }
 
@@ -32,7 +29,13 @@ public class PictureController {
         produces = MediaType.IMAGE_JPEG_VALUE
     )
     public ResponseEntity<ImageLoadResponse> getImage(@RequestParam StoragePath path) {
-        final ImageLoadResponse load = pictureService.load(path);
+        final ImageLoadResponse load = imageFileService.load(path);
         return ResponseEntity.ok(load);
+    }
+
+    @DeleteMapping("/api/picture/{id}")
+    public ResponseEntity<Void> delete(@PathVariable Long id){
+        imageFileService.delete(id);
+        return ResponseEntity.ok().build();
     }
 }

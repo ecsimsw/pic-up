@@ -17,6 +17,7 @@ public class UserFolder {
 //    private Long userId
 
     @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "userFolder_id")
     private UserFolder parentFolder;
 
     private String name;
@@ -32,5 +33,9 @@ public class UserFolder {
 
     public UserFolder(UserFolder parentFolder, String name) {
         this(null, parentFolder, name);
+    }
+
+    public Long getParentFolderId() {
+        return parentFolder.id;
     }
 }

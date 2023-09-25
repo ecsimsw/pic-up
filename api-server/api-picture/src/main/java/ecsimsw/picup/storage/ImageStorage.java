@@ -7,7 +7,13 @@ public interface ImageStorage {
 
     void create(StoragePath storagePath, ImageFile imageFile);
 
-    ImageFile read(StoragePath path);
+    void create(String storagePath, ImageFile imageFile);
+
+    ImageFile read(StoragePath storagePath);
+
+    ImageFile read(String storagePath);
 
     void delete(StoragePath storagePath);
+
+    void delete(String storagePath);
 }
