@@ -1,7 +1,5 @@
 package ecsimsw.picup.service;
 
-import ecsimsw.picup.domain.UserFileResourceKey;
-import ecsimsw.picup.domain.UserFileResourceKeyRepository;
 import ecsimsw.picup.dto.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,10 +25,10 @@ public class StorageService {
         return FileUploadResponse.of(userFile, storageResource);
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     public FileDownloadResponse downLoadFile(Long userFileId) {
-        final UserFileResourceKey userFileResourceKey = userResourceService.findResourceKeyOf(userFileId);
-        final StorageResourceResponse storageResource = filePersistenceService.download(userFileResourceKey.getKey());
+        final UserFileInfo userFile = userResourceService.getById(userFileId);
+        final StorageResourceResponse storageResource = filePersistenceService.download(userFile.getResourceKey());
         return new FileDownloadResponse(userFileId, storageResource.getSize(), storageResource.getFile());
     }
 
@@ -38,8 +36,8 @@ public class StorageService {
     // TODO :: Trash strategy
     @Transactional
     public void deleteFile(Long userFileId) {
-        final UserFileResourceKey userFileResourceKey = userResourceService.findResourceKeyOf(userFileId);
-        filePersistenceService.delete(userFileResourceKey.getKey());
-        userResourceService.deleteFile(userFileResourceKey);
+        final UserFileInfo userFile = userResourceService.getById(userFileId);
+        filePersistenceService.delete(userFile.getResourceKey());
+        userResourceService.deleteFile(userFileId);
     }
 }

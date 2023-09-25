@@ -21,17 +21,21 @@ public class UserFile {
     @NotNull
     private String name;
 
+    @NotNull
+    private String resourceKey;
+
     public UserFile() {
     }
 
-    public UserFile(Long id, UserFolder folder, String name) {
+    public UserFile(Long id, UserFolder folder, String name, String resourceKey) {
         this.id = id;
         this.folder = folder;
         this.name = name;
+        this.resourceKey = resourceKey;
     }
 
-    public UserFile(UserFolder folder, String name) {
-        this(null, folder, name);
+    public UserFile(UserFolder folder, String name, String resourceKey) {
+        this(null, folder, name, resourceKey);
     }
 
     public Long getFolderId() {
