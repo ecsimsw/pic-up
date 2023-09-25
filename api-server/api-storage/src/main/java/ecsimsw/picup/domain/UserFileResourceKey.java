@@ -9,7 +9,7 @@ import lombok.Getter;
 
 @Getter
 @Entity
-public class ResourceKey {
+public class UserFileResourceKey {
 
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
@@ -23,16 +23,16 @@ public class ResourceKey {
 
     // TODO :: Storage type, file type
 
-    public ResourceKey() {
+    public UserFileResourceKey() {
     }
 
-    public ResourceKey(Long id, Long userFileId, String key) {
+    public UserFileResourceKey(Long id, Long userFileId, String key) {
         this.id = id;
         this.userFileId = userFileId;
         this.key = key;
     }
 
-    public ResourceKey(Long userFileId, String key) {
+    public UserFileResourceKey(Long userFileId, String key) {
         this(null, userFileId, key);
     }
 }

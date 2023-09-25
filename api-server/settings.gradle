@@ -5,5 +5,5 @@ include 'api-product'
 include 'api-email'
 include 'api-auth'
 include 'api-core'
-include 'api-picture'
+include 'api-storage'
 

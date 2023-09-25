@@ -1,6 +1,6 @@
 package ecsimsw.picup.dto;
 
-import ecsimsw.picup.storage.ImageFile;
+import ecsimsw.picup.persistence.ImageFile;
 import lombok.Getter;
 
 @Getter

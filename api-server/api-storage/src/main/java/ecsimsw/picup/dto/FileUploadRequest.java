@@ -4,12 +4,12 @@ import lombok.Getter;
 import org.springframework.web.multipart.MultipartFile;
 
 @Getter
-public class PictureUploadRequest {
+public class FileUploadRequest {
 
     private final String fileName;
     private final MultipartFile file;
 
-    public PictureUploadRequest(String fileName, MultipartFile file) {
+    public FileUploadRequest(String fileName, MultipartFile file) {
         this.fileName = fileName;
         this.file = file;
     }
