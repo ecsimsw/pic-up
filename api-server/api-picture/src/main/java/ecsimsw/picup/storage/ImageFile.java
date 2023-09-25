@@ -1,4 +1,4 @@
-package ecsimsw.picup.domain;
+package ecsimsw.picup.storage;
 
 import lombok.Getter;
 import org.springframework.web.multipart.MultipartFile;
@@ -10,22 +10,20 @@ import java.io.IOException;
 public class ImageFile {
 
     private final long size;
-    private final String name;
     private final byte[] binaryValue;
 
-    public ImageFile(long size, String name, byte[] binaryValue) {
+    public ImageFile(long size, byte[] binaryValue) {
         this.size = size;
-        this.name = name;
         this.binaryValue = binaryValue;
     }
 
     public static ImageFile of(File file, byte[] binaryValue) {
-        return new ImageFile(file.length(), file.getName(), binaryValue);
+        return new ImageFile(file.length(), binaryValue);
     }
 
     public static ImageFile of(MultipartFile file) {
         try {
-            return new ImageFile(file.getSize(), file.getName(), file.getBytes());
+            return new ImageFile(file.getSize(), file.getBytes());
         } catch (IOException e) {
             e.printStackTrace();
             throw new IllegalArgumentException("Invalid multipart file");

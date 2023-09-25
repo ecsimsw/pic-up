@@ -4,11 +4,11 @@ import ecsimsw.picup.domain.UserFolder;
 import lombok.Getter;
 
 @Getter
-public class FolderCreationRequest {
+public class UserFolderCreationRequest {
 
     private final String name;
 
-    public FolderCreationRequest(String name) {
+    public UserFolderCreationRequest(String name) {
         this.name = name;
     }
 

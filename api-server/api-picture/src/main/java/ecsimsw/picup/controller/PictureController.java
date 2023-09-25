@@ -1,41 +1,44 @@
 package ecsimsw.picup.controller;
 
-import ecsimsw.picup.domain.StoragePath;
-import ecsimsw.picup.dto.ImageLoadResponse;
-import ecsimsw.picup.dto.ImageUploadResponse;
-import ecsimsw.picup.service.ImageFileService;
+import ecsimsw.picup.dto.PictureUploadResponse;
+import ecsimsw.picup.storage.StoragePath;
+import ecsimsw.picup.dto.StorageResourceResponse;
+import ecsimsw.picup.dto.PictureUploadRequest;
+import ecsimsw.picup.dto.StorageResourceUploadResponse;
+import ecsimsw.picup.service.PictureService;
+import org.apache.kafka.common.resource.ResourceType;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 public class PictureController {
 
-    private final ImageFileService imageFileService;
+    private final PictureService pictureService;
 
-    public PictureController(ImageFileService imageFileService) {
-        this.imageFileService = imageFileService;
+    public PictureController(PictureService pictureService) {
+        this.pictureService = pictureService;
     }
 
     @PostMapping("/api/picture")
-    public ResponseEntity<ImageUploadResponse> upload(@RequestParam Long folderId, MultipartFile file) {
-        final ImageUploadResponse upload = imageFileService.upload(folderId, file);
-        return ResponseEntity.ok(upload);
+    public ResponseEntity<PictureUploadResponse> upload(@RequestParam Long folderId, PictureUploadRequest request) {
+        final PictureUploadResponse response = pictureService.upload(folderId, request);
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping(
         value = "/api/picture",
         produces = MediaType.IMAGE_JPEG_VALUE
     )
-    public ResponseEntity<ImageLoadResponse> getImage(@RequestParam StoragePath path) {
-        final ImageLoadResponse load = imageFileService.load(path);
-        return ResponseEntity.ok(load);
+    public ResponseEntity<StorageResourceResponse> getImage(@RequestParam StoragePath path) {
+
+
     }
 
     @DeleteMapping("/api/picture/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id){
-        imageFileService.delete(id);
-        return ResponseEntity.ok().build();
+
+
     }
 }

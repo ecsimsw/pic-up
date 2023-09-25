@@ -4,19 +4,19 @@ import ecsimsw.picup.domain.UserFolder;
 import lombok.Getter;
 
 @Getter
-public class FolderResponse {
+public class UserFolderResponse {
 
     private final Long id;
     private final String name;
     private final Long parentFolderId;
 
-    public FolderResponse(Long id, String name, Long parentFolderId) {
+    public UserFolderResponse(Long id, String name, Long parentFolderId) {
         this.id = id;
         this.name = name;
         this.parentFolderId = parentFolderId;
     }
 
-    public static FolderResponse of(UserFolder newFolder) {
-        return new FolderResponse(newFolder.getId(), newFolder.getName(), newFolder.getParentFolderId());
+    public static UserFolderResponse of(UserFolder newFolder) {
+        return new UserFolderResponse(newFolder.getId(), newFolder.getName(), newFolder.getParentFolderId());
     }
 }

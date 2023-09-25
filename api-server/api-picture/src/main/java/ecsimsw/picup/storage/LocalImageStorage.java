@@ -1,7 +1,5 @@
 package ecsimsw.picup.storage;
 
-import ecsimsw.picup.domain.ImageFile;
-import ecsimsw.picup.domain.StoragePath;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -23,26 +21,19 @@ public class LocalImageStorage implements ImageStorage {
     }
 
     @Override
-    public void create(StoragePath storagePath, ImageFile imageFile) {
-        create(storagePath.getValue(), imageFile);
-    }
-
-    @Override
-    public void create(String storagePath, ImageFile imageFile) {
+    public void create(String resourceKey, ImageFile imageFile) {
         try {
-            final Path path = Paths.get(rootPath + storagePath);
-            Files.write(path, imageFile.getBinaryValue());
+            final String storagePath = rootPath + resourceKey;
+            Files.write(Paths.get(storagePath), imageFile.getBinaryValue());
         } catch (IOException e) {
             e.printStackTrace();
             throw new IllegalArgumentException("Fail to save image file");
         }
     }
 
-    public ImageFile read(StoragePath storagePath) {
-        return read(storagePath.getValue());
-    }
-
-    public ImageFile read(String storagePath) {
+    @Override
+    public ImageFile read(String resourceKey) {
+        final String storagePath = rootPath + resourceKey;
         try (
             final InputStream inputStream = new FileInputStream(storagePath)
         ) {
@@ -57,11 +48,9 @@ public class LocalImageStorage implements ImageStorage {
     }
 
     // TODO :: Soft delete
-    public void delete(StoragePath storagePath) {
-        delete(storagePath.getValue());
-    }
-
-    public void delete(String storagePath) {
+    @Override
+    public void delete(String resourceKey) {
+        final String storagePath = rootPath + resourceKey;
         final File file = new File(storagePath);
         if(!file.exists()) {
             throw new IllegalArgumentException("File not exists");

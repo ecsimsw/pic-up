@@ -1,4 +1,4 @@
-package ecsimsw.picup.domain;
+package ecsimsw.picup.storage;
 
 import lombok.Getter;
 import org.assertj.core.util.Strings;
@@ -16,13 +16,12 @@ public class StoragePath {
         this.value = value;
     }
 
-    public static StoragePath of(String username, Long folderId, String fileName) {
+    public static StoragePath of(String username, String fileName) {
         final String path = Strings.join(
             username,
-            folderId.toString(),
+            fileName,
             LocalDateTime.now().toString(),
-            String.valueOf(RANDOM.nextInt(100)),
-            fileName
+            String.valueOf(RANDOM.nextInt(100))
         ).with("-");
         return new StoragePath(path);
     }
