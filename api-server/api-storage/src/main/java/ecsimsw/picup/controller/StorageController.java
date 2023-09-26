@@ -8,6 +8,7 @@ import ecsimsw.picup.service.StorageService;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 public class StorageController {
@@ -19,8 +20,8 @@ public class StorageController {
     }
 
     @PostMapping("/api/file")
-    public ResponseEntity<FileUploadResponse> uploadFile(Long folderId, @RequestBody FileUploadRequest request) {
-        final FileUploadResponse response = storageService.uploadFile(folderId, request);
+    public ResponseEntity<FileUploadResponse> uploadFile(Long folderId, FileUploadRequest request, MultipartFile file) {
+        final FileUploadResponse response = storageService.uploadFile(folderId, request, file);
         return ResponseEntity.ok(response);
     }
 

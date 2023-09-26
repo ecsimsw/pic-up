@@ -7,10 +7,8 @@ import org.springframework.web.multipart.MultipartFile;
 public class FileUploadRequest {
 
     private final String fileName;
-    private final MultipartFile file;
 
-    public FileUploadRequest(String fileName, MultipartFile file) {
+    public FileUploadRequest(String fileName) {
         this.fileName = fileName;
-        this.file = file;
     }
 }

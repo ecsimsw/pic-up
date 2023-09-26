@@ -6,7 +6,6 @@ import java.util.List;
 
 public interface UserFileRepository extends JpaRepository<UserFile, Long> {
 
-    void deleteAllByFolderId(Long folderId);
-
+    boolean existsByFolderIdAndName(Long folderId, String name);
     List<UserFile> findAllByFolderId(Long folderId);
 }

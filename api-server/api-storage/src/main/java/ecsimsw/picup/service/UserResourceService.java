@@ -30,6 +30,9 @@ public class UserResourceService {
 
     @Transactional
     public UserFileInfo createFile(Long folderId, FileUploadRequest request, long size, String resourceKey) {
+        if(userFileRepository.existsByFolderIdAndName(folderId, request.getFileName())) {
+            throw new IllegalArgumentException("File name duplicated exception");
+        }
         final UserFile userFile = new UserFile(folderId, request.getFileName(), size, resourceKey);
         userFileRepository.save(userFile);
         return UserFileInfo.of(userFile);

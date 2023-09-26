@@ -10,6 +10,7 @@ import java.util.Random;
 import org.assertj.core.util.Strings;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 @Service
 public class FilePersistenceService {
@@ -23,9 +24,9 @@ public class FilePersistenceService {
     }
 
     @Transactional
-    public StorageResourceInfo upload(FileUploadRequest request) {
-        final String resourceKey = resourceKey("username", request.getFileName());
-        final ImageFile imageFile = ImageFile.of(request.getFile());
+    public StorageResourceInfo upload(String fileName, MultipartFile file) {
+        final String resourceKey = resourceKey("username", fileName);
+        final ImageFile imageFile = ImageFile.of(file);
         imageStorage.create(resourceKey, imageFile);
         return StorageResourceInfo.of(imageFile, resourceKey);
     }
