@@ -24,8 +24,7 @@ public class UserResourceService {
 
     @Transactional
     public UserFileInfo createFile(Long folderId, FileUploadRequest request, String resourceKey) {
-        final UserFolder folder = userFolderRepository.findById(folderId).orElseThrow();
-        final UserFile userFile = new UserFile(folder, request.getFileName(), resourceKey);
+        final UserFile userFile = new UserFile(folderId, request.getFileName(), resourceKey);
         userFileRepository.save(userFile);
         return UserFileInfo.of(userFile);
     }

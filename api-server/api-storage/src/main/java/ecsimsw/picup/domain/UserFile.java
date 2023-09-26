@@ -15,8 +15,8 @@ public class UserFile {
 
 //    private Long userId
 
-    @OneToOne(fetch = FetchType.LAZY)
-    private UserFolder folder;
+    @NotNull
+    private Long folderId;
 
     @NotNull
     private String name;
@@ -27,18 +27,14 @@ public class UserFile {
     public UserFile() {
     }
 
-    public UserFile(Long id, UserFolder folder, String name, String resourceKey) {
+    public UserFile(Long id, Long folderId, String name, String resourceKey) {
         this.id = id;
-        this.folder = folder;
+        this.folderId = folderId;
         this.name = name;
         this.resourceKey = resourceKey;
     }
 
-    public UserFile(UserFolder folder, String name, String resourceKey) {
-        this(null, folder, name, resourceKey);
-    }
-
-    public Long getFolderId() {
-        return folder.getId();
+    public UserFile(Long folderId, String name, String resourceKey) {
+        this(null, folderId, name, resourceKey);
     }
 }

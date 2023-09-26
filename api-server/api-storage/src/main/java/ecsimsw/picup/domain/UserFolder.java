@@ -16,7 +16,7 @@ public class UserFolder {
 
 //    private Long userId
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "userFolder_id")
     private UserFolder parentFolder;
 
