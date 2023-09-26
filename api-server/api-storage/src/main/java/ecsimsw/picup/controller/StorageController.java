@@ -1,8 +1,9 @@
 package ecsimsw.picup.controller;
 
-import ecsimsw.picup.dto.FileDownloadResponse;
+import ecsimsw.picup.dto.FileFindResponse;
 import ecsimsw.picup.dto.FileUploadRequest;
 import ecsimsw.picup.dto.FileUploadResponse;
+import ecsimsw.picup.dto.UserFolderCreationRequest;
 import ecsimsw.picup.service.StorageService;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -18,23 +19,41 @@ public class StorageController {
     }
 
     @PostMapping("/api/file")
-    public ResponseEntity<FileUploadResponse> uploadFile(@RequestParam Long folderId, FileUploadRequest request) {
+    public ResponseEntity<FileUploadResponse> uploadFile(Long folderId, @RequestBody FileUploadRequest request) {
         final FileUploadResponse response = storageService.uploadFile(folderId, request);
         return ResponseEntity.ok(response);
     }
 
+    @GetMapping("/api/file/{userFileId}")
+    public ResponseEntity<FileFindResponse> findFile(@PathVariable Long userFileId) {
+        final FileFindResponse response = storageService.findFile(userFileId);
+        return ResponseEntity.ok(response);
+    }
+
     @GetMapping(
-        value = "/api/file/{userFileId}",
+        value = "/api/file/view/{resourceKey}",
         produces = MediaType.IMAGE_JPEG_VALUE
     )
-    public ResponseEntity<FileDownloadResponse> downloadFile(@PathVariable Long userFileId) {
-        final FileDownloadResponse response = storageService.downLoadFile(userFileId);
-        return ResponseEntity.ok(response);
+    public ResponseEntity<byte[]> downloadFile(@PathVariable String resourceKey) {
+        final byte[] file = storageService.downloadFile(resourceKey);
+        return ResponseEntity.ok(file);
     }
 
     @DeleteMapping("/api/file/{userFileId}")
     public ResponseEntity<Void> deleteFile(@PathVariable Long userFileId) {
         storageService.deleteFile(userFileId);
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/api/folder/{parentFolderId}")
+    public ResponseEntity<Void> createFolder(@PathVariable Long parentFolderId, @RequestBody UserFolderCreationRequest request) {
+        storageService.createFolder(parentFolderId, request);
+        return ResponseEntity.ok().build();
+    }
+
+    @DeleteMapping("/api/folder/{userFolderId}")
+    public ResponseEntity<Void> deleteFolder(@PathVariable Long userFolderId) {
+        storageService.deleteFolder(userFolderId);
         return ResponseEntity.ok().build();
     }
 }

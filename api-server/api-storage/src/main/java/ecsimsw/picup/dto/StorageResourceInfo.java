@@ -4,19 +4,22 @@ import ecsimsw.picup.persistence.ImageFile;
 import lombok.Getter;
 
 @Getter
-public class StorageResourceResponse {
+public class StorageResourceInfo {
 
     private final long size;
+    private final String key;
     private final byte[] file;
 
-    public StorageResourceResponse(long size, byte[] file) {
+    public StorageResourceInfo(long size, String key, byte[] file) {
         this.size = size;
+        this.key = key;
         this.file = file;
     }
 
-    public static StorageResourceResponse of(ImageFile imageFile) {
-        return new StorageResourceResponse(
+    public static StorageResourceInfo of(ImageFile imageFile, String resourceKey) {
+        return new StorageResourceInfo(
             imageFile.getSize(),
+            resourceKey,
             imageFile.getFile()
         );
     }

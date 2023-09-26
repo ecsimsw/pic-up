@@ -13,7 +13,7 @@ public class FileUploadResponse {
         this.size = size;
     }
 
-    public static FileUploadResponse of(UserFileInfo userFile, StorageResourceUploadResponse storageResource) {
+    public static FileUploadResponse of(UserFileInfo userFile, StorageResourceInfo storageResource) {
         return new FileUploadResponse(userFile.getId(), storageResource.getSize());
     }
 }

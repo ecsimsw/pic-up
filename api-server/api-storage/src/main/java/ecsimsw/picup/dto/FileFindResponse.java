@@ -3,15 +3,15 @@ package ecsimsw.picup.dto;
 import lombok.Getter;
 
 @Getter
-public class FileDownloadResponse {
+public class FileFindResponse {
 
     private final long userFileId;
     private final long size;
-    private final byte[] file;
+    private final String resourceKey;
 
-    public FileDownloadResponse(long userFileId, long size, byte[] file) {
+    public FileFindResponse(long userFileId, long size, String resourceKey) {
         this.userFileId = userFileId;
         this.size = size;
-        this.file = file;
+        this.resourceKey = resourceKey;
     }
 }

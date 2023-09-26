@@ -12,12 +12,14 @@ public class UserFileInfo {
     private final Long id;
     private final Long folderId;
     private final String name;
+    private final Long size;
     private final String resourceKey;
 
-    public UserFileInfo(Long id, Long folderId, String name, String resourceKey) {
+    public UserFileInfo(Long id, Long folderId, String name, Long size, String resourceKey) {
         this.id = id;
         this.folderId = folderId;
         this.name = name;
+        this.size = size;
         this.resourceKey = resourceKey;
     }
 
@@ -26,6 +28,7 @@ public class UserFileInfo {
             userFile.getId(),
             userFile.getFolderId(),
             userFile.getName(),
+            userFile.getResourceSize(),
             userFile.getResourceKey()
         );
     }

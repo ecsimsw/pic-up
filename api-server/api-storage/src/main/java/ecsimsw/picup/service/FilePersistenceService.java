@@ -1,9 +1,8 @@
 package ecsimsw.picup.service;
 
 import ecsimsw.picup.persistence.ImageFile;
-import ecsimsw.picup.dto.StorageResourceResponse;
+import ecsimsw.picup.dto.StorageResourceInfo;
 import ecsimsw.picup.dto.FileUploadRequest;
-import ecsimsw.picup.dto.StorageResourceUploadResponse;
 import ecsimsw.picup.persistence.ImageStorage;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -24,17 +23,17 @@ public class FilePersistenceService {
     }
 
     @Transactional
-    public StorageResourceUploadResponse upload(FileUploadRequest request) {
+    public StorageResourceInfo upload(FileUploadRequest request) {
         final String resourceKey = resourceKey("username", request.getFileName());
         final ImageFile imageFile = ImageFile.of(request.getFile());
         imageStorage.create(resourceKey, imageFile);
-        return StorageResourceUploadResponse.of(imageFile, resourceKey);
+        return StorageResourceInfo.of(imageFile, resourceKey);
     }
 
     @Transactional(readOnly = true)
-    public StorageResourceResponse download(String resourceKey) {
+    public StorageResourceInfo download(String resourceKey) {
         final ImageFile imageFile = imageStorage.read(resourceKey);
-        return StorageResourceResponse.of(imageFile);
+        return StorageResourceInfo.of(imageFile, resourceKey);
     }
 
     @Transactional

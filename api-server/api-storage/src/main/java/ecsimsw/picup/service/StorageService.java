@@ -23,16 +23,21 @@ public class StorageService {
 
     @Transactional
     public FileUploadResponse uploadFile(Long userFolderId, FileUploadRequest request) {
-        final StorageResourceUploadResponse storageResource = filePersistenceService.upload(request);
-        final UserFileInfo userFile = userResourceService.createFile(userFolderId, request, storageResource.getKey());
+        final StorageResourceInfo storageResource = filePersistenceService.upload(request);
+        final UserFileInfo userFile = userResourceService.createFile(userFolderId, request, storageResource.getSize(), storageResource.getKey());
         return FileUploadResponse.of(userFile, storageResource);
     }
 
     @Transactional(readOnly = true)
-    public FileDownloadResponse downLoadFile(Long userFileId) {
+    public FileFindResponse findFile(Long userFileId) {
         final UserFileInfo userFile = userResourceService.getById(userFileId);
-        final StorageResourceResponse storageResource = filePersistenceService.download(userFile.getResourceKey());
-        return new FileDownloadResponse(userFileId, storageResource.getSize(), storageResource.getFile());
+        return new FileFindResponse(userFileId, userFile.getSize(), userFile.getResourceKey());
+    }
+
+    @Transactional(readOnly = true)
+    public byte[] downloadFile(String resourceKey) {
+        final StorageResourceInfo storageResource = filePersistenceService.download(resourceKey);
+        return storageResource.getFile();
     }
 
     // TODO :: Soft delete

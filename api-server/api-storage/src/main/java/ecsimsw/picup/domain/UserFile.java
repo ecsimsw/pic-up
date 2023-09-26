@@ -22,19 +22,23 @@ public class UserFile {
     private String name;
 
     @NotNull
+    private Long resourceSize;
+
+    @NotNull
     private String resourceKey;
 
     public UserFile() {
     }
 
-    public UserFile(Long id, Long folderId, String name, String resourceKey) {
+    public UserFile(Long id, Long folderId, String name, Long resourceSize, String resourceKey) {
         this.id = id;
         this.folderId = folderId;
         this.name = name;
+        this.resourceSize = resourceSize;
         this.resourceKey = resourceKey;
     }
 
-    public UserFile(Long folderId, String name, String resourceKey) {
-        this(null, folderId, name, resourceKey);
+    public UserFile(Long folderId, String name, Long resourceSize, String resourceKey) {
+        this(null, folderId, name, resourceSize, resourceKey);
     }
 }
