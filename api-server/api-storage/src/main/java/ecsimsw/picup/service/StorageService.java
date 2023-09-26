@@ -4,6 +4,9 @@ import ecsimsw.picup.dto.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 public class StorageService {
 
@@ -39,5 +42,19 @@ public class StorageService {
         final UserFileInfo userFile = userResourceService.getById(userFileId);
         filePersistenceService.delete(userFile.getResourceKey());
         userResourceService.deleteFile(userFileId);
+    }
+
+    @Transactional
+    public void createFolder(Long parentFolderId, UserFolderCreationRequest request) {
+        userResourceService.createFolder(parentFolderId, request);
+    }
+
+    @Transactional
+    public void deleteFolder(Long folderId) {
+        final List<UserFileInfo> deletedUserFiles = userResourceService.deleteFolder(folderId);
+        final List<String> resourceKeys = deletedUserFiles.stream()
+            .map(UserFileInfo::getResourceKey)
+            .collect(Collectors.toList());
+        filePersistenceService.deleteAll(resourceKeys);
     }
 }

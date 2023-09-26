@@ -3,6 +3,7 @@ package ecsimsw.picup.domain;
 import lombok.Getter;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 
 @Getter
 @Entity
@@ -16,26 +17,22 @@ public class UserFolder {
 
 //    private Long userId
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "userFolder_id")
-    private UserFolder parentFolder;
+    @NotNull
+    private Long parentId;
 
+    @NotNull
     private String name;
 
     public UserFolder() {
     }
 
-    public UserFolder(Long id, UserFolder parentFolder, String name) {
+    public UserFolder(Long id, Long parentId, String name) {
         this.id = id;
-        this.parentFolder = parentFolder;
+        this.parentId = parentId;
         this.name = name;
     }
 
-    public UserFolder(UserFolder parentFolder, String name) {
-        this(null, parentFolder, name);
-    }
-
-    public Long getParentFolderId() {
-        return parentFolder.id;
+    public UserFolder(Long parentId, String name) {
+        this(null, parentId, name);
     }
 }

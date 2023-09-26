@@ -6,9 +6,11 @@ import ecsimsw.picup.dto.FileUploadRequest;
 import ecsimsw.picup.dto.StorageResourceUploadResponse;
 import ecsimsw.picup.persistence.ImageStorage;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Random;
 import org.assertj.core.util.Strings;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class FilePersistenceService {
@@ -21,6 +23,7 @@ public class FilePersistenceService {
         this.imageStorage = imageStorage;
     }
 
+    @Transactional
     public StorageResourceUploadResponse upload(FileUploadRequest request) {
         final String resourceKey = resourceKey("username", request.getFileName());
         final ImageFile imageFile = ImageFile.of(request.getFile());
@@ -28,13 +31,20 @@ public class FilePersistenceService {
         return StorageResourceUploadResponse.of(imageFile, resourceKey);
     }
 
+    @Transactional(readOnly = true)
     public StorageResourceResponse download(String resourceKey) {
         final ImageFile imageFile = imageStorage.read(resourceKey);
         return StorageResourceResponse.of(imageFile);
     }
 
+    @Transactional
     public void delete(String resourceKey) {
         imageStorage.delete(resourceKey);
+    }
+
+    @Transactional
+    public void deleteAll(List<String> resourceKeys) {
+        resourceKeys.forEach(this::delete);
     }
 
     private String resourceKey(String username, String fileName) {
@@ -45,4 +55,5 @@ public class FilePersistenceService {
                 String.valueOf(RANDOM.nextInt(100))
         ).with("-");
     }
+
 }

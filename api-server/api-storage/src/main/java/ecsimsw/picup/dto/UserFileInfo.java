@@ -3,6 +3,9 @@ package ecsimsw.picup.dto;
 import ecsimsw.picup.domain.UserFile;
 import lombok.Getter;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Getter
 public class UserFileInfo {
 
@@ -25,5 +28,11 @@ public class UserFileInfo {
             userFile.getName(),
             userFile.getResourceKey()
         );
+    }
+
+    public static List<UserFileInfo> listOf(List<UserFile> userFiles) {
+        return userFiles.stream()
+            .map(UserFileInfo::of)
+            .collect(Collectors.toList());
     }
 }
