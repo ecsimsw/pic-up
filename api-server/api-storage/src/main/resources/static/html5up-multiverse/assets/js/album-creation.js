@@ -1,7 +1,6 @@
 let descriptionArea = document.getElementById("description");
 let imageBoxButton = document.getElementById("imageBoxButton");
 
-
 descriptionArea.addEventListener('input', function() {
     let content = this.value;
     let maxRows = 2;
@@ -16,5 +15,7 @@ imageBoxButton.addEventListener('change', function() {
     let filePath = content.split('\\');
     let fileName = filePath[filePath.length -1];
     let imageBoxName = document.getElementById("imageBoxText");
+    imageBoxName.readOnly = false;
     imageBoxName.value = fileName;
+    imageBoxName.readOnly = true;
 }, false);
