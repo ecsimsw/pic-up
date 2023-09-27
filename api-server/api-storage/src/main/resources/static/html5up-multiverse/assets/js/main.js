@@ -206,11 +206,11 @@
 
 			});
 
-	// Main.
-		var $main = $('#main');
+	// album-main.
+		var albumMain = $('#album-main');
 
 		// Thumbs.
-			$main.children('.thumb').each(function() {
+			albumMain.children('.thumb').each(function() {
 
 				var	$this = $(this),
 					$image = $this.find('.image'), $image_img = $image.children('img'),
@@ -237,7 +237,7 @@
 			});
 
 		// Poptrox.
-			$main.poptrox({
+			albumMain.poptrox({
 				baseZIndex: 20000,
 				caption: function($a) {
 
@@ -271,11 +271,11 @@
 
 			// Hack: Set margins to 0 when 'xsmall' activates.
 				breakpoints.on('<=xsmall', function() {
-					$main[0]._poptrox.windowMargin = 0;
+					albumMain[0]._poptrox.windowMargin = 0;
 				});
 
 				breakpoints.on('>xsmall', function() {
-					$main[0]._poptrox.windowMargin = 50;
+					albumMain[0]._poptrox.windowMargin = 50;
 				});
 
 })(jQuery);

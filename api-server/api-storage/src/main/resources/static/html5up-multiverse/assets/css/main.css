@@ -1611,9 +1611,9 @@ body.is-preload #header {
 
 }
 
-/* Main */
+/* album-main */
 
-#main {
+#album-main {
     -moz-transition: -moz-filter 0.5s ease, -webkit-filter 0.5s ease, -ms-filter 0.5s ease, -moz-filter 0.5s ease;
     -webkit-transition: -moz-filter 0.5s ease, -webkit-filter 0.5s ease, -ms-filter 0.5s ease, -webkit-filter 0.5s ease;
     -ms-transition: -moz-filter 0.5s ease, -webkit-filter 0.5s ease, -ms-filter 0.5s ease, -ms-filter 0.5s ease;
@@ -1629,7 +1629,7 @@ body.is-preload #header {
     -webkit-tap-highlight-color: rgba(255, 255, 255, 0);
 }
 
-#main .thumb {
+#album-main .thumb {
     -moz-transition: opacity 1.25s ease-in-out;
     -webkit-transition: opacity 1.25s ease-in-out;
     -ms-transition: opacity 1.25s ease-in-out;
@@ -1641,7 +1641,7 @@ body.is-preload #header {
     position: relative;
 }
 
-#main .thumb:after {
+#album-main .thumb:after {
     background-image: -moz-linear-gradient(to top, rgba(10, 17, 25, 0.35) 5%, rgba(10, 17, 25, 0) 35%);
     background-image: -webkit-linear-gradient(to top, rgba(10, 17, 25, 0.35) 5%, rgba(10, 17, 25, 0) 35%);
     background-image: -ms-linear-gradient(to top, rgba(10, 17, 25, 0.35) 5%, rgba(10, 17, 25, 0) 35%);
@@ -1657,7 +1657,7 @@ body.is-preload #header {
     width: 100%;
 }
 
-#main .thumb > .image {
+#album-main .thumb > .image {
     -webkit-tap-highlight-color: rgba(255, 255, 255, 0);
     background-position: center;
     background-repeat: no-repeat;
@@ -1670,7 +1670,7 @@ body.is-preload #header {
     width: 100%;
 }
 
-#main .thumb > h2 {
+#album-main .thumb > h2 {
     pointer-events: none;
     bottom: 1.875em;
     font-size: 0.8em;
@@ -1680,11 +1680,11 @@ body.is-preload #header {
     z-index: 1;
 }
 
-#main .thumb > p {
+#album-main .thumb > p {
     display: none;
 }
 
-#main:after {
+#album-main:after {
     pointer-events: none;
     -moz-transition: opacity 0.5s ease, visibility 0.5s;
     -webkit-transition: opacity 0.5s ease, visibility 0.5s;
@@ -1703,29 +1703,29 @@ body.is-preload #header {
     z-index: 1;
 }
 
-body.ie #main:after {
+body.ie #album-main:after {
     background: rgba(36, 38, 41, 0.55);
 }
 
-body.content-active #main {
+body.content-active #album-main {
     -moz-filter: blur(6px);
     -webkit-filter: blur(6px);
     -ms-filter: blur(6px);
     filter: blur(6px);
 }
 
-body.content-active #main:after {
+body.content-active #album-main:after {
     pointer-events: auto;
     opacity: 1;
     visibility: visible;
 }
 
-body.is-preload #main .thumb {
+body.is-preload #album-main .thumb {
     pointer-events: none;
     opacity: 0;
 }
 
-#main .thumb {
+#album-main .thumb {
     -moz-transition-delay: 2.525s;
     -webkit-transition-delay: 2.525s;
     -ms-transition-delay: 2.525s;
@@ -1735,84 +1735,84 @@ body.is-preload #main .thumb {
     width: 25%;
 }
 
-#main .thumb:nth-child(1) {
+#album-main .thumb:nth-child(1) {
     -moz-transition-delay: 0.65s;
     -webkit-transition-delay: 0.65s;
     -ms-transition-delay: 0.65s;
     transition-delay: 0.65s;
 }
 
-#main .thumb:nth-child(2) {
+#album-main .thumb:nth-child(2) {
     -moz-transition-delay: 0.8s;
     -webkit-transition-delay: 0.8s;
     -ms-transition-delay: 0.8s;
     transition-delay: 0.8s;
 }
 
-#main .thumb:nth-child(3) {
+#album-main .thumb:nth-child(3) {
     -moz-transition-delay: 0.95s;
     -webkit-transition-delay: 0.95s;
     -ms-transition-delay: 0.95s;
     transition-delay: 0.95s;
 }
 
-#main .thumb:nth-child(4) {
+#album-main .thumb:nth-child(4) {
     -moz-transition-delay: 1.1s;
     -webkit-transition-delay: 1.1s;
     -ms-transition-delay: 1.1s;
     transition-delay: 1.1s;
 }
 
-#main .thumb:nth-child(5) {
+#album-main .thumb:nth-child(5) {
     -moz-transition-delay: 1.25s;
     -webkit-transition-delay: 1.25s;
     -ms-transition-delay: 1.25s;
     transition-delay: 1.25s;
 }
 
-#main .thumb:nth-child(6) {
+#album-main .thumb:nth-child(6) {
     -moz-transition-delay: 1.4s;
     -webkit-transition-delay: 1.4s;
     -ms-transition-delay: 1.4s;
     transition-delay: 1.4s;
 }
 
-#main .thumb:nth-child(7) {
+#album-main .thumb:nth-child(7) {
     -moz-transition-delay: 1.55s;
     -webkit-transition-delay: 1.55s;
     -ms-transition-delay: 1.55s;
     transition-delay: 1.55s;
 }
 
-#main .thumb:nth-child(8) {
+#album-main .thumb:nth-child(8) {
     -moz-transition-delay: 1.7s;
     -webkit-transition-delay: 1.7s;
     -ms-transition-delay: 1.7s;
     transition-delay: 1.7s;
 }
 
-#main .thumb:nth-child(9) {
+#album-main .thumb:nth-child(9) {
     -moz-transition-delay: 1.85s;
     -webkit-transition-delay: 1.85s;
     -ms-transition-delay: 1.85s;
     transition-delay: 1.85s;
 }
 
-#main .thumb:nth-child(10) {
+#album-main .thumb:nth-child(10) {
     -moz-transition-delay: 2s;
     -webkit-transition-delay: 2s;
     -ms-transition-delay: 2s;
     transition-delay: 2s;
 }
 
-#main .thumb:nth-child(11) {
+#album-main .thumb:nth-child(11) {
     -moz-transition-delay: 2.15s;
     -webkit-transition-delay: 2.15s;
     -ms-transition-delay: 2.15s;
     transition-delay: 2.15s;
 }
 
-#main .thumb:nth-child(12) {
+#album-main .thumb:nth-child(12) {
     -moz-transition-delay: 2.3s;
     -webkit-transition-delay: 2.3s;
     -ms-transition-delay: 2.3s;
@@ -1821,7 +1821,7 @@ body.is-preload #main .thumb {
 
 @media screen and (max-width: 1680px) {
 
-    #main .thumb {
+    #album-main .thumb {
         -moz-transition-delay: 2.075s;
         -webkit-transition-delay: 2.075s;
         -ms-transition-delay: 2.075s;
@@ -1831,63 +1831,63 @@ body.is-preload #main .thumb {
         width: 33.33333%;
     }
 
-    #main .thumb:nth-child(1) {
+    #album-main .thumb:nth-child(1) {
         -moz-transition-delay: 0.65s;
         -webkit-transition-delay: 0.65s;
         -ms-transition-delay: 0.65s;
         transition-delay: 0.65s;
     }
 
-    #main .thumb:nth-child(2) {
+    #album-main .thumb:nth-child(2) {
         -moz-transition-delay: 0.8s;
         -webkit-transition-delay: 0.8s;
         -ms-transition-delay: 0.8s;
         transition-delay: 0.8s;
     }
 
-    #main .thumb:nth-child(3) {
+    #album-main .thumb:nth-child(3) {
         -moz-transition-delay: 0.95s;
         -webkit-transition-delay: 0.95s;
         -ms-transition-delay: 0.95s;
         transition-delay: 0.95s;
     }
 
-    #main .thumb:nth-child(4) {
+    #album-main .thumb:nth-child(4) {
         -moz-transition-delay: 1.1s;
         -webkit-transition-delay: 1.1s;
         -ms-transition-delay: 1.1s;
         transition-delay: 1.1s;
     }
 
-    #main .thumb:nth-child(5) {
+    #album-main .thumb:nth-child(5) {
         -moz-transition-delay: 1.25s;
         -webkit-transition-delay: 1.25s;
         -ms-transition-delay: 1.25s;
         transition-delay: 1.25s;
     }
 
-    #main .thumb:nth-child(6) {
+    #album-main .thumb:nth-child(6) {
         -moz-transition-delay: 1.4s;
         -webkit-transition-delay: 1.4s;
         -ms-transition-delay: 1.4s;
         transition-delay: 1.4s;
     }
 
-    #main .thumb:nth-child(7) {
+    #album-main .thumb:nth-child(7) {
         -moz-transition-delay: 1.55s;
         -webkit-transition-delay: 1.55s;
         -ms-transition-delay: 1.55s;
         transition-delay: 1.55s;
     }
 
-    #main .thumb:nth-child(8) {
+    #album-main .thumb:nth-child(8) {
         -moz-transition-delay: 1.7s;
         -webkit-transition-delay: 1.7s;
         -ms-transition-delay: 1.7s;
         transition-delay: 1.7s;
     }
 
-    #main .thumb:nth-child(9) {
+    #album-main .thumb:nth-child(9) {
         -moz-transition-delay: 1.85s;
         -webkit-transition-delay: 1.85s;
         -ms-transition-delay: 1.85s;
@@ -1898,7 +1898,7 @@ body.is-preload #main .thumb {
 
 @media screen and (max-width: 1280px) {
 
-    #main .thumb {
+    #album-main .thumb {
         -moz-transition-delay: 1.625s;
         -webkit-transition-delay: 1.625s;
         -ms-transition-delay: 1.625s;
@@ -1908,42 +1908,42 @@ body.is-preload #main .thumb {
         width: 50%;
     }
 
-    #main .thumb:nth-child(1) {
+    #album-main .thumb:nth-child(1) {
         -moz-transition-delay: 0.65s;
         -webkit-transition-delay: 0.65s;
         -ms-transition-delay: 0.65s;
         transition-delay: 0.65s;
     }
 
-    #main .thumb:nth-child(2) {
+    #album-main .thumb:nth-child(2) {
         -moz-transition-delay: 0.8s;
         -webkit-transition-delay: 0.8s;
         -ms-transition-delay: 0.8s;
         transition-delay: 0.8s;
     }
 
-    #main .thumb:nth-child(3) {
+    #album-main .thumb:nth-child(3) {
         -moz-transition-delay: 0.95s;
         -webkit-transition-delay: 0.95s;
         -ms-transition-delay: 0.95s;
         transition-delay: 0.95s;
     }
 
-    #main .thumb:nth-child(4) {
+    #album-main .thumb:nth-child(4) {
         -moz-transition-delay: 1.1s;
         -webkit-transition-delay: 1.1s;
         -ms-transition-delay: 1.1s;
         transition-delay: 1.1s;
     }
 
-    #main .thumb:nth-child(5) {
+    #album-main .thumb:nth-child(5) {
         -moz-transition-delay: 1.25s;
         -webkit-transition-delay: 1.25s;
         -ms-transition-delay: 1.25s;
         transition-delay: 1.25s;
     }
 
-    #main .thumb:nth-child(6) {
+    #album-main .thumb:nth-child(6) {
         -moz-transition-delay: 1.4s;
         -webkit-transition-delay: 1.4s;
         -ms-transition-delay: 1.4s;
@@ -1954,7 +1954,7 @@ body.is-preload #main .thumb {
 
 @media screen and (max-width: 980px) {
 
-    #main .thumb {
+    #album-main .thumb {
         -moz-transition-delay: 2.075s;
         -webkit-transition-delay: 2.075s;
         -ms-transition-delay: 2.075s;
@@ -1964,63 +1964,63 @@ body.is-preload #main .thumb {
         width: 50%;
     }
 
-    #main .thumb:nth-child(1) {
+    #album-main .thumb:nth-child(1) {
         -moz-transition-delay: 0.65s;
         -webkit-transition-delay: 0.65s;
         -ms-transition-delay: 0.65s;
         transition-delay: 0.65s;
     }
 
-    #main .thumb:nth-child(2) {
+    #album-main .thumb:nth-child(2) {
         -moz-transition-delay: 0.8s;
         -webkit-transition-delay: 0.8s;
         -ms-transition-delay: 0.8s;
         transition-delay: 0.8s;
     }
 
-    #main .thumb:nth-child(3) {
+    #album-main .thumb:nth-child(3) {
         -moz-transition-delay: 0.95s;
         -webkit-transition-delay: 0.95s;
         -ms-transition-delay: 0.95s;
         transition-delay: 0.95s;
     }
 
-    #main .thumb:nth-child(4) {
+    #album-main .thumb:nth-child(4) {
         -moz-transition-delay: 1.1s;
         -webkit-transition-delay: 1.1s;
         -ms-transition-delay: 1.1s;
         transition-delay: 1.1s;
     }
 
-    #main .thumb:nth-child(5) {
+    #album-main .thumb:nth-child(5) {
         -moz-transition-delay: 1.25s;
         -webkit-transition-delay: 1.25s;
         -ms-transition-delay: 1.25s;
         transition-delay: 1.25s;
     }
 
-    #main .thumb:nth-child(6) {
+    #album-main .thumb:nth-child(6) {
         -moz-transition-delay: 1.4s;
         -webkit-transition-delay: 1.4s;
         -ms-transition-delay: 1.4s;
         transition-delay: 1.4s;
     }
 
-    #main .thumb:nth-child(7) {
+    #album-main .thumb:nth-child(7) {
         -moz-transition-delay: 1.55s;
         -webkit-transition-delay: 1.55s;
         -ms-transition-delay: 1.55s;
         transition-delay: 1.55s;
     }
 
-    #main .thumb:nth-child(8) {
+    #album-main .thumb:nth-child(8) {
         -moz-transition-delay: 1.7s;
         -webkit-transition-delay: 1.7s;
         -ms-transition-delay: 1.7s;
         transition-delay: 1.7s;
     }
 
-    #main .thumb:nth-child(9) {
+    #album-main .thumb:nth-child(9) {
         -moz-transition-delay: 1.85s;
         -webkit-transition-delay: 1.85s;
         -ms-transition-delay: 1.85s;
@@ -2031,7 +2031,7 @@ body.is-preload #main .thumb {
 
 @media screen and (max-width: 480px) {
 
-    #main .thumb {
+    #album-main .thumb {
         -moz-transition-delay: 1.175s;
         -webkit-transition-delay: 1.175s;
         -ms-transition-delay: 1.175s;
@@ -2041,21 +2041,21 @@ body.is-preload #main .thumb {
         width: 100%;
     }
 
-    #main .thumb:nth-child(1) {
+    #album-main .thumb:nth-child(1) {
         -moz-transition-delay: 0.65s;
         -webkit-transition-delay: 0.65s;
         -ms-transition-delay: 0.65s;
         transition-delay: 0.65s;
     }
 
-    #main .thumb:nth-child(2) {
+    #album-main .thumb:nth-child(2) {
         -moz-transition-delay: 0.8s;
         -webkit-transition-delay: 0.8s;
         -ms-transition-delay: 0.8s;
         transition-delay: 0.8s;
     }
 
-    #main .thumb:nth-child(3) {
+    #album-main .thumb:nth-child(3) {
         -moz-transition-delay: 0.95s;
         -webkit-transition-delay: 0.95s;
         -ms-transition-delay: 0.95s;
