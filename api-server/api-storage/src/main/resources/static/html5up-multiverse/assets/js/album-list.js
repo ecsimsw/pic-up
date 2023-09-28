@@ -11,6 +11,7 @@ createBtn.addEventListener("click", function () {
 
     const thumbImage = document.createElement('a');
     thumbImage.className = "image"
+    thumbImage.href = "images/fulls/01.jpg"
     thumbImage.id = "pic-1"
     thumbImage.style.backgroundImage = "url('images/thumbs/01.jpg')"
     thumbImage.style.cursor = "pointer"
