@@ -5,12 +5,16 @@ let picNum = 0
 
 createBtn.addEventListener("click", function () {
     picNum++;
+    createArticle(picNum);
+}, false);
+
+function createArticle() {
     const article = document.createElement('article');
     article.id = `picture-${picNum}`
     article.className = 'thumb'
 
     const thumbImage = document.createElement('a');
-    thumbImage.className = "image"
+    thumbImage.className = "album-main-image"
     thumbImage.href = "images/fulls/01.jpg"
     thumbImage.id = "pic-1"
     thumbImage.style.backgroundImage = "url('images/thumbs/01.jpg')"
@@ -28,4 +32,4 @@ createBtn.addEventListener("click", function () {
     article.appendChild(title);
     article.appendChild(description);
     albumMain.appendChild(article);
-}, false);
+}
