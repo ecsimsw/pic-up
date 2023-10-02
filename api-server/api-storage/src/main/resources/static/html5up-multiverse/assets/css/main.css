@@ -414,12 +414,10 @@ button:hover:active,
     color: #34a58e !important;
 }
 
-input[type="submit"].icon,
 input[type="reset"].icon,
-input[type="button"].icon,
 button.icon,
 .button.icon {
-    padding-left: 1.35em;
+    margin-right: 10px;
 }
 
 input[type="submit"].icon:before,
