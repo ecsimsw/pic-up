@@ -32,3 +32,5 @@ document.getElementById('dynamic').addEventListener('click', function() {
     })
 });
 ```
+
+`a tag is supposed not to include href`
