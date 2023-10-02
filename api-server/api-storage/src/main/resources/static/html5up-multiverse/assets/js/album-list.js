@@ -31,8 +31,9 @@ function createAlbumArticle(albumId) {
 }
 
 function addImageViewer(albumArticleId) {
-    document.getElementById(albumArticleId).addEventListener('click', function () {
-        lightGallery(document.getElementById(albumArticleId), {
+    const articleElement = document.getElementById(albumArticleId);
+    articleElement.addEventListener('click', function () {
+        lightGallery(articleElement, {
             dynamic: true,
             dynamicEl: [{
                 "src": 'images/fulls/07.jpg',
@@ -49,4 +50,12 @@ function addImageViewer(albumArticleId) {
             }]
         })
     });
+
+    articleElement.addEventListener('onBeforeOpen', function(event){
+        document.getElementById('header').style.display = 'none'
+    }, false);
+
+    articleElement.addEventListener('onBeforeClose', function(event){
+        document.getElementById('header').style.display = 'block'
+    }, false);
 }

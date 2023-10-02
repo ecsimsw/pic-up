@@ -33,4 +33,8 @@ document.getElementById('dynamic').addEventListener('click', function() {
 });
 ```
 
+### Tip
 `a tag is supposed not to include href`
+
+### REF
+`https://sachinchoolur.github.io/lightgallery.js/demos/`
