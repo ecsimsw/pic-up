@@ -2,6 +2,7 @@ let albumMain = document.getElementById("album-main");
 let logoBtn = document.getElementById("logo");
 let settingBtn = document.getElementById("setting-btn");
 
+let settingAble = false
 let albumId = 0
 
 logoBtn.addEventListener("click", function () {
@@ -11,16 +12,24 @@ logoBtn.addEventListener("click", function () {
 }, false);
 
 settingBtn.addEventListener('click', function () {
-    $('#album-main').sortable({
-        item: $('#album-main'),
-        animation: 1000,
-        start: function(event, ui) {
-            console.log('start point : ' + ui.item.position().top);
-        },
-        end: function(event, ui) {
-            console.log('end point : ' + ui.item.position().top);
-        }
-    })
+    settingAble = !settingAble
+    if(settingAble) {
+        settingBtn.style.backgroundColor = "#47c5ab"
+        settingBtn.style.color = "#ffffff"
+        $('#album-main').sortable({
+            item: $('#album-main'),
+            animation: 1000,
+            start: function(event, ui) {
+                console.log('start point : ' + ui.item.position().top);
+            },
+            end: function(event, ui) {
+                console.log('end point : ' + ui.item.position().top);
+            }
+        })
+    } else {
+        settingBtn.style.backgroundColor = ""
+        $('#album-main').sortable("destroy")
+    }
 })
 
 function createAlbumArticle(albumId) {
