@@ -14,8 +14,8 @@
         <link rel="stylesheet" href="assets/css/noscript.css"/>
     </noscript>
     <script src="http://code.jquery.com/jquery-3.5.1.min.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/viewerjs/1.11.6/viewer.min.css" />
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/viewerjs/1.11.6/viewer.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/lightgallery.js@1.4.0/dist/js/lightgallery.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/lightgallery.js@1.4.0/dist/css/lightgallery.min.css" rel="stylesheet">
 </head>
 <body class="is-preload">
 
@@ -34,6 +34,15 @@
         </nav>
     </header>
 
+    <div id="lightgallery">
+        <a href="images/fulls/01.jpg">
+            <img src="images/thumbs/01.jpg">
+        </a>
+        <a href="images/fulls/01.jpg" style="display: none">
+            <img src="images/thumbs/01.jpg">
+        </a>
+    </div>
+
     <!-- album-main -->
     <div id="album-main">
         <article id="picture-1" class="thumb">
@@ -44,6 +53,12 @@
             </a>
             <h2>Magna feugiat lorem</h2>
             <p>Nunc blandit nisi ligula magna sodales lectus elementum non. Integer id venenatis velit.</p>
+            <a href="images/fulls/01.jpg" style="display: none">
+                <img src="images/thumbs/01.jpg">
+            </a>
+            <a href="images/fulls/01.jpg" style="display: none">
+                <img src="images/thumbs/01.jpg">
+            </a>
         </article>
     </div>
 
@@ -82,6 +97,7 @@
 
 </div>
 
+
 <!-- Scripts -->
 <script src="assets/js/browser.min.js"></script>
 <script src="assets/js/breakpoints.min.js"></script>
@@ -91,7 +107,6 @@
 
 </body>
 </html>
-
 
 
 <!--<article class="thumb">-->

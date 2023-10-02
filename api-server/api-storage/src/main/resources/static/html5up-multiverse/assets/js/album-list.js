@@ -3,6 +3,8 @@ let createBtn = document.getElementById("create-btn");
 
 let picNum = 0
 
+lightGallery(document.getElementById('lightgallery'));
+
 createBtn.addEventListener("click", function () {
     picNum++;
     createArticle(picNum);
