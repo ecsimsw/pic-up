@@ -1,6 +1,9 @@
 let albumMain = document.getElementById("album-main");
 let logoBtn = document.getElementById("logo");
 let editBtn = document.getElementById("edit-btn");
+let createBtn = document.getElementById("create-btn");
+let descriptionArea = document.getElementById("description");
+let imageBoxButton = document.getElementById("imageBoxButton");
 
 let editMode = false
 let albumId = 0
@@ -26,11 +29,32 @@ editBtn.addEventListener('click', function () {
                 console.log('end point : ' + ui.item.position().top);
             }
         })
+        createBtn.style.display = 'block'
     } else {
         editBtn.style.backgroundColor = ""
         $('#album-main').sortable("destroy")
+        createBtn.style.display = 'none'
     }
 })
+
+descriptionArea.addEventListener('input', function () {
+    let content = this.value;
+    let maxRows = 2;
+    const rows = content.split('\n').length;
+    if (rows > maxRows) {
+        this.value = content.slice(0, -1);
+    }
+}, false);
+
+imageBoxButton.addEventListener('change', function () {
+    let content = this.value
+    let filePath = content.split('\\');
+    let fileName = filePath[filePath.length - 1];
+    let imageBoxName = document.getElementById("imageBoxText");
+    imageBoxName.readOnly = false;
+    imageBoxName.value = fileName;
+    imageBoxName.readOnly = true;
+}, false);
 
 function createAlbumArticle(albumId) {
     const article = document.createElement('article');
@@ -82,28 +106,6 @@ function addImageViewer(albumArticleId) {
         document.getElementById('header').style.display = 'block'
     }, false);
 }
-
-let descriptionArea = document.getElementById("description");
-let imageBoxButton = document.getElementById("imageBoxButton");
-
-descriptionArea.addEventListener('input', function () {
-    let content = this.value;
-    let maxRows = 2;
-    const rows = content.split('\n').length;
-    if (rows > maxRows) {
-        this.value = content.slice(0, -1);
-    }
-}, false);
-
-imageBoxButton.addEventListener('change', function () {
-    let content = this.value
-    let filePath = content.split('\\');
-    let fileName = filePath[filePath.length - 1];
-    let imageBoxName = document.getElementById("imageBoxText");
-    imageBoxName.readOnly = false;
-    imageBoxName.value = fileName;
-    imageBoxName.readOnly = true;
-}, false);
 
 function initCreationPanel() {
     const $body = $('body');
