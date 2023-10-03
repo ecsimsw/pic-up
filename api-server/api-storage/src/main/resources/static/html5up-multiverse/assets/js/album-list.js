@@ -19,30 +19,19 @@ editBtn.addEventListener('click', function () {
     if(editMode) {
         editBtn.style.backgroundColor = "#47c5ab"
         editBtn.style.color = "#ffffff"
-        $('#album-main').sortable({
-            item: $('#album-main'),
-            animation: 1000,
-            start: function(event, ui) {
-                console.log('start point : ' + ui.item.position().top);
-            },
-            end: function(event, ui) {
-                console.log('end point : ' + ui.item.position().top);
-            }
-        })
         createBtn.style.display = 'block'
-
-        let thumbs = document.getElementsByClassName('thumb');
-        for(let thumb of thumbs) {
+        enableAlbumSortable();
+        for(let thumb of document.getElementsByClassName('thumb')) {
             thumb.className = 'thumb edit_blur_1'
+            removeImageViewer(thumb.id)
         }
     } else {
         editBtn.style.backgroundColor = ""
-        $('#album-main').sortable("destroy")
         createBtn.style.display = 'none'
-
-        let thumbs = document.getElementsByClassName('thumb');
-        for(let thumb of thumbs) {
+        disableAlbumSortable();
+        for(let thumb of document.getElementsByClassName('thumb')) {
             thumb.className = 'thumb'
+            addImageViewer(thumb.id);
         }
     }
 })
@@ -65,6 +54,23 @@ imageBoxButton.addEventListener('change', function () {
     imageBoxName.value = fileName;
     imageBoxName.readOnly = true;
 }, false);
+
+function enableAlbumSortable() {
+    $('#album-main').sortable({
+        item: $('#album-main'),
+        animation: 1000,
+        start: function (event, ui) {
+            console.log('start point : ' + ui.item.position().top);
+        },
+        end: function (event, ui) {
+            console.log('end point : ' + ui.item.position().top);
+        }
+    })
+}
+
+function disableAlbumSortable() {
+    $('#album-main').sortable("destroy")
+}
 
 function createAlbumArticle(albumId) {
     const article = document.createElement('article');
@@ -89,7 +95,24 @@ function createAlbumArticle(albumId) {
 
 function addImageViewer(albumArticleId) {
     const articleElement = document.getElementById(albumArticleId);
-    articleElement.addEventListener('click', function () {
+    articleElement.addEventListener('click', initLightGallery(articleElement));
+
+    articleElement.addEventListener('onBeforeOpen', function(event){
+        document.getElementById('header').style.display = 'none'
+    }, false);
+
+    articleElement.addEventListener('onBeforeClose', function(event){
+        document.getElementById('header').style.display = 'block'
+    }, false);
+}
+
+function removeImageViewer(albumArticleId) {
+    const articleElement = document.getElementById(albumArticleId);
+    articleElement.replaceWith(articleElement.cloneNode(true));
+}
+
+function initLightGallery(articleElement) {
+    return function () {
         lightGallery(articleElement, {
             dynamic: true,
             dynamicEl: [{
@@ -106,15 +129,7 @@ function addImageViewer(albumArticleId) {
                 'subHtml': "<h4>Coniston Calmness</h4><p>Beautiful morning</p>"
             }]
         })
-    });
-
-    articleElement.addEventListener('onBeforeOpen', function(event){
-        document.getElementById('header').style.display = 'none'
-    }, false);
-
-    articleElement.addEventListener('onBeforeClose', function(event){
-        document.getElementById('header').style.display = 'block'
-    }, false);
+    };
 }
 
 function initCreationPanel() {

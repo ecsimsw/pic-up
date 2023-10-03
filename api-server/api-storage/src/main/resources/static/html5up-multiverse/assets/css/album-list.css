@@ -1,3 +1,25 @@
+#create-btn {
+  display: none;
+}
+
+#create-btn .edit-mode {
+  display: block;
+}
+
+#edit-btn {
+  background-color : transparent;
+  color : #ffffff;
+}
+
+.edit-mode {
+  background-color : #47c5ab;
+  color : #ffffff;
+}
+
+.thumb {
+  filter: blur(0px);
+}
+
 .edit_blur_1 {
   filter: blur(3px);
 }
