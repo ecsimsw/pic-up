@@ -1,0 +1,26 @@
+.edit_blur_1 {
+  filter: blur(3px);
+}
+
+.edit_blur_1:hover {
+  filter: blur(0px);
+}
+
+/* TIP :: Vibration */
+/*.vibration {*/
+/*  animation: vibration 1s infinite;*/
+/*}*/
+
+/*@keyframes vibration {*/
+/*  from {*/
+/*    transform: rotate(0.3deg);*/
+/*  }*/
+/*  to {*/
+/*    transform: rotate(-0.3deg);*/
+/*  }*/
+/*}*/
+
+/* TIP :: Border radious */
+/*.radius_img_4 {*/
+  /*border-radius: 4%;*/
+/*}*/

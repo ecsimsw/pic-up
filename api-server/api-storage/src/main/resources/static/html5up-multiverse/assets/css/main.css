@@ -1903,7 +1903,6 @@ body.is-preload #album-main .thumb {
         transition-delay: 1.625s;
         height: calc(40vh - 2em);
         min-height: 20em;
-        width: 50%;
     }
 
     #album-main .thumb:nth-child(1) {

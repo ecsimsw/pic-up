@@ -30,10 +30,20 @@ editBtn.addEventListener('click', function () {
             }
         })
         createBtn.style.display = 'block'
+
+        let thumbs = document.getElementsByClassName('thumb');
+        for(let thumb of thumbs) {
+            thumb.className = 'thumb edit_blur_1'
+        }
     } else {
         editBtn.style.backgroundColor = ""
         $('#album-main').sortable("destroy")
         createBtn.style.display = 'none'
+
+        let thumbs = document.getElementsByClassName('thumb');
+        for(let thumb of thumbs) {
+            thumb.className = 'thumb'
+        }
     }
 })
 
