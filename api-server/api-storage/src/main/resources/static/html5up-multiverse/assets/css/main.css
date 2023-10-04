@@ -242,7 +242,6 @@ h1, h2, h3, h4, h5, h6 {
     letter-spacing: 0.1em;
     line-height: 1.5;
     margin: 0 0 1em 0;
-    text-transform: uppercase;
 }
 
 h1 a, h2 a, h3 a, h4 a, h5 a, h6 a {
@@ -1639,22 +1638,6 @@ body.is-preload #header {
     position: relative;
 }
 
-#album-main .thumb:after {
-    background-image: -moz-linear-gradient(to top, rgba(10, 17, 25, 0.35) 5%, rgba(10, 17, 25, 0) 35%);
-    background-image: -webkit-linear-gradient(to top, rgba(10, 17, 25, 0.35) 5%, rgba(10, 17, 25, 0) 35%);
-    background-image: -ms-linear-gradient(to top, rgba(10, 17, 25, 0.35) 5%, rgba(10, 17, 25, 0) 35%);
-    background-image: linear-gradient(to top, rgba(10, 17, 25, 0.35) 5%, rgba(10, 17, 25, 0) 35%);
-    pointer-events: none;
-    background-size: cover;
-    content: '';
-    display: block;
-    height: 100%;
-    left: 0;
-    position: absolute;
-    top: 0;
-    width: 100%;
-}
-
 .album-main-image {
     -webkit-tap-highlight-color: rgba(255, 255, 255, 0);
     background-position: center;
@@ -1675,29 +1658,6 @@ body.is-preload #header {
     left: 2.1875em;
     margin: 0;
     position: absolute;
-    z-index: 1;
-}
-
-#album-main .thumb > p {
-    display: none;
-}
-
-#album-main:after {
-    pointer-events: none;
-    -moz-transition: opacity 0.5s ease, visibility 0.5s;
-    -webkit-transition: opacity 0.5s ease, visibility 0.5s;
-    -ms-transition: opacity 0.5s ease, visibility 0.5s;
-    transition: opacity 0.5s ease, visibility 0.5s;
-    background: rgba(36, 38, 41, 0.25);
-    content: '';
-    display: block;
-    height: 100%;
-    left: 0;
-    opacity: 0;
-    position: absolute;
-    top: 0;
-    visibility: hidden;
-    width: 100%;
     z-index: 1;
 }
 

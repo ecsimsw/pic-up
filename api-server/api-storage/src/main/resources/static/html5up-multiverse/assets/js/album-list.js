@@ -6,7 +6,7 @@ let descriptionArea = document.getElementById("description");
 let imageBoxButton = document.getElementById("imageBoxButton");
 
 let editMode = false
-let albumId = 0
+let albumId = 1
 
 logoBtn.addEventListener("click", function () {
     albumId++;
