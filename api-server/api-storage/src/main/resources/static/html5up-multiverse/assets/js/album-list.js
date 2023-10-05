@@ -24,6 +24,7 @@ editBtn.addEventListener('click', function () {
         for(let thumb of document.getElementsByClassName('thumb')) {
             thumb.className = 'thumb edit_blur_1'
             removeImageViewer(thumb.id)
+            addEditViewer(thumb.id)
         }
     } else {
         editBtn.style.backgroundColor = ""
@@ -31,6 +32,7 @@ editBtn.addEventListener('click', function () {
         disableAlbumSortable();
         for(let thumb of document.getElementsByClassName('thumb')) {
             thumb.className = 'thumb'
+            removeEditViewer(thumb.id)
             addImageViewer(thumb.id);
         }
     }
@@ -107,6 +109,18 @@ function addImageViewer(albumArticleId) {
 }
 
 function removeImageViewer(albumArticleId) {
+    const articleElement = document.getElementById(albumArticleId);
+    articleElement.replaceWith(articleElement.cloneNode(true));
+}
+
+function addEditViewer(albumArticleId) {
+    const articleElement = document.getElementById(albumArticleId);
+    articleElement.addEventListener('click', function () {
+        location.href = "http://localhost:63342/pic-up/picup.api-storage.main/static/html5up-multiverse/album-edit.html?_ijt=bkf5km140p1k34nnstvoh4nsa4&_ij_reload=RELOAD_ON_SAVE"
+    });
+}
+
+function removeEditViewer(albumArticleId) {
     const articleElement = document.getElementById(albumArticleId);
     articleElement.replaceWith(articleElement.cloneNode(true));
 }
