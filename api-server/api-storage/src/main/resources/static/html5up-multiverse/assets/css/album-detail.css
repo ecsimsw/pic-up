@@ -1,0 +1,48 @@
+#create-btn {
+  display: none;
+}
+
+#create-btn .edit-mode {
+  display: block;
+}
+
+#edit-btn {
+  background-color : transparent;
+  color : #ffffff;
+}
+
+.edit-mode {
+  background-color : #47c5ab;
+  color : #ffffff;
+}
+
+.thumb {
+  filter: blur(0px);
+}
+
+.edit_blur_1 {
+  filter: blur(3px);
+}
+
+.edit_blur_1:hover {
+  filter: blur(0px);
+}
+
+/* TIP :: Vibration */
+/*.vibration {*/
+/*  animation: vibration 1s infinite;*/
+/*}*/
+
+/*@keyframes vibration {*/
+/*  from {*/
+/*    transform: rotate(0.3deg);*/
+/*  }*/
+/*  to {*/
+/*    transform: rotate(-0.3deg);*/
+/*  }*/
+/*}*/
+
+/* TIP :: Border radious */
+/*.radius_img_4 {*/
+  /*border-radius: 4%;*/
+/*}*/

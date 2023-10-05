@@ -10,61 +10,37 @@
     <meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no"/>
     <link rel="stylesheet" href="assets/css/main.css"/>
-    <link rel="stylesheet" href="assets/css/album-list.css"/>
+    <link rel="stylesheet" href="assets/css/album-detail.css"/>
     <noscript>
         <link rel="stylesheet" href="assets/css/noscript.css"/>
     </noscript>
     <script src="http://code.jquery.com/jquery-3.5.1.min.js"></script>
     <script src = "https://code.jquery.com/ui/1.10.4/jquery-ui.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/lightgallery.js@1.4.0/dist/js/lightgallery.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/lightgallery.js@1.4.0/dist/css/lightgallery.min.css" rel="stylesheet">
 </head>
-<body class="is-preload" style="padding: 0">
+<body class="is-preload">
 
 <!-- Wrapper -->
 <div id="wrapper">
 
-    <div
-        id="album-title"
-        style="
-            margin-left: 0.4em;
-            margin-top: 0.4em;
-            height: 50px;
-            font-size: 24px;
-            color: white;
-            background: space;
-            font-weight: bold;
-        ">
-        Magna feugiat lorem
-    </div>
+    <!-- Header -->
+    <header id="header">
+        <h1>
+            <div id="logo"><strong>ecsimsw</strong></div>
+        </h1>
+        <nav>
+            <ul>
+                <li><button href="#footer" id="create-btn" class="icon solid fa-info-circle">Create</button></li>
+                <li><button id="edit-btn" class="icon solid fa-info-circle">Edit</button></li>
+            </ul>
+        </nav>
+    </header>
 
     <!-- album-main -->
     <div id="album-main">
         <article id="album-1" class="thumb">
             <a class="album-main-image" id="album-1-thumb" style="background-image: url('images/thumbs/01.jpg'); cursor: pointer; outline: 0px;"></a>
-            <h2>Magna feugiat lorem</h2>
-        </article>
-
-        <article id="album-2" class="thumb">
-            <a class="album-main-image" id="album-2-thumb" style="background-image: url('images/thumbs/02.jpg'); cursor: pointer; outline: 0px;"></a>
-            <h2>Magna feugiat lorem</h2>
-        </article>
-
-        <article id="album-3" class="thumb">
-            <a class="album-main-image" id="album-3-thumb" style="background-image: url('images/thumbs/03.jpg'); cursor: pointer; outline: 0px;"></a>
-            <h2>Magna feugiat lorem</h2>
-        </article>
-
-        <article id="album-4" class="thumb">
-            <a class="album-main-image" id="album-4-thumb" style="background-image: url('images/thumbs/04.jpg'); cursor: pointer; outline: 0px;"></a>
-            <h2>Magna feugiat lorem</h2>
-        </article>
-
-        <article id="album-5" class="thumb">
-            <a class="album-main-image" id="album-5-thumb" style="background-image: url('images/thumbs/05.jpg'); cursor: pointer; outline: 0px;"></a>
-            <h2>Magna feugiat lorem</h2>
-        </article>
-
-        <article id="album-6" class="thumb">
-            <a class="album-main-image" id="album-6-thumb" style="background-image: url('images/thumbs/06.jpg'); cursor: pointer; outline: 0px;"></a>
             <h2>Magna feugiat lorem</h2>
         </article>
     </div>
@@ -109,7 +85,7 @@
 <script src="assets/js/browser.min.js"></script>
 <script src="assets/js/breakpoints.min.js"></script>
 <script src="assets/js/main.js"></script>
-<script src="assets/js/album-edit.js"></script>
+<script src="assets/js/album-detail.js"></script>
 </body>
 </html>
 
