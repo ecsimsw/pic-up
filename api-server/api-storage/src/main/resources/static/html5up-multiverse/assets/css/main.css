@@ -1514,7 +1514,7 @@ body.is-preload #header {
 #header h1 {
     color: #a0a0a1;
     display: inline-block;
-    font-size: 1em;
+    font-size: 1.3em;
     line-height: 1;
     margin: 0;
     vertical-align: middle;
@@ -1654,7 +1654,7 @@ body.is-preload #header {
 #album-main .thumb > h2 {
     pointer-events: none;
     bottom: 1.875em;
-    font-size: 0.8em;
+    font-size: 1.1em;
     left: 2.1875em;
     margin: 0;
     position: absolute;

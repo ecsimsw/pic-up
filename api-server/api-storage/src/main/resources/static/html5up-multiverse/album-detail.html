@@ -31,17 +31,28 @@
         </h1>
         <nav>
             <ul>
-                <li><button href="#footer" id="create-btn" class="icon solid fa-info-circle">Create</button></li>
+                <li><button href="#footer" id="create-btn" class="icon solid fa-info-circle">Upload</button></li>
                 <li><button id="edit-btn" class="icon solid fa-info-circle">Edit</button></li>
             </ul>
         </nav>
     </header>
 
+    <div id="album-title">
+        <div style="
+                height: 50px;
+                font-size: 24px;
+                color: white;
+                background: #1f2224;
+                font-weight: bold;
+        ">
+            Magna feugiat lorem
+        </div>
+    </div>
+
     <!-- album-main -->
     <div id="album-main">
         <article id="album-1" class="thumb">
             <a class="album-main-image" id="album-1-thumb" style="background-image: url('images/thumbs/01.jpg'); cursor: pointer; outline: 0px;"></a>
-            <h2>Magna feugiat lorem</h2>
         </article>
     </div>
 
@@ -50,7 +61,7 @@
         <div class="inner split" style="text-align: center; justify-content: center;">
             <div>
                 <section>
-                    <h2>Create new album</h2>
+                    <h2>Upload</h2>
                     <form method="post" action="#">
                         <div class="fields">
                             <div class="field">
@@ -59,7 +70,7 @@
                             <div class="field">
                                 <input type="text" name="representative" placeholder="Representative image"
                                        id="imageBoxText" readonly style="color: white">
-                                <label for="imageBoxButton" id="imageBox">파일찾기</label>
+                                <label for="imageBoxButton" id="imageBox">File</label>
                                 <input type="file" id="imageBoxButton">
                             </div>
                             <div class="field">

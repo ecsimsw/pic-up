@@ -1,42 +1,13 @@
-let albumMain = document.getElementById("album-main");
 let logoBtn = document.getElementById("logo");
-let editBtn = document.getElementById("edit-btn");
-let createBtn = document.getElementById("create-btn");
 let descriptionArea = document.getElementById("description");
 let imageBoxButton = document.getElementById("imageBoxButton");
 
-let editMode = false
 let albumId = 1
 
 logoBtn.addEventListener("click", function () {
     albumId++;
     createAlbumArticle(albumId);
-    addImageViewer(`album-${albumId}`);
 }, false);
-
-editBtn.addEventListener('click', function () {
-    editMode = !editMode
-    if(editMode) {
-        editBtn.style.backgroundColor = "#47c5ab"
-        editBtn.style.color = "#ffffff"
-        createBtn.style.display = 'block'
-        enableAlbumSortable();
-        for(let thumb of document.getElementsByClassName('thumb')) {
-            thumb.className = 'thumb edit_blur_1'
-            removeImageViewer(thumb.id)
-            addEditViewer(thumb.id)
-        }
-    } else {
-        editBtn.style.backgroundColor = ""
-        createBtn.style.display = 'none'
-        disableAlbumSortable();
-        for(let thumb of document.getElementsByClassName('thumb')) {
-            thumb.className = 'thumb'
-            removeEditViewer(thumb.id)
-            addImageViewer(thumb.id);
-        }
-    }
-})
 
 descriptionArea.addEventListener('input', function () {
     let content = this.value;
@@ -57,23 +28,6 @@ imageBoxButton.addEventListener('change', function () {
     imageBoxName.readOnly = true;
 }, false);
 
-function enableAlbumSortable() {
-    $('#album-main').sortable({
-        item: $('#album-main'),
-        animation: 1000,
-        start: function (event, ui) {
-            console.log('start point : ' + ui.item.position().top);
-        },
-        end: function (event, ui) {
-            console.log('end point : ' + ui.item.position().top);
-        }
-    })
-}
-
-function disableAlbumSortable() {
-    $('#album-main').sortable("destroy")
-}
-
 function createAlbumArticle(albumId) {
     const article = document.createElement('article');
     article.id = `album-${albumId}`
@@ -92,58 +46,13 @@ function createAlbumArticle(albumId) {
 
     article.appendChild(thumbImage);
     article.appendChild(title);
-    albumMain.appendChild(article);
-}
 
-function addImageViewer(albumArticleId) {
-    const articleElement = document.getElementById(albumArticleId);
-    articleElement.addEventListener('click', initLightGallery(articleElement));
+    article.addEventListener('click', function () {
+        location.href = "http://localhost:63342/pic-up/picup.api-storage.main/static/html5up-multiverse/album-detail.html?_ijt=uuv8dlk235uicbb13idt1slo73&_ij_reload=RELOAD_ON_SAVE"
+    })
 
-    articleElement.addEventListener('onBeforeOpen', function(event){
-        document.getElementById('header').style.display = 'none'
-    }, false);
-
-    articleElement.addEventListener('onBeforeClose', function(event){
-        document.getElementById('header').style.display = 'block'
-    }, false);
-}
-
-function removeImageViewer(albumArticleId) {
-    const articleElement = document.getElementById(albumArticleId);
-    articleElement.replaceWith(articleElement.cloneNode(true));
-}
-
-function addEditViewer(albumArticleId) {
-    const articleElement = document.getElementById(albumArticleId);
-    articleElement.addEventListener('click', function () {
-        location.href = "http://localhost:63342/pic-up/picup.api-storage.main/static/html5up-multiverse/album-edit.html?_ijt=bkf5km140p1k34nnstvoh4nsa4&_ij_reload=RELOAD_ON_SAVE"
-    });
-}
-
-function removeEditViewer(albumArticleId) {
-    const articleElement = document.getElementById(albumArticleId);
-    articleElement.replaceWith(articleElement.cloneNode(true));
-}
-
-function initLightGallery(articleElement) {
-    return function () {
-        lightGallery(articleElement, {
-            dynamic: true,
-            dynamicEl: [{
-                "src": 'images/fulls/07.jpg',
-                'thumb': 'images/thumbs/01.jpg',
-                'subHtml': '<h4>Fading Light</h4><p>Classic view from Rigwood Jetty on Coniston Water an old archive shot similar to an old post but a little later on.</p>'
-            }, {
-                'src': 'images/fulls/08.jpg',
-                'thumb': 'images/thumbs/01.jpg',
-                'subHtml': "<h4>Bowness Bay</h4><p>A beautiful Sunrise this morning taken En-route to Keswick not one as planned but I'm extremely happy I was passing the right place at the right time....</p>"
-            }, {
-                'src': 'images/fulls/09.jpg',
-                'thumb': 'images/thumbs/01.jpg',
-                'subHtml': "<h4>Coniston Calmness</h4><p>Beautiful morning</p>"
-            }]
-        })
-    };
+    const albumMain = document.getElementById("album-main");
+    albumMain.insertBefore(article, albumMain.firstChild);
 }
 
 function initCreationPanel() {

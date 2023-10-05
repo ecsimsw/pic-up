@@ -18,6 +18,8 @@
     <script src = "https://code.jquery.com/ui/1.10.4/jquery-ui.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/lightgallery.js@1.4.0/dist/js/lightgallery.min.js"></script>
     <link href="https://cdn.jsdelivr.net/npm/lightgallery.js@1.4.0/dist/css/lightgallery.min.css" rel="stylesheet">
+    <script src=”js/popBox/popBox1.2.1.min.js” type=”text/javascript”></script>
+    <link href=”js/popBox/popBox1.2.1.css” rel=”stylesheet” type=”text/css” />
 </head>
 <body class="is-preload">
 
@@ -32,7 +34,6 @@
         <nav>
             <ul>
                 <li><button href="#footer" id="create-btn" class="icon solid fa-info-circle">Create</button></li>
-                <li><button id="edit-btn" class="icon solid fa-info-circle">Edit</button></li>
             </ul>
         </nav>
     </header>
@@ -43,6 +44,20 @@
             <a class="album-main-image" id="album-1-thumb" style="background-image: url('images/thumbs/01.jpg'); cursor: pointer; outline: 0px;"></a>
             <h2>Magna feugiat lorem</h2>
         </article>
+    </div>
+
+    <!-- Popup form -->
+    <div class="form-popup" id="myForm">
+        <form action="/action_page.php" class="form-container">
+            <label for="email"><b>Email</b></label>
+            <input type="text" placeholder="Enter Email" name="email" required>
+
+            <label for="psw"><b>Password</b></label>
+            <input type="password" placeholder="Enter Password" name="psw" required>
+
+            <button type="submit" class="btn">Login</button>
+            <button type="button" class="btn cancel" onclick="closeForm()">Close</button>
+        </form>
     </div>
 
     <!-- Footer -->
@@ -59,7 +74,7 @@
                             <div class="field">
                                 <input type="text" name="representative" placeholder="Representative image"
                                        id="imageBoxText" readonly style="color: white">
-                                <label for="imageBoxButton" id="imageBox">파일찾기</label>
+                                <label for="imageBoxButton" id="imageBox">File</label>
                                 <input type="file" id="imageBoxButton">
                             </div>
                             <div class="field">

@@ -1,61 +1,67 @@
-let albumMain = document.getElementById("album-main");
 let logoBtn = document.getElementById("logo");
 let editBtn = document.getElementById("edit-btn");
-let createBtn = document.getElementById("create-btn");
+let uploadBtn = document.getElementById("create-btn");
 let descriptionArea = document.getElementById("description");
-let imageBoxButton = document.getElementById("imageBoxButton");
+let fileUploadButton = document.getElementById("imageBoxButton");
 
 let editMode = false
 let albumId = 1
 
 logoBtn.addEventListener("click", function () {
     albumId++;
-    createAlbumArticle(albumId);
+    createNewPicture(albumId);
     addImageViewer(`album-${albumId}`);
 }, false);
 
-editBtn.addEventListener('click', function () {
-    editMode = !editMode
-    if(editMode) {
-        editBtn.style.backgroundColor = "#47c5ab"
-        editBtn.style.color = "#ffffff"
-        createBtn.style.display = 'block'
-        enableAlbumSortable();
-        for(let thumb of document.getElementsByClassName('thumb')) {
-            thumb.className = 'thumb edit_blur_1'
-            removeImageViewer(thumb.id)
-            addEditViewer(thumb.id)
+function initEditButton() {
+    editBtn.addEventListener('click', function () {
+        editMode = !editMode
+        if (editMode) {
+            editBtn.style.backgroundColor = "#47c5ab"
+            editBtn.style.color = "#ffffff"
+            uploadBtn.style.display = 'block'
+            enableAlbumSortable();
+            for (let thumb of document.getElementsByClassName('thumb')) {
+                thumb.className = 'thumb edit_blur_1'
+                removeImageViewer(thumb.id)
+                addEditViewer(thumb.id)
+            }
         }
-    } else {
-        editBtn.style.backgroundColor = ""
-        createBtn.style.display = 'none'
-        disableAlbumSortable();
-        for(let thumb of document.getElementsByClassName('thumb')) {
-            thumb.className = 'thumb'
-            removeEditViewer(thumb.id)
-            addImageViewer(thumb.id);
+        if(!editMode){
+            editBtn.style.backgroundColor = ""
+            uploadBtn.style.display = 'none'
+            disableAlbumSortable();
+            for (let thumb of document.getElementsByClassName('thumb')) {
+                thumb.className = 'thumb'
+                removeEditViewer(thumb.id)
+                addImageViewer(thumb.id);
+            }
         }
-    }
-})
+    })
+}
 
-descriptionArea.addEventListener('input', function () {
-    let content = this.value;
-    let maxRows = 2;
-    const rows = content.split('\n').length;
-    if (rows > maxRows) {
-        this.value = content.slice(0, -1);
-    }
-}, false);
+function initPictureDescriptionArea() {
+    descriptionArea.addEventListener('input', function () {
+        let content = this.value;
+        let maxRows = 2;
+        const rows = content.split('\n').length;
+        if (rows > maxRows) {
+            this.value = content.slice(0, -1);
+        }
+    }, false);
+}
 
-imageBoxButton.addEventListener('change', function () {
-    let content = this.value
-    let filePath = content.split('\\');
-    let fileName = filePath[filePath.length - 1];
-    let imageBoxName = document.getElementById("imageBoxText");
-    imageBoxName.readOnly = false;
-    imageBoxName.value = fileName;
-    imageBoxName.readOnly = true;
-}, false);
+function initFileUploadButton() {
+    fileUploadButton.addEventListener('change', function () {
+        let content = this.value
+        let filePath = content.split('\\');
+        let fileName = filePath[filePath.length - 1];
+        let imageBoxName = document.getElementById("imageBoxText");
+        imageBoxName.readOnly = false;
+        imageBoxName.value = fileName;
+        imageBoxName.readOnly = true;
+    }, false);
+}
 
 function enableAlbumSortable() {
     $('#album-main').sortable({
@@ -74,7 +80,7 @@ function disableAlbumSortable() {
     $('#album-main').sortable("destroy")
 }
 
-function createAlbumArticle(albumId) {
+function createNewPicture(albumId) {
     const article = document.createElement('article');
     article.id = `album-${albumId}`
     article.className = 'thumb'
@@ -87,12 +93,10 @@ function createAlbumArticle(albumId) {
     thumbImage.style.cursor = "pointer"
     thumbImage.style.outline = "0px"
 
-    const title = document.createElement('h2');
-    title.innerText = "Magna feugiat lorem"
-
     article.appendChild(thumbImage);
-    article.appendChild(title);
-    albumMain.appendChild(article);
+
+    const albumMain = document.getElementById("album-main");
+    albumMain.insertBefore(article, albumMain.firstChild);
 }
 
 function addImageViewer(albumArticleId) {
@@ -116,8 +120,8 @@ function removeImageViewer(albumArticleId) {
 function addEditViewer(albumArticleId) {
     const articleElement = document.getElementById(albumArticleId);
     articleElement.addEventListener('click', function () {
-        location.href = "http://localhost:63342/pic-up/picup.api-storage.main/static/html5up-multiverse/album-edit.html?_ijt=bkf5km140p1k34nnstvoh4nsa4&_ij_reload=RELOAD_ON_SAVE"
-    });
+
+    })
 }
 
 function removeEditViewer(albumArticleId) {
@@ -132,15 +136,15 @@ function initLightGallery(articleElement) {
             dynamicEl: [{
                 "src": 'images/fulls/07.jpg',
                 'thumb': 'images/thumbs/01.jpg',
-                'subHtml': '<h4>Fading Light</h4><p>Classic view from Rigwood Jetty on Coniston Water an old archive shot similar to an old post but a little later on.</p>'
+                'subHtml': '<p>Classic view from Rigwood Jetty on Coniston Water an old archive shot similar to an old post but a little later on.</p>'
             }, {
                 'src': 'images/fulls/08.jpg',
                 'thumb': 'images/thumbs/01.jpg',
-                'subHtml': "<h4>Bowness Bay</h4><p>A beautiful Sunrise this morning taken En-route to Keswick not one as planned but I'm extremely happy I was passing the right place at the right time....</p>"
+                'subHtml': "<p>A beautiful Sunrise this morning taken En-route to Keswick not one as planned but I'm extremely happy I was passing the right place at the right time....</p>"
             }, {
                 'src': 'images/fulls/09.jpg',
                 'thumb': 'images/thumbs/01.jpg',
-                'subHtml': "<h4>Coniston Calmness</h4><p>Beautiful morning</p>"
+                'subHtml': "<p>Beautiful morning</p>"
             }]
         })
     };
@@ -214,5 +218,6 @@ function initCreationPanel() {
 }
 
 initCreationPanel()
-
-
+initFileUploadButton();
+initPictureDescriptionArea();
+initEditButton();

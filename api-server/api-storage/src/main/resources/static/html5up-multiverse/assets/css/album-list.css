@@ -1,16 +1,3 @@
-#create-btn {
-  display: none;
-}
-
-#create-btn .edit-mode {
-  display: block;
-}
-
-#edit-btn {
-  background-color : transparent;
-  color : #ffffff;
-}
-
 .edit-mode {
   background-color : #47c5ab;
   color : #ffffff;
