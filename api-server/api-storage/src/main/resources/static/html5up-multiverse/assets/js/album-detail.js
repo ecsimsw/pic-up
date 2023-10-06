@@ -13,6 +13,14 @@ logoBtn.addEventListener("click", function () {
     addImageViewer(`album-${albumId}`);
 }, false);
 
+$(document).ready(function()
+{
+    $("#fileuploader").uploadFile({
+        url:"http://localhost:8083/upload",
+        fileName:"myfile"
+    });
+});
+
 function initEditButton() {
     editBtn.addEventListener('click', function () {
         editMode = !editMode

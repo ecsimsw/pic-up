@@ -9,6 +9,9 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
+
+import java.util.Iterator;
 
 @RestController
 public class StorageController {
@@ -56,5 +59,15 @@ public class StorageController {
     public ResponseEntity<Void> deleteFolder(@PathVariable Long userFolderId) {
         storageService.deleteFolder(userFolderId);
         return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/upload")
+    public @ResponseBody String handleFileUpload(MultipartHttpServletRequest request){
+        Iterator<String> iterator = request.getFileNames();
+        while (iterator.hasNext()) {
+            String fileName = iterator.next();
+            System.out.println(fileName);
+        }
+        return "ok";
     }
 }
