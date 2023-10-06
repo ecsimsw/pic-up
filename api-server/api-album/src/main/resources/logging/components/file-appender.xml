@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<RollingFile
+  name="RollingFile"
+  fileName="${BASE_DIR}/spring.log"
+  filePattern="${BASE_DIR}/%d{yyyy-MM-dd}.log.zip"
+  xmlns:xi="http://www.w3.org/2001/XInclude"
+>
+  <xi:include href="pattern-layout.xml"/>
+  <Policies>
+    <TimeBasedTriggeringPolicy interval="${FILE_LOG_DAY_INTERVAL}" modulate="true" />
+  </Policies>
+  <DefaultRolloverStrategy>
+    <Delete basePath="${BASE_DIR}" maxDepth="1">
+      <IfFileName glob="*.log.zip" />
+      <IfLastModified age="${FILE_DELETE_DAY_INTERVAL}d" />
+    </Delete>
+  </DefaultRolloverStrategy>
+</RollingFile>
