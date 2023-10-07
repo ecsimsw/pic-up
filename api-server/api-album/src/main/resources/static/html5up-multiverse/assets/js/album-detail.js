@@ -16,7 +16,7 @@ logoBtn.addEventListener("click", function () {
 $(document).ready(function()
 {
     $("#fileuploader").uploadFile({
-        url:"http://localhost:8083/upload",
+        url:"http://localhost:8084/upload",
         fileName:"myfile"
     });
 });

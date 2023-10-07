@@ -41,11 +41,12 @@ public class AlbumController {
     // @PostMapping("/api/album/{albumId}/viewer/{userId})
 
     @PostMapping("/upload")
-    public @ResponseBody
-    String handleFileUpload(MultipartHttpServletRequest request) {
+    public @ResponseBody String handleFileUpload(MultipartHttpServletRequest request) throws InterruptedException {
         Iterator<String> iterator = request.getFileNames();
         while (iterator.hasNext()) {
             String fileName = iterator.next();
+            System.out.println("hihi");
+            Thread.sleep(5000);
             System.out.println(fileName);
         }
         return "ok";
