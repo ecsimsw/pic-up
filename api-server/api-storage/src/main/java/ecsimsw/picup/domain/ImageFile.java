@@ -23,6 +23,7 @@ public class ImageFile {
 
     public static ImageFile of(MultipartFile file) {
         try {
+            System.out.println("original name : " + file.getOriginalFilename());
             return new ImageFile(file.getSize(), file.getBytes());
         } catch (IOException e) {
             e.printStackTrace();
