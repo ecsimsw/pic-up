@@ -25,14 +25,14 @@ public class AlbumController {
         @RequestPart(required = false) MultipartFile file,
         @RequestPart AlbumInfoRequest request
     ) {
-        final AlbumInfoResponse albumInfoResponse = albumService.create(request, file);
-        return ResponseEntity.ok(albumInfoResponse);
+        final AlbumInfoResponse response = albumService.create(request, file);
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/api/album/{albumId}")
     public ResponseEntity<AlbumInfoResponse> getAlbumInfo(@PathVariable Long albumId) {
-        final AlbumInfoResponse albumInfoResponse = albumService.read(albumId);
-        return ResponseEntity.ok(albumInfoResponse);
+        final AlbumInfoResponse response = albumService.read(albumId);
+        return ResponseEntity.ok(response);
     }
 
     @PutMapping("/api/album/{albumId}")
@@ -40,8 +40,8 @@ public class AlbumController {
                                                          @RequestBody AlbumInfoRequest request,
                                                          Optional<MultipartFile> file
     ) {
-        final AlbumInfoResponse albumInfoResponse = albumService.update(albumId, request, file);
-        return ResponseEntity.ok(albumInfoResponse);
+        final AlbumInfoResponse response = albumService.update(albumId, request, file);
+        return ResponseEntity.ok(response);
     }
 
     @DeleteMapping("/api/album/{albumId}")

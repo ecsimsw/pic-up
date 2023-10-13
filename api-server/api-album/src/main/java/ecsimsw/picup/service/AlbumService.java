@@ -14,9 +14,11 @@ import java.util.Optional;
 public class AlbumService {
 
     private final AlbumRepository albumRepository;
+    private final StorageService storageService;
 
-    public AlbumService(AlbumRepository albumRepository) {
+    public AlbumService(AlbumRepository albumRepository, StorageService storageService) {
         this.albumRepository = albumRepository;
+        this.storageService = storageService;
     }
 
     @Transactional
@@ -24,6 +26,7 @@ public class AlbumService {
         final String fileName = request.getName();
         final String resourceKey = file.getName();
         // TODO :: GET resourceKey from storage module
+        storageService.upload(file);
         final Album album = new Album(fileName, resourceKey);
         albumRepository.save(album);
         return AlbumInfoResponse.of(album);

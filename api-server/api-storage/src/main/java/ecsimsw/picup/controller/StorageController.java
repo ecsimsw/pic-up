@@ -22,6 +22,12 @@ public class StorageController {
         this.storageService = storageService;
     }
 
+    @PostMapping("/api/file/test")
+    public ResponseEntity<String> upload(MultipartFile file, String desc) {
+        System.out.println(desc);
+        return ResponseEntity.ok("hi " + file.getName());
+    }
+
     @PostMapping("/api/file")
     public ResponseEntity<FileUploadResponse> uploadFile(Long folderId, FileUploadRequest request, MultipartFile file) {
         final FileUploadResponse response = storageService.uploadFile(folderId, request, file);
