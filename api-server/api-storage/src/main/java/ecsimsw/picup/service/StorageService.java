@@ -1,6 +1,7 @@
 package ecsimsw.picup.service;
 
 import ecsimsw.picup.dto.*;
+import ecsimsw.picup.dtoNew.ImageUploadResponse;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -23,10 +24,8 @@ public class StorageService {
     }
 
     @Transactional
-    public FileUploadResponse uploadFile(Long userFolderId, FileUploadRequest request, MultipartFile file) {
-        final StorageResourceInfo storageResource = filePersistenceService.upload(request.getFileName(), file);
-        final UserFileInfo userFile = userResourceService.createFile(userFolderId, request, storageResource.getSize(), storageResource.getKey());
-        return FileUploadResponse.of(userFile, storageResource);
+    public StorageResourceInfo uploadFile(MultipartFile file, String tag) {
+        return filePersistenceService.upload(file, tag);
     }
 
     @Transactional(readOnly = true)

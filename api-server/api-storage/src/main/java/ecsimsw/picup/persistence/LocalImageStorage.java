@@ -1,5 +1,6 @@
 package ecsimsw.picup.persistence;
 
+import ecsimsw.picup.domain.ImageFile;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -20,9 +21,9 @@ public class LocalImageStorage implements ImageStorage {
     }
 
     @Override
-    public void create(String fileName, ImageFile imageFile) {
+    public void create(String resourceKey, ImageFile imageFile) {
         try {
-            final String storagePath = rootPath + fileName;
+            final String storagePath = rootPath + resourceKey;
             Files.write(Paths.get(storagePath), imageFile.getFile());
         } catch (IOException e) {
             e.printStackTrace();

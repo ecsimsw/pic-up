@@ -1,16 +1,16 @@
 package ecsimsw.picup.service;
 
-import ecsimsw.picup.persistence.ImageFile;
 import ecsimsw.picup.dto.StorageResourceInfo;
-import ecsimsw.picup.dto.FileUploadRequest;
+import ecsimsw.picup.domain.ImageFile;
 import ecsimsw.picup.persistence.ImageStorage;
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Random;
 import org.assertj.core.util.Strings;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Random;
 
 @Service
 public class FilePersistenceService {
@@ -21,6 +21,14 @@ public class FilePersistenceService {
 
     public FilePersistenceService(ImageStorage imageStorage) {
         this.imageStorage = imageStorage;
+    }
+
+    @Transactional
+    public StorageResourceInfo upload(MultipartFile file, String fileTag) {
+        final String resourceKey = resourceKey(fileTag, file.getName());
+        final ImageFile imageFile = ImageFile.of(file);
+        imageStorage.create(resourceKey, imageFile);
+        return StorageResourceInfo.of(imageFile, resourceKey);
     }
 
     @Transactional
@@ -47,12 +55,12 @@ public class FilePersistenceService {
         resourceKeys.forEach(this::delete);
     }
 
-    private String resourceKey(String username, String fileName) {
+    private String resourceKey(String fileTag, String fileName) {
         return Strings.join(
-                username,
-                fileName,
-                LocalDateTime.now().toString(),
-                String.valueOf(RANDOM.nextInt(100))
+            fileTag,
+            fileName,
+            LocalDateTime.now().toString(),
+            String.valueOf(RANDOM.nextInt(100))
         ).with("-");
     }
 

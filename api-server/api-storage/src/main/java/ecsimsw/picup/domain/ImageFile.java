@@ -1,4 +1,4 @@
-package ecsimsw.picup.persistence;
+package ecsimsw.picup.domain;
 
 import lombok.Getter;
 import org.springframework.web.multipart.MultipartFile;

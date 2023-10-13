@@ -1,9 +1,6 @@
 package ecsimsw.picup.controller;
 
-import ecsimsw.picup.dto.FileFindResponse;
-import ecsimsw.picup.dto.FileUploadRequest;
-import ecsimsw.picup.dto.FileUploadResponse;
-import ecsimsw.picup.dto.UserFolderCreationRequest;
+import ecsimsw.picup.dto.*;
 import ecsimsw.picup.service.StorageService;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -22,16 +19,10 @@ public class StorageController {
         this.storageService = storageService;
     }
 
-    @PostMapping("/api/file/test")
-    public ResponseEntity<String> upload(MultipartFile file, String desc) {
-        System.out.println(desc);
-        return ResponseEntity.ok("hi " + file.getName());
-    }
-
     @PostMapping("/api/file")
-    public ResponseEntity<FileUploadResponse> uploadFile(Long folderId, FileUploadRequest request, MultipartFile file) {
-        final FileUploadResponse response = storageService.uploadFile(folderId, request, file);
-        return ResponseEntity.ok(response);
+    public ResponseEntity<StorageResourceInfo> upload(MultipartFile file, String tag) {
+        final StorageResourceInfo resourceInfo = storageService.uploadFile(file, tag);
+        return ResponseEntity.ok(resourceInfo);
     }
 
     @GetMapping("/api/file/{userFileId}")
@@ -68,7 +59,8 @@ public class StorageController {
     }
 
     @PostMapping("/upload")
-    public @ResponseBody String handleFileUpload(MultipartHttpServletRequest request){
+    public @ResponseBody
+    String handleFileUpload(MultipartHttpServletRequest request) {
         Iterator<String> iterator = request.getFileNames();
         while (iterator.hasNext()) {
             String fileName = iterator.next();

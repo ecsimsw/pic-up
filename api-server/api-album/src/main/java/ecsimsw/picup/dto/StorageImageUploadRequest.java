@@ -1,0 +1,50 @@
+package ecsimsw.picup.dto;
+
+import lombok.Getter;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.web.multipart.MultipartFile;
+
+@Getter
+public class StorageImageUploadRequest {
+
+    private static final HttpHeaders REQUEST_HEADERS = new HttpHeaders();
+    private static final String FILE_REQUEST_KEY_NAME = "file";
+    private static final String TAG_REQUEST_KEY_NAME = "tag";
+
+    static {
+        REQUEST_HEADERS.setContentType(MediaType.MULTIPART_FORM_DATA);
+    }
+
+    private final MultipartFile file;
+    private final String tag;
+
+    public StorageImageUploadRequest(MultipartFile file, String tag) {
+        if (file.isEmpty()) {
+            throw new IllegalArgumentException("File must not be empty");
+        }
+        this.file = file;
+        this.tag = tag;
+    }
+
+    public static StorageImageUploadRequest of(MultipartFile file, String name) {
+        return new StorageImageUploadRequest(file, name);
+    }
+
+    public LinkedMultiValueMap<String, Object> body() {
+        final LinkedMultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
+        body.add(FILE_REQUEST_KEY_NAME, file.getResource());
+        body.add(TAG_REQUEST_KEY_NAME, tag);
+        return body;
+    }
+
+    public HttpHeaders headers() {
+        return REQUEST_HEADERS;
+    }
+
+    public HttpEntity<Object> toHttpEntity() {
+        return new HttpEntity<>(body(), headers());
+    }
+}
