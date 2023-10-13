@@ -19,13 +19,13 @@ public class HttpResponseTimeAlarmFilter implements Filter {
 
     private static final CustomLogger LOGGER = CustomLogger.init("RES_TIME_ALARM", HttpResponseTimeAlarmFilter.class);
 
-    @Value("${mymarket.log.http.response-time.alarm.enable:true}")
+    @Value("${picup.log.http.response-time.alarm.enable:true}")
     private boolean enable;
 
-    @Value("${mymarket.log.http.response-time.alarm.level:WARN}")
+    @Value("${picup.log.http.response-time.alarm.level:WARN}")
     private LogLevel logLevel;
 
-    @Value("${mymarket.log.http.response-time.alarm.threshold:5}")
+    @Value("${picup.log.http.response-time.alarm.threshold:5}")
     private double threshold;
 
     @Override

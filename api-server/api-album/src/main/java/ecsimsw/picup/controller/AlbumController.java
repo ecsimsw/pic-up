@@ -21,7 +21,10 @@ public class AlbumController {
     }
 
     @PostMapping("/api/album")
-    public ResponseEntity<AlbumInfoResponse> createAlbum(@RequestBody AlbumInfoRequest request, MultipartFile file) {
+    public ResponseEntity<AlbumInfoResponse> createAlbum(
+        @RequestPart(required = false) MultipartFile file,
+        @RequestPart AlbumInfoRequest request
+    ) {
         final AlbumInfoResponse albumInfoResponse = albumService.create(request, file);
         return ResponseEntity.ok(albumInfoResponse);
     }

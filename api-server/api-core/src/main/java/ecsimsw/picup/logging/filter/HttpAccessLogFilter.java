@@ -23,22 +23,22 @@ public class HttpAccessLogFilter implements Filter {
 
     private static final CustomLogger LOGGER = CustomLogger.init("HTTP_ACCESS", HttpAccessLogFilter.class);
 
-    @Value("${mymarket.log.http.access.level:INFO}")
+    @Value("${picup.log.http.access.level:INFO}")
     private LogLevel logLevel;
 
-    @Value("${mymarket.log.http.access.request.enable:true}")
+    @Value("${picup.log.http.access.request.enable:true}")
     private boolean requestEnable;
 
-    @Value("${mymarket.log.http.access.request.header.enable:false}")
+    @Value("${picup.log.http.access.request.header.enable:false}")
     private boolean requestHeaderEnable;
 
-    @Value("${mymarket.log.http.access.request.body.enable:false}")
+    @Value("${picup.log.http.access.request.body.enable:false}")
     private boolean requestBodyEnable;
 
-    @Value("${mymarket.log.http.access.response.enable:true}")
+    @Value("${picup.log.http.access.response.enable:true}")
     private boolean responseEnable;
 
-    @Value("${mymarket.log.http.access.response.body.enable:false}")
+    @Value("${picup.log.http.access.response.body.enable:false}")
     private boolean responseBodyEnable;
 
     @Override

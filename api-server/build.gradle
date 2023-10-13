@@ -5,7 +5,7 @@ plugins {
     id 'com.google.cloud.tools.jib' version '3.1.4'
 }
 
-group = 'ecsimsw.mymarket'
+group = 'ecsimsw.picup'
 version = '0.0.1'
 sourceCompatibility = '11'
 
@@ -29,7 +29,6 @@ subprojects {
         implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
         implementation 'org.springframework.boot:spring-boot-starter-actuator'
         implementation 'org.springframework.boot:spring-boot-starter-test'
-        implementation 'org.springframework.kafka:spring-kafka'
         testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.0'
         testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.7.0'
 
@@ -39,7 +38,7 @@ subprojects {
 
     jib {
         from.image = "adoptopenjdk/openjdk11:jre-11.0.10_9-alpine"
-        to.image = "ghcr.io/ecsimsw/mymarket/${project.name}"
+        to.image = "ghcr.io/ecsimsw/picup/${project.name}"
         to.tags = ["latest"]
         // gradle :{projectName}:jib
     }
