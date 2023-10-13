@@ -31,14 +31,6 @@ public class FilePersistenceService {
         return StorageResourceInfo.of(imageFile, resourceKey);
     }
 
-    @Transactional
-    public StorageResourceInfo upload(String fileName, MultipartFile file) {
-        final String resourceKey = resourceKey("username", fileName);
-        final ImageFile imageFile = ImageFile.of(file);
-        imageStorage.create(resourceKey, imageFile);
-        return StorageResourceInfo.of(imageFile, resourceKey);
-    }
-
     @Transactional(readOnly = true)
     public StorageResourceInfo download(String resourceKey) {
         final ImageFile imageFile = imageStorage.read(resourceKey);
