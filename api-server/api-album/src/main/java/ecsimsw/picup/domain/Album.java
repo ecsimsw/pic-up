@@ -16,18 +16,20 @@ public class Album {
     private Long id;
     private String name;
     private String thumbnailResourceKey;
+    private int orderNumber;
 
     public Album() {
     }
 
-    public Album(Long id, String name, String thumbnailResourceKey) {
+    public Album(Long id, String name, String thumbnailResourceKey, int orderNumber) {
         this.id = id;
         this.name = name;
         this.thumbnailResourceKey = thumbnailResourceKey;
+        this.orderNumber = orderNumber;
     }
 
-    public Album(String name, String thumbnailResourceKey) {
-        this(null, name, thumbnailResourceKey);
+    public Album(String name, String thumbnailResourceKey, int orderNumber) {
+        this(null, name, thumbnailResourceKey, orderNumber);
     }
 
     public void updateName(String name) {
@@ -36,5 +38,9 @@ public class Album {
 
     public void updateThumbnail(String thumbnailImage) {
         this.thumbnailResourceKey = thumbnailImage;
+    }
+
+    public void updateOrder(int newOrder) {
+        this.orderNumber = newOrder;
     }
 }

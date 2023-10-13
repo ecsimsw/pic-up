@@ -2,8 +2,10 @@ package ecsimsw.picup.controller;
 
 import ecsimsw.picup.dto.AlbumInfoRequest;
 import ecsimsw.picup.dto.AlbumInfoResponse;
+import ecsimsw.picup.dto.UpdateAlbumOrderRequest;
 import ecsimsw.picup.service.AlbumService;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Optional;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -36,12 +38,6 @@ public class AlbumController {
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping("/api/album/{albumId}")
-    public ResponseEntity<AlbumInfoResponse> getAlbumInfo(@PathVariable Long albumId) {
-        final AlbumInfoResponse response = albumService.read(albumId);
-        return ResponseEntity.ok(response);
-    }
-
     @PutMapping("/api/album/{albumId}")
     public ResponseEntity<AlbumInfoResponse> updateAlbum(
         @PathVariable Long albumId,
@@ -56,6 +52,24 @@ public class AlbumController {
     public ResponseEntity<Void> deleteAlbum(@PathVariable Long albumId) {
         albumService.delete(albumId);
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/api/album/{albumId}")
+    public ResponseEntity<AlbumInfoResponse> getAlbum(@PathVariable Long albumId) {
+        final AlbumInfoResponse response = albumService.read(albumId);
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/api/album")
+    public ResponseEntity<List<AlbumInfoResponse>> getAlbums() {
+        final List<AlbumInfoResponse> response = albumService.listAll();
+        return ResponseEntity.ok(response);
+    }
+
+    @PutMapping("/api/album/order")
+    public ResponseEntity<List<AlbumInfoResponse>> updateOrder(List<UpdateAlbumOrderRequest> orders) {
+        final List<AlbumInfoResponse> response = albumService.updateOrder(orders);
+        return ResponseEntity.ok(response);
     }
 
     // @PostMapping("/api/album/{albumId}/pictures)
