@@ -14,29 +14,27 @@ public class Album {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
     private Long id;
-
     private String name;
-
-    private String thumbnailImage;
+    private String thumbnailResourceKey;
 
     public Album() {
     }
 
-    public Album(Long id, String name, String thumbnailImage) {
+    public Album(Long id, String name, String thumbnailResourceKey) {
         this.id = id;
         this.name = name;
-        this.thumbnailImage = thumbnailImage;
+        this.thumbnailResourceKey = thumbnailResourceKey;
     }
 
-    public Album(String name, String thumbnailImage) {
-        this(null, name, thumbnailImage);
+    public Album(String name, String thumbnailResourceKey) {
+        this(null, name, thumbnailResourceKey);
     }
 
     public void updateName(String name) {
         this.name = name;
     }
 
-    public void updateThumbnailImage(String thumbnailImage) {
-        this.thumbnailImage = thumbnailImage;
+    public void updateThumbnail(String thumbnailImage) {
+        this.thumbnailResourceKey = thumbnailImage;
     }
 }

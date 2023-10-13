@@ -1,65 +1,43 @@
 package ecsimsw.picup.service;
 
-import ecsimsw.picup.dto.*;
-import ecsimsw.picup.dtoNew.ImageUploadResponse;
+import ecsimsw.picup.domain.ImageFile;
+import ecsimsw.picup.dto.ImageUploadResponse;
+import ecsimsw.picup.persistence.ImageStorage;
+import java.util.UUID;
+import org.assertj.core.util.Strings;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
 @Service
 public class StorageService {
 
-    private final FilePersistenceService filePersistenceService;
-    private final UserResourceService userResourceService;
+    private final ImageStorage mainImageStorage;
 
-    public StorageService(
-        FilePersistenceService filePersistenceService,
-        UserResourceService userResourceService
-    ) {
-        this.filePersistenceService = filePersistenceService;
-        this.userResourceService = userResourceService;
+    public StorageService(ImageStorage mainImageStorage) {
+        this.mainImageStorage = mainImageStorage;
     }
 
     @Transactional
-    public StorageResourceInfo uploadFile(MultipartFile file, String tag) {
-        return filePersistenceService.upload(file, tag);
-    }
-
-    @Transactional(readOnly = true)
-    public FileFindResponse findFile(Long userFileId) {
-        final UserFileInfo userFile = userResourceService.getById(userFileId);
-        return new FileFindResponse(userFileId, userFile.getSize(), userFile.getResourceKey());
-    }
-
-    @Transactional(readOnly = true)
-    public byte[] downloadFile(String resourceKey) {
-        final StorageResourceInfo storageResource = filePersistenceService.download(resourceKey);
-        return storageResource.getFile();
-    }
-
-    // TODO :: Soft delete
-    // TODO :: Trash strategy
-    @Transactional
-    public void deleteFile(Long userFileId) {
-        final UserFileInfo userFile = userResourceService.getById(userFileId);
-        filePersistenceService.delete(userFile.getResourceKey());
-        userResourceService.deleteFile(userFileId);
+    public ImageUploadResponse upload(MultipartFile file, String tag) {
+        final String resourceKey = resourceKey(tag, file);
+        final ImageFile imageFile = ImageFile.of(file);
+        mainImageStorage.create(resourceKey, imageFile);
+        return new ImageUploadResponse(resourceKey, imageFile.getSize());
     }
 
     @Transactional
-    public void createFolder(Long parentFolderId, UserFolderCreationRequest request) {
-        userResourceService.createFolder(parentFolderId, request);
+    public void delete(String resourceKey) {
+        mainImageStorage.delete(resourceKey);
     }
 
-    @Transactional
-    public void deleteFolder(Long folderId) {
-        final List<UserFileInfo> deletedUserFiles = userResourceService.deleteFolder(folderId);
-        final List<String> resourceKeys = deletedUserFiles.stream()
-            .map(UserFileInfo::getResourceKey)
-            .collect(Collectors.toList());
-        filePersistenceService.deleteAll(resourceKeys);
+    private String resourceKey(String fileTag, MultipartFile file) {
+        final String originalName = file.getOriginalFilename();
+        final String extension = originalName.substring(originalName.lastIndexOf(".") + 1);
+        final String fileName = Strings.join(
+            fileTag,
+            UUID.randomUUID().toString()
+        ).with("-");
+        return fileName + "." + extension;
     }
 }

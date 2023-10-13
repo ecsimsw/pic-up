@@ -3,7 +3,11 @@ package ecsimsw.picup.service;
 import ecsimsw.picup.dto.StorageImageUploadRequest;
 import ecsimsw.picup.dto.StorageImageUploadResponse;
 import ecsimsw.picup.logging.CustomLogger;
+import java.util.Map;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
@@ -20,21 +24,21 @@ public class StorageHttpClient {
 
     public StorageHttpClient(
         RestTemplate restTemplate,
-        @Value("${storage.server.url:http://localhost:8083/api/file}") String storageServerUrl
+        @Value("${storage.server.url:http://localhost:8083}") String storageServerUrl
     ) {
         this.restTemplate = restTemplate;
         this.storageServerUrl = storageServerUrl;
     }
 
-    public String upload(MultipartFile file, String desc) {
-        return upload(StorageImageUploadRequest.of(file, desc));
+    public String upload(MultipartFile file, String tag) {
+        return upload(StorageImageUploadRequest.of(file, tag));
     }
 
     public String upload(StorageImageUploadRequest request) {
         logger.info("send image upload api call to " + storageServerUrl);
         final long startTime = System.currentTimeMillis();
         var response = restTemplate.postForEntity(
-            storageServerUrl,
+            storageServerUrl+"/api/file",
             request.toHttpEntity(),
             StorageImageUploadResponse.class
         );
@@ -42,9 +46,16 @@ public class StorageHttpClient {
         if (Objects.isNull(responseBody)) {
             throw new IllegalArgumentException();
         }
-        logger.info("file size : " + responseBody.getSize());
+        logger.info("file size : " + responseBody.getSize() + "byte");
         logger.info("duration time : " + (System.currentTimeMillis() - startTime) + "ms");
         return responseBody.getResourceKey();
+    }
+
+    public void delete(String resourceKey) {
+        logger.info("send image delete api call to " + storageServerUrl);
+        final long startTime = System.currentTimeMillis();
+        restTemplate.delete(storageServerUrl + "/api/file/" + resourceKey);
+        logger.info("duration time : " + (System.currentTimeMillis() - startTime) + "ms");
     }
 
     /**

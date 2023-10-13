@@ -29,7 +29,7 @@ public class LocalFileStorage implements ImageStorage {
     @Override
     public void create(String resourceKey, ImageFile imageFile) {
         try {
-            final String storagePath = rootPath + resourceKey;
+            final String storagePath = storagePath(resourceKey);
             Files.write(Paths.get(storagePath), imageFile.getFile());
             LOGGER.info("Save file : " + storagePath);
         } catch (IOException e) {
@@ -40,7 +40,7 @@ public class LocalFileStorage implements ImageStorage {
 
     @Override
     public ImageFile read(String resourceKey) {
-        final String storagePath = rootPath + resourceKey;
+        final String storagePath = storagePath(resourceKey);
         LOGGER.info("Read file : " + storagePath);
         try (
             final InputStream inputStream = new FileInputStream(storagePath)
@@ -58,11 +58,14 @@ public class LocalFileStorage implements ImageStorage {
     // TODO :: Soft delete
     @Override
     public void delete(String resourceKey) {
-        final String storagePath = rootPath + resourceKey;
-        final File file = new File(storagePath);
+        final File file = new File(storagePath(resourceKey));
         if(!file.exists()) {
             throw new IllegalArgumentException("File not exists");
         }
         file.delete();
+    }
+
+    private String storagePath(String resourceKey) {
+        return rootPath + resourceKey;
     }
 }

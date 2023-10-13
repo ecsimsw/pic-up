@@ -59,6 +59,7 @@ public class CustomLogger {
     public void trace(String message, Object... arguments) {
         if(marker == null) {
             logger.trace(message, arguments);
+            return;
         }
         logger.trace(marker, message, arguments);
     }
@@ -66,6 +67,7 @@ public class CustomLogger {
     public void debug(String message, Object... arguments) {
         if(marker == null) {
             logger.debug(message, arguments);
+            return;
         }
         logger.debug(marker, message, arguments);
     }
@@ -73,6 +75,7 @@ public class CustomLogger {
     public void info(String message, Object... arguments) {
         if(marker == null) {
             logger.info(message, arguments);
+            return;
         }
         logger.info(marker, message, arguments);
     }
@@ -80,6 +83,7 @@ public class CustomLogger {
     public void warn(String message, Object... arguments) {
         if(marker == null) {
             logger.warn(message, arguments);
+            return;
         }
         logger.warn(marker, message, arguments);
     }
@@ -87,6 +91,7 @@ public class CustomLogger {
     public void error(String message, Object... arguments) {
         if(marker == null) {
             logger.error(message, arguments);
+            return;
         }
         logger.error(marker, message, arguments);
     }
