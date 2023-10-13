@@ -1,2 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<PatternLayout pattern="%style{%d{ISO8601}}{gray} %highlight{%-5level }[%style{%t}{bright,blue}] %style{%C{1.}}{bright,yellow}: %msg%n%throwable"/>
