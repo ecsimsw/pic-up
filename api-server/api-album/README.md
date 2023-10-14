@@ -6,4 +6,4 @@
 -[] validation
 -[] exception handling
 -[] rest template config
--[] pagination
+-[] cursor based pagination
