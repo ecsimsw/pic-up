@@ -15,8 +15,8 @@ public class RestTemplateConfig {
     @Bean
     public RestTemplate restTemplate(RestTemplateBuilder builder) {
         return builder.requestFactory(() -> new BufferingClientHttpRequestFactory(new SimpleClientHttpRequestFactory()))
-            .setConnectTimeout(Duration.ofMillis(5000)) // connection-timeout
-            .setReadTimeout(Duration.ofMillis(5000)) // read-timeout
+            .setConnectTimeout(Duration.ofMillis(5000))
+            .setReadTimeout(Duration.ofMillis(5000))
             .build();
     }
 }

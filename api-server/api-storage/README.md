@@ -1,10 +1,11 @@
-## Api storage
+## API storage
 
 -[] soft delete
 -[] main storage
 -[] back up storage
 -[] cache storage
--[] validate image name
+-[] validation
+-[] exception handling
 -[] limit file size
 -[] limit file type
 -[] main storage path
