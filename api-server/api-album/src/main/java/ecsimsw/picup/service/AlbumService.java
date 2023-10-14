@@ -26,9 +26,9 @@ public class AlbumService {
 
     @Transactional
     public AlbumInfoResponse create(AlbumInfoRequest request, MultipartFile file) {
-        final String name = request.getName();
-        final String resourceKey = storageHttpClient.upload(file, name);
-        final Album album = new Album(name, resourceKey, lastOrder() + 1);
+        final String username = "username";
+        final String resourceKey = storageHttpClient.upload(file, username);
+        final Album album = new Album(request.getName(), resourceKey, lastOrder() + 1);
         albumRepository.save(album);
         return AlbumInfoResponse.of(album);
     }
@@ -40,14 +40,15 @@ public class AlbumService {
     }
 
     @Transactional
-    public AlbumInfoResponse update(Long albumId, AlbumInfoRequest request,
-        Optional<MultipartFile> optionalFile) {
+    public AlbumInfoResponse update(Long albumId, AlbumInfoRequest request, Optional<MultipartFile> optionalFile) {
+        final String username = "username";
         final Album album = albumRepository.findById(albumId).orElseThrow();
         album.updateName(request.getName());
         optionalFile.ifPresent(file -> {
-            storageHttpClient.delete(album.getThumbnailResourceKey());
-            final String resourceKey = storageHttpClient.upload(file, album.getName());
-            album.updateThumbnail(resourceKey);
+            final String oldImage = album.getThumbnailResourceKey();
+            final String newImage = storageHttpClient.upload(file, username);
+            album.updateThumbnail(newImage);
+            storageHttpClient.delete(oldImage);
         });
         albumRepository.save(album);
         return AlbumInfoResponse.of(album);
@@ -86,7 +87,7 @@ public class AlbumService {
     }
 
     private Integer lastOrder() {
-        return albumRepository.findTopByOrder()
+        return albumRepository.findTopByOrderByOrderNumber()
             .map(Album::getOrderNumber)
             .orElse(0);
     }

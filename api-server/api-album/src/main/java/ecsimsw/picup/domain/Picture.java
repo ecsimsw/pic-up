@@ -19,22 +19,40 @@ public class Picture {
 
     private String resourceKey;
 
-    private String name;
-
     private String description;
+
+    private int orderNumber;
 
     public Picture() {
     }
 
-    public Picture(Long id, Long albumId, String resourceKey, String name, String description) {
+    public Picture(Long id, Long albumId, String resourceKey, String description, int orderNumber) {
         this.id = id;
         this.albumId = albumId;
         this.resourceKey = resourceKey;
-        this.name = name;
+        this.description = description;
+        this.orderNumber = orderNumber;
+    }
+
+    public Picture(Long albumId, String resourceKey, String description, int orderNumber) {
+        this(null, albumId, resourceKey, description, orderNumber);
+    }
+
+    public void updateDescription(String description) {
         this.description = description;
     }
 
-    public Picture(Long albumId, String resourceKey, String name, String description) {
-        this(null, albumId, resourceKey, name, description);
+    public void updateImage(String resourceKey) {
+        this.resourceKey = resourceKey;
+    }
+
+    public void updateOrder(int orderNumber) {
+        this.orderNumber = orderNumber;
+    }
+
+    public void validateAlbum(Long albumId) {
+        if(!this.albumId.equals(albumId)) {
+            throw new IllegalArgumentException("Invalid album");
+        }
     }
 }
