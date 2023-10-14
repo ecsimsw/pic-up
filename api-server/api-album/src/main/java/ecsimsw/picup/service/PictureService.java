@@ -18,19 +18,15 @@ import org.springframework.web.multipart.MultipartFile;
 public class PictureService {
 
     private final PictureRepository pictureRepository;
-    private final AlbumRepository albumRepository;
     private final StorageHttpClient storageHttpClient;
 
-    public PictureService(PictureRepository pictureRepository,
-        AlbumRepository albumRepository, StorageHttpClient storageHttpClient) {
+    public PictureService(PictureRepository pictureRepository, StorageHttpClient storageHttpClient) {
         this.pictureRepository = pictureRepository;
-        this.albumRepository = albumRepository;
         this.storageHttpClient = storageHttpClient;
     }
 
     @Transactional
     public PictureInfoResponse create(Long albumId, PictureInfoRequest request, MultipartFile file) {
-        // TODO :: album 검증
         final String username = "hi";
         final String resourceKey = storageHttpClient.upload(file, username);
         final Picture picture = new Picture(albumId, resourceKey, request.getDescription(), lastOrderInAlbum(albumId) + 1);

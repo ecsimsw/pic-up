@@ -2,7 +2,9 @@ package ecsimsw.picup.controller;
 
 import ecsimsw.picup.dto.PictureInfoRequest;
 import ecsimsw.picup.dto.PictureInfoResponse;
+import ecsimsw.picup.dto.UpdatePictureOrderRequest;
 import ecsimsw.picup.service.PictureService;
+import java.util.List;
 import java.util.Optional;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -50,6 +52,15 @@ public class PictureController {
         @RequestPart Optional<MultipartFile> file
     ) {
         final PictureInfoResponse response = pictureService.update(albumId, pictureId, request, file);
+        return ResponseEntity.ok(response);
+    }
+
+    @PutMapping("/api/album/{albumId}/picture/order")
+    public ResponseEntity<List<PictureInfoResponse>> updateOrder(
+        @PathVariable Long albumId,
+        List<UpdatePictureOrderRequest> orders
+    ) {
+        final List<PictureInfoResponse> response = pictureService.updateOrder(albumId, orders);
         return ResponseEntity.ok(response);
     }
 }

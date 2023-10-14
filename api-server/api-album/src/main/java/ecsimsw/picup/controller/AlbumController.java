@@ -72,15 +72,6 @@ public class AlbumController {
         return ResponseEntity.ok(response);
     }
 
-    // @PostMapping("/api/album/{albumId}/pictures)
-
-    // @DeleteMapping("/api/album/{albumId}/pictures/{pictureId})
-
-    // @PutMapping("/api/album/{albumId}/pictures/{pictureId})
-    // description
-
-    // @PostMapping("/api/album/{albumId}/viewer/{userId})
-
     @PostMapping("/upload")
     public @ResponseBody
     String handleFileUpload(MultipartHttpServletRequest request) throws InterruptedException {
