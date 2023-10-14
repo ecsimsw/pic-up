@@ -3,12 +3,17 @@ package ecsimsw.picup.service;
 import ecsimsw.picup.dto.StorageImageUploadRequest;
 import ecsimsw.picup.dto.StorageImageUploadResponse;
 import ecsimsw.picup.logging.CustomLogger;
+import java.util.List;
+import java.util.Objects;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.util.Objects;
 
 @Service
 public class StorageHttpClient {
@@ -34,7 +39,7 @@ public class StorageHttpClient {
         LOGGER.info("send image upload api call to " + STORAGE_SERVER_URL);
         final long startTime = System.currentTimeMillis();
         var response = restTemplate.postForEntity(
-            STORAGE_SERVER_URL +"/api/file",
+            STORAGE_SERVER_URL + "/api/file",
             request.toHttpEntity(),
             StorageImageUploadResponse.class
         );
@@ -52,6 +57,24 @@ public class StorageHttpClient {
         final long startTime = System.currentTimeMillis();
         restTemplate.delete(STORAGE_SERVER_URL + "/api/file/" + resourceKey);
         LOGGER.info("duration time : " + (System.currentTimeMillis() - startTime) + "ms");
+    }
+
+    public int deleteAll(List<String> resources) {
+        LOGGER.info("send image delete all api call to " + STORAGE_SERVER_URL);
+        final long startTime = System.currentTimeMillis();
+
+        var headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        var response = restTemplate.exchange(
+            STORAGE_SERVER_URL + "/api/file",
+            HttpMethod.DELETE,
+            new HttpEntity<>(resources, headers),
+            new ParameterizedTypeReference<Integer>() {
+            }
+        );
+        LOGGER.info("duration time : " + (System.currentTimeMillis() - startTime) + "ms");
+        LOGGER.info("deleted images : " + response.getBody());
+        return response.getBody() != null ? response.getBody() : 0;
     }
 
     /**

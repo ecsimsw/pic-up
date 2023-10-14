@@ -20,6 +20,10 @@ public class CustomLogger {
         this(null, logger);
     }
 
+    public static CustomLogger init(String name) {
+        return new CustomLogger(LoggerFactory.getLogger(name));
+    }
+
     public static CustomLogger init(String markerName, Class<?> clazz) {
         return new CustomLogger(MarkerFactory.getMarker(markerName), LoggerFactory.getLogger(clazz));
     }

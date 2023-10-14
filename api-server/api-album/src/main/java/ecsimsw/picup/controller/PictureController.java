@@ -28,14 +28,14 @@ public class PictureController {
     @PostMapping("/api/album/{albumId}/picture")
     public ResponseEntity<PictureInfoResponse> createPicture(
         @PathVariable Long albumId,
-        @RequestPart MultipartFile file,
-        @RequestPart PictureInfoRequest request
+        @RequestPart MultipartFile imageFile,
+        @RequestPart PictureInfoRequest pictureInfo
     ) {
-        final PictureInfoResponse response = pictureService.create(albumId, request, file);
+        final PictureInfoResponse response = pictureService.create(albumId, pictureInfo, imageFile);
         return ResponseEntity.ok(response);
     }
 
-    @DeleteMapping("/api/album/{albumId}/pictures/{pictureId}")
+    @DeleteMapping("/api/album/{albumId}/picture/{pictureId}")
     public ResponseEntity<Void> deletePicture(
         @PathVariable Long albumId,
         @PathVariable Long pictureId
@@ -44,14 +44,14 @@ public class PictureController {
         return ResponseEntity.ok().build();
     }
 
-    @PutMapping("/api/album/{albumId}/pictures/{pictureId}")
+    @PutMapping("/api/album/{albumId}/picture/{pictureId}")
     public ResponseEntity<PictureInfoResponse> updatePicture(
         @PathVariable Long albumId,
         @PathVariable Long pictureId,
-        @RequestBody PictureInfoRequest request,
-        @RequestPart Optional<MultipartFile> file
+        @RequestBody PictureInfoRequest pictureInfo,
+        @RequestPart Optional<MultipartFile> imageFile
     ) {
-        final PictureInfoResponse response = pictureService.update(albumId, pictureId, request, file);
+        final PictureInfoResponse response = pictureService.update(albumId, pictureId, pictureInfo, imageFile);
         return ResponseEntity.ok(response);
     }
 

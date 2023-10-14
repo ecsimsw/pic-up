@@ -2,6 +2,7 @@ package ecsimsw.picup.controller;
 
 import ecsimsw.picup.dto.ImageUploadResponse;
 import ecsimsw.picup.service.StorageService;
+import java.util.List;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -30,14 +31,9 @@ public class StorageController {
         return ResponseEntity.ok().build();
     }
 
-    @PostMapping("/upload")
-    public @ResponseBody
-    String handleFileUpload(MultipartHttpServletRequest request) {
-        Iterator<String> iterator = request.getFileNames();
-        while (iterator.hasNext()) {
-            String fileName = iterator.next();
-            System.out.println(fileName);
-        }
-        return "ok";
+    @DeleteMapping("/api/file")
+    public ResponseEntity<Integer> deleteAll(@RequestBody List<String> resourceKeys) {
+        final int response = storageService.deleteAll(resourceKeys);
+        return ResponseEntity.ok(response);
     }
 }

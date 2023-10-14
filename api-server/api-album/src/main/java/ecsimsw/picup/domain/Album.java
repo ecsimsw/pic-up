@@ -19,23 +19,23 @@ public class Album {
 
     private String name;
 
-    private String thumbnailResourceKey;
+    private String resourceKey;
 
     private int orderNumber;
 
     public Album() {
     }
 
-    public Album(Long id, Long userId, String name, String thumbnailResourceKey, int orderNumber) {
+    public Album(Long id, Long userId, String name, String resourceKey, int orderNumber) {
         this.id = id;
         this.userId = userId;
         this.name = name;
-        this.thumbnailResourceKey = thumbnailResourceKey;
+        this.resourceKey = resourceKey;
         this.orderNumber = orderNumber;
     }
 
-    public Album(Long userId, String name, String thumbnailResourceKey, int orderNumber) {
-        this(null, userId, name, thumbnailResourceKey, orderNumber);
+    public Album(Long userId, String name, String resourceKey, int orderNumber) {
+        this(null, userId, name, resourceKey, orderNumber);
     }
 
     public void updateName(String name) {
@@ -43,7 +43,7 @@ public class Album {
     }
 
     public void updateThumbnail(String thumbnailImage) {
-        this.thumbnailResourceKey = thumbnailImage;
+        this.resourceKey = thumbnailImage;
     }
 
     public void updateOrder(int newOrder) {

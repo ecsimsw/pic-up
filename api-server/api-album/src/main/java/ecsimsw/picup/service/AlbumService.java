@@ -5,10 +5,13 @@ import ecsimsw.picup.domain.AlbumRepository;
 import ecsimsw.picup.dto.AlbumInfoRequest;
 import ecsimsw.picup.dto.AlbumInfoResponse;
 import ecsimsw.picup.dto.UpdateAlbumOrderRequest;
+import ecsimsw.picup.event.AlbumDeletionEvent;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
@@ -21,17 +24,23 @@ public class AlbumService {
 
     private final AlbumRepository albumRepository;
     private final StorageHttpClient storageHttpClient;
+    private final ApplicationEventPublisher eventPublisher;
 
-    public AlbumService(AlbumRepository albumRepository, StorageHttpClient storageHttpClient) {
+    public AlbumService(
+        AlbumRepository albumRepository,
+        StorageHttpClient storageHttpClient,
+        ApplicationEventPublisher eventPublisher
+    ) {
         this.albumRepository = albumRepository;
         this.storageHttpClient = storageHttpClient;
+        this.eventPublisher = eventPublisher;
     }
 
     @Transactional
-    public AlbumInfoResponse create(AlbumInfoRequest request, MultipartFile file) {
+    public AlbumInfoResponse create(AlbumInfoRequest albumInfo, MultipartFile thumbnail) {
         final Long userId = 1L;
-        final String resourceKey = storageHttpClient.upload(file, userId.toString());
-        final Album album = new Album(userId, request.getName(), resourceKey, lastOrder(userId) + 1);
+        final String resourceKey = storageHttpClient.upload(thumbnail, userId.toString());
+        final Album album = new Album(userId, albumInfo.getName(), resourceKey, lastOrder(userId) + 1);
         albumRepository.save(album);
         return AlbumInfoResponse.of(album);
     }
@@ -43,12 +52,12 @@ public class AlbumService {
     }
 
     @Transactional
-    public AlbumInfoResponse update(Long albumId, AlbumInfoRequest request, Optional<MultipartFile> optionalFile) {
+    public AlbumInfoResponse update(Long albumId, AlbumInfoRequest albumInfo, Optional<MultipartFile> optionalThumbnail) {
         final Long userId = 1L;
         final Album album = albumRepository.findById(albumId).orElseThrow();
-        album.updateName(request.getName());
-        optionalFile.ifPresent(file -> {
-            final String oldImage = album.getThumbnailResourceKey();
+        album.updateName(albumInfo.getName());
+        optionalThumbnail.ifPresent(file -> {
+            final String oldImage = album.getResourceKey();
             final String newImage = storageHttpClient.upload(file, userId.toString());
             album.updateThumbnail(newImage);
             storageHttpClient.delete(oldImage);
@@ -57,14 +66,12 @@ public class AlbumService {
         return AlbumInfoResponse.of(album);
     }
 
-    // TODO :: delete all the picture bellow
-    // TODO :: soft delete
-
     @Transactional
     public void delete(Long albumId) {
         final Album album = albumRepository.findById(albumId).orElseThrow();
         albumRepository.delete(album);
-        storageHttpClient.delete(album.getThumbnailResourceKey());
+        storageHttpClient.delete(album.getResourceKey());
+        eventPublisher.publishEvent(new AlbumDeletionEvent(albumId));
     }
 
     @Transactional(readOnly = true)

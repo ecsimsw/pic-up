@@ -31,20 +31,20 @@ public class AlbumController {
 
     @PostMapping("/api/album")
     public ResponseEntity<AlbumInfoResponse> createAlbum(
-        @RequestPart(required = false) MultipartFile file,
-        @RequestPart AlbumInfoRequest request
+        @RequestPart(required = false) MultipartFile thumbnail,
+        @RequestPart AlbumInfoRequest albumInfo
     ) {
-        final AlbumInfoResponse response = albumService.create(request, file);
+        final AlbumInfoResponse response = albumService.create(albumInfo, thumbnail);
         return ResponseEntity.ok(response);
     }
 
     @PutMapping("/api/album/{albumId}")
     public ResponseEntity<AlbumInfoResponse> updateAlbum(
         @PathVariable Long albumId,
-        @RequestPart AlbumInfoRequest request,
-        @RequestPart Optional<MultipartFile> file
+        @RequestPart AlbumInfoRequest albumInfo,
+        @RequestPart Optional<MultipartFile> thumbnail
     ) {
-        final AlbumInfoResponse response = albumService.update(albumId, request, file);
+        final AlbumInfoResponse response = albumService.update(albumId, albumInfo, thumbnail);
         return ResponseEntity.ok(response);
     }
 

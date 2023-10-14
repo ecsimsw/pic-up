@@ -1,24 +1,31 @@
 package ecsimsw.picup.service;
 
-import com.google.common.collect.Iterables;
 import ecsimsw.picup.domain.Picture;
 import ecsimsw.picup.domain.PictureRepository;
 import ecsimsw.picup.dto.PictureInfoRequest;
 import ecsimsw.picup.dto.PictureInfoResponse;
 import ecsimsw.picup.dto.UpdatePictureOrderRequest;
+import ecsimsw.picup.event.AlbumDeletionEvent;
+import ecsimsw.picup.logging.CustomLogger;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.event.TransactionPhase;
+import org.springframework.transaction.event.TransactionalEventListener;
 import org.springframework.web.multipart.MultipartFile;
 
 @Service
 public class PictureService {
+
+    private static final CustomLogger LOGGER = CustomLogger.init(PictureService.class);
 
     private final PictureRepository pictureRepository;
     private final StorageHttpClient storageHttpClient;
@@ -29,10 +36,10 @@ public class PictureService {
     }
 
     @Transactional
-    public PictureInfoResponse create(Long albumId, PictureInfoRequest request, MultipartFile file) {
+    public PictureInfoResponse create(Long albumId, PictureInfoRequest pictureInfo, MultipartFile imageFile) {
         final Long userId = 1L;
-        final String resourceKey = storageHttpClient.upload(file, userId.toString());
-        final Picture picture = new Picture(albumId, resourceKey, request.getDescription(), lastOrderNumber(albumId) + 1);
+        final String resourceKey = storageHttpClient.upload(imageFile, userId.toString());
+        final Picture picture = new Picture(albumId, resourceKey, pictureInfo.getDescription(), lastOrderNumber(albumId) + 1);
         pictureRepository.save(picture);
         return PictureInfoResponse.of(picture);
     }
@@ -57,14 +64,32 @@ public class PictureService {
         pictureRepository.delete(picture);
     }
 
+    @Async
     @Transactional
-    public PictureInfoResponse update(Long albumId, Long pictureId, PictureInfoRequest request, Optional<MultipartFile> optionalFile) {
+    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
+    public void deleteAllInAlbum(AlbumDeletionEvent event) {
+        final List<Picture> pictures = pictureRepository.findAllByAlbumId(event.getAlbumId());
+        final List<String> imagesToDelete = pictures.stream()
+            .map(Picture::getResourceKey)
+            .collect(Collectors.toList());
+        final int deletionCnt = storageHttpClient.deleteAll(imagesToDelete);
+        if(deletionCnt != pictures.size()) {
+            LOGGER.error(
+                "Failed to delete all the picture in album " + event.getAlbumId() + "\n" +
+                    "To be deleted : " +  pictures.size() + " Actual deleted : " + deletionCnt
+            );
+        }
+        pictureRepository.deleteAll(pictures);
+    }
+
+    @Transactional
+    public PictureInfoResponse update(Long albumId, Long pictureId, PictureInfoRequest pictureInfo, Optional<MultipartFile> optionalImageFile) {
         final Long userId = 1L;
         final Picture picture = pictureRepository.findById(pictureId).orElseThrow();
         picture.validateAlbum(albumId);
-        picture.updateDescription(request.getDescription());
+        picture.updateDescription(pictureInfo.getDescription());
 
-        optionalFile.ifPresent(file -> {
+        optionalImageFile.ifPresent(file -> {
             final String oldImage = picture.getResourceKey();
             final String newImage = storageHttpClient.upload(file, userId.toString());
             picture.updateImage(newImage);

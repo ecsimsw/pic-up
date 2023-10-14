@@ -7,7 +7,10 @@ import lombok.Setter;
 @Getter
 public class PictureInfoRequest {
 
-    private final String description;
+    private String description;
+
+    public PictureInfoRequest() {
+    }
 
     public PictureInfoRequest(String description) {
         this.description = description;
