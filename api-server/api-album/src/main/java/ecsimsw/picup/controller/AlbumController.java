@@ -67,9 +67,9 @@ public class AlbumController {
     }
 
     @PutMapping("/api/album/order")
-    public ResponseEntity<List<AlbumInfoResponse>> updateOrder(List<UpdateAlbumOrderRequest> orders) {
-        final List<AlbumInfoResponse> response = albumService.updateOrder(orders);
-        return ResponseEntity.ok(response);
+    public ResponseEntity<Void> updateOrder(List<UpdateAlbumOrderRequest> orders) {
+        albumService.updateOrder(orders);
+        return ResponseEntity.ok().build();
     }
 
     @PostMapping("/upload")

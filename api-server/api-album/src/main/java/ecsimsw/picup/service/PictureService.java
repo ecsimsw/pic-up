@@ -1,6 +1,6 @@
 package ecsimsw.picup.service;
 
-import ecsimsw.picup.domain.AlbumRepository;
+import com.google.common.collect.Iterables;
 import ecsimsw.picup.domain.Picture;
 import ecsimsw.picup.domain.PictureRepository;
 import ecsimsw.picup.dto.PictureInfoRequest;
@@ -10,6 +10,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -27,9 +30,9 @@ public class PictureService {
 
     @Transactional
     public PictureInfoResponse create(Long albumId, PictureInfoRequest request, MultipartFile file) {
-        final String username = "hi";
-        final String resourceKey = storageHttpClient.upload(file, username);
-        final Picture picture = new Picture(albumId, resourceKey, request.getDescription(), lastOrderInAlbum(albumId) + 1);
+        final Long userId = 1L;
+        final String resourceKey = storageHttpClient.upload(file, userId.toString());
+        final Picture picture = new Picture(albumId, resourceKey, request.getDescription(), lastOrderNumber(albumId) + 1);
         pictureRepository.save(picture);
         return PictureInfoResponse.of(picture);
     }
@@ -56,14 +59,14 @@ public class PictureService {
 
     @Transactional
     public PictureInfoResponse update(Long albumId, Long pictureId, PictureInfoRequest request, Optional<MultipartFile> optionalFile) {
-        final String username = "username";
+        final Long userId = 1L;
         final Picture picture = pictureRepository.findById(pictureId).orElseThrow();
         picture.validateAlbum(albumId);
         picture.updateDescription(request.getDescription());
 
         optionalFile.ifPresent(file -> {
             final String oldImage = picture.getResourceKey();
-            final String newImage = storageHttpClient.upload(file, username);
+            final String newImage = storageHttpClient.upload(file, userId.toString());
             picture.updateImage(newImage);
             storageHttpClient.delete(oldImage);
         });
@@ -88,9 +91,11 @@ public class PictureService {
         return PictureInfoResponse.listOf(pictures);
     }
 
-    private int lastOrderInAlbum(Long albumId) {
-        return pictureRepository.findTopByAlbumIdOrderByOrderNumber(albumId)
+    private int lastOrderNumber(Long albumId) {
+        final PageRequest requestTop1 = PageRequest.of(0, 1, Sort.by(Direction.DESC, "orderNumber"));
+        return pictureRepository.findAllByAlbumId(albumId, requestTop1).stream()
             .map(Picture::getOrderNumber)
+            .findFirst()
             .orElse(0);
     }
 }

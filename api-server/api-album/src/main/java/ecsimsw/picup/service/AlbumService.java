@@ -9,6 +9,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -26,9 +29,9 @@ public class AlbumService {
 
     @Transactional
     public AlbumInfoResponse create(AlbumInfoRequest request, MultipartFile file) {
-        final String username = "username";
-        final String resourceKey = storageHttpClient.upload(file, username);
-        final Album album = new Album(request.getName(), resourceKey, lastOrder() + 1);
+        final Long userId = 1L;
+        final String resourceKey = storageHttpClient.upload(file, userId.toString());
+        final Album album = new Album(userId, request.getName(), resourceKey, lastOrder(userId) + 1);
         albumRepository.save(album);
         return AlbumInfoResponse.of(album);
     }
@@ -41,12 +44,12 @@ public class AlbumService {
 
     @Transactional
     public AlbumInfoResponse update(Long albumId, AlbumInfoRequest request, Optional<MultipartFile> optionalFile) {
-        final String username = "username";
+        final Long userId = 1L;
         final Album album = albumRepository.findById(albumId).orElseThrow();
         album.updateName(request.getName());
         optionalFile.ifPresent(file -> {
             final String oldImage = album.getThumbnailResourceKey();
-            final String newImage = storageHttpClient.upload(file, username);
+            final String newImage = storageHttpClient.upload(file, userId.toString());
             album.updateThumbnail(newImage);
             storageHttpClient.delete(oldImage);
         });
@@ -71,7 +74,7 @@ public class AlbumService {
     }
 
     @Transactional
-    public List<AlbumInfoResponse> updateOrder(List<UpdateAlbumOrderRequest> orderInfos) {
+    public void updateOrder(List<UpdateAlbumOrderRequest> orderInfos) {
         final Set<Integer> usedOrder = new HashSet<>();
         albumRepository.findAll().forEach(album -> {
             orderInfos.stream()
@@ -82,13 +85,13 @@ public class AlbumService {
             }
             usedOrder.add(album.getOrderNumber());
         });
-        final List<Album> albums = albumRepository.findAllByOrderByOrderNumber();
-        return AlbumInfoResponse.listOf(albums);
     }
 
-    private Integer lastOrder() {
-        return albumRepository.findTopByOrderByOrderNumber()
+    private Integer lastOrder(Long userId) {
+        final PageRequest requestTop1 = PageRequest.of(0, 1, Sort.by(Direction.DESC, "orderNumber"));
+        return albumRepository.findAllByUserId(userId, requestTop1).stream()
             .map(Album::getOrderNumber)
+            .findFirst()
             .orElse(0);
     }
 }
