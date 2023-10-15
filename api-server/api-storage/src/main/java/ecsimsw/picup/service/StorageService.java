@@ -4,11 +4,12 @@ import ecsimsw.picup.domain.ImageFile;
 import ecsimsw.picup.dto.ImageUploadResponse;
 import ecsimsw.picup.logging.CustomLogger;
 import ecsimsw.picup.persistence.ImageStorage;
-import java.util.List;
-import java.util.UUID;
 import org.assertj.core.util.Strings;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
+import java.util.UUID;
 
 @Service
 public class StorageService {
@@ -34,19 +35,16 @@ public class StorageService {
 
     public int deleteAll(List<String> resourceKeys) {
         int deletedCnt = 0;
-        try {
-            for(String resourceKey : resourceKeys) {
+        for (String resourceKey : resourceKeys) {
+            try {
                 mainImageStorage.delete(resourceKey);
                 deletedCnt++;
+            } catch (Exception e) {
+                // TODO :: 제거 실패 리소스 관리, 예외 타입 구체화
+                LOGGER.error("Fail while deleting, \nresource key : " + resourceKey + "\nerror message : " + e.getMessage());
             }
-            return deletedCnt;
-        } catch (Exception e) {
-            LOGGER.error(
-                "Failed to delete all the resources\n" +
-                "To be deleted : " +  resourceKeys.size() + " Actual deleted : " + deletedCnt
-            );
-            return deletedCnt;
         }
+        return deletedCnt;
     }
 
     private String resourceKey(String fileTag, MultipartFile file) {
