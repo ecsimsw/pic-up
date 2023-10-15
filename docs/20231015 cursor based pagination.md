@@ -94,9 +94,8 @@ select * from product where name > 'y' order by name asc limit 10;           // 
 
 ### Result
 
-<img width="636" alt="image" src="https://github.com/ecsimsw/A-to-Z/assets/46060746/5c3f59e2-dd00-4029-aa73-f68ef2df5845">
+<img width="713" alt="image" src="https://github.com/ecsimsw/pic-up/assets/46060746/734c4f33-9b26-4554-a8c6-c02f8dc03c02">
 
-<img width="698" alt="image" src="https://github.com/ecsimsw/A-to-Z/assets/46060746/6338712f-578f-4e00-8be4-3204c01d37c1">
 
 ```
 select * from product order by name asc limit 10 offset 0;
@@ -107,7 +106,3 @@ select * from product where name > 'a' order by name asc limit 10;
 
 select * from product where name > 'y' order by name asc limit 10; 
 ```
-
-#### Result
-
-![image](https://github.com/ecsimsw/A-to-Z/assets/46060746/aa8a0490-aa85-4a45-ab58-e4d5effcdd69)
