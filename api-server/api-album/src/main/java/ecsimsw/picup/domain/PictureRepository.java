@@ -12,8 +12,4 @@ public interface PictureRepository extends JpaRepository<Picture, Long>,
     List<Picture> findAllByAlbumId(Long albumId);
 
     Slice<Picture> findAllByAlbumId(Long albumId, Pageable pageable);
-
-    interface Specification {
-
-    }
 }

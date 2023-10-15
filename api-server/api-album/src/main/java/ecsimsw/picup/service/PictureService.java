@@ -6,12 +6,6 @@ import ecsimsw.picup.dto.PictureInfoRequest;
 import ecsimsw.picup.dto.PictureInfoResponse;
 import ecsimsw.picup.dto.UpdatePictureOrderRequest;
 import ecsimsw.picup.event.AlbumDeletionEvent;
-import ecsimsw.picup.logging.CustomLogger;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
@@ -22,10 +16,14 @@ import org.springframework.transaction.event.TransactionPhase;
 import org.springframework.transaction.event.TransactionalEventListener;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 @Service
 public class PictureService {
-
-    private static final CustomLogger LOGGER = CustomLogger.init(PictureService.class);
 
     private final PictureRepository pictureRepository;
     private final StorageHttpClient storageHttpClient;
@@ -72,13 +70,7 @@ public class PictureService {
         final List<String> imagesToDelete = pictures.stream()
             .map(Picture::getResourceKey)
             .collect(Collectors.toList());
-        final int deletionCnt = storageHttpClient.deleteAll(imagesToDelete);
-        if(deletionCnt != pictures.size()) {
-            LOGGER.error(
-                "Failed to delete all the picture in album " + event.getAlbumId() + "\n" +
-                    "To be deleted : " +  pictures.size() + " Actual deleted : " + deletionCnt
-            );
-        }
+        storageHttpClient.deleteAll(imagesToDelete);
         pictureRepository.deleteAll(pictures);
     }
 

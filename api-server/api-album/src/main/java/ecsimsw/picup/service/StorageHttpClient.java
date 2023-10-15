@@ -1,5 +1,6 @@
 package ecsimsw.picup.service;
 
+import com.google.common.collect.Iterables;
 import ecsimsw.picup.dto.StorageImageUploadRequest;
 import ecsimsw.picup.dto.StorageImageUploadResponse;
 import ecsimsw.picup.logging.CustomLogger;
@@ -19,6 +20,7 @@ import org.springframework.web.multipart.MultipartFile;
 public class StorageHttpClient {
 
     private static final CustomLogger LOGGER = CustomLogger.init(StorageHttpClient.class);
+    private static final int IMAGE_DELETE_API_CALL_UNIT = 5;
 
     private final String STORAGE_SERVER_URL;
     private final RestTemplate restTemplate;
@@ -32,49 +34,24 @@ public class StorageHttpClient {
     }
 
     public String upload(MultipartFile file, String tag) {
-        return upload(StorageImageUploadRequest.of(file, tag));
+        var response = callImageUploadApi(file, tag);
+        LOGGER.info("file size : " + response.getSize() + "byte");
+        return response.getResourceKey();
     }
 
-    public String upload(StorageImageUploadRequest request) {
+    private StorageImageUploadResponse callImageUploadApi(MultipartFile file, String tag) {
         LOGGER.info("send image upload api call to " + STORAGE_SERVER_URL);
-        final long startTime = System.currentTimeMillis();
+        var startTime = System.currentTimeMillis();
         var response = restTemplate.postForEntity(
             STORAGE_SERVER_URL + "/api/file",
-            request.toHttpEntity(),
+            StorageImageUploadRequest.of(file, tag).toHttpEntity(),
             StorageImageUploadResponse.class
         );
-        var responseBody = response.getBody();
-        if (Objects.isNull(responseBody)) {
+        if (Objects.isNull(response.getBody())) {
             throw new IllegalArgumentException();
         }
-        LOGGER.info("file size : " + responseBody.getSize() + "byte");
         LOGGER.info("duration time : " + (System.currentTimeMillis() - startTime) + "ms");
-        return responseBody.getResourceKey();
-    }
-
-    public void delete(String resourceKey) {
-        LOGGER.info("send image delete api call to " + STORAGE_SERVER_URL);
-        final long startTime = System.currentTimeMillis();
-        restTemplate.delete(STORAGE_SERVER_URL + "/api/file/" + resourceKey);
-        LOGGER.info("duration time : " + (System.currentTimeMillis() - startTime) + "ms");
-    }
-
-    public int deleteAll(List<String> resources) {
-        LOGGER.info("send image delete all api call to " + STORAGE_SERVER_URL);
-        final long startTime = System.currentTimeMillis();
-
-        var headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        var response = restTemplate.exchange(
-            STORAGE_SERVER_URL + "/api/file",
-            HttpMethod.DELETE,
-            new HttpEntity<>(resources, headers),
-            new ParameterizedTypeReference<Integer>() {
-            }
-        );
-        LOGGER.info("duration time : " + (System.currentTimeMillis() - startTime) + "ms");
-        LOGGER.info("deleted images : " + response.getBody());
-        return response.getBody() != null ? response.getBody() : 0;
+        return response.getBody();
     }
 
     /**
@@ -84,4 +61,37 @@ public class StorageHttpClient {
      * https://www.javacodemonk.com/multipart-file-upload-spring-boot-resttemplate-9f837ffe
      * https://gist.github.com/ihoneymon/836cd6ca162cc2b436e70a3cbd035760#file-201904-java-byte-array-to-input-stream-adoc
      **/
+
+    public void delete(String resourceKey) {
+        LOGGER.info("send image delete api call to " + STORAGE_SERVER_URL);
+        var startTime = System.currentTimeMillis();
+        restTemplate.delete(STORAGE_SERVER_URL + "/api/file/" + resourceKey);
+        LOGGER.info("duration time : " + (System.currentTimeMillis() - startTime) + "ms");
+    }
+
+    public void deleteAll(List<String> resources) {
+        for(var resourcePart : Iterables.partition(resources, IMAGE_DELETE_API_CALL_UNIT)) {
+            callDeleteAllAPI(resourcePart);
+        }
+    }
+
+    // TODO :: handle storage server is dead
+    private void callDeleteAllAPI(List<String> resources) {
+        LOGGER.info("delete "+ resources.size() + " images");
+        var startTime = System.currentTimeMillis();
+        var headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        var response = restTemplate.exchange(
+            STORAGE_SERVER_URL + "/api/file",
+            HttpMethod.DELETE,
+            new HttpEntity<>(resources, headers),
+            new ParameterizedTypeReference<Integer>() {
+            }
+        );
+        final int deleted = response.getBody() != null ? response.getBody() : 0;
+        if(deleted != resources.size()) {
+            LOGGER.error("Failed to delete all resources \n" + "To be deleted : " +  resources.size() + " Actual deleted : " + deleted);
+        }
+        LOGGER.info("duration time : " + (System.currentTimeMillis() - startTime) + "ms");
+    }
 }
