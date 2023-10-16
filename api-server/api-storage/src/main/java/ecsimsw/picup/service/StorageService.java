@@ -8,6 +8,7 @@ import org.assertj.core.util.Strings;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
 
@@ -33,18 +34,18 @@ public class StorageService {
         mainImageStorage.delete(resourceKey);
     }
 
-    public int deleteAll(List<String> resourceKeys) {
-        int deletedCnt = 0;
+    public List<String> deleteAll(List<String> resourceKeys) {
+        final List<String> deleted = new LinkedList<>();
         for (String resourceKey : resourceKeys) {
             try {
                 mainImageStorage.delete(resourceKey);
-                deletedCnt++;
+                deleted.add(resourceKey);
             } catch (Exception e) {
                 // TODO :: 제거 실패 리소스 관리, 예외 타입 구체화
                 LOGGER.error("Fail while deleting, \nresource key : " + resourceKey + "\nerror message : " + e.getMessage());
             }
         }
-        return deletedCnt;
+        return deleted;
     }
 
     private String resourceKey(String fileTag, MultipartFile file) {

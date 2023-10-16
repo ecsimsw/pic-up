@@ -33,7 +33,7 @@ public class StorageController {
 
     @DeleteMapping("/api/file")
     public ResponseEntity<Integer> deleteAll(@RequestBody List<String> resourceKeys) {
-        final int response = storageService.deleteAll(resourceKeys);
+        final int response = storageService.deleteAll(resourceKeys).size();
         return ResponseEntity.ok(response);
     }
 }
