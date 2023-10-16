@@ -23,7 +23,7 @@ public void deleteAll(List<String> resources) {
 파일들 제거 요청은 원자성을 지키지 않는다. 파일 제거 과정에서 문제가 생기면 그 파일은 건너뛰고 다음 파일 제거를 수행한다.
 ``` java
 public List<String> deleteAll(List<String> resourceKeys) {
-    List<String> deleted = new LinkedList<>();
+    List<String> deleted = new ArrayList<>();
     for (var resourceKey : resourceKeys) {
         try {
             imageStorage.delete(resourceKey);
@@ -39,13 +39,18 @@ public List<String> deleteAll(List<String> resourceKeys) {
 제거 되지 않은 파일은 제거 요청을 재시도 한다. 이때 무한정 스레드를 잡고 있지 않을 수 있도록 재시도 횟수를 지정한다.
 ``` java
 public void deleteAll(List<String> resources, int leftRetryCnt) {
-    List<String> toBeRetried = new LinkedList<>();
-    for(var resourcePart : Iterables.partition(resources, IMAGE_DELETE_API_CALL_UNIT)) {
-        var deletedResources = storageClient.deleteAll(resourcePart);
-        toBeRetried.addAll(deletedResources);
+    final List<String> toBeRetried = new ArrayList<>();
+    for (var resourcePart : Iterables.partition(resources, IMAGE_DELETE_ALL_API_CALL_SEG_UNIT)) {
+        var deleted = callDeleteAllAPI(resourcePart);
+        var failed = new ArrayList<>(Sets.difference(Sets.newHashSet(resourcePart), Sets.newHashSet(deleted)));
+        toBeRetried.addAll(failed);
     }
-    if(leftRetryCnt > 0) {
-        deleteAll(toBeRetried, leftRetryCnt-1);
+    if (!toBeRetried.isEmpty() && leftRetryCnt > 0) {
+        deleteAll(toBeRetried, leftRetryCnt - 1);
+    }
+    if (!toBeRetried.isEmpty() && leftRetryCnt <= 0) {
+        // poll in queue
+        LOGGER.error("Failed to delete resources : " + resources.size());
     }
 }
 ```

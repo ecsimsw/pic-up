@@ -21,8 +21,8 @@ public class StorageController {
 
     @PostMapping("/api/file")
     public ResponseEntity<ImageUploadResponse> upload(MultipartFile file, String tag) {
-        final ImageUploadResponse response = storageService.upload(file, tag);
-        return ResponseEntity.ok(response);
+        final ImageUploadResponse uploadedInfo = storageService.upload(file, tag);
+        return ResponseEntity.ok(uploadedInfo);
     }
 
     @DeleteMapping("/api/file/{resourceKey}")
@@ -32,8 +32,8 @@ public class StorageController {
     }
 
     @DeleteMapping("/api/file")
-    public ResponseEntity<Integer> deleteAll(@RequestBody List<String> resourceKeys) {
-        final int response = storageService.deleteAll(resourceKeys).size();
-        return ResponseEntity.ok(response);
+    public ResponseEntity<List<String>> deleteAll(@RequestBody List<String> resourceKeys) {
+        final List<String> deletedResources = storageService.deleteAll(resourceKeys);
+        return ResponseEntity.ok(deletedResources);
     }
 }

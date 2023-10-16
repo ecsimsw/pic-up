@@ -2,6 +2,7 @@ package ecsimsw.picup.service;
 
 import ecsimsw.picup.domain.Album;
 import ecsimsw.picup.domain.AlbumRepository;
+import ecsimsw.picup.domain.Album_;
 import ecsimsw.picup.dto.AlbumInfoRequest;
 import ecsimsw.picup.dto.AlbumInfoResponse;
 import ecsimsw.picup.dto.UpdateAlbumOrderRequest;
@@ -95,7 +96,7 @@ public class AlbumService {
     }
 
     private Integer lastOrder(Long userId) {
-        final PageRequest requestTop1 = PageRequest.of(0, 1, Sort.by(Direction.DESC, "orderNumber"));
+        final PageRequest requestTop1 = PageRequest.of(0, 1, Sort.by(Direction.DESC, Album_.ORDER_NUMBER, Album_.ID));
         return albumRepository.findAllByUserId(userId, requestTop1).stream()
             .map(Album::getOrderNumber)
             .findFirst()

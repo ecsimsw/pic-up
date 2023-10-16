@@ -42,7 +42,7 @@ public class StorageService {
                 deleted.add(resourceKey);
             } catch (Exception e) {
                 // TODO :: 제거 실패 리소스 관리, 예외 타입 구체화
-                LOGGER.error("Fail while deleting, \nresource key : " + resourceKey + "\nerror message : " + e.getMessage());
+                LOGGER.error("Fail while deleting, resource key : " + resourceKey + " error message : " + e.getMessage());
             }
         }
         return deleted;

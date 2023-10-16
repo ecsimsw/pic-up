@@ -1,5 +1,7 @@
 package ecsimsw.picup.service;
 
+import ecsimsw.picup.domain.Album;
+import ecsimsw.picup.domain.AlbumRepository;
 import ecsimsw.picup.domain.Picture;
 import ecsimsw.picup.domain.PictureRepository;
 import ecsimsw.picup.domain.Picture_;
@@ -26,10 +28,16 @@ import java.util.stream.Collectors;
 @Service
 public class PictureService {
 
+    private final AlbumRepository albumRepository;
     private final PictureRepository pictureRepository;
     private final StorageHttpClient storageHttpClient;
 
-    public PictureService(PictureRepository pictureRepository, StorageHttpClient storageHttpClient) {
+    public PictureService(
+        AlbumRepository albumRepository,
+        PictureRepository pictureRepository,
+        StorageHttpClient storageHttpClient
+    ) {
+        this.albumRepository = albumRepository;
         this.pictureRepository = pictureRepository;
         this.storageHttpClient = storageHttpClient;
     }
@@ -37,6 +45,7 @@ public class PictureService {
     @Transactional
     public PictureInfoResponse create(Long albumId, PictureInfoRequest pictureInfo, MultipartFile imageFile) {
         final Long userId = 1L;
+        final Album album = albumRepository.findById(albumId).orElseThrow();
         final String resourceKey = storageHttpClient.upload(imageFile, userId.toString());
         final Picture picture = new Picture(albumId, resourceKey, pictureInfo.getDescription(), lastOrderNumber(albumId) + 1);
         pictureRepository.save(picture);
@@ -57,6 +66,7 @@ public class PictureService {
 
     @Transactional
     public void delete(Long albumId, Long pictureId) {
+        final Album album = albumRepository.findById(albumId).orElseThrow();
         final Picture picture = pictureRepository.findById(pictureId).orElseThrow();
         picture.validateAlbum(albumId);
         storageHttpClient.delete(picture.getResourceKey());
@@ -78,6 +88,7 @@ public class PictureService {
     @Transactional
     public PictureInfoResponse update(Long albumId, Long pictureId, PictureInfoRequest pictureInfo, Optional<MultipartFile> optionalImageFile) {
         final Long userId = 1L;
+        final Album album = albumRepository.findById(albumId).orElseThrow();
         final Picture picture = pictureRepository.findById(pictureId).orElseThrow();
         picture.validateAlbum(albumId);
         picture.updateDescription(pictureInfo.getDescription());
@@ -95,6 +106,7 @@ public class PictureService {
 
     @Transactional
     public List<PictureInfoResponse> updateOrder(Long albumId, List<UpdatePictureOrderRequest> orderInfos) {
+        final Album album = albumRepository.findById(albumId).orElseThrow();
         final Set<Integer> usedOrder = new HashSet<>();
         pictureRepository.findAllByAlbumId(albumId).forEach(picture -> {
             orderInfos.stream()
@@ -109,7 +121,6 @@ public class PictureService {
         return PictureInfoResponse.listOf(pictures);
     }
 
-    // Model metadata
     private int lastOrderNumber(Long albumId) {
         final PageRequest requestTop1 = PageRequest.of(0, 1, Sort.by(Direction.DESC, Picture_.ORDER_NUMBER, Picture_.ID));
         return pictureRepository.findAllByAlbumId(albumId, requestTop1).stream()
