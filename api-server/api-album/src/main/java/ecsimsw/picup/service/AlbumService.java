@@ -11,7 +11,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -24,23 +23,23 @@ import org.springframework.web.multipart.MultipartFile;
 public class AlbumService {
 
     private final AlbumRepository albumRepository;
-    private final StorageHttpClient storageHttpClient;
+    private final FileService fileService;
     private final ApplicationEventPublisher eventPublisher;
 
     public AlbumService(
         AlbumRepository albumRepository,
-        StorageHttpClient storageHttpClient,
+        FileService fileService,
         ApplicationEventPublisher eventPublisher
     ) {
         this.albumRepository = albumRepository;
-        this.storageHttpClient = storageHttpClient;
+        this.fileService = fileService;
         this.eventPublisher = eventPublisher;
     }
 
     @Transactional
     public AlbumInfoResponse create(AlbumInfoRequest albumInfo, MultipartFile thumbnail) {
         final Long userId = 1L;
-        final String resourceKey = storageHttpClient.upload(thumbnail, userId.toString());
+        final String resourceKey = fileService.upload(thumbnail, userId.toString());
         final Album album = new Album(userId, albumInfo.getName(), resourceKey, lastOrder(userId) + 1);
         albumRepository.save(album);
         return AlbumInfoResponse.of(album);
@@ -59,9 +58,9 @@ public class AlbumService {
         album.updateName(albumInfo.getName());
         optionalThumbnail.ifPresent(file -> {
             final String oldImage = album.getResourceKey();
-            final String newImage = storageHttpClient.upload(file, userId.toString());
+            final String newImage = fileService.upload(file, userId.toString());
             album.updateThumbnail(newImage);
-            storageHttpClient.delete(oldImage);
+            fileService.delete(oldImage);
         });
         albumRepository.save(album);
         return AlbumInfoResponse.of(album);
@@ -71,7 +70,7 @@ public class AlbumService {
     public void delete(Long albumId) {
         final Album album = albumRepository.findById(albumId).orElseThrow();
         albumRepository.delete(album);
-        storageHttpClient.delete(album.getResourceKey());
+        fileService.delete(album.getResourceKey());
         eventPublisher.publishEvent(new AlbumDeletionEvent(albumId));
     }
 

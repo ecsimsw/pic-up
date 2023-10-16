@@ -30,23 +30,23 @@ public class PictureService {
 
     private final AlbumRepository albumRepository;
     private final PictureRepository pictureRepository;
-    private final StorageHttpClient storageHttpClient;
+    private final FileService fileService;
 
     public PictureService(
         AlbumRepository albumRepository,
         PictureRepository pictureRepository,
-        StorageHttpClient storageHttpClient
+        FileService fileService
     ) {
         this.albumRepository = albumRepository;
         this.pictureRepository = pictureRepository;
-        this.storageHttpClient = storageHttpClient;
+        this.fileService = fileService;
     }
 
     @Transactional
     public PictureInfoResponse create(Long albumId, PictureInfoRequest pictureInfo, MultipartFile imageFile) {
         final Long userId = 1L;
         final Album album = albumRepository.findById(albumId).orElseThrow();
-        final String resourceKey = storageHttpClient.upload(imageFile, userId.toString());
+        final String resourceKey = fileService.upload(imageFile, userId.toString());
         final Picture picture = new Picture(albumId, resourceKey, pictureInfo.getDescription(), lastOrderNumber(albumId) + 1);
         pictureRepository.save(picture);
         return PictureInfoResponse.of(picture);
@@ -69,7 +69,7 @@ public class PictureService {
         final Album album = albumRepository.findById(albumId).orElseThrow();
         final Picture picture = pictureRepository.findById(pictureId).orElseThrow();
         picture.validateAlbum(albumId);
-        storageHttpClient.delete(picture.getResourceKey());
+        fileService.delete(picture.getResourceKey());
         pictureRepository.delete(picture);
     }
 
@@ -81,7 +81,7 @@ public class PictureService {
         final List<String> imagesToDelete = pictures.stream()
             .map(Picture::getResourceKey)
             .collect(Collectors.toList());
-        storageHttpClient.deleteAll(imagesToDelete);
+        fileService.deleteAll(imagesToDelete);
         pictureRepository.deleteAll(pictures);
     }
 
@@ -95,9 +95,9 @@ public class PictureService {
 
         optionalImageFile.ifPresent(file -> {
             final String oldImage = picture.getResourceKey();
-            final String newImage = storageHttpClient.upload(file, userId.toString());
+            final String newImage = fileService.upload(file, userId.toString());
             picture.updateImage(newImage);
-            storageHttpClient.delete(oldImage);
+            fileService.delete(oldImage);
         });
 
         pictureRepository.save(picture);

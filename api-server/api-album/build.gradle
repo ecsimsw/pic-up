@@ -1,8 +1,19 @@
 dependencies {
     implementation project(':api-core')
 
-    implementation 'com.google.guava:guava:11.0.2'
+    // Spring validation
     implementation 'org.springframework.boot:spring-boot-starter-validation'
+
+    // Spring retry
+    implementation 'org.springframework.retry:spring-retry'
+
+    // Spring AOP
+    implementation 'org.springframework.boot:spring-boot-starter-aop'
+
+    // Google Guava
+    implementation 'com.google.guava:guava:11.0.2'
+
+    // H2
     runtimeOnly 'com.h2database:h2:1.4.199'
 }
 
