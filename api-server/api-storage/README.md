@@ -1,7 +1,6 @@
 ## API storage
 
--[] soft delete
--[] main storage
+-[x] main storage
 -[] back up storage
 -[] cache storage
 -[] validation

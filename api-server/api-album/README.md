@@ -7,3 +7,5 @@
 -[] exception handling
 -[] rest template config
 -[] cursor based pagination
+-[] Message queue
+-[] ByteArrayResource
