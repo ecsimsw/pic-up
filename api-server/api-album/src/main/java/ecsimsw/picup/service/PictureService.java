@@ -2,6 +2,7 @@ package ecsimsw.picup.service;
 
 import ecsimsw.picup.domain.Picture;
 import ecsimsw.picup.domain.PictureRepository;
+import ecsimsw.picup.domain.Picture_;
 import ecsimsw.picup.dto.PictureInfoRequest;
 import ecsimsw.picup.dto.PictureInfoResponse;
 import ecsimsw.picup.dto.UpdatePictureOrderRequest;
@@ -108,8 +109,9 @@ public class PictureService {
         return PictureInfoResponse.listOf(pictures);
     }
 
+    // Model metadata
     private int lastOrderNumber(Long albumId) {
-        final PageRequest requestTop1 = PageRequest.of(0, 1, Sort.by(Direction.DESC, "orderNumber"));
+        final PageRequest requestTop1 = PageRequest.of(0, 1, Sort.by(Direction.DESC, Picture_.ORDER_NUMBER, Picture_.ID));
         return pictureRepository.findAllByAlbumId(albumId, requestTop1).stream()
             .map(Picture::getOrderNumber)
             .findFirst()
