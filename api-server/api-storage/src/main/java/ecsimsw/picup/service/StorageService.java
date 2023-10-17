@@ -3,7 +3,6 @@ package ecsimsw.picup.service;
 import ecsimsw.picup.domain.ImageFile;
 import ecsimsw.picup.dto.ImageUploadResponse;
 import ecsimsw.picup.logging.CustomLogger;
-import ecsimsw.picup.persistence.ImageStorage;
 import org.assertj.core.util.Strings;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -28,6 +27,11 @@ public class StorageService {
         final ImageFile imageFile = ImageFile.of(file);
         mainImageStorage.create(resourceKey, imageFile);
         return new ImageUploadResponse(resourceKey, imageFile.getSize());
+    }
+
+    public byte[] read(String resourceKey) {
+        final ImageFile read = mainImageStorage.read(resourceKey);
+        return read.getFile();
     }
 
     public void delete(String resourceKey) {

@@ -1,4 +1,4 @@
-package ecsimsw.picup.persistence;
+package ecsimsw.picup.service;
 
 import ecsimsw.picup.domain.ImageFile;
 

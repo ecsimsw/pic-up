@@ -1,8 +1,7 @@
-package ecsimsw.picup.persistence;
+package ecsimsw.picup.service;
 
 import ecsimsw.picup.domain.ImageFile;
-import ecsimsw.picup.logging.CustomLogger;
-import org.slf4j.Logger;
+import ecsimsw.picup.ecrypt.AES256Utils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -16,22 +15,23 @@ import java.nio.file.Paths;
 @Component
 public class LocalFileStorage implements ImageStorage {
 
-    private static final CustomLogger LOGGER = CustomLogger.init(LocalFileStorage.class);
-
     private final String rootPath;
+    private final String encryptKey;
 
     public LocalFileStorage(
-        @Value("${file.root.directory:./}") String rootPath
+        @Value("${file.root.directory}") String rootPath,
+        @Value("${file.aes.encryption.key}") String encryptKey
     ) {
         this.rootPath = rootPath;
+        this.encryptKey = encryptKey;
     }
 
     @Override
     public void create(String resourceKey, ImageFile imageFile) {
         try {
             final String storagePath = storagePath(resourceKey);
-            Files.write(Paths.get(storagePath), imageFile.getFile());
-            LOGGER.info("Save file : " + storagePath);
+            final byte[] encrypted = AES256Utils.encrypt(imageFile.getFile(), encryptKey);
+            Files.write(Paths.get(storagePath), encrypted);
         } catch (IOException e) {
             e.printStackTrace();
             throw new IllegalArgumentException("Fail to save image file");
@@ -41,21 +41,20 @@ public class LocalFileStorage implements ImageStorage {
     @Override
     public ImageFile read(String resourceKey) {
         final String storagePath = storagePath(resourceKey);
-        LOGGER.info("Read file : " + storagePath);
         try (
             final InputStream inputStream = new FileInputStream(storagePath)
         ) {
             final File file = new File(storagePath);
             final byte[] binaryValue = new byte[(int) file.length()];
             inputStream.read(binaryValue);
-            return ImageFile.of(file, binaryValue);
+            final byte[] decryptedFile = AES256Utils.decrypt(binaryValue, encryptKey);
+            return ImageFile.of(file, decryptedFile);
         } catch (IOException e) {
             e.printStackTrace();
             throw new IllegalArgumentException("Fail to read image");
         }
     }
 
-    // TODO :: Soft delete
     @Override
     public void delete(String resourceKey) {
         final File file = new File(storagePath(resourceKey));

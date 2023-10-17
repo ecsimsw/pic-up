@@ -6,7 +6,8 @@
 -[] validation
 -[] exception handling
 -[] rest template config
--[] cursor based pagination
--[] Message queue
+- [x] cursor based pagination
+- [x] external server api call retry strategy
+-[] external server connection error handling with message queue
 -[] ByteArrayResource
 -[] encrypt user data, image

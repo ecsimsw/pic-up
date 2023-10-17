@@ -3,6 +3,7 @@ package ecsimsw.picup.controller;
 import ecsimsw.picup.dto.ImageUploadResponse;
 import ecsimsw.picup.service.StorageService;
 import java.util.List;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -23,6 +24,15 @@ public class StorageController {
     public ResponseEntity<ImageUploadResponse> upload(MultipartFile file, String tag) {
         final ImageUploadResponse uploadedInfo = storageService.upload(file, tag);
         return ResponseEntity.ok(uploadedInfo);
+    }
+
+    @GetMapping("/api/file/{resourceKey}")
+    public ResponseEntity<byte[]> read(@PathVariable String resourceKey) {
+        final byte[] file = storageService.read(resourceKey);
+        final String extension = resourceKey.substring(resourceKey.lastIndexOf(".") + 1);
+        return ResponseEntity.ok()
+            .contentType(extension.equals("jpg") ? MediaType.IMAGE_JPEG : MediaType.IMAGE_PNG)
+            .body(file);
     }
 
     @DeleteMapping("/api/file/{resourceKey}")
