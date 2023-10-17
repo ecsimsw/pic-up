@@ -2,9 +2,5 @@ rootProject.name = 'picup'
 
 include 'api-album'
 include 'api-audit'
-include 'api-product'
-include 'api-email'
-include 'api-auth'
 include 'api-core'
 include 'api-storage'
-
