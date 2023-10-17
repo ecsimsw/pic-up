@@ -1,5 +1,7 @@
 package ecsimsw.picup.domain;
 
+import ecsimsw.picup.ecrypt.AES256Converter;
+import javax.persistence.Convert;
 import lombok.Getter;
 
 import javax.persistence.Entity;
@@ -17,8 +19,10 @@ public class Album {
 
     private Long userId;
 
+    @Convert(converter = AES256Converter.class)
     private String name;
 
+    @Convert(converter = AES256Converter.class)
     private String resourceKey;
 
     private int orderNumber;
