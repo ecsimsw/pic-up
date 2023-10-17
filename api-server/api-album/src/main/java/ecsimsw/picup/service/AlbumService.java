@@ -1,7 +1,10 @@
 package ecsimsw.picup.service;
 
+import static ecsimsw.picup.domain.AlbumRepository.AlbumSearchSpecs.greaterOrder;
+
 import ecsimsw.picup.domain.Album;
 import ecsimsw.picup.domain.AlbumRepository;
+import ecsimsw.picup.domain.AlbumRepository.AlbumSearchSpecs;
 import ecsimsw.picup.domain.Album_;
 import ecsimsw.picup.dto.AlbumInfoRequest;
 import ecsimsw.picup.dto.AlbumInfoResponse;
@@ -75,8 +78,11 @@ public class AlbumService {
     }
 
     @Transactional(readOnly = true)
-    public List<AlbumInfoResponse> listAll() {
-        final List<Album> albums = albumRepository.findAll();
+    public List<AlbumInfoResponse> cursorByOrder(int limit, int prev) {
+        var searchSpec = AlbumSearchSpecs.where()
+            .and(greaterOrder(prev));
+        var pageable = PageRequest.of(0, limit, Sort.by(Direction.ASC, Album_.ORDER_NUMBER));
+        final List<Album> albums = albumRepository.fetch(searchSpec, pageable);
         return AlbumInfoResponse.listOf(albums);
     }
 

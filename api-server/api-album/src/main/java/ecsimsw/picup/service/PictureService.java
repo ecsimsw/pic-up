@@ -1,9 +1,13 @@
 package ecsimsw.picup.service;
 
+import static ecsimsw.picup.domain.PictureRepository.PictureSearchSpecs.greaterOrderThan;
+import static ecsimsw.picup.domain.PictureRepository.PictureSearchSpecs.isAlbum;
+
 import ecsimsw.picup.domain.Album;
 import ecsimsw.picup.domain.AlbumRepository;
 import ecsimsw.picup.domain.Picture;
 import ecsimsw.picup.domain.PictureRepository;
+import ecsimsw.picup.domain.PictureRepository.PictureSearchSpecs;
 import ecsimsw.picup.domain.Picture_;
 import ecsimsw.picup.dto.PictureInfoRequest;
 import ecsimsw.picup.dto.PictureInfoResponse;
@@ -59,8 +63,12 @@ public class PictureService {
     }
 
     @Transactional(readOnly = true)
-    public List<PictureInfoResponse> listAll(Long albumId) {
-        final List<Picture> pictures = pictureRepository.findAllByAlbumId(albumId);
+    public List<PictureInfoResponse> cursorByOrder(Long albumId, int limit, int prev) {
+        var searchSpec = PictureSearchSpecs.where()
+            .and(isAlbum(albumId))
+            .and(greaterOrderThan(prev));
+        var pageable = PageRequest.of(0, limit, Sort.by(Direction.ASC, Picture_.ORDER_NUMBER));
+        final List<Picture> pictures = pictureRepository.fetch(searchSpec, pageable);
         return PictureInfoResponse.listOf(pictures);
     }
 

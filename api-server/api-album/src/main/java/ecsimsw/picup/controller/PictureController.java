@@ -8,10 +8,12 @@ import java.util.List;
 import java.util.Optional;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
@@ -32,6 +34,16 @@ public class PictureController {
         @RequestPart PictureInfoRequest pictureInfo
     ) {
         final PictureInfoResponse response = pictureService.create(albumId, pictureInfo, imageFile);
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/api/album/{albumId}/picture")
+    public ResponseEntity<List<PictureInfoResponse>> getPictures(
+        @PathVariable Long albumId,
+        @RequestParam(defaultValue = "10") int limit,
+        @RequestParam(defaultValue = "0") int prevOrder
+    ) {
+        final List<PictureInfoResponse> response = pictureService.cursorByOrder(albumId, limit, prevOrder);
         return ResponseEntity.ok(response);
     }
 
