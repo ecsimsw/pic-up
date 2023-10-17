@@ -10,4 +10,4 @@
 - [x] external server api call retry strategy
 -[] external server connection error handling with message queue
 -[] ByteArrayResource
--[] encrypt user data, image
+-[x] AES - encrypt user data, image
