@@ -1,20 +1,13 @@
 package ecsimsw.picup.service;
 
-import static ecsimsw.picup.domain.PictureRepository.PictureSearchSpecs.greaterOrderThan;
-import static ecsimsw.picup.domain.PictureRepository.PictureSearchSpecs.isAlbum;
-
-import ecsimsw.picup.domain.Album;
-import ecsimsw.picup.domain.AlbumRepository;
-import ecsimsw.picup.domain.Picture;
-import ecsimsw.picup.domain.PictureRepository;
-import ecsimsw.picup.domain.PictureRepository.PictureSearchSpecs;
-import ecsimsw.picup.domain.Picture_;
+import ecsimsw.picup.domain.*;
 import ecsimsw.picup.dto.PictureInfoRequest;
 import ecsimsw.picup.dto.PictureInfoResponse;
 import ecsimsw.picup.dto.UpdatePictureOrderRequest;
 import ecsimsw.picup.event.AlbumDeletionEvent;
 import ecsimsw.picup.exception.AlbumException;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.scheduling.annotation.Async;
@@ -29,6 +22,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
+
+import static ecsimsw.picup.domain.PictureRepository.PictureSearchSpecs.*;
 
 @Service
 public class PictureService {
@@ -65,17 +60,19 @@ public class PictureService {
 
     @Transactional(readOnly = true)
     public List<PictureInfoResponse> cursorByOrder(Long albumId, int limit, int prev) {
-        var searchSpec = PictureSearchSpecs.where()
-            .and(isAlbum(albumId))
-            .and(greaterOrderThan(prev));
-        var pageable = PageRequest.of(0, limit, Sort.by(Direction.ASC, Picture_.ORDER_NUMBER));
-        final List<Picture> pictures = pictureRepository.fetch(searchSpec, pageable);
+        final List<Picture> pictures = pictureRepository.fetch(
+            where()
+                .and(isAlbum(albumId))
+                .and(greaterOrderThan(prev)),
+            limit,
+            Sort.by(Direction.ASC, Picture_.ORDER_NUMBER)
+        );
         return PictureInfoResponse.listOf(pictures);
     }
 
     @Transactional
     public void delete(Long albumId, Long pictureId) {
-        final Album album = albumRepository.findById(albumId).orElseThrow(()-> new AlbumException("Invalid album"));
+        final Album album = albumRepository.findById(albumId).orElseThrow(() -> new AlbumException("Invalid album"));
         final Picture picture = pictureRepository.findById(pictureId).orElseThrow(() -> new AlbumException("Invalid picture"));
         picture.validateAlbum(albumId);
         fileService.delete(picture.getResourceKey());
@@ -97,7 +94,7 @@ public class PictureService {
     @Transactional
     public PictureInfoResponse update(Long albumId, Long pictureId, PictureInfoRequest pictureInfo, Optional<MultipartFile> optionalImageFile) {
         final Long userId = 1L;
-        final Album album = albumRepository.findById(albumId).orElseThrow(()-> new AlbumException("Invalid album"));
+        final Album album = albumRepository.findById(albumId).orElseThrow(() -> new AlbumException("Invalid album"));
         final Picture picture = pictureRepository.findById(pictureId).orElseThrow(() -> new AlbumException("Invalid picture"));
         picture.validateAlbum(albumId);
         picture.updateDescription(pictureInfo.getDescription());
@@ -113,7 +110,7 @@ public class PictureService {
 
     @Transactional
     public List<PictureInfoResponse> updateOrder(Long albumId, List<UpdatePictureOrderRequest> orderInfos) {
-        final Album album = albumRepository.findById(albumId).orElseThrow(()-> new AlbumException("Invalid album"));
+        final Album album = albumRepository.findById(albumId).orElseThrow(() -> new AlbumException("Invalid album"));
         final List<Picture> pictures = pictureRepository.findAllByAlbumId(albumId);
         final Set<Integer> usedOrder = new HashSet<>();
         pictures.forEach(picture -> {

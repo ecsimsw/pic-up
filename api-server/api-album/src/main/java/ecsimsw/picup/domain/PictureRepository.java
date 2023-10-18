@@ -1,24 +1,30 @@
 package ecsimsw.picup.domain;
 
-import java.util.List;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
-public interface PictureRepository extends JpaRepository<Picture, Long>, JpaSpecificationExecutor<Picture>, PictureSpecRepository{
+import java.util.List;
+
+public interface PictureRepository extends JpaRepository<Picture, Long>, JpaSpecificationExecutor<Picture>, PictureSpecRepository {
 
     List<Picture> findAllByAlbumId(Long albumId);
 
     Slice<Picture> findAllByAlbumId(Long albumId, Pageable pageable);
 
-    List<Picture> fetch(Specification<Picture> specification, Pageable pageable);
+    List<Picture> fetch(Specification<Picture> specification, int limit, Sort sort);
 
     interface PictureSearchSpecs {
 
         static Specification<Picture> where() {
             return Specification.where(null);
+        }
+
+        static Specification<Picture> where(Specification<Picture> spec) {
+            return Specification.<Picture>where(null).and(spec);
         }
 
         static Specification<Picture> greaterOrderThan(int orderNumber) {

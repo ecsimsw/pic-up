@@ -31,7 +31,7 @@ public class StorageController {
         final byte[] file = storageService.read(resourceKey);
         final String extension = resourceKey.substring(resourceKey.lastIndexOf(".") + 1);
         return ResponseEntity.ok()
-            .contentType(extension.equals("jpg") ? MediaType.IMAGE_JPEG : MediaType.IMAGE_PNG)
+            .contentType(extension.equals("jpg") || extension.equals("jpeg") ? MediaType.IMAGE_JPEG : MediaType.IMAGE_PNG)
             .body(file);
     }
 

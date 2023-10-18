@@ -2,6 +2,7 @@ package ecsimsw.picup.service;
 
 import ecsimsw.picup.domain.ImageFile;
 import ecsimsw.picup.dto.ImageUploadResponse;
+import ecsimsw.picup.exception.InvalidResourceException;
 import ecsimsw.picup.logging.CustomLogger;
 import org.assertj.core.util.Strings;
 import org.springframework.stereotype.Service;
@@ -44,8 +45,8 @@ public class StorageService {
             try {
                 mainImageStorage.delete(resourceKey);
                 deleted.add(resourceKey);
-            } catch (Exception e) {
-                // TODO :: 제거 실패 리소스 관리, 예외 타입 구체화
+            } catch (InvalidResourceException e) {
+                // TODO :: 제거 실패 리소스 관리
                 LOGGER.error("Fail while deleting, resource key : " + resourceKey + " error message : " + e.getMessage());
             }
         }

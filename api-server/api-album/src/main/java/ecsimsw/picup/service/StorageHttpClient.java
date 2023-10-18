@@ -39,9 +39,10 @@ public class StorageHttpClient {
     }
 
     @Retryable(
-        label = "Retry when storage server is dead",
+        label = "Retry when storage server is down",
         maxAttempts = SERVER_CONNECTION_RETRY_CNT,
         value = Throwable.class,
+        exclude = StorageServerException.class,
         backoff = @Backoff(delay = SERVER_CONNECTION_RETRY_DELAY_TIME_MS),
         recover = "recoverUploadApi"
     )
@@ -52,8 +53,8 @@ public class StorageHttpClient {
             StorageImageUploadRequest.of(file, tag).toHttpEntity(),
             new ParameterizedTypeReference<StorageImageUploadResponse>() {
             });
-        if (Objects.isNull(response.getBody())) {
-            throw new RestClientException("Invalid response from server");
+        if (Objects.isNull(response.getBody()) || Objects.isNull(response.getBody().getResourceKey())) {
+            throw new StorageServerException("Failed to upload resources.\nStorage server is on, but invalid response.");
         }
         return response.getBody();
     }
@@ -64,9 +65,10 @@ public class StorageHttpClient {
     }
 
     @Retryable(
-        label = "Retry when storage server is dead",
+        label = "Retry when storage server is down",
         maxAttempts = SERVER_CONNECTION_RETRY_CNT,
         value = Throwable.class,
+        exclude = StorageServerException.class,
         backoff = @Backoff(delay = SERVER_CONNECTION_RETRY_DELAY_TIME_MS),
         recover = "recoverDeleteApi"
     )
@@ -80,7 +82,7 @@ public class StorageHttpClient {
             new ParameterizedTypeReference<List<String>>() {
             });
         if (Objects.isNull(response.getBody())) {
-            throw new RestClientException("Invalid response from server");
+            throw new StorageServerException("Failed to delete resources.\nStorage server is on, but invalid response.");
         }
     }
 

@@ -2,6 +2,8 @@ package ecsimsw.picup.service;
 
 import ecsimsw.picup.domain.ImageFile;
 import ecsimsw.picup.ecrypt.AES256Utils;
+import ecsimsw.picup.exception.InvalidResourceException;
+import ecsimsw.picup.exception.StorageException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -33,8 +35,7 @@ public class LocalFileStorage implements ImageStorage {
             final byte[] encrypted = AES256Utils.encrypt(imageFile.getFile(), encryptKey);
             Files.write(Paths.get(storagePath), encrypted);
         } catch (IOException e) {
-            e.printStackTrace();
-            throw new IllegalArgumentException("Fail to save image file");
+            throw new StorageException("Fail to save image file : " + resourceKey);
         }
     }
 
@@ -50,8 +51,7 @@ public class LocalFileStorage implements ImageStorage {
             final byte[] decryptedFile = AES256Utils.decrypt(binaryValue, encryptKey);
             return ImageFile.of(file, decryptedFile);
         } catch (IOException e) {
-            e.printStackTrace();
-            throw new IllegalArgumentException("Fail to read image");
+            throw new InvalidResourceException("Fail to read image : " + resourceKey);
         }
     }
 
@@ -59,7 +59,7 @@ public class LocalFileStorage implements ImageStorage {
     public void delete(String resourceKey) {
         final File file = new File(storagePath(resourceKey));
         if(!file.exists()) {
-            throw new IllegalArgumentException("File not exists");
+            throw new InvalidResourceException("File not exists : " + resourceKey);
         }
         file.delete();
     }
