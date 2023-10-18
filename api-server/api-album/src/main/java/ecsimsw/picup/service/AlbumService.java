@@ -14,6 +14,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+
+import ecsimsw.picup.exception.AlbumException;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -57,7 +59,7 @@ public class AlbumService {
     @Transactional
     public AlbumInfoResponse update(Long albumId, AlbumInfoRequest albumInfo, Optional<MultipartFile> optionalThumbnail) {
         final Long userId = 1L;
-        final Album album = albumRepository.findById(albumId).orElseThrow();
+        final Album album = albumRepository.findById(albumId).orElseThrow(() -> new AlbumException("Invalid album"));
         album.updateName(albumInfo.getName());
         optionalThumbnail.ifPresent(file -> {
             final String oldImage = album.getResourceKey();
@@ -94,7 +96,7 @@ public class AlbumService {
                 .filter(it -> it.isAlbum(album))
                 .forEach(it -> album.updateOrder(it.getOrder()));
             if (usedOrder.contains(album.getOrderNumber())) {
-                throw new IllegalArgumentException("Order can't be duplicated");
+                throw new AlbumException("Order can't be duplicated");
             }
             usedOrder.add(album.getOrderNumber());
         });

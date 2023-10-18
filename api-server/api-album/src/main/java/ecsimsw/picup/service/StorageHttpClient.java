@@ -1,13 +1,9 @@
 package ecsimsw.picup.service;
 
-import static ecsimsw.picup.config.RestTemplateConfig.SERVER_CONNECTION_RETRY_CNT;
-import static ecsimsw.picup.config.RestTemplateConfig.SERVER_CONNECTION_RETRY_DELAY_TIME_MS;
-
 import ecsimsw.picup.dto.StorageImageUploadRequest;
 import ecsimsw.picup.dto.StorageImageUploadResponse;
-import ecsimsw.picup.logging.CustomLogger;
-import java.util.List;
-import java.util.Objects;
+import ecsimsw.picup.exception.StorageServerException;
+import org.assertj.core.util.Strings;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
@@ -22,16 +18,20 @@ import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
+import java.util.Objects;
+
+import static ecsimsw.picup.config.RestTemplateConfig.SERVER_CONNECTION_RETRY_CNT;
+import static ecsimsw.picup.config.RestTemplateConfig.SERVER_CONNECTION_RETRY_DELAY_TIME_MS;
+
 @Service
 public class StorageHttpClient {
-
-    private static final CustomLogger LOGGER = CustomLogger.init(StorageHttpClient.class);
 
     private final String STORAGE_SERVER_URL;
     private final RestTemplate restTemplate;
 
     public StorageHttpClient(
-        @Value("${storage.server.url:http://localhost:8083}") String STORAGE_SERVER_URL,
+        @Value("${storage.server.url}") String STORAGE_SERVER_URL,
         RestTemplate restTemplate
     ) {
         this.STORAGE_SERVER_URL = STORAGE_SERVER_URL;
@@ -39,17 +39,19 @@ public class StorageHttpClient {
     }
 
     @Retryable(
+        label = "Retry when storage server is dead",
         maxAttempts = SERVER_CONNECTION_RETRY_CNT,
         value = Throwable.class,
         backoff = @Backoff(delay = SERVER_CONNECTION_RETRY_DELAY_TIME_MS),
         recover = "recoverUploadApi"
     )
     public StorageImageUploadResponse requestUpload(MultipartFile file, String tag) {
-        var response = restTemplate.postForEntity(
+        var response = restTemplate.exchange(
             STORAGE_SERVER_URL + "/api/file",
+            HttpMethod.POST,
             StorageImageUploadRequest.of(file, tag).toHttpEntity(),
-            StorageImageUploadResponse.class
-        );
+            new ParameterizedTypeReference<StorageImageUploadResponse>() {
+            });
         if (Objects.isNull(response.getBody())) {
             throw new RestClientException("Invalid response from server");
         }
@@ -58,18 +60,17 @@ public class StorageHttpClient {
 
     @Recover
     public List<String> recoverUploadApi(Throwable exception, MultipartFile file, String tag) {
-        // TODO :: Manage server, resources to be deleted
-        LOGGER.error("Failed to connect server");
-        throw new IllegalArgumentException("Failed to connect server");
+        throw new StorageServerException("Failed to connect server", exception);
     }
 
     @Retryable(
+        label = "Retry when storage server is dead",
         maxAttempts = SERVER_CONNECTION_RETRY_CNT,
         value = Throwable.class,
         backoff = @Backoff(delay = SERVER_CONNECTION_RETRY_DELAY_TIME_MS),
         recover = "recoverDeleteApi"
     )
-    public List<String> requestDelete(List<String> resources) {
+    public void requestDelete(List<String> resources) {
         var headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         var response = restTemplate.exchange(
@@ -81,13 +82,13 @@ public class StorageHttpClient {
         if (Objects.isNull(response.getBody())) {
             throw new RestClientException("Invalid response from server");
         }
-        return response.getBody();
     }
 
     @Recover
     public List<String> recoverDeleteApi(Throwable exception, List<String> resources) {
         // TODO :: Manage server, resources to be deleted
-        LOGGER.error("Failed to connect server");
-        throw new IllegalArgumentException("Failed to connect server");
+        var errorMessage = "Failed to connect server while deleting resources\n" +
+            "Resources to be deleted : " + Strings.join(resources).with(", ");
+        throw new StorageServerException(errorMessage, exception);
     }
 }

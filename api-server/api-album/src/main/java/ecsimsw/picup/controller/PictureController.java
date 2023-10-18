@@ -70,7 +70,7 @@ public class PictureController {
     @PutMapping("/api/album/{albumId}/picture/order")
     public ResponseEntity<List<PictureInfoResponse>> updateOrder(
         @PathVariable Long albumId,
-        List<UpdatePictureOrderRequest> orders
+        @RequestBody List<UpdatePictureOrderRequest> orders
     ) {
         final List<PictureInfoResponse> response = pictureService.updateOrder(albumId, orders);
         return ResponseEntity.ok(response);

@@ -8,15 +8,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RequestPart;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
@@ -49,13 +41,17 @@ public class AlbumController {
     }
 
     @DeleteMapping("/api/album/{albumId}")
-    public ResponseEntity<Void> deleteAlbum(@PathVariable Long albumId) {
+    public ResponseEntity<Void> deleteAlbum(
+        @PathVariable Long albumId
+    ) {
         albumService.delete(albumId);
         return ResponseEntity.ok().build();
     }
 
     @GetMapping("/api/album/{albumId}")
-    public ResponseEntity<AlbumInfoResponse> getAlbum(@PathVariable Long albumId) {
+    public ResponseEntity<AlbumInfoResponse> getAlbum(
+        @PathVariable Long albumId
+    ) {
         final AlbumInfoResponse response = albumService.read(albumId);
         return ResponseEntity.ok(response);
     }
@@ -70,7 +66,9 @@ public class AlbumController {
     }
 
     @PutMapping("/api/album/order")
-    public ResponseEntity<Void> updateOrder(List<UpdateAlbumOrderRequest> orders) {
+    public ResponseEntity<Void> updateOrder(
+        @RequestBody List<UpdateAlbumOrderRequest> orders
+    ) {
         albumService.updateOrder(orders);
         return ResponseEntity.ok().build();
     }

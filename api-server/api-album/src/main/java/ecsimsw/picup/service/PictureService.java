@@ -13,6 +13,7 @@ import ecsimsw.picup.dto.PictureInfoRequest;
 import ecsimsw.picup.dto.PictureInfoResponse;
 import ecsimsw.picup.dto.UpdatePictureOrderRequest;
 import ecsimsw.picup.event.AlbumDeletionEvent;
+import ecsimsw.picup.exception.AlbumException;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
@@ -74,8 +75,8 @@ public class PictureService {
 
     @Transactional
     public void delete(Long albumId, Long pictureId) {
-        final Album album = albumRepository.findById(albumId).orElseThrow();
-        final Picture picture = pictureRepository.findById(pictureId).orElseThrow();
+        final Album album = albumRepository.findById(albumId).orElseThrow(()-> new AlbumException("Invalid album"));
+        final Picture picture = pictureRepository.findById(pictureId).orElseThrow(() -> new AlbumException("Invalid picture"));
         picture.validateAlbum(albumId);
         fileService.delete(picture.getResourceKey());
         pictureRepository.delete(picture);
@@ -96,37 +97,36 @@ public class PictureService {
     @Transactional
     public PictureInfoResponse update(Long albumId, Long pictureId, PictureInfoRequest pictureInfo, Optional<MultipartFile> optionalImageFile) {
         final Long userId = 1L;
-        final Album album = albumRepository.findById(albumId).orElseThrow();
-        final Picture picture = pictureRepository.findById(pictureId).orElseThrow();
+        final Album album = albumRepository.findById(albumId).orElseThrow(()-> new AlbumException("Invalid album"));
+        final Picture picture = pictureRepository.findById(pictureId).orElseThrow(() -> new AlbumException("Invalid picture"));
         picture.validateAlbum(albumId);
         picture.updateDescription(pictureInfo.getDescription());
-
         optionalImageFile.ifPresent(file -> {
             final String oldImage = picture.getResourceKey();
             final String newImage = fileService.upload(file, userId.toString());
             picture.updateImage(newImage);
             fileService.delete(oldImage);
         });
-
         pictureRepository.save(picture);
         return PictureInfoResponse.of(picture);
     }
 
     @Transactional
     public List<PictureInfoResponse> updateOrder(Long albumId, List<UpdatePictureOrderRequest> orderInfos) {
-        final Album album = albumRepository.findById(albumId).orElseThrow();
+        final Album album = albumRepository.findById(albumId).orElseThrow(()-> new AlbumException("Invalid album"));
+        final List<Picture> pictures = pictureRepository.findAllByAlbumId(albumId);
         final Set<Integer> usedOrder = new HashSet<>();
-        pictureRepository.findAllByAlbumId(albumId).forEach(picture -> {
+        pictures.forEach(picture -> {
             orderInfos.stream()
                 .filter(it -> it.isPicture(picture))
                 .forEach(it -> picture.updateOrder(it.getOrder()));
             if (usedOrder.contains(picture.getOrderNumber())) {
-                throw new IllegalArgumentException("Order can't be duplicated");
+                throw new AlbumException("Order can't be duplicated");
             }
             usedOrder.add(picture.getOrderNumber());
         });
-        final List<Picture> pictures = pictureRepository.findAllByAlbumId(albumId);
-        return PictureInfoResponse.listOf(pictures);
+        final List<Picture> updated = pictureRepository.findAllByAlbumId(albumId);
+        return PictureInfoResponse.listOf(updated);
     }
 
     private int lastOrderNumber(Long albumId) {

@@ -10,7 +10,7 @@ public class AES256Converter implements AttributeConverter<String, String> {
     private final String encryptKey;
 
     public AES256Converter(
-        @Value("${data.aes.encryption.key:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa}") String encryptKey
+        @Value("${data.aes.encryption.key}") String encryptKey
     ) {
         this.encryptKey = encryptKey;
     }

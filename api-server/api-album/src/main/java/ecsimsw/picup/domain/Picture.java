@@ -3,12 +3,15 @@ package ecsimsw.picup.domain;
 import ecsimsw.picup.ecrypt.AES256Converter;
 import javax.persistence.Convert;
 import javax.persistence.Converter;
+
+import ecsimsw.picup.exception.AlbumException;
 import lombok.Getter;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.validation.constraints.NotBlank;
 
 @Getter
 @Entity
@@ -18,6 +21,7 @@ public class Picture {
     @Id
     private Long id;
 
+    @NotBlank
     private Long albumId;
 
     @Convert(converter = AES256Converter.class)
@@ -57,7 +61,7 @@ public class Picture {
 
     public void validateAlbum(Long albumId) {
         if(!this.albumId.equals(albumId)) {
-            throw new IllegalArgumentException("Invalid album");
+            throw new AlbumException("Invalid album");
         }
     }
 }
