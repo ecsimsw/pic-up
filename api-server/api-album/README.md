@@ -4,7 +4,7 @@
 -[] user storage usage
 -[] limit number of picture in album
 -[] validation
--[] exception handling
+-[x] exception handling
 -[] rest template config
 - [x] cursor based pagination
 - [x] external server api call retry strategy
