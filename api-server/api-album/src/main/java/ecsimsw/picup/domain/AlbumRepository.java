@@ -22,7 +22,7 @@ public interface AlbumRepository extends JpaRepository<Album, Long>, JpaSpecific
         }
 
         static Specification<Album> where(Specification<Album> spec) {
-            return Specification.<Album>where(null).and(spec);
+            return where().and(spec);
         }
 
         static Specification<Album> greaterOrder(int orderNumber) {

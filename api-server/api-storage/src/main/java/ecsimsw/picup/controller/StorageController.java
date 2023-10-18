@@ -1,15 +1,13 @@
 package ecsimsw.picup.controller;
 
+import ecsimsw.picup.dto.ImageResponse;
 import ecsimsw.picup.dto.ImageUploadResponse;
 import ecsimsw.picup.service.StorageService;
-import java.util.List;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.multipart.MultipartHttpServletRequest;
 
-import java.util.Iterator;
+import java.util.List;
 
 @RestController
 public class StorageController {
@@ -31,11 +29,10 @@ public class StorageController {
 
     @GetMapping("/api/file/{resourceKey}")
     public ResponseEntity<byte[]> read(@PathVariable String resourceKey) {
-        final byte[] file = storageService.read(resourceKey);
-        final String extension = resourceKey.substring(resourceKey.lastIndexOf(".") + 1);
+        final ImageResponse imageResponse = storageService.read(resourceKey);
         return ResponseEntity.ok()
-            .contentType(extension.equals("jpg") || extension.equals("jpeg") ? MediaType.IMAGE_JPEG : MediaType.IMAGE_PNG)
-            .body(file);
+            .contentType(imageResponse.getMediaType())
+            .body(imageResponse.getImageFile());
     }
 
     @DeleteMapping("/api/file/{resourceKey}")

@@ -1,6 +1,7 @@
 package ecsimsw.picup.service;
 
 import ecsimsw.picup.domain.ImageFile;
+import ecsimsw.picup.domain.ImageFileType;
 import ecsimsw.picup.ecrypt.AES256Utils;
 import ecsimsw.picup.exception.InvalidResourceException;
 import ecsimsw.picup.exception.StorageException;
@@ -49,7 +50,7 @@ public class LocalFileStorage implements ImageStorage {
             final byte[] binaryValue = new byte[(int) file.length()];
             inputStream.read(binaryValue);
             final byte[] decryptedFile = AES256Utils.decrypt(binaryValue, encryptKey);
-            return ImageFile.of(file, decryptedFile);
+            return ImageFile.of(ImageFileType.extensionOf(resourceKey), file, decryptedFile);
         } catch (IOException e) {
             throw new InvalidResourceException("Fail to read image : " + resourceKey);
         }

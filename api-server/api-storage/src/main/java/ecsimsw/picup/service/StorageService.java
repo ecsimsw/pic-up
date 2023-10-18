@@ -1,6 +1,8 @@
 package ecsimsw.picup.service;
 
 import ecsimsw.picup.domain.ImageFile;
+import ecsimsw.picup.domain.ImageFileType;
+import ecsimsw.picup.dto.ImageResponse;
 import ecsimsw.picup.dto.ImageUploadResponse;
 import ecsimsw.picup.exception.InvalidResourceException;
 import ecsimsw.picup.logging.CustomLogger;
@@ -30,9 +32,10 @@ public class StorageService {
         return new ImageUploadResponse(resourceKey, imageFile.getSize());
     }
 
-    public byte[] read(String resourceKey) {
-        final ImageFile read = mainImageStorage.read(resourceKey);
-        return read.getFile();
+    public ImageResponse read(String resourceKey) {
+        validateResourceType(resourceKey);
+        final ImageFile imageFile = mainImageStorage.read(resourceKey);
+        return new ImageResponse(imageFile.getFile(), imageFile.getFileType());
     }
 
     public void delete(String resourceKey) {
@@ -56,10 +59,15 @@ public class StorageService {
     private String resourceKey(String fileTag, MultipartFile file) {
         final String originalName = file.getOriginalFilename();
         final String extension = originalName.substring(originalName.lastIndexOf(".") + 1);
+        ImageFileType.extensionOf(extension);
         final String fileName = Strings.join(
             fileTag,
             UUID.randomUUID().toString()
         ).with("-");
         return fileName + "." + extension;
+    }
+
+    private void validateResourceType(String resourceKey) {
+        ImageFileType.extensionOf(resourceKey);
     }
 }

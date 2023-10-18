@@ -53,7 +53,7 @@ public class AlbumService {
 
     @Transactional(readOnly = true)
     public AlbumInfoResponse read(Long albumId) {
-        final Album album = albumRepository.findById(albumId).orElseThrow();
+        final Album album = albumRepository.findById(albumId).orElseThrow(()-> new AlbumException("Invalid album"));
         return AlbumInfoResponse.of(album);
     }
 
@@ -74,7 +74,7 @@ public class AlbumService {
 
     @Transactional
     public void delete(Long albumId) {
-        final Album album = albumRepository.findById(albumId).orElseThrow();
+        final Album album = albumRepository.findById(albumId).orElseThrow(() -> new AlbumException("Invalid album"));
         albumRepository.delete(album);
         fileService.delete(album.getResourceKey());
         eventPublisher.publishEvent(new AlbumDeletionEvent(albumId));
