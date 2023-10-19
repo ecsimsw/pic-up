@@ -15,6 +15,10 @@ dependencies {
 
     // H2
     runtimeOnly 'com.h2database:h2:1.4.199'
+
+    // Model metadata
+    implementation 'org.hibernate:hibernate-jpamodelgen'
+    annotationProcessor 'org.hibernate:hibernate-jpamodelgen'
 }
 
 test {

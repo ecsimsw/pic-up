@@ -3,6 +3,8 @@ package ecsimsw.picup.controller;
 import ecsimsw.picup.dto.ImageResponse;
 import ecsimsw.picup.dto.ImageUploadResponse;
 import ecsimsw.picup.service.StorageService;
+import org.springframework.amqp.core.Message;
+import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -45,5 +47,10 @@ public class StorageController {
     public ResponseEntity<List<String>> deleteAll(@RequestBody List<String> resourceKeys) {
         final List<String> deletedResources = storageService.deleteAll(resourceKeys);
         return ResponseEntity.ok(deletedResources);
+    }
+
+    @RabbitListener(queues = "sample.queue")
+    public void receiveMessage(final Message message) {
+        System.out.println(message.toString());
     }
 }

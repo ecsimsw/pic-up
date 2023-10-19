@@ -1,4 +1,4 @@
-version: '2'
+version: '3'
 services:
   redis:
     image: redis:latest
@@ -13,3 +13,17 @@ services:
       - "mode=standalone"
     restart: always
     command: redis-server /usr/local/conf/redis.conf
+
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    container_name: 'rabbitmq'
+    ports:
+      - 5672:5672     # for AMQP communication and
+      - 15672:15672   # for the RabbitMQ management interface, http://localhost:15672
+    volumes:
+      - ~/rabbitmq-data/data/:/var/lib/rabbitmq/
+      - ~/rabbitmq-data/log/:/var/log/rabbitmq
+    environment:
+      RABBITMQ_ERLANG_COOKIE: "RabbitMQ-My-Cookies"
+      RABBITMQ_DEFAULT_USER: "admin"
+      RABBITMQ_DEFAULT_PASS: "password"
