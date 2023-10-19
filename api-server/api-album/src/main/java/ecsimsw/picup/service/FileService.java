@@ -6,6 +6,7 @@ import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 
@@ -41,8 +42,13 @@ public class FileService {
         FileExtension.fromFileName(fileName);
     }
 
-    @RabbitListener(queues = {"hello.queue"})
-    public void onUserRegistration(String object) {
-        System.out.println(object);
+    @RabbitListener(queues = {"hello.queue1"})
+    public void onUserRegistration1(String object) {
+        System.out.println(LocalDateTime.now() + " q1 " + object);
+    }
+
+    @RabbitListener(queues = {"hello.queue2"})
+    public void onUserRegistration2(String object) {
+        System.out.println(LocalDateTime.now() + " q2 "+ object);
     }
 }

@@ -1,8 +1,6 @@
 package ecsimsw.picup;
 
-import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -20,7 +18,7 @@ public class PicUpAlbumApplication {
         app.setAdditionalProfiles("dev");
         final ConfigurableApplicationContext run = app.run(args);
         final TestClass bean = run.getBean(TestClass.class);
-        while(true) {
+        while (true) {
             Thread.sleep(1000);
             bean.testSend();
         }
@@ -37,7 +35,11 @@ class TestClass {
     }
 
     public void testSend() {
-        rabbitTemplate.convertAndSend("hello.exchange", "hello.key", "hi");
+        rabbitTemplate.convertAndSend(
+            "hello.exchange",
+            "hello.key",
+            "hi"
+        );
         System.out.println("sent");
     }
 }
