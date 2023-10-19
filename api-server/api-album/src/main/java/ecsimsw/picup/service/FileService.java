@@ -2,6 +2,7 @@ package ecsimsw.picup.service;
 
 import ecsimsw.picup.domain.FileExtension;
 import ecsimsw.picup.exception.AlbumException;
+import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -38,5 +39,10 @@ public class FileService {
             throw new AlbumException("Invalid file type");
         }
         FileExtension.fromFileName(fileName);
+    }
+
+    @RabbitListener(queues = {"hello.queue"})
+    public void onUserRegistration(String object) {
+        System.out.println(object);
     }
 }
