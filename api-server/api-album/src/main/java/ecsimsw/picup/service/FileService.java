@@ -41,14 +41,4 @@ public class FileService {
         }
         FileExtension.fromFileName(fileName);
     }
-
-    @RabbitListener(queues = {"hello.queue1"})
-    public void onUserRegistration1(String object) {
-        System.out.println(LocalDateTime.now() + " q1 " + object);
-    }
-
-    @RabbitListener(queues = {"hello.queue2"})
-    public void onUserRegistration2(String object) {
-        System.out.println(LocalDateTime.now() + " q2 "+ object);
-    }
 }

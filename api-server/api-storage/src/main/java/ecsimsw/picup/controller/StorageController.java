@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
@@ -49,8 +50,13 @@ public class StorageController {
         return ResponseEntity.ok(deletedResources);
     }
 
-    @RabbitListener(queues = "sample.queue")
-    public void receiveMessage(final Message message) {
-        System.out.println(message.toString());
+    @RabbitListener(queues = {"hello.queue1"})
+    public void onUserRegistration1(String object) {
+        System.out.println(LocalDateTime.now() + " q1 " + object);
+    }
+
+    @RabbitListener(queues = {"hello.queue2"})
+    public void onUserRegistration2(String object) {
+        System.out.println(LocalDateTime.now() + " q2 "+ object);
     }
 }
