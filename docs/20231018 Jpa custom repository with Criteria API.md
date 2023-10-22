@@ -45,4 +45,4 @@ public class AlbumSpecRepositoryImpl extends SimpleJpaRepository<Album, Long> im
     }
 }
 ```
-Page 가 아닌 다음 커서에 해당하는 데이터 List 를 반환하는 메서드를 직접 구현하면서도 기존 JpaRepository의 기본 메서드를 살릴 수 있도록 새로운 커스텀 레포지토리를 만들었다.
+Page 가 아닌 다음 커서에 해당하는 데이터 List 를 반환하는 메서드를 직접 구현하면서도 기존 JpaRepository 의 기본 메서드를 살릴 수 있도록 새로운 커스텀 레포지토리를 만들었다.
