@@ -1,5 +1,6 @@
-package ecsimsw.picup.utils;
+package ecsimsw.picup.dataUtils;
 
+import ecsimsw.picup.dataUtils.strategy.RandomProductCsvLine;
 import java.io.IOException;
 
 public class InitDataMain {

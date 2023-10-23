@@ -1,4 +1,4 @@
-package ecsimsw.picup.utils;
+package ecsimsw.picup.dataUtils.strategy;
 
 public interface CsvLineStrategy {
 

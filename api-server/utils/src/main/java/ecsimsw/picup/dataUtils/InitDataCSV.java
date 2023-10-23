@@ -1,5 +1,6 @@
-package ecsimsw.picup.utils;
+package ecsimsw.picup.dataUtils;
 
+import ecsimsw.picup.dataUtils.strategy.CsvLineStrategy;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;

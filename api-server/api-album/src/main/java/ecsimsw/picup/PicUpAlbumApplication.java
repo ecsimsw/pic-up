@@ -36,8 +36,8 @@ class TestClass {
 
     public void testSend() {
         rabbitTemplate.convertAndSend(
-            "hello.exchange",
-            "hello.key",
+            "global.exchange",
+            "file.deletion",
             "hi"
         );
         System.out.println("sent");
