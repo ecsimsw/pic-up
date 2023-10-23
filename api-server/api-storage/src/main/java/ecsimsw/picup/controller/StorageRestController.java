@@ -13,11 +13,11 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
-public class StorageController {
+public class StorageRestController {
 
     private final StorageService storageService;
 
-    public StorageController(StorageService storageService) {
+    public StorageRestController(StorageService storageService) {
         this.storageService = storageService;
     }
 
@@ -48,15 +48,5 @@ public class StorageController {
     public ResponseEntity<List<String>> deleteAll(@RequestBody List<String> resourceKeys) {
         final List<String> deletedResources = storageService.deleteAll(resourceKeys);
         return ResponseEntity.ok(deletedResources);
-    }
-
-    @RabbitListener(queues = {"hello.queue1"})
-    public void onUserRegistration1(String object) {
-        System.out.println(LocalDateTime.now() + " q1 " + object);
-    }
-
-    @RabbitListener(queues = {"hello.queue2"})
-    public void onUserRegistration2(String object) {
-        System.out.println(LocalDateTime.now() + " q2 "+ object);
     }
 }

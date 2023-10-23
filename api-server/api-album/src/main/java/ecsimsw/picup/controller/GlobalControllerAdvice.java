@@ -38,12 +38,14 @@ public class GlobalControllerAdvice {
 
     @ExceptionHandler(StorageServerDownException.class)
     public ResponseEntity<String> storageServerException(IllegalArgumentException e) {
+        e.printStackTrace();
         LOGGER.error(e.getCause().toString());
         return ResponseEntity.internalServerError().body("unhandled server exception");
     }
 
     @ExceptionHandler(Throwable.class)
     public ResponseEntity<String> unhandledException(Throwable e) {
+        e.printStackTrace();
         LOGGER.error(e.getCause().toString());
         return ResponseEntity.internalServerError().body("unhandled server exception");
     }

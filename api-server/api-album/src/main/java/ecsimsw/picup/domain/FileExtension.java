@@ -1,16 +1,10 @@
 package ecsimsw.picup.domain;
 
-import ecsimsw.picup.exception.AlbumException;
 import ecsimsw.picup.exception.UnsupportedFileTypeException;
-
 import java.util.Arrays;
-import java.util.Objects;
 
 public enum FileExtension {
-    JPEG,
-    JPG,
-    PNG,
-    HEIC;
+    JPEG, JPG, PNG, HEIC;
 
     public static FileExtension of(String value) {
         return Arrays.stream(values())

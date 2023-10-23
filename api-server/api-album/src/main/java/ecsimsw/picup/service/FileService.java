@@ -1,27 +1,30 @@
 package ecsimsw.picup.service;
 
+import com.google.common.collect.Iterables;
 import ecsimsw.picup.domain.FileExtension;
 import ecsimsw.picup.exception.AlbumException;
-import org.springframework.amqp.rabbit.annotation.RabbitListener;
-import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
-
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
+import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 @Service
 public class FileService {
 
-    private final StorageHttpClient storageClient;
+    private final StorageHttpClient storageHttpClient;
+    private final StorageMessageQueue storageMessageQueue;
 
-    public FileService(StorageHttpClient storageClient) {
-        this.storageClient = storageClient;
+    public FileService(
+        StorageHttpClient storageHttpClient,
+        StorageMessageQueue storageMessageQueue
+    ) {
+        this.storageHttpClient = storageHttpClient;
+        this.storageMessageQueue = storageMessageQueue;
     }
 
     public String upload(MultipartFile file, String tag) {
         validateFileType(file.getOriginalFilename());
-        var response = storageClient.requestUpload(file, tag);
+        var response = storageHttpClient.requestUpload(file, tag);
         return response.getResourceKey();
     }
 
@@ -32,11 +35,13 @@ public class FileService {
 
     public void deleteAll(List<String> resources) {
         resources.forEach(this::validateFileType);
-        storageClient.requestDelete(resources);
+        for(var resourcePart : Iterables.partition(resources, 5)) {
+            storageMessageQueue.requestDelete(resourcePart);
+        }
     }
 
     private void validateFileType(String fileName) {
-        if(Objects.isNull(fileName) || !fileName.contains(".")) {
+        if (Objects.isNull(fileName) || !fileName.contains(".")) {
             throw new AlbumException("Invalid file type");
         }
         FileExtension.fromFileName(fileName);
