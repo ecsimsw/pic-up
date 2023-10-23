@@ -42,7 +42,7 @@ public class RabbitMQConfig {
         @Value("${spring.rabbitmq.username}") String username,
         @Value("${spring.rabbitmq.password}") String password
     ) {
-        CachingConnectionFactory connectionFactory = new CachingConnectionFactory();
+        CachingConnectionFactory connectionFactory = new CachingConnectionFactory();   //  return same connection from all createConnection() calls, and ignores calls to Connection.close() and caches Channel
         connectionFactory.setHost(host);
         connectionFactory.setPort(port);
         connectionFactory.setUsername(username);
