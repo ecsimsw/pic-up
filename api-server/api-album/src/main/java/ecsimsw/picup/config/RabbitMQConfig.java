@@ -15,6 +15,9 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class RabbitMQConfig {
 
+    public static final int MQ_SERVER_CONNECTION_RETRY_CNT = 5;
+    public static final int MQ_SERVER_CONNECTION_RETRY_DELAY_TIME_MS = 1000;
+
     @Bean
     public RabbitTemplate rabbitTemplate(ConnectionFactory connectionFactory) {
         RabbitTemplate rabbitTemplate = new RabbitTemplate(connectionFactory);

@@ -36,7 +36,7 @@ public class FileService {
     public void deleteAll(List<String> resources) {
         resources.forEach(this::validateFileType);
         for(var resourcePart : Iterables.partition(resources, 5)) {
-            storageMessageQueue.requestDelete(resourcePart);
+            storageMessageQueue.pollDeleteRequest(resourcePart);
         }
     }
 

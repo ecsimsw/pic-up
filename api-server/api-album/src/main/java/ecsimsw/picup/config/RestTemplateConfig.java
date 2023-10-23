@@ -13,7 +13,7 @@ import java.time.Duration;
 public class RestTemplateConfig {
 
     public static final int SERVER_CONNECTION_RETRY_CNT = 5;
-    public static final int SERVER_CONNECTION_RETRY_DELAY_TIME_MS = 5000;
+    public static final int SERVER_CONNECTION_RETRY_DELAY_TIME_MS = 1000;
 
     public static final int SERVER_CONNECTION_TIMEOUT_SEC = 5;
     public static final int SERVER_READ_TIMEOUT_SEC = 5;

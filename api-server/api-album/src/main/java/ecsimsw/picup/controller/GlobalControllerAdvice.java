@@ -2,6 +2,7 @@ package ecsimsw.picup.controller;
 
 import ecsimsw.picup.exception.AlbumException;
 import ecsimsw.picup.exception.InvalidStorageServerResponseException;
+import ecsimsw.picup.exception.MessageQueueServerDownException;
 import ecsimsw.picup.exception.StorageServerDownException;
 import ecsimsw.picup.exception.UnsupportedFileTypeException;
 import ecsimsw.picup.logging.CustomLogger;
@@ -16,10 +17,7 @@ public class GlobalControllerAdvice {
 
     private static final CustomLogger LOGGER = CustomLogger.init(GlobalControllerAdvice.class);
 
-    @ExceptionHandler({
-        AlbumException.class,
-        UnsupportedFileTypeException.class
-    })
+    @ExceptionHandler({AlbumException.class, UnsupportedFileTypeException.class})
     public ResponseEntity<String> albumException(IllegalArgumentException e) {
         return ResponseEntity.badRequest().body(e.getMessage());
     }
@@ -36,8 +34,8 @@ public class GlobalControllerAdvice {
         return ResponseEntity.internalServerError().body("unhandled server exception");
     }
 
-    @ExceptionHandler(StorageServerDownException.class)
-    public ResponseEntity<String> storageServerException(IllegalArgumentException e) {
+    @ExceptionHandler({StorageServerDownException.class, MessageQueueServerDownException.class})
+    public ResponseEntity<String> serverDownException(IllegalArgumentException e) {
         e.printStackTrace();
         LOGGER.error(e.getCause().toString());
         return ResponseEntity.internalServerError().body("unhandled server exception");
