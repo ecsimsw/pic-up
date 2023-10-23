@@ -1,13 +1,18 @@
 package ecsimsw.picup.config;
 
+import ecsimsw.picup.exception.MessageQueueServerDownException;
+import ecsimsw.picup.logging.CustomLogger;
 import org.springframework.amqp.core.Binding;
 import org.springframework.amqp.core.BindingBuilder;
 import org.springframework.amqp.core.DirectExchange;
 import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
+import org.springframework.amqp.rabbit.connection.Connection;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
+import org.springframework.amqp.rabbit.connection.ConnectionListener;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
+import org.springframework.amqp.support.converter.MessageConverter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -15,13 +20,18 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class RabbitMQConfig {
 
+    private static final CustomLogger LOGGER = CustomLogger.init(RabbitMQConfig.class);
+
     public static final int MQ_SERVER_CONNECTION_RETRY_CNT = 5;
     public static final int MQ_SERVER_CONNECTION_RETRY_DELAY_TIME_MS = 1000;
 
     @Bean
-    public RabbitTemplate rabbitTemplate(ConnectionFactory connectionFactory) {
+    public RabbitTemplate rabbitTemplate(
+        ConnectionFactory connectionFactory,
+        MessageConverter messageConverter
+    ) {
         RabbitTemplate rabbitTemplate = new RabbitTemplate(connectionFactory);
-        rabbitTemplate.setMessageConverter(new Jackson2JsonMessageConverter());
+        rabbitTemplate.setMessageConverter(messageConverter);
         return rabbitTemplate;
     }
 
@@ -37,6 +47,17 @@ public class RabbitMQConfig {
         connectionFactory.setPort(port);
         connectionFactory.setUsername(username);
         connectionFactory.setPassword(password);
+        connectionFactory.addConnectionListener(new ConnectionListener() {
+            @Override
+            public void onCreate(Connection connection) {
+                LOGGER.info("Message queue server connection is created");
+            }
+
+            @Override
+            public void onClose(Connection connection) {
+                throw new MessageQueueServerDownException("Message queue server connection is closed");
+            }
+        });
         return connectionFactory;
     }
 
@@ -54,12 +75,7 @@ public class RabbitMQConfig {
         @Value("${mq.file.deletion.queue.exclusive}") boolean exclusive,
         @Value("${mq.file.deletion.queue.autoDelete}") boolean autoDelete
     ) {
-        return new Queue(
-            queueName,
-            durable,
-            exclusive,
-            autoDelete
-        );
+        return new Queue(queueName, durable, exclusive, autoDelete);
     }
 
     @Bean
@@ -72,5 +88,10 @@ public class RabbitMQConfig {
             .bind(imageDeletionQueue)
             .to(globalExchange)
             .with(fileDeletionQueueKey);
+    }
+
+    @Bean
+    MessageConverter messageConverter() {
+        return new Jackson2JsonMessageConverter();
     }
 }

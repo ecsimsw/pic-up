@@ -5,7 +5,6 @@ import static ecsimsw.picup.domain.AlbumRepository.AlbumSearchSpecs.where;
 
 import ecsimsw.picup.domain.Album;
 import ecsimsw.picup.domain.AlbumRepository;
-import ecsimsw.picup.domain.AlbumRepository.AlbumSearchSpecs;
 import ecsimsw.picup.domain.Album_;
 import ecsimsw.picup.dto.AlbumInfoRequest;
 import ecsimsw.picup.dto.AlbumInfoResponse;
