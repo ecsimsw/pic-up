@@ -46,3 +46,18 @@ public class AlbumSpecRepositoryImpl extends SimpleJpaRepository<Album, Long> im
 }
 ```
 Page 가 아닌 다음 커서에 해당하는 데이터 List 를 반환하는 메서드를 직접 구현하면서도 기존 JpaRepository 의 기본 메서드를 살릴 수 있도록 새로운 커스텀 레포지토리를 만들었다.
+
+### 사용 형태
+``` java
+@Transactional(readOnly = true)
+public List<PictureInfoResponse> cursorByOrder(Long albumId, int limit, int prev) {
+    final List<Picture> pictures = pictureRepository.fetch(
+        where()
+            .and(isAlbum(albumId))
+            .and(greaterOrderThan(prev)),
+        limit,
+        Sort.by(Direction.ASC, Picture_.ORDER_NUMBER)
+    );
+    return PictureInfoResponse.listOf(pictures);
+}
+```
