@@ -2,7 +2,7 @@ version: '3'
 services:
   redis:
     image: redis:latest
-    container_name: redis
+    container_name: 'picup-core-redis'
     ports:
       - 6379:6379
     volumes:
@@ -16,7 +16,7 @@ services:
 
   rabbitmq:
     image: rabbitmq:3-management-alpine
-    container_name: 'rabbitmq'
+    container_name: 'picup-core-rabbitmq'
     ports:
       - 5672:5672     # for AMQP communication and
       - 15672:15672   # for the RabbitMQ management interface, http://localhost:15672
@@ -27,3 +27,14 @@ services:
       RABBITMQ_ERLANG_COOKIE: "RabbitMQ-My-Cookies"
       RABBITMQ_DEFAULT_USER: "admin"
       RABBITMQ_DEFAULT_PASS: "password"
+
+  mongodb:
+    image: mongo:6.0.1
+    container_name: 'picup-storage-mongo'
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: root
+    volumes:
+      - ~/mongo-data:/data/db

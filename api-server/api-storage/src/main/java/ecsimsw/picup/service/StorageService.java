@@ -1,5 +1,7 @@
 package ecsimsw.picup.service;
 
+import ecsimsw.picup.domain.History;
+import ecsimsw.picup.domain.HistoryRepository;
 import ecsimsw.picup.domain.ImageFile;
 import ecsimsw.picup.domain.ImageFileType;
 import ecsimsw.picup.dto.ImageResponse;
@@ -9,6 +11,7 @@ import ecsimsw.picup.logging.CustomLogger;
 import ecsimsw.picup.storage.ImageStorage;
 import ecsimsw.picup.storage.LocalFileStorage;
 import ecsimsw.picup.storage.S3ObjectStorage;
+import java.util.Map;
 import org.assertj.core.util.Strings;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -23,13 +26,16 @@ public class StorageService {
 
     private final ImageStorage mainStorage;
     private final ImageStorage backUpStorage;
+    private final HistoryRepository historyRepository;
 
     public StorageService(
         LocalFileStorage localFileStorage,
-        S3ObjectStorage s3ObjectStorage
+        S3ObjectStorage s3ObjectStorage,
+        HistoryRepository historyRepository
     ) {
         this.mainStorage = localFileStorage;
         this.backUpStorage = s3ObjectStorage;
+        this.historyRepository = historyRepository;
     }
 
     public ImageUploadResponse upload(MultipartFile file, String tag) {
