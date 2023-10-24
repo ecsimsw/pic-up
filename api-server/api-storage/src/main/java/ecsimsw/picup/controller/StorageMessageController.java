@@ -20,7 +20,6 @@ public class StorageMessageController {
     @RabbitListener(queues = "${mq.file.deletion.queue.name}", containerFactory = "fileDeletionQueueCF")
     public void deleteAll(List<String> resources) {
         LOGGER.info("poll to be deleted resources : " + String.join(", ", resources));
-        final List<String> deleted = storageService.deleteAll(resources);
-        LOGGER.info("actual deleted resources : " + String.join(", ", deleted));
+        storageService.deleteAll(resources);
     }
 }

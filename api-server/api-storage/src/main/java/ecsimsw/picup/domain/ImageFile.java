@@ -11,23 +11,24 @@ import java.io.IOException;
 public class ImageFile {
 
     private final ImageFileType fileType;
-    private final long size;
+    private final int size;
     private final byte[] file;
 
-    public ImageFile(ImageFileType fileType, long size, byte[] file) {
+    public ImageFile(ImageFileType fileType, int size, byte[] file) {
         this.fileType = fileType;
         this.size = size;
         this.file = file;
     }
 
-    public static ImageFile of(ImageFileType imageFileType, File file, byte[] binaryValue) {
-        return new ImageFile(imageFileType, file.length(), binaryValue);
+    public static ImageFile of(ImageFileType imageFileType, byte[] binaryValue) {
+        return new ImageFile(imageFileType, binaryValue.length, binaryValue);
     }
 
     public static ImageFile of(MultipartFile file) {
         try {
             final ImageFileType imageFileType = ImageFileType.extensionOf(file.getOriginalFilename());
-            return new ImageFile(imageFileType, file.getSize(), file.getBytes());
+            final byte[] fileValue = file.getBytes();
+            return new ImageFile(imageFileType, fileValue.length, fileValue);
         } catch (IOException e) {
             throw new StorageException("Invalid multipart file");
         }

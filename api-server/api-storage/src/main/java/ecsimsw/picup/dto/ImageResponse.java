@@ -1,5 +1,6 @@
 package ecsimsw.picup.dto;
 
+import ecsimsw.picup.domain.ImageFile;
 import ecsimsw.picup.domain.ImageFileType;
 import lombok.Getter;
 import org.springframework.http.MediaType;
@@ -13,6 +14,10 @@ public class ImageResponse {
     public ImageResponse(byte[] imageFile, ImageFileType fileType) {
         this.imageFile = imageFile;
         this.fileType = fileType;
+    }
+
+    public static ImageResponse of(ImageFile imageFile) {
+        return new ImageResponse(imageFile.getFile(), imageFile.getFileType());
     }
 
     public MediaType getMediaType() {

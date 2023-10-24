@@ -5,6 +5,7 @@ import javax.persistence.Convert;
 import javax.persistence.Converter;
 
 import ecsimsw.picup.exception.AlbumException;
+import javax.validation.constraints.NotNull;
 import lombok.Getter;
 
 import javax.persistence.Entity;
@@ -21,7 +22,7 @@ public class Picture {
     @Id
     private Long id;
 
-    @NotBlank
+    @NotNull
     private Long albumId;
 
     @Convert(converter = AES256Converter.class)

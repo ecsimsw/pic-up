@@ -4,13 +4,15 @@ import ecsimsw.picup.domain.ImageFile;
 import ecsimsw.picup.domain.ImageFileType;
 import ecsimsw.picup.dto.ImageResponse;
 import ecsimsw.picup.dto.ImageUploadResponse;
-import ecsimsw.picup.exception.InvalidResourceException;
+import ecsimsw.picup.exception.StorageException;
 import ecsimsw.picup.logging.CustomLogger;
+import ecsimsw.picup.storage.ImageStorage;
+import ecsimsw.picup.storage.LocalFileStorage;
+import ecsimsw.picup.storage.S3ObjectStorage;
 import org.assertj.core.util.Strings;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
 
@@ -19,41 +21,64 @@ public class StorageService {
 
     private static final CustomLogger LOGGER = CustomLogger.init(StorageService.class);
 
-    private final ImageStorage mainImageStorage;
+    private final ImageStorage mainStorage;
+    private final ImageStorage backUpStorage;
 
-    public StorageService(ImageStorage mainImageStorage) {
-        this.mainImageStorage = mainImageStorage;
+    public StorageService(
+        LocalFileStorage localFileStorage,
+        S3ObjectStorage s3ObjectStorage
+    ) {
+        this.mainStorage = localFileStorage;
+        this.backUpStorage = s3ObjectStorage;
     }
 
     public ImageUploadResponse upload(MultipartFile file, String tag) {
         final String resourceKey = resourceKey(tag, file);
         final ImageFile imageFile = ImageFile.of(file);
-        mainImageStorage.create(resourceKey, imageFile);
+        mainStorage.create(resourceKey, imageFile);
+        try {
+            backUpStorage.create(resourceKey, imageFile);
+        } catch (Exception backUp) {
+            try {
+                mainStorage.delete(resourceKey);
+                throw new StorageException("failed to upload to back up storage", backUp);
+            } catch (Exception deletion) {
+                // TODO :: 제거 실패 리소스 관리
+                throw new StorageException("failed to delete from main storage", deletion);
+            }
+        }
         return new ImageUploadResponse(resourceKey, imageFile.getSize());
     }
 
     public ImageResponse read(String resourceKey) {
         validateResourceType(resourceKey);
-        final ImageFile imageFile = mainImageStorage.read(resourceKey);
-        return new ImageResponse(imageFile.getFile(), imageFile.getFileType());
+        try {
+            final ImageFile imageFile = mainStorage.read(resourceKey);
+            return ImageResponse.of(imageFile);
+        } catch (Exception e) {
+            // TODO :: MAKE LOG
+            final ImageFile imageFile = backUpStorage.read(resourceKey);
+            return ImageResponse.of(imageFile);
+        }
     }
 
     public void delete(String resourceKey) {
-        mainImageStorage.delete(resourceKey);
+        try {
+            mainStorage.delete(resourceKey);
+        } catch (Exception e) {
+            // TODO :: 제거 실패 리소스 관리
+            LOGGER.error("Fail while deleting, resource key : " + resourceKey + " error message : " + e.getMessage());
+        }
+        try {
+            backUpStorage.delete(resourceKey);
+        } catch (Exception e) {
+            // TODO :: 제거 실패 리소스 관리
+            LOGGER.error("Fail while deleting, resource key : " + resourceKey + " error message : " + e.getMessage());
+        }
     }
 
-    public List<String> deleteAll(List<String> resourceKeys) {
-        final List<String> deleted = new LinkedList<>();
-        for (String resourceKey : resourceKeys) {
-            try {
-                mainImageStorage.delete(resourceKey);
-                deleted.add(resourceKey);
-            } catch (InvalidResourceException e) {
-                // TODO :: 제거 실패 리소스 관리
-                LOGGER.error("Fail while deleting, resource key : " + resourceKey + " error message : " + e.getMessage());
-            }
-        }
-        return deleted;
+    public void deleteAll(List<String> resourceKeys) {
+        resourceKeys.forEach(this::delete);
     }
 
     private String resourceKey(String fileTag, MultipartFile file) {
