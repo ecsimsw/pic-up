@@ -25,6 +25,10 @@ public enum ImageFileType {
             .orElseThrow(() -> new InvalidResourceException("Invalid resource image type"));
     }
 
+    public static ImageFileType validateSupport(String fileName) {
+        return extensionOf(fileName);
+    }
+
     public MediaType getMediaType() {
         return mediaType;
     }

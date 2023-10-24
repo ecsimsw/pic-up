@@ -11,6 +11,7 @@ import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.amazonaws.services.s3.model.S3Object;
 import com.amazonaws.util.IOUtils;
 import ecsimsw.picup.domain.ImageFile;
+import ecsimsw.picup.domain.StorageKey;
 import ecsimsw.picup.exception.InvalidResourceException;
 import ecsimsw.picup.exception.StorageException;
 import java.io.ByteArrayInputStream;
@@ -56,10 +57,9 @@ public class S3ObjectStorage implements ImageStorage {
 
     @Override
     public void delete(String resourceKey) {
-        if (!s3Client.doesObjectExist(bucketName, resourceKey)) {
-            throw new StorageException("resource not found");
+        if (s3Client.doesObjectExist(bucketName, resourceKey)) {
+            s3Client.deleteObject(bucketName, resourceKey);
         }
-        s3Client.deleteObject(bucketName, resourceKey);
     }
 
     @Override
@@ -73,6 +73,11 @@ public class S3ObjectStorage implements ImageStorage {
         } catch (Exception e) {
             throw new StorageException("S3 server exception while reading", e);
         }
+    }
+
+    @Override
+    public StorageKey key() {
+        return StorageKey.BACKUP_STORAGE;
     }
 }
 
