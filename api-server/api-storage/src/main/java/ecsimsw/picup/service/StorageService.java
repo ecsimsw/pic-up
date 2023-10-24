@@ -9,6 +9,7 @@ import ecsimsw.picup.domain.ImageFile;
 import ecsimsw.picup.domain.ImageFileType;
 import ecsimsw.picup.domain.Residue;
 import ecsimsw.picup.domain.ResidueRepository;
+import ecsimsw.picup.domain.ResourceKeyStrategy;
 import ecsimsw.picup.dto.ImageResponse;
 import ecsimsw.picup.dto.ImageUploadResponse;
 import ecsimsw.picup.exception.FileNotExistsException;
@@ -16,12 +17,10 @@ import ecsimsw.picup.exception.StorageException;
 import ecsimsw.picup.storage.ImageStorage;
 import ecsimsw.picup.storage.LocalFileStorage;
 import ecsimsw.picup.storage.S3ObjectStorage;
-import org.assertj.core.util.Strings;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
-import java.util.UUID;
 
 @Service
 public class StorageService {
@@ -44,7 +43,7 @@ public class StorageService {
     }
 
     public ImageUploadResponse upload(MultipartFile file, String tag) {
-        final String resourceKey = resourceKey(tag, file);
+        final String resourceKey = ResourceKeyStrategy.generate(tag, file);
         final ImageFile imageFile = ImageFile.of(file);
 
         mainStorage.create(resourceKey, imageFile);
@@ -88,16 +87,5 @@ public class StorageService {
         } catch (Exception e) {
             residueRepository.save(Residue.from(resourceKey, storage.key(), e.getMessage()));
         }
-    }
-
-    private String resourceKey(String fileTag, MultipartFile file) {
-        final String originalName = file.getOriginalFilename();
-        final String extension = originalName.substring(originalName.lastIndexOf(".") + 1);
-        ImageFileType.extensionOf(extension);
-        final String fileName = Strings.join(
-            fileTag,
-            UUID.randomUUID().toString()
-        ).with("-");
-        return fileName + "." + extension;
     }
 }
