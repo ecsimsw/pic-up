@@ -26,7 +26,8 @@ public class GlobalControllerAdvice {
 
     @ExceptionHandler(Throwable.class)
     public ResponseEntity<String> unhandledException(Throwable e) {
-        LOGGER.error(e.getCause().toString());
+        e.printStackTrace();
+        LOGGER.error(e.getMessage());
         return ResponseEntity.internalServerError().body("unhandled server exception");
     }
 }

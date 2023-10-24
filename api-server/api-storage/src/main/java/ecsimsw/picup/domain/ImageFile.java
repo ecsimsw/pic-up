@@ -20,8 +20,8 @@ public class ImageFile {
         this.file = file;
     }
 
-    public static ImageFile of(ImageFileType imageFileType, byte[] binaryValue) {
-        return new ImageFile(imageFileType, binaryValue.length, binaryValue);
+    public static ImageFile of(String resourceKey, byte[] binaryValue) {
+        return new ImageFile(ImageFileType.extensionOf(resourceKey), binaryValue.length, binaryValue);
     }
 
     public static ImageFile of(MultipartFile file) {

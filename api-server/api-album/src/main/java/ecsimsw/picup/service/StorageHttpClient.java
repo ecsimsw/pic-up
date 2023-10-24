@@ -65,7 +65,7 @@ public class StorageHttpClient {
     }
 
     @Recover
-    public List<String> recoverUploadApi(Throwable exception, MultipartFile file, String tag) {
+    public StorageImageUploadResponse recoverUploadApi(Throwable exception, MultipartFile file, String tag) {
         throw new StorageServerDownException("Failed to connect server", exception);
     }
 
@@ -96,7 +96,7 @@ public class StorageHttpClient {
     }
 
     @Recover
-    public List<String> recoverDeleteApi(Throwable exception, List<String> resources) {
+    public void recoverDeleteApi(Throwable exception, List<String> resources) {
         // TODO :: Manage server, resources to be deleted
         var errorMessage = "Failed to connect server while deleting resources\n" +
             "Resources to be deleted : " + Strings.join(resources).with(", ");

@@ -11,7 +11,6 @@ import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.amazonaws.services.s3.model.S3Object;
 import com.amazonaws.util.IOUtils;
 import ecsimsw.picup.domain.ImageFile;
-import ecsimsw.picup.domain.ImageFileType;
 import ecsimsw.picup.exception.InvalidResourceException;
 import ecsimsw.picup.exception.StorageException;
 import java.io.ByteArrayInputStream;
@@ -68,7 +67,7 @@ public class S3ObjectStorage implements ImageStorage {
         try {
             final S3Object object = s3Client.getObject(new GetObjectRequest(bucketName, resourceKey));
             final byte[] file = IOUtils.toByteArray(object.getObjectContent());
-            return ImageFile.of(ImageFileType.extensionOf(resourceKey), file);
+            return ImageFile.of(resourceKey, file);
         } catch (AmazonS3Exception e) {
             throw new InvalidResourceException("Fail to read : " + resourceKey + ", please check access key or resource key");
         } catch (Exception e) {
