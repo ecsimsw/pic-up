@@ -7,12 +7,13 @@ import ecsimsw.picup.domain.History;
 import ecsimsw.picup.domain.HistoryRepository;
 import ecsimsw.picup.domain.ImageFile;
 import ecsimsw.picup.domain.ImageFileType;
-import ecsimsw.picup.domain.Residue;
-import ecsimsw.picup.domain.ResidueRepository;
+import ecsimsw.picup.domain.Resource;
 import ecsimsw.picup.domain.ResourceKeyStrategy;
+import ecsimsw.picup.domain.ResourceRepository;
 import ecsimsw.picup.dto.ImageResponse;
 import ecsimsw.picup.dto.ImageUploadResponse;
 import ecsimsw.picup.exception.FileNotExistsException;
+import ecsimsw.picup.exception.InvalidResourceException;
 import ecsimsw.picup.exception.StorageException;
 import ecsimsw.picup.storage.ImageStorage;
 import ecsimsw.picup.storage.LocalFileStorage;
@@ -25,35 +26,37 @@ import java.util.List;
 @Service
 public class StorageService {
 
+    private final ResourceRepository resourceRepository;
     private final ImageStorage mainStorage;
     private final ImageStorage backUpStorage;
     private final HistoryRepository historyRepository;
-    private final ResidueRepository residueRepository;
 
     public StorageService(
+        ResourceRepository resourceRepository,
         LocalFileStorage localFileStorage,
         S3ObjectStorage s3ObjectStorage,
-        HistoryRepository historyRepository,
-        ResidueRepository residueRepository
+        HistoryRepository historyRepository
     ) {
+        this.resourceRepository = resourceRepository;
         this.mainStorage = localFileStorage;
         this.backUpStorage = s3ObjectStorage;
         this.historyRepository = historyRepository;
-        this.residueRepository = residueRepository;
     }
 
     public ImageUploadResponse upload(MultipartFile file, String tag) {
         final String resourceKey = ResourceKeyStrategy.generate(tag, file);
         final ImageFile imageFile = ImageFile.of(file);
 
+        final Resource resource = Resource.createRequested(resourceKey);
         mainStorage.create(resourceKey, imageFile);
+        resource.storedAt(MAIN_STORAGE);
         historyRepository.save(History.create(MAIN_STORAGE, resourceKey));
         try {
             backUpStorage.create(resourceKey, imageFile);
+            resource.storedAt(BACKUP_STORAGE);
             historyRepository.save(History.create(BACKUP_STORAGE, resourceKey));
             return new ImageUploadResponse(resourceKey, imageFile.getSize());
         } catch (Exception e) {
-            residueRepository.save(Residue.from(resourceKey, MAIN_STORAGE, e.getMessage()));
             throw new StorageException("Failed to back up", e);
         }
     }
@@ -61,6 +64,10 @@ public class StorageService {
     public ImageResponse read(String resourceKey) {
         ImageFileType.validateSupport(resourceKey);
         try {
+            final Resource resource = resourceRepository.findById(resourceKey).orElseThrow(() -> new InvalidResourceException("Not exists resources"));
+            if(!resource.isLived()) {
+                throw new InvalidResourceException("Not exists resources");
+            }
             final ImageFile imageFile = mainStorage.read(resourceKey);
             return ImageResponse.of(imageFile);
         } catch (FileNotExistsException fileNotExistsException) {
@@ -82,10 +89,18 @@ public class StorageService {
 
     public void delete(String resourceKey, ImageStorage storage) {
         try {
-            storage.delete(resourceKey);
-            historyRepository.save(History.delete(storage.key(), resourceKey));
-        } catch (Exception e) {
-            residueRepository.save(Residue.from(resourceKey, storage.key(), e.getMessage()));
+            final Resource resource = resourceRepository.findById(resourceKey).orElseThrow(() -> new InvalidResourceException("Not exists resources"));
+            if(!resource.isLived()) {
+                throw new InvalidResourceException("Not exists resources");
+            }
+            resource.deleteRequested();
+            if(resource.isStoredAt(storage.key())) {
+                storage.delete(resourceKey);
+                resource.deletedAt(storage.key());
+                historyRepository.save(History.delete(storage.key(), resourceKey));
+            }
+            resourceRepository.save(resource);
+        } catch (Exception ignored) {
         }
     }
 }
