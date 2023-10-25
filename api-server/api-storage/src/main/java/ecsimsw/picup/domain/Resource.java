@@ -7,6 +7,7 @@ import java.util.List;
 import lombok.Getter;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.web.multipart.MultipartFile;
 
 @Getter
 @Document(collection = "resource")
@@ -37,15 +38,16 @@ public class Resource {
         this.deleteRequested = deletedAt;
     }
 
-    public static Resource createRequested(String resourceKey) {
+    public static Resource createRequested(String tag, MultipartFile file) {
+        final String resourceKey = ResourceKeyStrategy.generate(tag, file);
         return new Resource(resourceKey, new ArrayList<>(), LocalDateTime.now(), null);
     }
 
-    public void storedAt(StorageKey storageKey) {
+    public void storedTo(StorageKey storageKey) {
         storedStorages.add(storageKey);
     }
 
-    public void deletedAt(StorageKey storageKey) {
+    public void deletedFrom(StorageKey storageKey) {
         storedStorages.remove(storageKey);
     }
 
