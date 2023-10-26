@@ -21,7 +21,11 @@ public class StorageMessageController {
 
     @RabbitListener(queues = "${mq.file.deletion.queue.name}", containerFactory = FILE_DELETION_QUEUE_CF)
     public void deleteAll(List<String> resources) {
-        LOGGER.info("poll to be deleted resources : " + String.join(", ", resources));
         storageService.deleteAll(resources);
+    }
+
+    @RabbitListener(queues = "${mq.file.deletion.recover.queue.name}", containerFactory = FILE_DELETION_QUEUE_CF)
+    public void deleteAllRecover(List<String> resources) {
+        LOGGER.error("dead letter from file deletion queue : " + String.join(", ", resources));
     }
 }

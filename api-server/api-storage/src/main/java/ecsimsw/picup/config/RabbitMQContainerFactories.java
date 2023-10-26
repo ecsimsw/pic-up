@@ -16,6 +16,11 @@ public class RabbitMQContainerFactories {
 
     public static final String FILE_DELETION_QUEUE_CF = "fileDeletionQueueContainerFactory";
 
+    private static final int RETRY_MAX_ATTEMPTS = 3;
+    private static final int RETRY_INITIAL_INTERVAL_SEC = 1;
+    private static final int RETRY_MULTIPLIER = 3;
+    private static final int RETRY_MAX_INTERVAL_SEC = 10;
+
     @Bean
     public RabbitListenerContainerFactory<SimpleMessageListenerContainer> fileDeletionQueueContainerFactory(
         ConnectionFactory connectionFactory,
@@ -25,8 +30,12 @@ public class RabbitMQContainerFactories {
         factory.setPrefetchCount(prefetch);
         factory.setConnectionFactory(connectionFactory);
         factory.setAdviceChain(RetryInterceptorBuilder.stateless()
-            .maxAttempts(3)
-            .backOffOptions(Duration.ofSeconds(1L).toMillis(), 3, Duration.ofSeconds(10L).toMillis())
+            .maxAttempts(RETRY_MAX_ATTEMPTS)
+            .backOffOptions(
+                Duration.ofSeconds(RETRY_INITIAL_INTERVAL_SEC).toMillis(),
+                RETRY_MULTIPLIER,
+                Duration.ofSeconds(RETRY_MAX_INTERVAL_SEC).toMillis()
+            )
             .recoverer(new RejectAndDontRequeueRecoverer())
             .build());
         return factory;

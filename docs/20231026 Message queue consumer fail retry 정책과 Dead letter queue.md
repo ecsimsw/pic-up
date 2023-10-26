@@ -95,8 +95,8 @@ public Binding fileDeletionRecoverQueueBinding() {
 그리고 이 dead letter queue 의 listener 를 선언하는 것으로 재시도 끝에도 처리되지 못한 메시지를 처리할 로직을 선언 할 수 있다.
 
 ``` java
-@RabbitListener(queues = "${mq.file.deletion.recover.queue.name}")
-public void recoverDeleteAll(List<String> resources) {
-    LOGGER.error("dead letter from file deletion queue : " + resouces);
+@RabbitListener(queues = "${mq.file.deletion.recover.queue.name}", containerFactory = FILE_DELETION_QUEUE_CF)
+public void deleteAllRecover(List<String> resources) {
+    LOGGER.error("dead letter from file deletion queue : " + String.join(", ", resources));
 }
 ```
