@@ -43,7 +43,6 @@ public class StorageHttpClient {
         label = "Retry when storage server is down",
         maxAttempts = SERVER_CONNECTION_RETRY_CNT,
         value = Throwable.class,
-        exclude = {StorageServerDownException.class, HttpStatusCodeException.class},
         backoff = @Backoff(delay = SERVER_CONNECTION_RETRY_DELAY_TIME_MS),
         recover = "recoverUploadApi"
     )
@@ -56,11 +55,11 @@ public class StorageHttpClient {
                 new ParameterizedTypeReference<StorageImageUploadResponse>() {
                 });
             if (Objects.isNull(response.getBody()) || Objects.isNull(response.getBody().getResourceKey())) {
-                throw new InvalidStorageServerResponseException("Failed to upload resources.\nStorage server is on, but invalid response.");
+                throw new InvalidStorageServerResponseException("Failed to upload resources.\nStorage server is on, but invalid response body.");
             }
             return response.getBody();
         } catch (HttpStatusCodeException e) {
-            throw new InvalidStorageServerResponseException("Failed to upload resources.\nStorage server is on, but invalid response.");
+            throw new InvalidStorageServerResponseException("Failed to upload resources.\nStorage server is on, but invalid response status.", e);
         }
     }
 

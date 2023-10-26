@@ -23,7 +23,7 @@ public class ResourceKeyStrategy {
 
     private static String getExtension(String fileName) {
         int indexOfExtension = fileName.lastIndexOf(".");
-        if(indexOfExtension +1 < fileName.length()) {
+        if(indexOfExtension + 1 >= fileName.length()) {
             throw new InvalidResourceException("Invalid file name resource");
         }
         return fileName.substring(indexOfExtension + 1);

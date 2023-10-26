@@ -2,10 +2,12 @@ package ecsimsw.picup.config;
 
 import ecsimsw.picup.exception.MessageQueueServerDownException;
 import ecsimsw.picup.logging.CustomLogger;
+import java.util.Map;
 import org.springframework.amqp.core.Binding;
 import org.springframework.amqp.core.BindingBuilder;
 import org.springframework.amqp.core.DirectExchange;
 import org.springframework.amqp.core.Queue;
+import org.springframework.amqp.core.QueueBuilder;
 import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
 import org.springframework.amqp.rabbit.connection.Connection;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
@@ -52,7 +54,6 @@ public class RabbitMQConfig {
             public void onCreate(Connection connection) {
                 LOGGER.info("Message queue server connection is created");
             }
-
             @Override
             public void onClose(Connection connection) {
                 throw new MessageQueueServerDownException("Message queue server connection is closed");
@@ -69,25 +70,57 @@ public class RabbitMQConfig {
     }
 
     @Bean
+    public DirectExchange deadLetterExchange(
+        @Value("${mq.dead.letter.exchange}") String deadLetterExchange
+    ) {
+        return new DirectExchange(deadLetterExchange);
+    }
+
+    @Bean
     public Queue fileDeletionQueue(
         @Value("${mq.file.deletion.queue.name}") String queueName,
-        @Value("${mq.file.deletion.queue.durable}") boolean durable,
-        @Value("${mq.file.deletion.queue.exclusive}") boolean exclusive,
-        @Value("${mq.file.deletion.queue.autoDelete}") boolean autoDelete
+        @Value("${mq.dead.letter.exchange}") String deadLetterExchange,
+        @Value("${mq.file.deletion.recover.queue.key}") String fileDeletionRecoverQueueKey
     ) {
-        return new Queue(queueName, durable, exclusive, autoDelete);
+        return QueueBuilder.durable(queueName)
+            .deadLetterExchange(deadLetterExchange)
+            .withArguments(Map.of(
+                "x-dead-letter-exchange", deadLetterExchange,
+                "x-dead-letter-routing-key", fileDeletionRecoverQueueKey
+            ))
+            .build();
+    }
+
+    @Bean
+    public Queue fileDeletionRecoverQueue(
+        @Value("${mq.file.deletion.recover.queue.name}") String queueName
+    ) {
+        return QueueBuilder.durable(queueName)
+            .build();
     }
 
     @Bean
     public Binding fileDeletionQueueBinding(
         @Value("${mq.file.deletion.queue.key}") String fileDeletionQueueKey,
         DirectExchange globalExchange,
-        Queue imageDeletionQueue
+        Queue fileDeletionQueue
     ) {
         return BindingBuilder
-            .bind(imageDeletionQueue)
+            .bind(fileDeletionQueue)
             .to(globalExchange)
             .with(fileDeletionQueueKey);
+    }
+
+    @Bean
+    public Binding fileDeletionRecoverQueueBinding(
+        @Value("${mq.file.deletion.recover.queue.key}") String fileDeletionRecoverQueueKey,
+        DirectExchange deadLetterExchange,
+        Queue fileDeletionRecoverQueue
+    ) {
+        return BindingBuilder
+            .bind(fileDeletionRecoverQueue)
+            .to(deadLetterExchange)
+            .with(fileDeletionRecoverQueueKey);
     }
 
     @Bean
