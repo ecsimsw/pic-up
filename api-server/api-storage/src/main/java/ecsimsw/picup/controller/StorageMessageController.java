@@ -22,11 +22,8 @@ public class StorageMessageController {
     }
 
     @RabbitListener(queues = "${mq.file.deletion.queue.name}", containerFactory = FILE_DELETION_QUEUE_CF)
-    public void deleteAll(List<String> resources) throws InterruptedException {
-//        storageService.deleteAll(resources);
-
-            Thread.sleep(100000);
-            throw new IllegalArgumentException();
+    public void deleteAll(List<String> resources) {
+        storageService.deleteAll(resources);
     }
 
     @RabbitListener(queues = "${mq.file.deletion.recover.queue.name}")

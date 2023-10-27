@@ -33,54 +33,64 @@ public class ResourceService {
         this.backUpStorage = s3ObjectStorage;
     }
 
-    @Transactional
     public ImageUploadResponse upload(String tag, MultipartFile file) {
         final ImageFile imageFile = ImageFile.of(file);
         final Resource resource = Resource.createRequested(tag, file);
+        resourceRepository.save(resource);
+
         if(!resource.isStoredAt(MAIN_STORAGE)) {
             mainStorage.create(resource.getResourceKey(), imageFile);
             resource.storedTo(MAIN_STORAGE);
+            resourceRepository.save(resource);
         }
+
         if(!resource.isStoredAt(BACKUP_STORAGE)) {
             backUpStorage.create(resource.getResourceKey(), imageFile);
             resource.storedTo(BACKUP_STORAGE);
+            resourceRepository.save(resource);
         }
         return new ImageUploadResponse(resource.getResourceKey(), imageFile.getSize());
     }
 
-    @Transactional
     public ImageResponse read(String resourceKey) {
         final Resource resource = findLivedResource(resourceKey);
         if(resource.isStoredAt(MAIN_STORAGE) && resource.isStoredAt(BACKUP_STORAGE)) {
             final ImageFile imageFile = mainStorage.read(resourceKey);
             return ImageResponse.of(imageFile);
         }
+
         if(resource.isStoredAt(MAIN_STORAGE)) {
             final ImageFile imageFile = mainStorage.read(resourceKey);
             backUpStorage.create(resourceKey, imageFile);
             resource.storedTo(BACKUP_STORAGE);
+            resourceRepository.save(resource);
             return ImageResponse.of(imageFile);
         }
+
         if(resource.isStoredAt(BACKUP_STORAGE)) {
             final ImageFile imageFile = backUpStorage.read(resourceKey);
             mainStorage.create(resourceKey, imageFile);
             resource.storedTo(MAIN_STORAGE);
+            resourceRepository.save(resource);
             return ImageResponse.of(imageFile);
         }
         throw new InvalidResourceException("Not exists resource");
     }
 
-    @Transactional
     public void delete(String resourceKey) {
         final Resource resource = findLivedResource(resourceKey);
         resource.deleteRequested();
+
         if(resource.isStoredAt(MAIN_STORAGE)) {
             mainStorage.delete(resourceKey);
             resource.deletedFrom(MAIN_STORAGE);
+            resourceRepository.save(resource);
         }
+
         if(resource.isStoredAt(BACKUP_STORAGE)) {
             backUpStorage.delete(resourceKey);
             resource.deletedFrom(BACKUP_STORAGE);
+            resourceRepository.save(resource);
         }
     }
 
