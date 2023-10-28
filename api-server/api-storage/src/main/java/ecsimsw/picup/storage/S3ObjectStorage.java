@@ -15,6 +15,7 @@ import ecsimsw.picup.domain.StorageKey;
 import ecsimsw.picup.exception.InvalidResourceException;
 import ecsimsw.picup.exception.StorageException;
 import java.io.ByteArrayInputStream;
+import java.io.FileNotFoundException;
 import java.io.InputStream;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -56,14 +57,7 @@ public class S3ObjectStorage implements ImageStorage {
     }
 
     @Override
-    public void delete(String resourceKey) {
-        if (s3Client.doesObjectExist(bucketName, resourceKey)) {
-            s3Client.deleteObject(bucketName, resourceKey);
-        }
-    }
-
-    @Override
-    public ImageFile read(String resourceKey) {
+    public ImageFile read(String resourceKey) throws FileNotFoundException {
         try {
             final S3Object object = s3Client.getObject(new GetObjectRequest(bucketName, resourceKey));
             final byte[] file = IOUtils.toByteArray(object.getObjectContent());
@@ -73,6 +67,14 @@ public class S3ObjectStorage implements ImageStorage {
         } catch (Exception e) {
             throw new StorageException("S3 server exception while reading", e);
         }
+    }
+
+    @Override
+    public void delete(String resourceKey) throws FileNotFoundException {
+        if (!s3Client.doesObjectExist(bucketName, resourceKey)) {
+            throw new FileNotFoundException();
+        }
+        s3Client.deleteObject(bucketName, resourceKey);
     }
 
     @Override

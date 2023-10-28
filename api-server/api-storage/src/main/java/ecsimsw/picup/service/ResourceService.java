@@ -5,7 +5,6 @@ import ecsimsw.picup.domain.Resource;
 import ecsimsw.picup.domain.ResourceRepository;
 import ecsimsw.picup.dto.ImageResponse;
 import ecsimsw.picup.dto.ImageUploadResponse;
-import ecsimsw.picup.exception.FileNotExistsException;
 import ecsimsw.picup.exception.InvalidResourceException;
 import ecsimsw.picup.exception.StorageException;
 import ecsimsw.picup.logging.CustomLogger;
@@ -14,6 +13,8 @@ import ecsimsw.picup.storage.LocalFileStorage;
 import ecsimsw.picup.storage.S3ObjectStorage;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.io.FileNotFoundException;
 
 import static ecsimsw.picup.domain.StorageKey.BACKUP_STORAGE;
 import static ecsimsw.picup.domain.StorageKey.MAIN_STORAGE;
@@ -64,22 +65,28 @@ public class ResourceService {
         try {
             final ImageFile imageFile = mainStorage.read(resourceKey);
             return ImageResponse.of(imageFile);
-        } catch (FileNotExistsException failToReadFromMain) {
+        } catch (FileNotFoundException notFoundFromMain) {
             try {
                 final ImageFile imageFile = backUpStorage.read(resourceKey);
                 mainStorage.create(resourceKey, imageFile);
                 resource.storedTo(MAIN_STORAGE);
                 resourceRepository.save(resource);
                 return ImageResponse.of(imageFile);
-            } catch (FileNotExistsException failToReadFromBackUp) {
+            } catch (FileNotFoundException notFoundFromBackup) {
                 resource.deletedFrom(MAIN_STORAGE);
                 resource.deletedFrom(BACKUP_STORAGE);
                 resourceRepository.save(resource);
                 throw new StorageException("File not exists : " + resourceKey);
+            } catch (Exception failToReadFromBoth) {
+                throw new StorageException("Failed to read : " + resourceKey);
             }
-        } catch (Exception e) {
-            final ImageFile imageFile = backUpStorage.read(resourceKey);
-            return ImageResponse.of(imageFile);
+        } catch (Exception failedToReadFromMain) {
+            try {
+                final ImageFile imageFile = backUpStorage.read(resourceKey);
+                return ImageResponse.of(imageFile);
+            } catch (Exception failToReadFromBoth) {
+                throw new StorageException("Failed to read : " + resourceKey);
+            }
         }
     }
 
@@ -93,7 +100,7 @@ public class ResourceService {
                 mainStorage.delete(resourceKey);
                 resource.deletedFrom(MAIN_STORAGE);
                 resourceRepository.save(resource);
-            } catch (FileNotExistsException ignored) {
+            } catch (FileNotFoundException e) {
                 resource.deletedFrom(MAIN_STORAGE);
                 resourceRepository.save(resource);
             }
@@ -104,7 +111,7 @@ public class ResourceService {
                 backUpStorage.delete(resourceKey);
                 resource.deletedFrom(BACKUP_STORAGE);
                 resourceRepository.save(resource);
-            } catch (FileNotExistsException ignored) {
+            } catch (FileNotFoundException e) {
                 resource.deletedFrom(BACKUP_STORAGE);
                 resourceRepository.save(resource);
             }

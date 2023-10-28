@@ -3,16 +3,11 @@ package ecsimsw.picup.storage;
 import ecsimsw.picup.domain.ImageFile;
 import ecsimsw.picup.domain.StorageKey;
 import ecsimsw.picup.ecrypt.AES256Utils;
-import ecsimsw.picup.exception.FileNotExistsException;
-import ecsimsw.picup.exception.InvalidResourceException;
 import ecsimsw.picup.exception.StorageException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
@@ -42,30 +37,33 @@ public class LocalFileStorage implements ImageStorage {
     }
 
     @Override
-    public ImageFile read(String resourceKey) {
+    public ImageFile read(String resourceKey) throws FileNotFoundException {
         final String storagePath = storagePath(resourceKey);
         try (
             final InputStream inputStream = new FileInputStream(storagePath)
         ) {
             final File file = new File(storagePath);
             if(!file.exists()) {
-                throw new FileNotExistsException("File not exists in local file storage");
+                throw new FileNotFoundException();
             }
             final byte[] encrypted = new byte[(int) file.length()];
             inputStream.read(encrypted);
             final byte[] decrypted = AES256Utils.decrypt(encrypted, encryptKey);
             return ImageFile.of(resourceKey, decrypted);
+        } catch (FileNotFoundException e) {
+            throw new FileNotFoundException();
         } catch (Exception e) {
             throw new StorageException("Fail to read image : " + resourceKey);
         }
     }
 
     @Override
-    public void delete(String resourceKey) {
+    public void delete(String resourceKey) throws FileNotFoundException {
         final File file = new File(storagePath(resourceKey));
-        if(file.exists()) {
-            file.delete();
+        if(!file.exists()) {
+            throw new FileNotFoundException();
         }
+        file.delete();
     }
 
     @Override
