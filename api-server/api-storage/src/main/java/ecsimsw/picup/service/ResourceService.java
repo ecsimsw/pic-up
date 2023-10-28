@@ -5,6 +5,7 @@ import ecsimsw.picup.domain.Resource;
 import ecsimsw.picup.domain.ResourceRepository;
 import ecsimsw.picup.dto.ImageResponse;
 import ecsimsw.picup.dto.ImageUploadResponse;
+import ecsimsw.picup.exception.FileNotExistsException;
 import ecsimsw.picup.exception.InvalidResourceException;
 import ecsimsw.picup.exception.StorageException;
 import ecsimsw.picup.logging.CustomLogger;
@@ -63,41 +64,50 @@ public class ResourceService {
         try {
             final ImageFile imageFile = mainStorage.read(resourceKey);
             return ImageResponse.of(imageFile);
-        } catch (Exception failToReadFromMain) {
+        } catch (FileNotExistsException failToReadFromMain) {
             try {
                 final ImageFile imageFile = backUpStorage.read(resourceKey);
-                try {
-                    mainStorage.create(resourceKey, imageFile);
-                    resource.storedTo(MAIN_STORAGE);
-                    resourceRepository.save(resource);
-                    return ImageResponse.of(imageFile);
-                } catch (Exception failToStoreMain) {
-                    LOGGER.error("failed to store main storage from backUp : " + resourceKey);
-                    return ImageResponse.of(imageFile);
-                }
-            } catch (Exception failToReadFromBackUp) {
+                mainStorage.create(resourceKey, imageFile);
+                resource.storedTo(MAIN_STORAGE);
+                resourceRepository.save(resource);
+                return ImageResponse.of(imageFile);
+            } catch (FileNotExistsException failToReadFromBackUp) {
                 resource.deletedFrom(MAIN_STORAGE);
                 resource.deletedFrom(BACKUP_STORAGE);
                 resourceRepository.save(resource);
-                throw new StorageException("Fail to read : " + resourceKey);
+                throw new StorageException("File not exists : " + resourceKey);
             }
+        } catch (Exception e) {
+            final ImageFile imageFile = backUpStorage.read(resourceKey);
+            return ImageResponse.of(imageFile);
         }
     }
 
     public void delete(String resourceKey) {
         final Resource resource = findLivedResource(resourceKey);
         resource.deleteRequested();
+        resourceRepository.save(resource);
 
         if (resource.isStoredAt(MAIN_STORAGE)) {
-            mainStorage.delete(resourceKey);
-            resource.deletedFrom(MAIN_STORAGE);
-            resourceRepository.save(resource);
+            try {
+                mainStorage.delete(resourceKey);
+                resource.deletedFrom(MAIN_STORAGE);
+                resourceRepository.save(resource);
+            } catch (FileNotExistsException ignored) {
+                resource.deletedFrom(MAIN_STORAGE);
+                resourceRepository.save(resource);
+            }
         }
 
         if (resource.isStoredAt(BACKUP_STORAGE)) {
-            backUpStorage.delete(resourceKey);
-            resource.deletedFrom(BACKUP_STORAGE);
-            resourceRepository.save(resource);
+            try {
+                backUpStorage.delete(resourceKey);
+                resource.deletedFrom(BACKUP_STORAGE);
+                resourceRepository.save(resource);
+            } catch (FileNotExistsException ignored) {
+                resource.deletedFrom(BACKUP_STORAGE);
+                resourceRepository.save(resource);
+            }
         }
     }
 
