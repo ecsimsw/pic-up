@@ -4,13 +4,12 @@ import ecsimsw.picup.dto.AlbumInfoRequest;
 import ecsimsw.picup.dto.AlbumInfoResponse;
 import ecsimsw.picup.dto.UpdateAlbumOrderRequest;
 import ecsimsw.picup.service.AlbumService;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Optional;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.multipart.MultipartHttpServletRequest;
+
+import java.util.List;
+import java.util.Optional;
 
 @RestController
 public class AlbumController {
@@ -71,18 +70,5 @@ public class AlbumController {
     ) {
         albumService.updateOrder(orders);
         return ResponseEntity.ok().build();
-    }
-
-    @PostMapping("/upload")
-    public @ResponseBody
-    String handleFileUpload(MultipartHttpServletRequest request) throws InterruptedException {
-        Iterator<String> iterator = request.getFileNames();
-        while (iterator.hasNext()) {
-            String fileName = iterator.next();
-            System.out.println("hihi");
-            Thread.sleep(5000);
-            System.out.println(fileName);
-        }
-        return "ok";
     }
 }
