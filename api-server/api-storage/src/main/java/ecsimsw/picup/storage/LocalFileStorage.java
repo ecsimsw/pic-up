@@ -50,7 +50,7 @@ public class LocalFileStorage implements ImageStorage {
             final byte[] decrypted = AES256Utils.decrypt(encrypted, encryptKey);
             return ImageFile.of(resourceKey, decrypted);
         } catch (FileNotFoundException e) {
-            throw new FileNotFoundException();
+            throw new FileNotFoundException("file not exists : " + resourceKey);
         } catch (Exception e) {
             throw new StorageException("Fail to read image : " + resourceKey);
         }

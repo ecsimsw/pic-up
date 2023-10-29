@@ -56,8 +56,11 @@ public class S3ObjectStorage implements ImageStorage {
     }
 
     @Override
-    public ImageFile read(String resourceKey) throws FileNotFoundException {
+    public ImageFile read(String resourceKey) {
         try {
+            if (!s3Client.doesObjectExist(bucketName, resourceKey)) {
+                throw new FileNotFoundException("file not exists : " + resourceKey);
+            }
             final S3Object object = s3Client.getObject(new GetObjectRequest(bucketName, resourceKey));
             final byte[] file = IOUtils.toByteArray(object.getObjectContent());
             return ImageFile.of(resourceKey, file);
@@ -71,7 +74,7 @@ public class S3ObjectStorage implements ImageStorage {
     @Override
     public void delete(String resourceKey) throws FileNotFoundException {
         if (!s3Client.doesObjectExist(bucketName, resourceKey)) {
-            throw new FileNotFoundException();
+            throw new FileNotFoundException("file not exists : " + resourceKey);
         }
         s3Client.deleteObject(bucketName, resourceKey);
     }
