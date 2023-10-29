@@ -7,10 +7,7 @@ import ecsimsw.picup.dto.ImageResponse;
 import ecsimsw.picup.dto.ImageUploadResponse;
 import ecsimsw.picup.exception.InvalidResourceException;
 import ecsimsw.picup.exception.StorageException;
-import ecsimsw.picup.logging.CustomLogger;
 import ecsimsw.picup.storage.ImageStorage;
-import ecsimsw.picup.storage.LocalFileStorage;
-import ecsimsw.picup.storage.S3ObjectStorage;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -22,16 +19,14 @@ import static ecsimsw.picup.domain.StorageKey.MAIN_STORAGE;
 @Service
 public class ResourceService {
 
-    private static final CustomLogger LOGGER = CustomLogger.init(ResourceService.class);
-
     private final ResourceRepository resourceRepository;
     private final ImageStorage mainStorage;
     private final ImageStorage backUpStorage;
 
     public ResourceService(
         ResourceRepository resourceRepository,
-        LocalFileStorage localFileStorage,
-        S3ObjectStorage s3ObjectStorage
+        ImageStorage localFileStorage,
+        ImageStorage s3ObjectStorage
     ) {
         this.resourceRepository = resourceRepository;
         this.mainStorage = localFileStorage;

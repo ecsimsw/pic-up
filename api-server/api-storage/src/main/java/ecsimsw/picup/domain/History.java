@@ -2,7 +2,6 @@ package ecsimsw.picup.domain;
 
 import java.time.LocalDateTime;
 import lombok.Getter;
-import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -19,8 +18,7 @@ public class History {
 
     private String note;
 
-    @CreatedDate
-    private LocalDateTime createdAt;
+    private final LocalDateTime historyAt = LocalDateTime.now();
 
     public History() {
     }
