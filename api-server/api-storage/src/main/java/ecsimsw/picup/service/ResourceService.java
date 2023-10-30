@@ -8,6 +8,8 @@ import ecsimsw.picup.dto.ImageUploadResponse;
 import ecsimsw.picup.exception.InvalidResourceException;
 import ecsimsw.picup.exception.StorageException;
 import ecsimsw.picup.storage.ImageStorage;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -18,6 +20,8 @@ import static ecsimsw.picup.domain.StorageKey.MAIN_STORAGE;
 
 @Service
 public class ResourceService {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(ResourceService.class);
 
     private final ResourceRepository resourceRepository;
     private final ImageStorage mainStorage;
@@ -54,34 +58,45 @@ public class ResourceService {
 
     public ImageResponse read(String resourceKey) {
         final Resource resource = findLivedResource(resourceKey);
-        if (!resource.isLived() || resource.getStoredStorages().isEmpty()) {
-            throw new InvalidResourceException("Not exists resource");
-        }
+        final ImageFile imageFile = loadFromMain(resourceKey, resource);
+        return ImageResponse.of(imageFile);
+    }
+
+    private ImageFile loadFromMain(String resourceKey, Resource resource) {
         try {
-            final ImageFile imageFile = mainStorage.read(resourceKey);
-            return ImageResponse.of(imageFile);
+            if(!resource.isStoredAt(MAIN_STORAGE)) {
+                throw new InvalidResourceException("Not exists resource");
+            }
+            return mainStorage.read(resourceKey);
         } catch (FileNotFoundException notFoundFromMain) {
             try {
-                final ImageFile imageFile = backUpStorage.read(resourceKey);
+                final ImageFile imageFile = loadFromBackUp(resourceKey, resource);
                 mainStorage.create(resourceKey, imageFile);
                 resource.storedTo(MAIN_STORAGE);
                 resourceRepository.save(resource);
-                return ImageResponse.of(imageFile);
-            } catch (FileNotFoundException notFoundFromBackup) {
+                return imageFile;
+            } catch (Exception exceptionFromBackUpStorage) {
                 resource.deletedFrom(MAIN_STORAGE);
-                resource.deletedFrom(BACKUP_STORAGE);
                 resourceRepository.save(resource);
-                throw new StorageException("File not exists : " + resourceKey);
-            } catch (Exception failToReadFromBoth) {
-                throw new StorageException("Failed to read : " + resourceKey);
+                throw exceptionFromBackUpStorage;
             }
-        } catch (Exception failedToReadFromMain) {
-            try {
-                final ImageFile imageFile = backUpStorage.read(resourceKey);
-                return ImageResponse.of(imageFile);
-            } catch (Exception failToReadFromBoth) {
-                throw new StorageException("Failed to read : " + resourceKey);
+        } catch (Exception e) {
+            LOGGER.error("Fail to read file from main, backUp : " + resourceKey);
+            return loadFromBackUp(resourceKey, resource);
+        }
+    }
+
+    private ImageFile loadFromBackUp(String resourceKey, Resource resource) {
+        try {
+            if (!resource.isStoredAt(BACKUP_STORAGE)) {
+                throw new InvalidResourceException("Not exists resource");
             }
+            return backUpStorage.read(resourceKey);
+        } catch (FileNotFoundException notFoundFromBackup) {
+            resource.deletedFrom(BACKUP_STORAGE);
+            resourceRepository.save(resource);
+            LOGGER.error("Fail to read file from backUp : " + resourceKey);
+            throw new StorageException("File not exists : " + resourceKey);
         }
     }
 
@@ -90,26 +105,22 @@ public class ResourceService {
         resource.deleteRequested();
         resourceRepository.save(resource);
 
-        if (resource.isStoredAt(MAIN_STORAGE)) {
-            try {
-                mainStorage.delete(resourceKey);
-                resource.deletedFrom(MAIN_STORAGE);
-                resourceRepository.save(resource);
-            } catch (FileNotFoundException e) {
-                resource.deletedFrom(MAIN_STORAGE);
-                resourceRepository.save(resource);
-            }
+        try {
+            mainStorage.delete(resourceKey);
+            resource.deletedFrom(MAIN_STORAGE);
+            resourceRepository.save(resource);
+        } catch (FileNotFoundException ignored) {
+            resource.deletedFrom(MAIN_STORAGE);
+            resourceRepository.save(resource);
         }
 
-        if (resource.isStoredAt(BACKUP_STORAGE)) {
-            try {
-                backUpStorage.delete(resourceKey);
-                resource.deletedFrom(BACKUP_STORAGE);
-                resourceRepository.save(resource);
-            } catch (FileNotFoundException e) {
-                resource.deletedFrom(BACKUP_STORAGE);
-                resourceRepository.save(resource);
-            }
+        try {
+            backUpStorage.delete(resourceKey);
+            resource.deletedFrom(BACKUP_STORAGE);
+            resourceRepository.save(resource);
+        } catch (FileNotFoundException ignored) {
+            resource.deletedFrom(BACKUP_STORAGE);
+            resourceRepository.save(resource);
         }
     }
 
