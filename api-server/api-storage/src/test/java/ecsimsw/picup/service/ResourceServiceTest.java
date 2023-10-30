@@ -18,11 +18,13 @@ import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.io.FileNotFoundException;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
-import static ecsimsw.picup.utils.FileFixture.mockFile;
-import static ecsimsw.picup.utils.FileFixture.mockTag;
+import static ecsimsw.picup.domain.StorageKey.MAIN_STORAGE;
+import static ecsimsw.picup.utils.FileFixture.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hibernate.validator.internal.util.Contracts.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertAll;
@@ -49,11 +51,11 @@ public class ResourceServiceTest {
         resourceService = new ResourceService(resourceRepository, mainStorage, backUpStorage);
     }
 
-    @Captor
-    private ArgumentCaptor<Resource> resourceArgumentCaptor;
-
     @Nested
     class UploadTest {
+
+        @Captor
+        private ArgumentCaptor<Resource> resourceArgumentCaptor;
 
         @BeforeEach
         public void initRepository() {
@@ -63,7 +65,7 @@ public class ResourceServiceTest {
         @DisplayName("업로드 성공")
         @Test
         public void uploadSuccessfully() {
-            var result = resourceService.upload(mockTag, mockFile);
+            var result = resourceService.upload(fakeTag, mockMultipartFile);
             verify(resourceRepository, times(3))
                 .save(resourceArgumentCaptor.capture());
 
@@ -72,7 +74,7 @@ public class ResourceServiceTest {
                 () -> assertNotNull(result.getResourceKey()),
                 () -> assertThat(savedResource.getResourceKey()).isEqualTo(result.getResourceKey()),
                 () -> assertThat(savedResource.getStoredStorages()).isEqualTo(
-                    List.of(StorageKey.MAIN_STORAGE, StorageKey.BACKUP_STORAGE)
+                    List.of(MAIN_STORAGE, StorageKey.BACKUP_STORAGE)
                 )
             );
         }
@@ -84,7 +86,7 @@ public class ResourceServiceTest {
                 .when(mainStorage)
                 .create(any(String.class), any(ImageFile.class));
 
-            assertThrows(StorageException.class, () -> resourceService.upload(mockTag, mockFile));
+            assertThrows(StorageException.class, () -> resourceService.upload(fakeTag, mockMultipartFile));
             verify(resourceRepository, times(1))
                 .save(resourceArgumentCaptor.capture());
 
@@ -103,7 +105,7 @@ public class ResourceServiceTest {
                 .when(backUpStorage)
                 .create(any(String.class), any(ImageFile.class));
 
-            assertThrows(StorageException.class, () -> resourceService.upload(mockTag, mockFile));
+            assertThrows(StorageException.class, () -> resourceService.upload(fakeTag, mockMultipartFile));
             verify(resourceRepository, times(2))
                 .save(resourceArgumentCaptor.capture());
 
@@ -111,8 +113,56 @@ public class ResourceServiceTest {
             assertAll(
                 () -> assertThat(savedResource.getResourceKey()).isNotNull(),
                 () -> assertThat(savedResource.getCreateRequested()).isNotNull(),
-                () -> assertThat(savedResource.getStoredStorages()).isEqualTo(List.of(StorageKey.MAIN_STORAGE))
+                () -> assertThat(savedResource.getStoredStorages()).isEqualTo(List.of(MAIN_STORAGE))
             );
+        }
+    }
+
+    @Nested
+    class ReadTest {
+
+        @Captor
+        private ArgumentCaptor<Resource> resourceArgumentCaptor;
+
+        private String resourceKey;
+
+        @BeforeEach
+        private void init() {
+            resourceKey = resourceService.upload(fakeTag, mockMultipartFile).getResourceKey();
+            when(resourceRepository.findById(resourceKey))
+                .thenReturn(Optional.of(createdResource(resourceKey))
+                );
+        }
+
+        @DisplayName("읽기 성공")
+        @Test
+        public void readSuccessfully() {
+            var result = resourceService.read(resourceKey);
+            assertAll(
+                () -> assertThat(result.getImageFile()).isNotNull(),
+                () -> assertThat(result.getFileType()).isNotNull(),
+                () -> assertThat(result.getMediaType()).isNotNull()
+            );
+        }
+
+        @DisplayName("Main storage 에 파일이 없는 경우 BackUp storage에서 load 한다.")
+        @Test
+        public void readFromBackUpStorage() throws FileNotFoundException {
+            doThrow(StorageException.class)
+                .when(mainStorage)
+                .read(any(String.class));
+
+            var result = resourceService.read(resourceKey);
+            assertThat(result.getImageFile()).isNotNull();
+
+            verify(mainStorage, times(1))
+                .create(eq(resourceKey), any(ImageFile.class));
+
+            verify(resourceRepository, times(3))
+                .save(resourceArgumentCaptor.capture());
+
+            var saved = resourceArgumentCaptor.getValue();
+            assertThat(saved.getStoredStorages()).contains(MAIN_STORAGE);
         }
     }
 }

@@ -58,45 +58,43 @@ public class ResourceService {
 
     public ImageResponse read(String resourceKey) {
         final Resource resource = findLivedResource(resourceKey);
-        final ImageFile imageFile = loadFromMain(resourceKey, resource);
-        return ImageResponse.of(imageFile);
-    }
-
-    private ImageFile loadFromMain(String resourceKey, Resource resource) {
-        try {
-            if(!resource.isStoredAt(MAIN_STORAGE)) {
-                throw new InvalidResourceException("Not exists resource");
-            }
-            return mainStorage.read(resourceKey);
-        } catch (FileNotFoundException notFoundFromMain) {
-            try {
-                final ImageFile imageFile = loadFromBackUp(resourceKey, resource);
-                mainStorage.create(resourceKey, imageFile);
-                resource.storedTo(MAIN_STORAGE);
-                resourceRepository.save(resource);
-                return imageFile;
-            } catch (Exception exceptionFromBackUpStorage) {
-                resource.deletedFrom(MAIN_STORAGE);
-                resourceRepository.save(resource);
-                throw exceptionFromBackUpStorage;
-            }
-        } catch (Exception e) {
-            LOGGER.error("Fail to read file from main, backUp : " + resourceKey);
-            return loadFromBackUp(resourceKey, resource);
+        if(!resource.isLived() || !resource.isStoredAt(MAIN_STORAGE)) {
+            throw new InvalidResourceException("Not exists resource");
         }
-    }
-
-    private ImageFile loadFromBackUp(String resourceKey, Resource resource) {
         try {
-            if (!resource.isStoredAt(BACKUP_STORAGE)) {
-                throw new InvalidResourceException("Not exists resource");
-            }
-            return backUpStorage.read(resourceKey);
-        } catch (FileNotFoundException notFoundFromBackup) {
-            resource.deletedFrom(BACKUP_STORAGE);
+            final ImageFile imageFile = mainStorage.read(resourceKey);
+            return ImageResponse.of(imageFile);
+        } catch (FileNotFoundException fnfMain) {
+            resource.deletedFrom(MAIN_STORAGE);
             resourceRepository.save(resource);
-            LOGGER.error("Fail to read file from backUp : " + resourceKey);
-            throw new StorageException("File not exists : " + resourceKey);
+            try {
+                if (!resource.isStoredAt(BACKUP_STORAGE)) {
+                    throw new InvalidResourceException("Not exists resource");
+                }
+                final ImageFile imageFile = backUpStorage.read(resourceKey);
+                mainStorage.create(resourceKey, imageFile);
+                return ImageResponse.of(imageFile);
+            } catch (FileNotFoundException fnfBackUp) {
+                resource.deletedFrom(BACKUP_STORAGE);
+                resourceRepository.save(resource);
+                throw new StorageException("File not exists at both storage : " + resourceKey);
+            } catch (Exception exceptionFromBackUpStorage) {
+                throw new StorageException("File not found in main, fail to read file from backUp : " + resourceKey, exceptionFromBackUpStorage);
+            }
+        } catch (Exception exceptionFromMainStorage) {
+            try {
+                if (!resource.isStoredAt(BACKUP_STORAGE)) {
+                    throw new InvalidResourceException("Not exists resource");
+                }
+                final ImageFile imageFile = backUpStorage.read(resourceKey);
+                return ImageResponse.of(imageFile);
+            } catch (FileNotFoundException f) {
+                resource.deletedFrom(BACKUP_STORAGE);
+                resourceRepository.save(resource);
+                throw new StorageException("Fail to read file from main, File not found in backUp : " + resourceKey, exceptionFromMainStorage);
+            } catch (Exception exceptionFromBackUpStorage) {
+                throw new StorageException("Fail to read file from both : " + resourceKey, exceptionFromMainStorage);
+            }
         }
     }
 
