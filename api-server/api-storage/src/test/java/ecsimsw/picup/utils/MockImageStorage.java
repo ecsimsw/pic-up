@@ -1,8 +1,6 @@
 package ecsimsw.picup.utils;
 
 import ecsimsw.picup.domain.ImageFile;
-import ecsimsw.picup.logging.CustomLogger;
-import ecsimsw.picup.service.ResourceServiceTest;
 import ecsimsw.picup.storage.ImageStorage;
 
 import java.util.Map;

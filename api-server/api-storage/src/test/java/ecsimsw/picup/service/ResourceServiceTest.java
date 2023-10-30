@@ -1,24 +1,34 @@
 package ecsimsw.picup.service;
 
+import ecsimsw.picup.domain.ImageFile;
 import ecsimsw.picup.domain.Resource;
 import ecsimsw.picup.domain.ResourceRepository;
+import ecsimsw.picup.domain.StorageKey;
+import ecsimsw.picup.exception.StorageException;
 import ecsimsw.picup.storage.ImageStorage;
 import ecsimsw.picup.utils.MockImageStorage;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.*;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
+import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
 
 import static ecsimsw.picup.utils.FileFixture.mockFile;
 import static ecsimsw.picup.utils.FileFixture.mockTag;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.hibernate.validator.internal.util.Contracts.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class ResourceServiceTest {
@@ -27,35 +37,63 @@ public class ResourceServiceTest {
     private ResourceRepository resourceRepository;
 
     @Spy
-    private ImageStorage mainStorage = new MockImageStorage();
+    private ImageStorage localFileStorage = new MockImageStorage();
 
     @Spy
-    private ImageStorage backUpStorage = new MockImageStorage();
+    private ImageStorage s3ObjectStorage = new MockImageStorage();
 
-    @InjectMocks
     private ResourceService resourceService;
 
+    @BeforeEach
+    public void init() {
+        resourceService = new ResourceService(resourceRepository, localFileStorage, s3ObjectStorage);
+    }
+
     @Captor
-    ArgumentCaptor<List<Resource>> listArgumentCaptor;
+    private ArgumentCaptor<Resource> resourceArgumentCaptor;
 
-    @DisplayName("Upload")
-    @Test
-    public void upload() throws IOException {
-        when(resourceRepository.save(any(Resource.class)))
-            .thenAnswer(i -> i.getArguments()[0]);
+    @Nested
+    class UploadTest {
 
-        var ac = ArgumentCaptor.forClass(Resource.class);
-        Mockito.verify(resourceRepository, times(3))
-            .save(ac.capture());
+        @BeforeEach
+        public void initRepository() {
+            when(resourceRepository.save(any(Resource.class))).thenAnswer(i -> i.getArguments()[0]);
+        }
 
-        var result = resourceService.upload(mockTag, mockFile);
-        System.out.println(ac.getValue());
+        @DisplayName("업로드 성공")
+        @Test
+        public void uploadSuccessfully() {
+            var result = resourceService.upload(mockTag, mockFile);
+            verify(resourceRepository, times(3))
+                .save(resourceArgumentCaptor.capture());
 
-//        when(resourceRepository.findById(any(String.class)))
-//            .thenAnswer(i -> ac.getValue());
+            var savedResource = resourceArgumentCaptor.getValue();
+            assertAll(
+                () -> assertNotNull(result.getResourceKey()),
+                () -> assertThat(savedResource.getResourceKey()).isEqualTo(result.getResourceKey()),
+                () -> assertThat(savedResource.getStoredStorages()).isEqualTo(
+                    List.of(StorageKey.MAIN_STORAGE, StorageKey.BACKUP_STORAGE)
+                )
+            );
+        }
 
-        var savedImageFile = resourceService.read(result.getResourceKey()).getImageFile();
-        assertThat(savedImageFile).isEqualTo(mockFile.getBytes());
+        @DisplayName("Main storage 에 저장 실패시 업로드 전체가 실패한다.")
+        @Test
+        public void uploadFailWithStorageIssue() {
+            doThrow(StorageException.class)
+                .when(localFileStorage)
+                .create(any(String.class), any(ImageFile.class));
+
+            assertThrows(StorageException.class, () -> resourceService.upload(mockTag, mockFile));
+            verify(resourceRepository, times(1))
+                .save(resourceArgumentCaptor.capture());
+
+            var savedResource = resourceArgumentCaptor.getValue();
+            assertAll(
+                () -> assertThat(savedResource.getResourceKey()).isNotNull(),
+                () -> assertThat(savedResource.getCreateRequested()).isNotNull(),
+                () -> assertThat(savedResource.getStoredStorages()).isEqualTo(Collections.emptyList())
+            );
+        }
     }
 }
-
