@@ -34,7 +34,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-public class StorageServiceBackUpBackUpTest {
+public class StorageServiceTest {
 
     @Mock
     private ResourceRepository resourceRepository;
@@ -80,7 +80,7 @@ public class StorageServiceBackUpBackUpTest {
             );
         }
 
-        @DisplayName("Main storage 에 저장 실패시 업로드에 실패한다. 단, 생성 기록은 남긴다.")
+        @DisplayName("Main storage 에 저장 실패시 업로드에 실패한다. 단, 리소스 생성 기록은 남긴다.")
         @Test
         public void uploadFailWithMainStorage() {
             doThrow(StorageException.class)
@@ -99,7 +99,7 @@ public class StorageServiceBackUpBackUpTest {
             );
         }
 
-        @DisplayName("BackUp storage 에 저장 실패시 업로드에 실패한다. 단, 생성 기록은 남긴다.")
+        @DisplayName("BackUp storage 에 저장 실패시 업로드에 실패한다. 단, Main 스토리지까지의 저장 기록은 남긴다.")
         @Test
         public void uploadFailWithBackUpStorage() {
             doThrow(StorageException.class)
@@ -145,9 +145,55 @@ public class StorageServiceBackUpBackUpTest {
             );
         }
 
-        @DisplayName("Main storage 에 파일이 없는 경우 BackUp storage에서 load 한다.")
+        @DisplayName("Main storage 에 파일이 없는 경우 BackUp storage 에서 Main 으로 load 하고 응답한다.")
         @Test
-        public void readFromBackUpStorage() throws FileNotFoundException {
+        public void readFailed1() throws FileNotFoundException {
+            doThrow(FileNotFoundException.class)
+                .when(mainStorage)
+                .read(any(String.class));
+
+            var result = storageService.read(resourceKey);
+            assertThat(result.getImageFile()).isNotNull();
+
+            verify(mainStorage, times(2))
+                .create(eq(resourceKey), any(ImageFile.class));
+
+            verify(resourceRepository, times(5))
+                .save(resourceArgumentCaptor.capture());
+
+            var saved = resourceArgumentCaptor.getValue();
+            assertThat(saved.getStoredStorages()).contains(LOCAL_FILE_STORAGE);
+            assertThat(saved.getStoredStorages()).contains(S3_OBJECT_STORAGE);
+        }
+
+        @DisplayName("Main storage 에 파일이 없고, 쓰기에 실패하는 경우 BackUp 에서 직접 응답한다.")
+        @Test
+        public void readFailed2() throws FileNotFoundException {
+            doThrow(FileNotFoundException.class)
+                .when(mainStorage)
+                .read(any(String.class));
+
+            doThrow(StorageException.class)
+                .when(mainStorage)
+                .create(any(String.class), any(ImageFile.class));
+
+            var result = storageService.read(resourceKey);
+            assertThat(result.getImageFile()).isNotNull();
+
+            verify(mainStorage, times(2))
+                .create(eq(resourceKey), any(ImageFile.class));
+
+            verify(resourceRepository, times(4))
+                .save(resourceArgumentCaptor.capture());
+
+            var saved = resourceArgumentCaptor.getValue();
+            assertThat(saved.getStoredStorages()).doesNotContain(LOCAL_FILE_STORAGE);
+            assertThat(saved.getStoredStorages()).contains(S3_OBJECT_STORAGE);
+        }
+
+        @DisplayName("Main storage 에서 읽기 실패할 경우 BackUp storage 에서 응답한다.")
+        @Test
+        public void readFailed3() throws FileNotFoundException {
             doThrow(StorageException.class)
                 .when(mainStorage)
                 .read(any(String.class));
@@ -163,6 +209,28 @@ public class StorageServiceBackUpBackUpTest {
 
             var saved = resourceArgumentCaptor.getValue();
             assertThat(saved.getStoredStorages()).contains(LOCAL_FILE_STORAGE);
+            assertThat(saved.getStoredStorages()).contains(S3_OBJECT_STORAGE);
+        }
+
+        @DisplayName("모든 storage 에서 읽기 실패하는 경우 읽기에 실패한다.")
+        @Test
+        public void readFailed4() throws FileNotFoundException {
+            doThrow(StorageException.class)
+                .when(mainStorage)
+                .read(any(String.class));
+
+            var result = storageService.read(resourceKey);
+            assertThat(result.getImageFile()).isNotNull();
+
+            verify(mainStorage, times(1))
+                .create(eq(resourceKey), any(ImageFile.class));
+
+            verify(resourceRepository, times(3))
+                .save(resourceArgumentCaptor.capture());
+
+            var saved = resourceArgumentCaptor.getValue();
+            assertThat(saved.getStoredStorages()).contains(LOCAL_FILE_STORAGE);
+            assertThat(saved.getStoredStorages()).contains(S3_OBJECT_STORAGE);
         }
     }
 }

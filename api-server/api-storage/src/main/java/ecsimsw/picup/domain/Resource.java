@@ -46,19 +46,21 @@ public class Resource {
     }
 
     public void storedTo(ImageStorage storage) {
-        storedStorages.add(storage.key());
+        storedTo(storage.key());
     }
 
     public void storedTo(StorageKey storageKey) {
+        storedStorages = new ArrayList<>(storedStorages);
         storedStorages.add(storageKey);
     }
 
-    public void deletedFrom(StorageKey storageKey) {
-        storedStorages.remove(storageKey);
+    public void deletedFrom(ImageStorage storage) {
+        deletedFrom(storage.key());
     }
 
-    public void deletedFrom(ImageStorage storage) {
-        storedStorages.remove(storage.key());
+    public void deletedFrom(StorageKey storageKey) {
+        storedStorages = new ArrayList<>(storedStorages);
+        storedStorages.remove(storageKey);
     }
 
     public void deleteRequested() {

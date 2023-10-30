@@ -53,27 +53,29 @@ public class StorageService {
         if (storages.isEmpty()) {
             throw new StorageException("Fail to read file from both : " + resource.getResourceKey());
         }
+
         final ImageStorage storage = storages.get(0);
+        ImageFile loadFromBackup;
         try {
             if (resource.isStoredAt(storage)) {
                 return storage.read(resource.getResourceKey());
             }
-            final ImageFile loadFromBackup = readWithLoading(resource, chainNext(storages));
-            storage.create(resource.getResourceKey(), loadFromBackup);
-            resource.storedTo(storage);
-            resourceRepository.save(resource);
-            return loadFromBackup;
+            loadFromBackup = readWithLoading(resource, chainNext(storages));
         } catch (FileNotFoundException fileNotFoundException) {
             resource.deletedFrom(storage);
             resourceRepository.save(resource);
+            loadFromBackup = readWithLoading(resource, chainNext(storages));
+        } catch (Exception e) {
+            return readWithLoading(resource, chainNext(storages));
+        }
 
-            final ImageFile loadFromBackup = readWithLoading(resource, chainNext(storages));
+        try {
             storage.create(resource.getResourceKey(), loadFromBackup);
             resource.storedTo(storage);
             resourceRepository.save(resource);
             return loadFromBackup;
         } catch (Exception e) {
-            return readWithLoading(resource, chainNext(storages));
+            return loadFromBackup;
         }
     }
 

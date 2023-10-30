@@ -61,21 +61,30 @@ public class ResourceServiceBackUp {
             final ImageFile imageFile = mainStorage.read(resourceKey);
             return ImageResponse.of(imageFile);
         } catch (FileNotFoundException fnfMain) {
-            resource.deletedFrom(LOCAL_FILE_STORAGE);
-            resourceRepository.save(resource);
+            ImageFile imageFile;
             try {
                 if (!resource.isStoredAt(S3_OBJECT_STORAGE)) {
                     throw new InvalidResourceException("Not exists resource");
                 }
-                final ImageFile imageFile = backUpStorage.read(resourceKey);
-                mainStorage.create(resourceKey, imageFile);
-                return ImageResponse.of(imageFile);
+                imageFile = backUpStorage.read(resourceKey);
             } catch (FileNotFoundException fnfBackUp) {
                 resource.deletedFrom(S3_OBJECT_STORAGE);
                 resourceRepository.save(resource);
                 throw new StorageException("File not exists at both storage : " + resourceKey);
             } catch (Exception exceptionFromBackUpStorage) {
                 throw new StorageException("File not found in main, fail to read file from backUp : " + resourceKey, exceptionFromBackUpStorage);
+            }
+            try {
+                resource.deletedFrom(LOCAL_FILE_STORAGE);
+                resourceRepository.save(resource);
+
+                mainStorage.create(resourceKey, imageFile);
+
+                resource.storedTo(LOCAL_FILE_STORAGE);
+                resourceRepository.save(resource);
+                return ImageResponse.of(imageFile);
+            } catch (Exception e) {
+                return ImageResponse.of(imageFile);
             }
         } catch (Exception exceptionFromMainStorage) {
             try {
