@@ -27,6 +27,7 @@ import static ecsimsw.picup.domain.StorageKey.LOCAL_FILE_STORAGE;
 import static ecsimsw.picup.domain.StorageKey.S3_OBJECT_STORAGE;
 import static ecsimsw.picup.utils.FileFixture.*;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.hibernate.validator.internal.util.Contracts.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -60,7 +61,8 @@ public class StorageServiceTest {
 
         @BeforeEach
         public void initRepository() {
-            when(resourceRepository.save(any(Resource.class))).thenAnswer(i -> i.getArguments()[0]);
+            when(resourceRepository.save(any(Resource.class)))
+                .thenAnswer(i -> i.getArguments()[0]);
         }
 
         @DisplayName("업로드 성공")
@@ -84,8 +86,7 @@ public class StorageServiceTest {
         @Test
         public void uploadFailWithMainStorage() {
             doThrow(StorageException.class)
-                .when(mainStorage)
-                .create(any(String.class), any(ImageFile.class));
+                .when(mainStorage).create(any(String.class), any(ImageFile.class));
 
             assertThrows(StorageException.class, () -> storageService.upload(fakeTag, mockMultipartFile));
             verify(resourceRepository, times(1))
@@ -103,8 +104,7 @@ public class StorageServiceTest {
         @Test
         public void uploadFailWithBackUpStorage() {
             doThrow(StorageException.class)
-                .when(backUpStorage)
-                .create(any(String.class), any(ImageFile.class));
+                .when(backUpStorage).create(any(String.class), any(ImageFile.class));
 
             assertThrows(StorageException.class, () -> storageService.upload(fakeTag, mockMultipartFile));
             verify(resourceRepository, times(2))
@@ -149,8 +149,7 @@ public class StorageServiceTest {
         @Test
         public void readFailed1() throws FileNotFoundException {
             doThrow(FileNotFoundException.class)
-                .when(mainStorage)
-                .read(any(String.class));
+                .when(mainStorage).read(any(String.class));
 
             var result = storageService.read(resourceKey);
             assertThat(result.getImageFile()).isNotNull();
@@ -170,12 +169,10 @@ public class StorageServiceTest {
         @Test
         public void readFailed2() throws FileNotFoundException {
             doThrow(FileNotFoundException.class)
-                .when(mainStorage)
-                .read(any(String.class));
+                .when(mainStorage).read(any(String.class));
 
             doThrow(StorageException.class)
-                .when(mainStorage)
-                .create(any(String.class), any(ImageFile.class));
+                .when(mainStorage).create(any(String.class), any(ImageFile.class));
 
             var result = storageService.read(resourceKey);
             assertThat(result.getImageFile()).isNotNull();
@@ -195,8 +192,7 @@ public class StorageServiceTest {
         @Test
         public void readFailed3() throws FileNotFoundException {
             doThrow(StorageException.class)
-                .when(mainStorage)
-                .read(any(String.class));
+                .when(mainStorage).read(any(String.class));
 
             var result = storageService.read(resourceKey);
             assertThat(result.getImageFile()).isNotNull();
@@ -212,18 +208,39 @@ public class StorageServiceTest {
             assertThat(saved.getStoredStorages()).contains(S3_OBJECT_STORAGE);
         }
 
-        @DisplayName("모든 storage 에서 읽기 실패하는 경우 읽기에 실패한다.")
+        @DisplayName("모든 storage 에서 파일이 존재하지 않는 경우 읽기에 실패한다.")
         @Test
         public void readFailed4() throws FileNotFoundException {
+            doThrow(FileNotFoundException.class)
+                .when(mainStorage).read(any(String.class));
+
+            doThrow(FileNotFoundException.class)
+                .when(backUpStorage).read(any(String.class));
+
+            assertThatThrownBy(
+                () -> storageService.read(resourceKey)
+            ).isInstanceOf(StorageException.class);
+
+            verify(resourceRepository, times(5))
+                .save(resourceArgumentCaptor.capture());
+
+            var saved = resourceArgumentCaptor.getValue();
+            assertThat(saved.getStoredStorages()).doesNotContain(LOCAL_FILE_STORAGE);
+            assertThat(saved.getStoredStorages()).doesNotContain(S3_OBJECT_STORAGE);
+        }
+
+        @DisplayName("모든 storage 에서 읽기 실패하는 경우 읽기에 실패한다.")
+        @Test
+        public void readFailed5() throws FileNotFoundException {
             doThrow(StorageException.class)
-                .when(mainStorage)
-                .read(any(String.class));
+                .when(mainStorage).read(any(String.class));
 
-            var result = storageService.read(resourceKey);
-            assertThat(result.getImageFile()).isNotNull();
+            doThrow(StorageException.class)
+                .when(backUpStorage).read(any(String.class));
 
-            verify(mainStorage, times(1))
-                .create(eq(resourceKey), any(ImageFile.class));
+            assertThatThrownBy(
+                () -> storageService.read(resourceKey)
+            ).isInstanceOf(StorageException.class);
 
             verify(resourceRepository, times(3))
                 .save(resourceArgumentCaptor.capture());
