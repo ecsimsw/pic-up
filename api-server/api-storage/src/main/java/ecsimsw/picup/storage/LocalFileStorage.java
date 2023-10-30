@@ -1,6 +1,7 @@
 package ecsimsw.picup.storage;
 
 import ecsimsw.picup.domain.ImageFile;
+import ecsimsw.picup.domain.StorageKey;
 import ecsimsw.picup.ecrypt.AES256Utils;
 import ecsimsw.picup.exception.StorageException;
 import org.springframework.beans.factory.annotation.Value;
@@ -12,6 +13,8 @@ import java.nio.file.Paths;
 
 @Component
 public class LocalFileStorage implements ImageStorage {
+
+    public static final StorageKey KEY = StorageKey.LOCAL_FILE_STORAGE;
 
     private final String rootPath;
     private final String encryptKey;
@@ -63,6 +66,11 @@ public class LocalFileStorage implements ImageStorage {
             throw new FileNotFoundException();
         }
         file.delete();
+    }
+
+    @Override
+    public StorageKey key() {
+        return KEY;
     }
 
     private String storagePath(String resourceKey) {

@@ -8,26 +8,22 @@ import ecsimsw.picup.dto.ImageUploadResponse;
 import ecsimsw.picup.exception.InvalidResourceException;
 import ecsimsw.picup.exception.StorageException;
 import ecsimsw.picup.storage.ImageStorage;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.FileNotFoundException;
 
-import static ecsimsw.picup.domain.StorageKey.BACKUP_STORAGE;
-import static ecsimsw.picup.domain.StorageKey.MAIN_STORAGE;
+import static ecsimsw.picup.domain.StorageKey.LOCAL_FILE_STORAGE;
+import static ecsimsw.picup.domain.StorageKey.S3_OBJECT_STORAGE;
 
 @Service
-public class ResourceService {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(ResourceService.class);
+public class ResourceServiceBackUp {
 
     private final ResourceRepository resourceRepository;
     private final ImageStorage mainStorage;
     private final ImageStorage backUpStorage;
 
-    public ResourceService(
+    public ResourceServiceBackUp(
         ResourceRepository resourceRepository,
         ImageStorage localFileStorage,
         ImageStorage s3ObjectStorage
@@ -42,15 +38,15 @@ public class ResourceService {
         final Resource resource = Resource.createRequested(tag, file);
         resourceRepository.save(resource);
 
-        if (!resource.isStoredAt(MAIN_STORAGE)) {
+        if (!resource.isStoredAt(LOCAL_FILE_STORAGE)) {
             mainStorage.create(resource.getResourceKey(), imageFile);
-            resource.storedTo(MAIN_STORAGE);
+            resource.storedTo(LOCAL_FILE_STORAGE);
             resourceRepository.save(resource);
         }
 
-        if (!resource.isStoredAt(BACKUP_STORAGE)) {
+        if (!resource.isStoredAt(S3_OBJECT_STORAGE)) {
             backUpStorage.create(resource.getResourceKey(), imageFile);
-            resource.storedTo(BACKUP_STORAGE);
+            resource.storedTo(S3_OBJECT_STORAGE);
             resourceRepository.save(resource);
         }
         return new ImageUploadResponse(resource.getResourceKey(), imageFile.getSize());
@@ -58,24 +54,24 @@ public class ResourceService {
 
     public ImageResponse read(String resourceKey) {
         final Resource resource = findLivedResource(resourceKey);
-        if(!resource.isLived() || !resource.isStoredAt(MAIN_STORAGE)) {
+        if (!resource.isLived() || resource.getStoredStorages().isEmpty()) {
             throw new InvalidResourceException("Not exists resource");
         }
         try {
             final ImageFile imageFile = mainStorage.read(resourceKey);
             return ImageResponse.of(imageFile);
         } catch (FileNotFoundException fnfMain) {
-            resource.deletedFrom(MAIN_STORAGE);
+            resource.deletedFrom(LOCAL_FILE_STORAGE);
             resourceRepository.save(resource);
             try {
-                if (!resource.isStoredAt(BACKUP_STORAGE)) {
+                if (!resource.isStoredAt(S3_OBJECT_STORAGE)) {
                     throw new InvalidResourceException("Not exists resource");
                 }
                 final ImageFile imageFile = backUpStorage.read(resourceKey);
                 mainStorage.create(resourceKey, imageFile);
                 return ImageResponse.of(imageFile);
             } catch (FileNotFoundException fnfBackUp) {
-                resource.deletedFrom(BACKUP_STORAGE);
+                resource.deletedFrom(S3_OBJECT_STORAGE);
                 resourceRepository.save(resource);
                 throw new StorageException("File not exists at both storage : " + resourceKey);
             } catch (Exception exceptionFromBackUpStorage) {
@@ -83,13 +79,13 @@ public class ResourceService {
             }
         } catch (Exception exceptionFromMainStorage) {
             try {
-                if (!resource.isStoredAt(BACKUP_STORAGE)) {
+                if (!resource.isStoredAt(S3_OBJECT_STORAGE)) {
                     throw new InvalidResourceException("Not exists resource");
                 }
                 final ImageFile imageFile = backUpStorage.read(resourceKey);
                 return ImageResponse.of(imageFile);
             } catch (FileNotFoundException f) {
-                resource.deletedFrom(BACKUP_STORAGE);
+                resource.deletedFrom(S3_OBJECT_STORAGE);
                 resourceRepository.save(resource);
                 throw new StorageException("Fail to read file from main, File not found in backUp : " + resourceKey, exceptionFromMainStorage);
             } catch (Exception exceptionFromBackUpStorage) {
@@ -105,19 +101,19 @@ public class ResourceService {
 
         try {
             mainStorage.delete(resourceKey);
-            resource.deletedFrom(MAIN_STORAGE);
+            resource.deletedFrom(LOCAL_FILE_STORAGE);
             resourceRepository.save(resource);
         } catch (FileNotFoundException ignored) {
-            resource.deletedFrom(MAIN_STORAGE);
+            resource.deletedFrom(LOCAL_FILE_STORAGE);
             resourceRepository.save(resource);
         }
 
         try {
             backUpStorage.delete(resourceKey);
-            resource.deletedFrom(BACKUP_STORAGE);
+            resource.deletedFrom(S3_OBJECT_STORAGE);
             resourceRepository.save(resource);
         } catch (FileNotFoundException ignored) {
-            resource.deletedFrom(BACKUP_STORAGE);
+            resource.deletedFrom(S3_OBJECT_STORAGE);
             resourceRepository.save(resource);
         }
     }

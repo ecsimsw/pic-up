@@ -3,7 +3,7 @@ package ecsimsw.picup.controller;
 import static ecsimsw.picup.config.RabbitMQContainerFactories.FILE_DELETION_QUEUE_CF;
 
 import ecsimsw.picup.logging.CustomLogger;
-import ecsimsw.picup.service.StorageService;
+import ecsimsw.picup.service.StorageServiceBackUp;
 
 import java.util.List;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
@@ -15,15 +15,15 @@ public class StorageMessageController {
 
     private static final CustomLogger LOGGER = CustomLogger.init(StorageMessageController.class);
 
-    private final StorageService storageService;
+    private final StorageServiceBackUp storageServiceBackUp;
 
-    public StorageMessageController(StorageService storageService) {
-        this.storageService = storageService;
+    public StorageMessageController(StorageServiceBackUp storageServiceBackUp) {
+        this.storageServiceBackUp = storageServiceBackUp;
     }
 
     @RabbitListener(queues = "${mq.file.deletion.queue.name}", containerFactory = FILE_DELETION_QUEUE_CF)
     public void deleteAll(List<String> resources) {
-        storageService.deleteAll(resources);
+        storageServiceBackUp.deleteAll(resources);
     }
 
     @RabbitListener(queues = "${mq.file.deletion.recover.queue.name}")

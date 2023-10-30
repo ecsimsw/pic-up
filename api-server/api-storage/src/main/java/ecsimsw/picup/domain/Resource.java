@@ -4,6 +4,8 @@ import ecsimsw.picup.exception.InvalidResourceException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+
+import ecsimsw.picup.storage.ImageStorage;
 import lombok.Getter;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -43,12 +45,20 @@ public class Resource {
         return new Resource(resourceKey, new ArrayList<>(), LocalDateTime.now(), null);
     }
 
+    public void storedTo(ImageStorage storage) {
+        storedStorages.add(storage.key());
+    }
+
     public void storedTo(StorageKey storageKey) {
         storedStorages.add(storageKey);
     }
 
     public void deletedFrom(StorageKey storageKey) {
         storedStorages.remove(storageKey);
+    }
+
+    public void deletedFrom(ImageStorage storage) {
+        storedStorages.remove(storage.key());
     }
 
     public void deleteRequested() {
@@ -64,5 +74,9 @@ public class Resource {
 
     public boolean isStoredAt(StorageKey key) {
         return storedStorages.contains(key);
+    }
+
+    public boolean isStoredAt(ImageStorage storage) {
+        return storedStorages.contains(storage.key());
     }
 }

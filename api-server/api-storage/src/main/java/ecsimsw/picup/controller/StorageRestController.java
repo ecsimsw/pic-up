@@ -19,8 +19,8 @@ public class StorageRestController {
     }
 
     @PostMapping("/api/file")
-    public ResponseEntity<ImageUploadResponse> upload(MultipartFile file, String tag) {
-        final ImageUploadResponse uploadedInfo = storageService.upload(file, tag);
+    public ResponseEntity<ImageUploadResponse> upload(String tag, MultipartFile file) {
+        final ImageUploadResponse uploadedInfo = storageService.upload(tag, file);
         return ResponseEntity.ok(uploadedInfo);
     }
 

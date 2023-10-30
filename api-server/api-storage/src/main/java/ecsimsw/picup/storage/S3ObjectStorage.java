@@ -11,6 +11,7 @@ import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.amazonaws.services.s3.model.S3Object;
 import com.amazonaws.util.IOUtils;
 import ecsimsw.picup.domain.ImageFile;
+import ecsimsw.picup.domain.StorageKey;
 import ecsimsw.picup.exception.InvalidResourceException;
 import ecsimsw.picup.exception.StorageException;
 import java.io.ByteArrayInputStream;
@@ -21,6 +22,8 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class S3ObjectStorage implements ImageStorage {
+
+    public static final StorageKey KEY = StorageKey.S3_OBJECT_STORAGE;
 
     private final AmazonS3 s3Client;
     private final String bucketName;
@@ -77,6 +80,11 @@ public class S3ObjectStorage implements ImageStorage {
             throw new FileNotFoundException("file not exists : " + resourceKey);
         }
         s3Client.deleteObject(bucketName, resourceKey);
+    }
+
+    @Override
+    public StorageKey key() {
+        return KEY;
     }
 }
 

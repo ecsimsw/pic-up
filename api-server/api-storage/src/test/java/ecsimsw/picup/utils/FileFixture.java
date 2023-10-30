@@ -20,7 +20,7 @@ public class FileFixture {
     public static Resource createdResource(String key) {
         return new Resource(
             key,
-            List.of(StorageKey.MAIN_STORAGE, StorageKey.BACKUP_STORAGE),
+            List.of(StorageKey.LOCAL_FILE_STORAGE, StorageKey.S3_OBJECT_STORAGE),
             LocalDateTime.now(),
             null
         );

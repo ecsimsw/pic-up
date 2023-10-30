@@ -23,7 +23,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-import static ecsimsw.picup.domain.StorageKey.MAIN_STORAGE;
+import static ecsimsw.picup.domain.StorageKey.LOCAL_FILE_STORAGE;
+import static ecsimsw.picup.domain.StorageKey.S3_OBJECT_STORAGE;
 import static ecsimsw.picup.utils.FileFixture.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hibernate.validator.internal.util.Contracts.assertNotNull;
@@ -33,22 +34,22 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-public class ResourceServiceTest {
+public class StorageServiceBackUpBackUpTest {
 
     @Mock
     private ResourceRepository resourceRepository;
 
     @Spy
-    private ImageStorage mainStorage = new MockImageStorage();
+    private ImageStorage mainStorage = new MockImageStorage(LOCAL_FILE_STORAGE);
 
     @Spy
-    private ImageStorage backUpStorage = new MockImageStorage();
+    private ImageStorage backUpStorage = new MockImageStorage(S3_OBJECT_STORAGE);
 
-    private ResourceService resourceService;
+    private StorageService storageService;
 
     @BeforeEach
     public void init() {
-        resourceService = new ResourceService(resourceRepository, mainStorage, backUpStorage);
+        storageService = new StorageService(resourceRepository, mainStorage, backUpStorage);
     }
 
     @Nested
@@ -65,7 +66,7 @@ public class ResourceServiceTest {
         @DisplayName("업로드 성공")
         @Test
         public void uploadSuccessfully() {
-            var result = resourceService.upload(fakeTag, mockMultipartFile);
+            var result = storageService.upload(fakeTag, mockMultipartFile);
             verify(resourceRepository, times(3))
                 .save(resourceArgumentCaptor.capture());
 
@@ -74,7 +75,7 @@ public class ResourceServiceTest {
                 () -> assertNotNull(result.getResourceKey()),
                 () -> assertThat(savedResource.getResourceKey()).isEqualTo(result.getResourceKey()),
                 () -> assertThat(savedResource.getStoredStorages()).isEqualTo(
-                    List.of(MAIN_STORAGE, StorageKey.BACKUP_STORAGE)
+                    List.of(LOCAL_FILE_STORAGE, StorageKey.S3_OBJECT_STORAGE)
                 )
             );
         }
@@ -86,7 +87,7 @@ public class ResourceServiceTest {
                 .when(mainStorage)
                 .create(any(String.class), any(ImageFile.class));
 
-            assertThrows(StorageException.class, () -> resourceService.upload(fakeTag, mockMultipartFile));
+            assertThrows(StorageException.class, () -> storageService.upload(fakeTag, mockMultipartFile));
             verify(resourceRepository, times(1))
                 .save(resourceArgumentCaptor.capture());
 
@@ -105,7 +106,7 @@ public class ResourceServiceTest {
                 .when(backUpStorage)
                 .create(any(String.class), any(ImageFile.class));
 
-            assertThrows(StorageException.class, () -> resourceService.upload(fakeTag, mockMultipartFile));
+            assertThrows(StorageException.class, () -> storageService.upload(fakeTag, mockMultipartFile));
             verify(resourceRepository, times(2))
                 .save(resourceArgumentCaptor.capture());
 
@@ -113,7 +114,7 @@ public class ResourceServiceTest {
             assertAll(
                 () -> assertThat(savedResource.getResourceKey()).isNotNull(),
                 () -> assertThat(savedResource.getCreateRequested()).isNotNull(),
-                () -> assertThat(savedResource.getStoredStorages()).isEqualTo(List.of(MAIN_STORAGE))
+                () -> assertThat(savedResource.getStoredStorages()).isEqualTo(List.of(LOCAL_FILE_STORAGE))
             );
         }
     }
@@ -128,16 +129,15 @@ public class ResourceServiceTest {
 
         @BeforeEach
         private void init() {
-            resourceKey = resourceService.upload(fakeTag, mockMultipartFile).getResourceKey();
+            resourceKey = storageService.upload(fakeTag, mockMultipartFile).getResourceKey();
             when(resourceRepository.findById(resourceKey))
-                .thenReturn(Optional.of(createdResource(resourceKey))
-                );
+                .thenReturn(Optional.of(createdResource(resourceKey)));
         }
 
         @DisplayName("읽기 성공")
         @Test
         public void readSuccessfully() {
-            var result = resourceService.read(resourceKey);
+            var result = storageService.read(resourceKey);
             assertAll(
                 () -> assertThat(result.getImageFile()).isNotNull(),
                 () -> assertThat(result.getFileType()).isNotNull(),
@@ -152,7 +152,7 @@ public class ResourceServiceTest {
                 .when(mainStorage)
                 .read(any(String.class));
 
-            var result = resourceService.read(resourceKey);
+            var result = storageService.read(resourceKey);
             assertThat(result.getImageFile()).isNotNull();
 
             verify(mainStorage, times(1))
@@ -162,7 +162,7 @@ public class ResourceServiceTest {
                 .save(resourceArgumentCaptor.capture());
 
             var saved = resourceArgumentCaptor.getValue();
-            assertThat(saved.getStoredStorages()).contains(MAIN_STORAGE);
+            assertThat(saved.getStoredStorages()).contains(LOCAL_FILE_STORAGE);
         }
     }
 }

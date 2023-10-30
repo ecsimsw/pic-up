@@ -1,41 +1,114 @@
 package ecsimsw.picup.service;
 
-import ecsimsw.picup.domain.History;
-import ecsimsw.picup.domain.HistoryRepository;
+import ecsimsw.picup.domain.ImageFile;
+import ecsimsw.picup.domain.Resource;
+import ecsimsw.picup.domain.ResourceRepository;
 import ecsimsw.picup.dto.ImageResponse;
 import ecsimsw.picup.dto.ImageUploadResponse;
+import ecsimsw.picup.exception.InvalidResourceException;
+import ecsimsw.picup.exception.StorageException;
+import ecsimsw.picup.storage.ImageStorage;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.FileNotFoundException;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
 public class StorageService {
 
-    private final ResourceService resourceService;
-    private final HistoryRepository historyRepository;
+    private final ResourceRepository resourceRepository;
+    private final List<ImageStorage> storages;
 
-    public StorageService(ResourceService resourceService, HistoryRepository historyRepository) {
-        this.resourceService = resourceService;
-        this.historyRepository = historyRepository;
+    public StorageService(
+        ResourceRepository resourceRepository,
+        ImageStorage localFileStorage,
+        ImageStorage s3ObjectStorage
+    ) {
+        this.resourceRepository = resourceRepository;
+        this.storages = List.of(localFileStorage, s3ObjectStorage);
     }
 
-    public ImageUploadResponse upload(MultipartFile file, String tag) {
-        final ImageUploadResponse uploadResult = resourceService.upload(tag, file);
-        historyRepository.save(History.create(uploadResult.getResourceKey()));
-        return uploadResult;
+    public ImageUploadResponse upload(String tag, MultipartFile file) {
+        final ImageFile imageFile = ImageFile.of(file);
+        final Resource resource = Resource.createRequested(tag, file);
+        resourceRepository.save(resource);
+
+        for (ImageStorage storage : storages) {
+            storage.create(resource.getResourceKey(), imageFile);
+            resource.storedTo(storage.key());
+            resourceRepository.save(resource);
+        }
+        return new ImageUploadResponse(resource.getResourceKey(), imageFile.getSize());
     }
 
     public ImageResponse read(String resourceKey) {
-        return resourceService.read(resourceKey);
+        final Resource resource = findLivedResource(resourceKey);
+        final ImageFile imageFile = readWithLoading(resource, new ArrayList<>(storages));
+        return ImageResponse.of(imageFile);
+    }
+
+    public ImageFile readWithLoading(Resource resource, List<ImageStorage> storages) {
+        if (storages.isEmpty()) {
+            throw new StorageException("Fail to read file from both : " + resource.getResourceKey());
+        }
+        final ImageStorage storage = storages.get(0);
+        try {
+            if (resource.isStoredAt(storage)) {
+                return storage.read(resource.getResourceKey());
+            }
+            final ImageFile loadFromBackup = readWithLoading(resource, chainNext(storages));
+            storage.create(resource.getResourceKey(), loadFromBackup);
+            resource.storedTo(storage);
+            resourceRepository.save(resource);
+            return loadFromBackup;
+        } catch (FileNotFoundException fileNotFoundException) {
+            resource.deletedFrom(storage);
+            resourceRepository.save(resource);
+
+            final ImageFile loadFromBackup = readWithLoading(resource, chainNext(storages));
+            storage.create(resource.getResourceKey(), loadFromBackup);
+            resource.storedTo(storage);
+            resourceRepository.save(resource);
+            return loadFromBackup;
+        } catch (Exception e) {
+            return readWithLoading(resource, chainNext(storages));
+        }
     }
 
     public void delete(String resourceKey) {
-        resourceService.delete(resourceKey);
-        historyRepository.save(History.delete(resourceKey));
+        final Resource resource = findLivedResource(resourceKey);
+        resource.deleteRequested();
+        resourceRepository.save(resource);
+
+        for (ImageStorage storage : storages) {
+            try {
+                storage.delete(resourceKey);
+                resource.deletedFrom(storage.key());
+                resourceRepository.save(resource);
+            } catch (FileNotFoundException ignored) {
+                resource.deletedFrom(storage.key());
+                resourceRepository.save(resource);
+            }
+        }
     }
 
     public void deleteAll(List<String> resourceKeys) {
         resourceKeys.forEach(this::delete);
+    }
+
+    private List<ImageStorage> chainNext(List<ImageStorage> storages) {
+        final ImageStorage now = storages.get(0);
+        storages.remove(now);
+        return storages;
+    }
+
+    private Resource findLivedResource(String resourceKey) {
+        final Resource resource = resourceRepository.findById(resourceKey).orElseThrow(() -> new InvalidResourceException("Not exists resources"));
+        if (!resource.isLived()) {
+            throw new InvalidResourceException("Not exists resources");
+        }
+        return resource;
     }
 }
