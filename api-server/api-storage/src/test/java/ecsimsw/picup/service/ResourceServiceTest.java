@@ -37,16 +37,16 @@ public class ResourceServiceTest {
     private ResourceRepository resourceRepository;
 
     @Spy
-    private ImageStorage localFileStorage = new MockImageStorage();
+    private ImageStorage mainStorage = new MockImageStorage();
 
     @Spy
-    private ImageStorage s3ObjectStorage = new MockImageStorage();
+    private ImageStorage backUpStorage = new MockImageStorage();
 
     private ResourceService resourceService;
 
     @BeforeEach
     public void init() {
-        resourceService = new ResourceService(resourceRepository, localFileStorage, s3ObjectStorage);
+        resourceService = new ResourceService(resourceRepository, mainStorage, backUpStorage);
     }
 
     @Captor
@@ -77,11 +77,11 @@ public class ResourceServiceTest {
             );
         }
 
-        @DisplayName("Main storage 에 저장 실패시 업로드 전체가 실패한다.")
+        @DisplayName("Main storage 에 저장 실패시 업로드에 실패한다. 단, 생성 기록은 남긴다.")
         @Test
-        public void uploadFailWithStorageIssue() {
+        public void uploadFailWithMainStorage() {
             doThrow(StorageException.class)
-                .when(localFileStorage)
+                .when(mainStorage)
                 .create(any(String.class), any(ImageFile.class));
 
             assertThrows(StorageException.class, () -> resourceService.upload(mockTag, mockFile));
@@ -93,6 +93,25 @@ public class ResourceServiceTest {
                 () -> assertThat(savedResource.getResourceKey()).isNotNull(),
                 () -> assertThat(savedResource.getCreateRequested()).isNotNull(),
                 () -> assertThat(savedResource.getStoredStorages()).isEqualTo(Collections.emptyList())
+            );
+        }
+
+        @DisplayName("BackUp storage 에 저장 실패시 업로드에 실패한다. 단, 생성 기록은 남긴다.")
+        @Test
+        public void uploadFailWithBackUpStorage() {
+            doThrow(StorageException.class)
+                .when(backUpStorage)
+                .create(any(String.class), any(ImageFile.class));
+
+            assertThrows(StorageException.class, () -> resourceService.upload(mockTag, mockFile));
+            verify(resourceRepository, times(2))
+                .save(resourceArgumentCaptor.capture());
+
+            var savedResource = resourceArgumentCaptor.getValue();
+            assertAll(
+                () -> assertThat(savedResource.getResourceKey()).isNotNull(),
+                () -> assertThat(savedResource.getCreateRequested()).isNotNull(),
+                () -> assertThat(savedResource.getStoredStorages()).isEqualTo(List.of(StorageKey.MAIN_STORAGE))
             );
         }
     }
