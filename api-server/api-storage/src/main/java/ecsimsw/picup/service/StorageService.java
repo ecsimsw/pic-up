@@ -92,6 +92,8 @@ public class StorageService {
             } catch (FileNotFoundException ignored) {
                 resource.deletedFrom(storage.key());
                 resourceRepository.save(resource);
+            } catch (Exception ignored) {
+
             }
         }
     }
