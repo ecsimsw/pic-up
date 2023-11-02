@@ -30,7 +30,7 @@ read_only = 1
 ### MASTER :: config 적용 확인
 
 ```
-master : show master status\G;
+show master status\G;
 ```
 
 위 명령어를 master, slave 에서 각자 입력하고 file 의 이름으로 설정한 prefix 가 적용되었는지 확인한다.
@@ -63,6 +63,19 @@ CHANGE MASTER TO MASTER_HOST='${HOST_IP_ADDRESS}', MASTER_USER='${HOST_USER_TO_C
 ```
 start slave;
 ```
+
+### Issue
+
+ISSUE : start slave 시 
+ERROR : `ERROR 1872 (HY000): Replica failed to initialize applier metadata structure from the repository`
+SOL :
+SLAVE DB에서
+```
+1. stop slave;
+2. reset slave;
+3. start slave;
+```
+그래도 안된다면 slave 연결 `CHANGE MASTER TO ~` 부분 재실행 
 
 ### 테스트 
 

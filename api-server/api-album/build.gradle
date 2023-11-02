@@ -17,7 +17,7 @@ dependencies {
 //    runtimeOnly 'com.h2database:h2:1.4.199'
 
     // Mysql
-    implementation 'com.mysql:mysql-connector-java'
+    runtimeOnly 'com.mysql:mysql-connector-j'
 
     // Model metadata
     implementation 'org.hibernate:hibernate-jpamodelgen'
