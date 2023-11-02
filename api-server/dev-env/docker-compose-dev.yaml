@@ -66,8 +66,3 @@ services:
     volumes:
       - ~/mysql-data/picup-mysql-2:/var/lib/mysql
       - ./mysql-2/mysql-2.cnf:/etc/mysql/conf.d/my.cnf
-
-        CREATE USER 'ecsimsw'@'%' IDENTIFIED BY 'password';
-        GRANT REPLICATION SLAVE ON *.* TO 'ecsimsw'@'%';
-
-      CHANGE MASTER TO MASTER_HOST='172.18.0.4', MASTER_USER='ecsimsw', MASTER_PASSWORD='password', MASTER_LOG_FILE='mysql-bin.000001', MASTER_LOG_POS=0, GET_MASTER_PUBLIC_KEY=1;

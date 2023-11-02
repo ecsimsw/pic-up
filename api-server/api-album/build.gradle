@@ -14,7 +14,10 @@ dependencies {
     implementation 'com.google.guava:guava:11.0.2'
 
     // H2
-    runtimeOnly 'com.h2database:h2:1.4.199'
+//    runtimeOnly 'com.h2database:h2:1.4.199'
+
+    // Mysql
+    implementation 'com.mysql:mysql-connector-java'
 
     // Model metadata
     implementation 'org.hibernate:hibernate-jpamodelgen'
