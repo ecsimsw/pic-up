@@ -1,5 +1,6 @@
 package ecsimsw.picup.controller;
 
+import ecsimsw.picup.auth.exception.UnauthorizedException;
 import ecsimsw.picup.exception.AlbumException;
 import ecsimsw.picup.exception.InvalidStorageServerResponseException;
 import ecsimsw.picup.exception.MessageQueueServerDownException;
@@ -39,6 +40,12 @@ public class GlobalControllerAdvice {
         e.printStackTrace();
         LOGGER.error(e.getCause().toString());
         return ResponseEntity.internalServerError().body("unhandled server exception");
+    }
+
+    @ExceptionHandler(UnauthorizedException.class)
+    public ResponseEntity<String> unauthorizedException() {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+            .body("unauthorized user request");
     }
 
     @ExceptionHandler(Throwable.class)
