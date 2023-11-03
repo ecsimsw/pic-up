@@ -35,8 +35,7 @@ public class DataSourceConfig {
     }
 
     @Bean
-    @Primary
-    public DataSource dataSource(
+    public DataSource routingDataSource(
         @Qualifier(DB_SOURCE_BEAN_ALIAS_MASTER) DataSource masterDataSource,
         @Qualifier(DB_SOURCE_BEAN_ALIAS_SLAVE) DataSource slaveDataSource
     ) {
@@ -48,7 +47,17 @@ public class DataSourceConfig {
                 SLAVE, slaveDataSource
             )
         );
-        return new LazyConnectionDataSourceProxy(routingDataSource);
+        return routingDataSource;
+    }
+
+    @Bean
+    @Primary
+    public DataSource dataSource() {
+        var determinedDataSource = routingDataSource(
+            masterDataSource(),
+            slaveDataSource()
+        );
+        return new LazyConnectionDataSourceProxy(determinedDataSource);
     }
 }
 
@@ -56,7 +65,7 @@ class RoutingDataSource extends AbstractRoutingDataSource {
 
     @Override
     protected Object determineCurrentLookupKey() {
-        boolean isReadOnly = TransactionSynchronizationManager.isCurrentTransactionReadOnly();
+        var isReadOnly = TransactionSynchronizationManager.isCurrentTransactionReadOnly();
         if (isReadOnly) {
             return SLAVE;
         }
