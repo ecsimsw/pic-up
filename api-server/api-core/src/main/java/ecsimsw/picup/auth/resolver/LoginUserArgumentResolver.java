@@ -12,6 +12,9 @@ import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 
+import static ecsimsw.picup.auth.config.AuthTokenWebConfig.ACCESS_TOKEN_COOKIE_KEY;
+import static ecsimsw.picup.auth.service.TokenCookieUtils.getTokenFromCookies;
+
 @Component
 public class LoginUserArgumentResolver implements HandlerMethodArgumentResolver {
 
@@ -31,8 +34,9 @@ public class LoginUserArgumentResolver implements HandlerMethodArgumentResolver 
         final HttpServletRequest request = (HttpServletRequest) webRequest.getNativeRequest();
         final Cookie[] cookies = request.getCookies();
         if (authTokenService.hasValidAccessToken(cookies)) {
-            final AuthTokenPayload accessToken = authTokenService.authWithAccessToken(cookies);
-            return LoginUserInfo.of(accessToken);
+            final String accessToken = getTokenFromCookies(cookies, ACCESS_TOKEN_COOKIE_KEY);
+            final AuthTokenPayload tokenPayload = authTokenService.getPayloadFromToken(accessToken);
+            return LoginUserInfo.of(tokenPayload);
         }
         throw new UnauthorizedException("Unauthorized user request");
     }

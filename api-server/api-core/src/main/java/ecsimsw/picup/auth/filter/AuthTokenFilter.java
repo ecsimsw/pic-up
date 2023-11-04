@@ -1,10 +1,11 @@
 package ecsimsw.picup.auth.filter;
 
+import ecsimsw.picup.auth.domain.AuthTokens;
 import ecsimsw.picup.auth.service.AuthTokenService;
+import ecsimsw.picup.auth.service.TokenCookieUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
-import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import javax.servlet.FilterChain;
@@ -14,7 +15,9 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.stream.Stream;
 
-@Component
+// XXX :: LEGACY
+
+//@Component
 public class AuthTokenFilter extends OncePerRequestFilter {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AuthTokenFilter.class);
@@ -37,10 +40,11 @@ public class AuthTokenFilter extends OncePerRequestFilter {
                 filterChain.doFilter(request, response);
                 return;
             }
-            tokenService.reissueAuthTokens(cookies).forEach(response::addCookie);
+            final AuthTokens reissued = tokenService.reissue(cookies);
+            TokenCookieUtils.createAuthCookies(reissued)
+                .forEach(response::addCookie);
             filterChain.doFilter(request, response);
         } catch (Exception e) {
-            e.printStackTrace();
             response.setStatus(HttpStatus.UNAUTHORIZED.value());
             response.getOutputStream().write("Non authorized".getBytes());
         }

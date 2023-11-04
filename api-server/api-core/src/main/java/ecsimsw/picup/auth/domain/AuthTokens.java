@@ -4,8 +4,11 @@ import lombok.Getter;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.redis.core.RedisHash;
 
+import static ecsimsw.picup.auth.config.AuthTokenCacheConfig.REDIS_HASH_KEY;
+import static ecsimsw.picup.auth.config.AuthTokenCacheConfig.REDIS_TTL;
+
 @Getter
-@RedisHash(value = "authToken", timeToLive = 60 * 60 * 24 * 3)
+@RedisHash(value = REDIS_HASH_KEY, timeToLive = REDIS_TTL)
 public class AuthTokens {
 
     @Id

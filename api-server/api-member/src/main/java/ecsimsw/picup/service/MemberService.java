@@ -1,6 +1,8 @@
 package ecsimsw.picup.service;
 
+import ecsimsw.picup.auth.domain.AuthTokens;
 import ecsimsw.picup.auth.service.AuthTokenService;
+import ecsimsw.picup.auth.service.TokenCookieUtils;
 import ecsimsw.picup.domain.Member;
 import ecsimsw.picup.domain.MemberRepository;
 import ecsimsw.picup.dto.SignInRequest;
@@ -27,10 +29,7 @@ public class MemberService {
     public void signIn(SignInRequest request, HttpServletResponse response) {
         final Member member = memberRepository.findByUsernameAndPassword(request.getUsername(), request.getPassword())
             .orElseThrow(() -> new IllegalArgumentException("Invalid login info"));
-        final List<Cookie> cookies = authTokenService.issueAuthTokens(member.getId(), member.getUsername());
-        for (var cookie : cookies) {
-            response.addCookie(cookie);
-        }
+        responseAuthTokens(response, member);
     }
 
     @Transactional
@@ -39,7 +38,12 @@ public class MemberService {
             throw new IllegalArgumentException("duplicated username");
         }
         final Member member = memberRepository.save(request.toEntity());
-        final List<Cookie> cookies = authTokenService.issueAuthTokens(member.getId(), member.getUsername());
+        responseAuthTokens(response, member);
+    }
+
+    private void responseAuthTokens(HttpServletResponse response, Member member) {
+        final AuthTokens authTokens = authTokenService.issueAuthTokens(member.getId(), member.getUsername());
+        final List<Cookie> cookies = TokenCookieUtils.createAuthCookies(authTokens);
         for (var cookie : cookies) {
             response.addCookie(cookie);
         }
