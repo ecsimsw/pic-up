@@ -12,41 +12,21 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
+import static ecsimsw.picup.auth.config.AuthTokenJwtConfig.*;
+import static ecsimsw.picup.auth.config.AuthTokenWebConfig.*;
+
 @Service
 public class AuthTokenService {
 
-    private final Key key;
-    private final int accessTokenJwtExpireTime;
-    private final String accessTokenPayloadKey;
-    private final int refreshTokenJwtExpireTime;
-    private final String refreshTokenPayloadKey;
-    private final String accessTokenCookieKey;
-    private final int accessTokenCookieTTL;
-    private final String refreshTokenCookieKey;
-    private final int refreshTokenCookieTTL;
     private final AuthTokensCacheRepository authTokensCacheRepository;
 
+    private final Key jwtSecretKey;
+
     public AuthTokenService(
-        @Value("${token.secret}") String key,
-        @Value("${access.token.jwt.expireTime}") int accessTokenJwtExpireTime,
-        @Value("${access.token.jwt.payload.key}") String accessTokenPayloadKey,
-        @Value("${refresh.token.jwt.expireTime}") int refreshTokenJwtExpireTime,
-        @Value("${refresh.token.jwt.payload.key}") String refreshTokenPayloadKey,
-        @Value("${access.token.cookie.key}") String accessTokenCookieKey,
-        @Value("${access.token.cookie.TTL}") int accessTokenCookieTTL,
-        @Value("${refresh.token.cookie.key}") String refreshTokenCookieKey,
-        @Value("${refresh.token.cookie.TTL}") int refreshTokenCookieTTL,
+        @Value("${token.secret}") String jwtSecretKey,
         AuthTokensCacheRepository authTokensCacheRepository
     ) {
-        this.key = JwtUtils.createSecretKey(key);
-        this.accessTokenJwtExpireTime = accessTokenJwtExpireTime;
-        this.accessTokenPayloadKey = accessTokenPayloadKey;
-        this.refreshTokenJwtExpireTime = refreshTokenJwtExpireTime;
-        this.refreshTokenPayloadKey = refreshTokenPayloadKey;
-        this.accessTokenCookieKey = accessTokenCookieKey;
-        this.accessTokenCookieTTL = accessTokenCookieTTL;
-        this.refreshTokenCookieKey = refreshTokenCookieKey;
-        this.refreshTokenCookieTTL = refreshTokenCookieTTL;
+        this.jwtSecretKey = JwtUtils.createSecretKey(jwtSecretKey);
         this.authTokensCacheRepository = authTokensCacheRepository;
     }
 
@@ -62,13 +42,13 @@ public class AuthTokenService {
     }
 
     public List<Cookie> reissueAuthTokens(Cookie[] cookies) {
-        final String accessToken = getTokenFromCookies(cookies, accessTokenCookieKey);
-        JwtUtils.requireExpired(key, accessToken);
-        final String refreshToken = getTokenFromCookies(cookies, refreshTokenCookieKey);
-        JwtUtils.requireLived(key, refreshToken);
+        final String accessToken = getTokenFromCookies(cookies, ACCESS_TOKEN_COOKIE_KEY);
+        JwtUtils.requireExpired(jwtSecretKey, accessToken);
+        final String refreshToken = getTokenFromCookies(cookies, REFRESH_TOKEN_COOKIE_KEY);
+        JwtUtils.requireLived(jwtSecretKey, refreshToken);
 
-        final AuthTokenPayload authTokenFromAT = JwtUtils.tokenValue(key, accessToken, accessTokenPayloadKey, AuthTokenPayload.class, true);
-        final AuthTokenPayload authTokenFromRT = JwtUtils.tokenValue(key, refreshToken, refreshTokenPayloadKey, AuthTokenPayload.class);
+        final AuthTokenPayload authTokenFromAT = JwtUtils.tokenValue(jwtSecretKey, accessToken, TOKEN_JWT_PAYLOAD_KEY, AuthTokenPayload.class, true);
+        final AuthTokenPayload authTokenFromRT = JwtUtils.tokenValue(jwtSecretKey, refreshToken, TOKEN_JWT_PAYLOAD_KEY, AuthTokenPayload.class);
         authTokenFromAT.checkSameUser(authTokenFromRT);
 
         final Long memberId = authTokenFromAT.getId();
@@ -80,13 +60,13 @@ public class AuthTokenService {
     }
 
     private String createAccessToken(Long memberId, String username) {
-        final Map<String, Object> payload = Map.of(accessTokenPayloadKey, new AuthTokenPayload(memberId, username));
-        return JwtUtils.createToken(key, payload, accessTokenJwtExpireTime);
+        final Map<String, Object> payload = Map.of(TOKEN_JWT_PAYLOAD_KEY, new AuthTokenPayload(memberId, username));
+        return JwtUtils.createToken(jwtSecretKey, payload, ACCESS_TOKEN_JWT_EXPIRE_TIME);
     }
 
     private String createRefreshToken(Long memberId, String username) {
-        final Map<String, Object> payload = Map.of(refreshTokenPayloadKey, new AuthTokenPayload(memberId, username));
-        return JwtUtils.createToken(key, payload, refreshTokenJwtExpireTime);
+        final Map<String, Object> payload = Map.of(TOKEN_JWT_PAYLOAD_KEY, new AuthTokenPayload(memberId, username));
+        return JwtUtils.createToken(jwtSecretKey, payload, REFRESH_TOKEN_JWT_EXPIRE_TIME);
     }
 
     public boolean hasValidAccessToken(Cookie[] cookies) {
@@ -94,14 +74,13 @@ public class AuthTokenService {
             authWithAccessToken(cookies);
             return true;
         } catch (Exception e) {
-            e.printStackTrace();
             return false;
         }
     }
 
     public AuthTokenPayload authWithAccessToken(Cookie[] cookies) {
-        final String accessToken = getTokenFromCookies(cookies, accessTokenCookieKey);
-        return JwtUtils.tokenValue(key, accessToken, accessTokenPayloadKey, AuthTokenPayload.class);
+        final String accessToken = getTokenFromCookies(cookies, ACCESS_TOKEN_COOKIE_KEY);
+        return JwtUtils.tokenValue(jwtSecretKey, accessToken, TOKEN_JWT_PAYLOAD_KEY, AuthTokenPayload.class);
     }
 
     private String getTokenFromCookies(Cookie[] cookies, String tokenCookieKey) {
@@ -116,19 +95,19 @@ public class AuthTokenService {
     }
 
     public Cookie createAccessTokenCookie(String accessToken) {
-        final Cookie cookie = new Cookie(accessTokenCookieKey, accessToken);
+        final Cookie cookie = new Cookie(ACCESS_TOKEN_COOKIE_KEY, accessToken);
         cookie.setHttpOnly(true);
         cookie.setPath("/");
-        cookie.setMaxAge(accessTokenCookieTTL);
+        cookie.setMaxAge(ACCESS_TOKEN_COOKIE_TTL);
         cookie.setSecure(false);
         return cookie;
     }
 
     public Cookie createRefreshTokenCookie(String refreshToken) {
-        final Cookie cookie = new Cookie(refreshTokenCookieKey, refreshToken);
+        final Cookie cookie = new Cookie(REFRESH_TOKEN_COOKIE_KEY, refreshToken);
         cookie.setHttpOnly(true);
         cookie.setPath("/");
-        cookie.setMaxAge(refreshTokenCookieTTL);
+        cookie.setMaxAge(REFRESH_TOKEN_COOKIE_TTL);
         cookie.setSecure(false);
         return cookie;
     }

@@ -54,6 +54,7 @@ public class RabbitMQConfig {
             public void onCreate(Connection connection) {
                 LOGGER.info("Message queue server connection is created");
             }
+
             @Override
             public void onClose(Connection connection) {
                 throw new MessageQueueServerDownException("Message queue server connection is closed");

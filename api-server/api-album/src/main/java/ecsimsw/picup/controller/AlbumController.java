@@ -1,6 +1,5 @@
 package ecsimsw.picup.controller;
 
-import ecsimsw.picup.auth.resolver.LoginUser;
 import ecsimsw.picup.dto.AlbumInfoRequest;
 import ecsimsw.picup.dto.AlbumInfoResponse;
 import ecsimsw.picup.dto.UpdateAlbumOrderRequest;
