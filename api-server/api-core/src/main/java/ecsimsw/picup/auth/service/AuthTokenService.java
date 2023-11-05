@@ -38,17 +38,12 @@ public class AuthTokenService {
         return authTokens;
     }
 
-    public AuthTokens reissue(Cookie[] cookies) {
-        final String accessToken = getTokenFromCookies(cookies, ACCESS_TOKEN_COOKIE_KEY);
-        JwtUtils.requireExpired(jwtSecretKey, accessToken);
-        final String refreshToken = getTokenFromCookies(cookies, REFRESH_TOKEN_COOKIE_KEY);
-        JwtUtils.requireLived(jwtSecretKey, refreshToken);
-        return reissue(accessToken, refreshToken);
-    }
-
     public AuthTokens reissue(String accessToken, String refreshToken) {
-        final AuthTokenPayload authTokenFromAT = JwtUtils.tokenValue(jwtSecretKey, accessToken, TOKEN_JWT_PAYLOAD_KEY, AuthTokenPayload.class, true);
-        final AuthTokenPayload authTokenFromRT = JwtUtils.tokenValue(jwtSecretKey, refreshToken, TOKEN_JWT_PAYLOAD_KEY, AuthTokenPayload.class);
+        JwtUtils.requireExpired(jwtSecretKey, accessToken);
+        JwtUtils.requireLived(jwtSecretKey, refreshToken);
+
+        final AuthTokenPayload authTokenFromAT = getPayloadFromToken(accessToken);
+        final AuthTokenPayload authTokenFromRT = getPayloadFromToken(refreshToken);
         authTokenFromAT.checkSameUser(authTokenFromRT);
 
         final String username = authTokenFromAT.getUsername();
@@ -67,17 +62,16 @@ public class AuthTokenService {
         return JwtUtils.createToken(jwtSecretKey, payload, REFRESH_TOKEN_JWT_EXPIRE_TIME_SEC);
     }
 
-    public boolean hasValidAccessToken(Cookie[] cookies) {
+    public boolean isValidToken(String token) {
         try {
-            final String accessToken = getTokenFromCookies(cookies, ACCESS_TOKEN_COOKIE_KEY);
-            getPayloadFromToken(accessToken);
+            getPayloadFromToken(token);
             return true;
         } catch (Exception e) {
             return false;
         }
     }
 
-    public AuthTokenPayload getPayloadFromToken(String accessToken) {
-        return JwtUtils.tokenValue(jwtSecretKey, accessToken, TOKEN_JWT_PAYLOAD_KEY, AuthTokenPayload.class);
+    public AuthTokenPayload getPayloadFromToken(String token) {
+        return JwtUtils.tokenValue(jwtSecretKey, token, TOKEN_JWT_PAYLOAD_KEY, AuthTokenPayload.class);
     }
 }

@@ -1,6 +1,9 @@
 package ecsimsw.picup.auth.interceptor;
 
-import ecsimsw.picup.auth.domain.AuthTokens;
+import static ecsimsw.picup.auth.config.AuthTokenWebConfig.ACCESS_TOKEN_COOKIE_KEY;
+import static ecsimsw.picup.auth.config.AuthTokenWebConfig.REFRESH_TOKEN_COOKIE_KEY;
+import static ecsimsw.picup.auth.service.TokenCookieUtils.getTokenFromCookies;
+
 import ecsimsw.picup.auth.exception.UnauthorizedException;
 import ecsimsw.picup.auth.resolver.LoginUser;
 import ecsimsw.picup.auth.service.AuthTokenService;
@@ -30,8 +33,12 @@ public class AuthInterceptor implements HandlerInterceptor {
         }
         try {
             var cookies = request.getCookies();
-            if (!authTokenService.hasValidAccessToken(cookies)) {
-                final AuthTokens reissued = authTokenService.reissue(cookies);
+            var accessToken = getTokenFromCookies(cookies, ACCESS_TOKEN_COOKIE_KEY);
+            if (!authTokenService.isValidToken(accessToken)) {
+                var reissued = authTokenService.reissue(
+                    getTokenFromCookies(cookies, ACCESS_TOKEN_COOKIE_KEY),
+                    getTokenFromCookies(cookies, REFRESH_TOKEN_COOKIE_KEY)
+                );
                 TokenCookieUtils.createAuthCookies(reissued).forEach(response::addCookie);
             }
             return true;

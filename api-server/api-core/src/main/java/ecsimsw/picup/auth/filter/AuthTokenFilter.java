@@ -1,6 +1,9 @@
 package ecsimsw.picup.auth.filter;
 
-import ecsimsw.picup.auth.domain.AuthTokens;
+import static ecsimsw.picup.auth.config.AuthTokenWebConfig.ACCESS_TOKEN_COOKIE_KEY;
+import static ecsimsw.picup.auth.config.AuthTokenWebConfig.REFRESH_TOKEN_COOKIE_KEY;
+import static ecsimsw.picup.auth.service.TokenCookieUtils.getTokenFromCookies;
+
 import ecsimsw.picup.auth.service.AuthTokenService;
 import ecsimsw.picup.auth.service.TokenCookieUtils;
 import org.slf4j.Logger;
@@ -9,7 +12,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import javax.servlet.FilterChain;
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -34,14 +36,17 @@ public class AuthTokenFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws IOException {
         try {
-            final Cookie[] cookies = request.getCookies();
-            if (tokenService.hasValidAccessToken(cookies)) {
+            var cookies = request.getCookies();
+            var accessToken = getTokenFromCookies(cookies, ACCESS_TOKEN_COOKIE_KEY);
+            if (tokenService.isValidToken(accessToken)) {
                 filterChain.doFilter(request, response);
                 return;
             }
-            final AuthTokens reissued = tokenService.reissue(cookies);
-            TokenCookieUtils.createAuthCookies(reissued)
-                .forEach(response::addCookie);
+            var reissued = tokenService.reissue(
+                getTokenFromCookies(cookies, ACCESS_TOKEN_COOKIE_KEY),
+                getTokenFromCookies(cookies, REFRESH_TOKEN_COOKIE_KEY)
+            );
+            TokenCookieUtils.createAuthCookies(reissued).forEach(response::addCookie);
             filterChain.doFilter(request, response);
         } catch (Exception e) {
             response.setStatus(HttpStatus.UNAUTHORIZED.value());

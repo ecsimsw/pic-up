@@ -33,8 +33,8 @@ public class LoginUserArgumentResolver implements HandlerMethodArgumentResolver 
     public LoginUserInfo resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer, NativeWebRequest webRequest, WebDataBinderFactory binderFactory) {
         final HttpServletRequest request = (HttpServletRequest) webRequest.getNativeRequest();
         final Cookie[] cookies = request.getCookies();
-        if (authTokenService.hasValidAccessToken(cookies)) {
-            final String accessToken = getTokenFromCookies(cookies, ACCESS_TOKEN_COOKIE_KEY);
+        final String accessToken = getTokenFromCookies(cookies, ACCESS_TOKEN_COOKIE_KEY);
+        if (authTokenService.isValidToken(accessToken)) {
             final AuthTokenPayload tokenPayload = authTokenService.getPayloadFromToken(accessToken);
             return LoginUserInfo.of(tokenPayload);
         }

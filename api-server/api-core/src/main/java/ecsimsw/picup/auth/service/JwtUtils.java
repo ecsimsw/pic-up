@@ -39,12 +39,12 @@ public class JwtUtils {
         if (isExpired(key, token)) {
             return;
         }
-        throw new IllegalArgumentException("Is not expired token");
+        throw new TokenException("Is not expired token");
     }
 
     public static void requireLived(Key key, String token) {
         if (isExpired(key, token)) {
-            throw new IllegalArgumentException("Is not lived token");
+            throw new TokenException("Is not lived token");
         }
     }
 

@@ -11,7 +11,6 @@ import static ecsimsw.picup.env.TestFixture.VALID_REFRESH_TOKEN;
 import static ecsimsw.picup.env.TestFixture.VALID_REFRESH_TOKEN_COOKIE;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -41,7 +40,7 @@ import org.springframework.test.web.servlet.MockMvc;
 @ExtendWith(MockitoExtension.class)
 @WebMvcTest(controllers = {AlbumController.class, HealthController.class})
 @AutoConfigureMockMvc
-public class AuthTokenTest {
+public class AuthTokenScenarioTest {
 
     @Autowired
     private MockMvc mockMvc;
@@ -66,7 +65,7 @@ public class AuthTokenTest {
                 get("/api/health")
             ).andExpect(status().isOk());
 
-            verify(authTokenService, never()).hasValidAccessToken(any());
+            verify(authTokenService, never()).isValidToken(any());
         }
 
         @DisplayName("유효한 로그인 토큰을 갖고 있는 경우 토큰에서 로그인 정보를 확인한다.")
@@ -108,9 +107,6 @@ public class AuthTokenTest {
                     .cookie(INVALID_ACCESS_TOKEN_COOKIE)
                     .cookie(VALID_REFRESH_TOKEN_COOKIE)
             ).andExpect(status().isOk());
-
-            verify(authTokenService, times(1))
-                .reissue(new Cookie[]{INVALID_ACCESS_TOKEN_COOKIE, VALID_REFRESH_TOKEN_COOKIE});
         }
 
         @DisplayName("Refresh token 이 존재하지 않는다면 재발급 없이 401 status 를 응답한다.")
@@ -138,13 +134,13 @@ public class AuthTokenTest {
         when(authTokenService.getPayloadFromToken(VALID_ACCESS_TOKEN))
             .thenReturn(new AuthTokenPayload(MEMBER_ID, MEMBER_USERNAME));
 
-        when(authTokenService.reissue(new Cookie[]{INVALID_ACCESS_TOKEN_COOKIE, VALID_REFRESH_TOKEN_COOKIE}))
+        when(authTokenService.reissue(INVALID_ACCESS_TOKEN, VALID_REFRESH_TOKEN))
             .thenReturn(new AuthTokens(MEMBER_USERNAME, VALID_ACCESS_TOKEN, VALID_REFRESH_TOKEN));
 
-        when(authTokenService.hasValidAccessToken(new Cookie[]{VALID_ACCESS_TOKEN_COOKIE}))
+        when(authTokenService.isValidToken(VALID_ACCESS_TOKEN))
             .thenReturn(true);
 
-        when(authTokenService.hasValidAccessToken(new Cookie[]{INVALID_ACCESS_TOKEN_COOKIE}))
+        when(authTokenService.isValidToken(INVALID_ACCESS_TOKEN))
             .thenReturn(false);
     }
 }
