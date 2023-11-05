@@ -25,7 +25,7 @@ public class AuthInterceptor implements HandlerInterceptor {
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
-        if (!isLoginNeeded((HandlerMethod) handler)) {
+        if (!(handler instanceof HandlerMethod) || !isLoginNeeded((HandlerMethod) handler)) {
             return true;
         }
         try {

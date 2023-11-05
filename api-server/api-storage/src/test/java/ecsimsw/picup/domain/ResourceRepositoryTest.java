@@ -1,8 +1,8 @@
 package ecsimsw.picup.domain;
 
 import static ecsimsw.picup.domain.StorageKey.LOCAL_FILE_STORAGE;
-import static ecsimsw.picup.utils.FileFixture.fakeTag;
-import static ecsimsw.picup.utils.FileFixture.mockMultipartFile;
+import static ecsimsw.picup.env.FileFixture.fakeTag;
+import static ecsimsw.picup.env.FileFixture.mockMultipartFile;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;

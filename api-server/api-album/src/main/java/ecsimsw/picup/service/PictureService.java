@@ -78,7 +78,6 @@ public class PictureService {
         pictureRepository.delete(picture);
     }
 
-    @Async
     @Transactional
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     public void deleteAllInAlbum(AlbumDeletionEvent event) {

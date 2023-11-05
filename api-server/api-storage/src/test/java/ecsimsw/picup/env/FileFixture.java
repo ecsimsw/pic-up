@@ -1,4 +1,4 @@
-package ecsimsw.picup.utils;
+package ecsimsw.picup.env;
 
 import ecsimsw.picup.domain.ImageFile;
 import ecsimsw.picup.domain.Resource;
