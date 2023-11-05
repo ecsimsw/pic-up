@@ -22,7 +22,6 @@ import ecsimsw.picup.auth.dto.AuthTokenPayload;
 import ecsimsw.picup.auth.service.AuthTokenService;
 import ecsimsw.picup.health.HealthController;
 import ecsimsw.picup.service.AlbumService;
-import javax.servlet.http.Cookie;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;

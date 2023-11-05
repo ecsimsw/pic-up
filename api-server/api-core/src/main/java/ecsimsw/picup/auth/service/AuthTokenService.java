@@ -3,6 +3,7 @@ package ecsimsw.picup.auth.service;
 import ecsimsw.picup.auth.domain.AuthTokens;
 import ecsimsw.picup.auth.domain.AuthTokensCacheRepository;
 import ecsimsw.picup.auth.dto.AuthTokenPayload;
+import ecsimsw.picup.auth.exception.TokenException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -42,12 +43,12 @@ public class AuthTokenService {
         JwtUtils.requireExpired(jwtSecretKey, accessToken);
         JwtUtils.requireLived(jwtSecretKey, refreshToken);
 
-        final AuthTokenPayload authTokenFromAT = getPayloadFromToken(accessToken);
-        final AuthTokenPayload authTokenFromRT = getPayloadFromToken(refreshToken);
+        final AuthTokenPayload authTokenFromAT = JwtUtils.tokenValue(jwtSecretKey, accessToken, TOKEN_JWT_PAYLOAD_KEY, AuthTokenPayload.class, true);
+        final AuthTokenPayload authTokenFromRT =JwtUtils.tokenValue(jwtSecretKey, refreshToken, TOKEN_JWT_PAYLOAD_KEY, AuthTokenPayload.class);
         authTokenFromAT.checkSameUser(authTokenFromRT);
 
         final String username = authTokenFromAT.getUsername();
-        final AuthTokens currentAuthToken = authTokensCacheRepository.findById(username).orElseThrow(() -> new IllegalArgumentException("Not valid user"));
+        final AuthTokens currentAuthToken = authTokensCacheRepository.findById(username).orElseThrow(() -> new TokenException("Not valid user"));
         currentAuthToken.checkSameWith(accessToken, refreshToken);
         return issueAuthTokens(authTokenFromAT.getId(), username);
     }

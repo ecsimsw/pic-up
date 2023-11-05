@@ -1,5 +1,6 @@
 package ecsimsw.picup.auth.domain;
 
+import ecsimsw.picup.auth.exception.TokenException;
 import lombok.Getter;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.redis.core.RedisHash;
@@ -26,6 +27,6 @@ public class AuthTokens {
         if(this.accessToken.equals(accessToken) && this.refreshToken.equals(refreshToken)) {
             return;
         }
-        throw new IllegalArgumentException("Not sync with cached auth tokens");
+        throw new TokenException("Not sync with cached auth tokens");
     }
 }
