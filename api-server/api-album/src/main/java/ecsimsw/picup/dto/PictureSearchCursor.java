@@ -1,6 +1,8 @@
 package ecsimsw.picup.dto;
 
 import java.time.LocalDateTime;
+
+import ecsimsw.picup.domain.Picture;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -14,5 +16,9 @@ public class PictureSearchCursor {
     public PictureSearchCursor(Long id, LocalDateTime createdAt) {
         this.id = id;
         this.createdAt = createdAt;
+    }
+
+    public PictureSearchCursor(Picture picture) {
+        this(picture.getId(), picture.getCreatedAt());
     }
 }

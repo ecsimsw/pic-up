@@ -20,6 +20,8 @@ public interface PictureRepository extends JpaRepository<Picture, Long>, JpaSpec
 
     interface PictureSearchSpecs {
 
+        Sort sortByCreatedAtAsc = Sort.by(Sort.Direction.ASC, Picture_.CREATED_AT, Picture_.ID);
+
         static Specification<Picture> where() {
             return Specification.where(null);
         }
@@ -32,7 +34,7 @@ public interface PictureRepository extends JpaRepository<Picture, Long>, JpaSpec
             return (root, query, criteriaBuilder) -> criteriaBuilder.greaterThan(root.get(Picture_.CREATED_AT), createdAt);
         }
 
-        static Specification<Picture> equalCreatedTime(LocalDateTime createdAt) {
+        static Specification<Picture> equalsCreatedTime(LocalDateTime createdAt) {
             return (root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get(Picture_.CREATED_AT), createdAt);
         }
 

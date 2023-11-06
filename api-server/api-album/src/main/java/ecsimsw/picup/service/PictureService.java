@@ -9,7 +9,6 @@ import ecsimsw.picup.exception.AlbumException;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.Sort;
-import org.springframework.data.domain.Sort.Direction;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -58,21 +57,22 @@ public class PictureService {
 
     @Transactional(readOnly = true)
     public List<PictureInfoResponse> cursorBasedFetch(Long albumId, int limit, Optional<PictureSearchCursor> cursor) {
-        final Sort sortByCreatedAtAsc = Sort.by(Direction.ASC, Album_.CREATED_AT);
         if(cursor.isEmpty()) {
-            final Slice<Picture> pictures = pictureRepository.findAllByAlbumId(albumId, PageRequest.of(0, limit, sortByCreatedAtAsc));
-            return PictureInfoResponse.listOf(pictures.getContent());
+            return fetchFirstPage(albumId, limit, sortByCreatedAtAsc);
         }
-
         final PictureSearchCursor prev = cursor.orElseThrow();
         final List<Picture> pictures = pictureRepository.fetch(
             where(isAlbum(albumId))
-                .and(createdLater(prev.getCreatedAt()))
-                .or(equalCreatedTime(prev.getCreatedAt()).and(greaterId(prev.getId()))),
+                .and(createdLater(prev.getCreatedAt()).or(equalsCreatedTime(prev.getCreatedAt()).and(greaterId(prev.getId())))),
             limit,
-            Sort.by(Direction.ASC, Picture_.CREATED_AT)
+            sortByCreatedAtAsc
         );
         return PictureInfoResponse.listOf(pictures);
+    }
+
+    private List<PictureInfoResponse> fetchFirstPage(Long albumId, int limit, Sort sortByCreatedAtAsc) {
+        final Slice<Picture> pictures = pictureRepository.findAllByAlbumId(albumId, PageRequest.of(0, limit, sortByCreatedAtAsc));
+        return PictureInfoResponse.listOf(pictures.getContent());
     }
 
     @Transactional

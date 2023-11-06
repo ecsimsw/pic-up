@@ -1,30 +1,21 @@
 package ecsimsw.picup.repository;
 
-import static ecsimsw.picup.domain.AlbumRepository.AlbumSearchSpecs.createdLater;
-import static ecsimsw.picup.domain.AlbumRepository.AlbumSearchSpecs.equalsCreatedTime;
-import static ecsimsw.picup.domain.AlbumRepository.AlbumSearchSpecs.greaterId;
-import static ecsimsw.picup.domain.AlbumRepository.AlbumSearchSpecs.isUser;
-import static ecsimsw.picup.domain.Album_.userId;
-import static ecsimsw.picup.env.TestFixture.MEMBER_ID;
-import static ecsimsw.picup.env.TestFixture.MEMBER_USERNAME;
-import static ecsimsw.picup.env.TestFixture.THUMBNAIL_RESOURCE_KEY;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertAll;
-import static org.springframework.data.jpa.domain.Specification.where;
-
 import ecsimsw.picup.domain.Album;
 import ecsimsw.picup.domain.AlbumRepository;
-import ecsimsw.picup.domain.Album_;
 import ecsimsw.picup.dto.AlbumSearchCursor;
-import java.time.LocalDateTime;
-import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.domain.Sort.Direction;
 import org.springframework.test.context.TestPropertySource;
+
+import java.time.LocalDateTime;
+import java.util.List;
+
+import static ecsimsw.picup.domain.AlbumRepository.AlbumSearchSpecs.*;
+import static ecsimsw.picup.env.TestFixture.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 @TestPropertySource(locations = "/testDatabaseConfig.properties")
 @DataJpaTest
@@ -59,13 +50,10 @@ public class AlbumRepositoryTest {
 
         var prev = new AlbumSearchCursor(album2);
         var limit = 2;
-        var sort = Sort.by(Direction.ASC, Album_.CREATED_AT);
         final List<Album> albums = albumRepository.fetch(
             where(isUser(1L))
-                .and(createdLater(prev.getCreatedAt())
-                .or(equalsCreatedTime(prev.getCreatedAt()).and(greaterId(prev.getId())))),
-            limit,
-            sort
+                .and(createdLater(prev.getCreatedAt()).or(equalsCreatedTime(prev.getCreatedAt()).and(greaterId(prev.getId())))),
+            limit, sortByCreatedAtAsc
         );
         assertThat(albums).isEqualTo(List.of(album3, album5));
     }
@@ -74,27 +62,23 @@ public class AlbumRepositoryTest {
     @Test
     public void testCursorBasedSameCreateTime() {
         LocalDateTime sameTime = LocalDateTime.now();
-        var album1 = albumRepository.save(new Album(1L, "username1", "resource1", sameTime));
-        var album2 = albumRepository.save(new Album(1L, "username1", "resource2", sameTime));
-        var album3 = albumRepository.save(new Album(1L, "username1", "resource3", sameTime));
-        var album4 = albumRepository.save(new Album(2L, "username1", "resource4", sameTime));
-        var album5 = albumRepository.save(new Album(1L, "username1", "resource5", sameTime));
-        var album6 = albumRepository.save(new Album(2L, "username2", "resource6", sameTime));
-        var album7 = albumRepository.save(new Album(1L, "username1", "resource7", sameTime));
-        var album8 = albumRepository.save(new Album(1L, "username1", "resource8"));
-        var album9 = albumRepository.save(new Album(1L, "username1", "resource9", sameTime));
+        var album1 = albumRepository.save(new Album(1L,1L, "username1", "resource1", sameTime));
+        var album2 = albumRepository.save(new Album(2L,1L, "username1", "resource2", sameTime));
+        var album3 = albumRepository.save(new Album(3L,1L, "username1", "resource3", sameTime));
+        var album4 = albumRepository.save(new Album(4L,2L, "username1", "resource4", sameTime));
+        var album5 = albumRepository.save(new Album(5L,1L, "username1", "resource5", sameTime));
+        var album6 = albumRepository.save(new Album(6L,2L, "username2", "resource6", sameTime));
+        var album7 = albumRepository.save(new Album(7L,1L, "username1", "resource7", sameTime));
+        var album8 = albumRepository.save(new Album(8L,1L, "username1", "resource8", LocalDateTime.now()));
+        var album9 = albumRepository.save(new Album(9L, 1L, "username1", "resource9", sameTime));
 
         var prev = new AlbumSearchCursor(album2);
-        var limit = 4;
-        var sort = Sort.by(Direction.ASC, Album_.CREATED_AT, Album_.ID);
+        var limit = 5;
         final List<Album> albums = albumRepository.fetch(
-            where(
-                isUser(1L).and(createdLater(prev.getCreatedAt()))
-                    .or(isUser(1L).and(equalsCreatedTime(prev.getCreatedAt()).and(greaterId(prev.getId()))))
-            ),
-            limit,
-            sort
+            where(isUser(1L))
+                .and(createdLater(prev.getCreatedAt()).or(equalsCreatedTime(prev.getCreatedAt()).and(greaterId(prev.getId())))
+            ), limit, sortByCreatedAtAsc
         );
-        assertThat(albums).isEqualTo(List.of(album3, album5));
+        assertThat(albums).isEqualTo(List.of(album3, album5, album7, album9, album8));
     }
 }
