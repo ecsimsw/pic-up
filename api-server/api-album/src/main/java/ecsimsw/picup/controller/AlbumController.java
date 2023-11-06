@@ -4,7 +4,7 @@ import ecsimsw.picup.auth.resolver.LoginUser;
 import ecsimsw.picup.auth.resolver.LoginUserInfo;
 import ecsimsw.picup.dto.AlbumInfoRequest;
 import ecsimsw.picup.dto.AlbumInfoResponse;
-import ecsimsw.picup.dto.UpdateAlbumOrderRequest;
+import ecsimsw.picup.dto.AlbumSearchCursor;
 import ecsimsw.picup.service.AlbumService;
 import java.util.List;
 import java.util.Optional;
@@ -34,8 +34,8 @@ public class AlbumController {
         @RequestPart MultipartFile thumbnail,
         @RequestPart AlbumInfoRequest albumInfo
     ) {
-        final AlbumInfoResponse response = albumService.create(albumInfo, thumbnail);
-        return ResponseEntity.ok(null);
+        final AlbumInfoResponse album = albumService.create(albumInfo, thumbnail);
+        return ResponseEntity.ok(album);
     }
 
     @PutMapping("/api/album/{albumId}")
@@ -44,8 +44,8 @@ public class AlbumController {
         @RequestPart AlbumInfoRequest albumInfo,
         @RequestPart Optional<MultipartFile> thumbnail
     ) {
-        final AlbumInfoResponse response = albumService.update(albumId, albumInfo, thumbnail);
-        return ResponseEntity.ok(response);
+        final AlbumInfoResponse album = albumService.update(albumId, albumInfo, thumbnail);
+        return ResponseEntity.ok(album);
     }
 
     @DeleteMapping("/api/album/{albumId}")
@@ -60,17 +60,17 @@ public class AlbumController {
     public ResponseEntity<AlbumInfoResponse> getAlbum(
         @PathVariable Long albumId
     ) {
-        final AlbumInfoResponse response = albumService.read(albumId);
-        return ResponseEntity.ok(response);
+        final AlbumInfoResponse album = albumService.read(albumId);
+        return ResponseEntity.ok(album);
     }
 
     @GetMapping("/api/album")
     public ResponseEntity<List<AlbumInfoResponse>> getAlbums(
         @LoginUser LoginUserInfo userInfo,
         @RequestParam(defaultValue = "10") int limit,
-        @RequestParam(defaultValue = "0") int prevOrder
+        @RequestBody Optional<AlbumSearchCursor> cursor
     ) {
-        final List<AlbumInfoResponse> response = albumService.cursorByOrder(limit, prevOrder);
-        return ResponseEntity.ok(null);
+        final List<AlbumInfoResponse> albums = albumService.cursorBasedFetch(userInfo.getId(), limit, cursor);
+        return ResponseEntity.ok(albums);
     }
 }

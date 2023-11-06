@@ -2,7 +2,7 @@ package ecsimsw.picup.controller;
 
 import ecsimsw.picup.dto.PictureInfoRequest;
 import ecsimsw.picup.dto.PictureInfoResponse;
-import ecsimsw.picup.dto.UpdatePictureOrderRequest;
+import ecsimsw.picup.dto.PictureSearchCursor;
 import ecsimsw.picup.service.PictureService;
 import java.util.List;
 import java.util.Optional;
@@ -41,9 +41,9 @@ public class PictureController {
     public ResponseEntity<List<PictureInfoResponse>> getPictures(
         @PathVariable Long albumId,
         @RequestParam(defaultValue = "10") int limit,
-        @RequestParam(defaultValue = "0") int prevOrder
+        @RequestBody Optional<PictureSearchCursor> cursor
     ) {
-        final List<PictureInfoResponse> response = pictureService.cursorByOrder(albumId, limit, prevOrder);
+        final List<PictureInfoResponse> response = pictureService.cursorBasedFetch(albumId, limit, cursor);
         return ResponseEntity.ok(response);
     }
 

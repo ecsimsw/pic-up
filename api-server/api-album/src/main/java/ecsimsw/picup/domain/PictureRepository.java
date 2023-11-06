@@ -1,5 +1,6 @@
 package ecsimsw.picup.domain;
 
+import java.time.LocalDateTime;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.Sort;
@@ -27,8 +28,16 @@ public interface PictureRepository extends JpaRepository<Picture, Long>, JpaSpec
             return Specification.<Picture>where(null).and(spec);
         }
 
-        static Specification<Picture> createdLater(int orderNumber) {
-            return (root, query, criteriaBuilder) -> criteriaBuilder.greaterThan(root.get(Picture_.CREATED_AT), orderNumber);
+        static Specification<Picture> createdLater(LocalDateTime createdAt) {
+            return (root, query, criteriaBuilder) -> criteriaBuilder.greaterThan(root.get(Picture_.CREATED_AT), createdAt);
+        }
+
+        static Specification<Picture> equalCreatedTime(LocalDateTime createdAt) {
+            return (root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get(Picture_.CREATED_AT), createdAt);
+        }
+
+        static Specification<Picture> greaterId(long id) {
+            return (root, query, criteriaBuilder) -> criteriaBuilder.greaterThan(root.get(Picture_.ID), id);
         }
 
         static Specification<Picture> isAlbum(long albumId) {

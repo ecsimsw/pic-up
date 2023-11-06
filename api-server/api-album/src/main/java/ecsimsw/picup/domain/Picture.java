@@ -37,16 +37,16 @@ public class Picture {
     public Picture() {
     }
 
-    public Picture(Long id, Long albumId, String resourceKey, String description) {
+    public Picture(Long id, Long albumId, String resourceKey, String description, LocalDateTime createdAt) {
         this.id = id;
         this.albumId = albumId;
         this.resourceKey = resourceKey;
         this.description = description;
-        this.createdAt = LocalDateTime.now();
+        this.createdAt = createdAt;
     }
 
     public Picture(Long albumId, String resourceKey, String description) {
-        this(null, albumId, resourceKey, description);
+        this(null, albumId, resourceKey, description, LocalDateTime.now());
     }
 
     public void updateDescription(String description) {

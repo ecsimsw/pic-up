@@ -3,10 +3,11 @@ package ecsimsw.picup.service;
 import ecsimsw.picup.domain.*;
 import ecsimsw.picup.dto.PictureInfoRequest;
 import ecsimsw.picup.dto.PictureInfoResponse;
-import ecsimsw.picup.dto.UpdatePictureOrderRequest;
+import ecsimsw.picup.dto.PictureSearchCursor;
 import ecsimsw.picup.event.AlbumDeletionEvent;
 import ecsimsw.picup.exception.AlbumException;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.scheduling.annotation.Async;
@@ -16,10 +17,8 @@ import org.springframework.transaction.event.TransactionPhase;
 import org.springframework.transaction.event.TransactionalEventListener;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import static ecsimsw.picup.domain.PictureRepository.PictureSearchSpecs.*;
@@ -58,11 +57,18 @@ public class PictureService {
     }
 
     @Transactional(readOnly = true)
-    public List<PictureInfoResponse> cursorByOrder(Long albumId, int limit, int prev) {
+    public List<PictureInfoResponse> cursorBasedFetch(Long albumId, int limit, Optional<PictureSearchCursor> cursor) {
+        final Sort sortByCreatedAtAsc = Sort.by(Direction.ASC, Album_.CREATED_AT);
+        if(cursor.isEmpty()) {
+            final Slice<Picture> pictures = pictureRepository.findAllByAlbumId(albumId, PageRequest.of(0, limit, sortByCreatedAtAsc));
+            return PictureInfoResponse.listOf(pictures.getContent());
+        }
+
+        final PictureSearchCursor prev = cursor.orElseThrow();
         final List<Picture> pictures = pictureRepository.fetch(
-            where()
-                .and(isAlbum(albumId))
-                .and(createdLater(prev)),
+            where(isAlbum(albumId))
+                .and(createdLater(prev.getCreatedAt()))
+                .or(equalCreatedTime(prev.getCreatedAt()).and(greaterId(prev.getId()))),
             limit,
             Sort.by(Direction.ASC, Picture_.CREATED_AT)
         );

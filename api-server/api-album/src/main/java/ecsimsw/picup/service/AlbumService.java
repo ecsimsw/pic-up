@@ -1,6 +1,9 @@
 package ecsimsw.picup.service;
 
 import static ecsimsw.picup.domain.AlbumRepository.AlbumSearchSpecs.createdLater;
+import static ecsimsw.picup.domain.AlbumRepository.AlbumSearchSpecs.equalsCreatedTime;
+import static ecsimsw.picup.domain.AlbumRepository.AlbumSearchSpecs.greaterId;
+import static ecsimsw.picup.domain.AlbumRepository.AlbumSearchSpecs.isUser;
 import static ecsimsw.picup.domain.AlbumRepository.AlbumSearchSpecs.where;
 
 import ecsimsw.picup.domain.Album;
@@ -8,12 +11,14 @@ import ecsimsw.picup.domain.AlbumRepository;
 import ecsimsw.picup.domain.Album_;
 import ecsimsw.picup.dto.AlbumInfoRequest;
 import ecsimsw.picup.dto.AlbumInfoResponse;
+import ecsimsw.picup.dto.AlbumSearchCursor;
 import ecsimsw.picup.event.AlbumDeletionEvent;
+import ecsimsw.picup.exception.AlbumException;
 import java.util.List;
 import java.util.Optional;
-
-import ecsimsw.picup.exception.AlbumException;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
@@ -48,12 +53,13 @@ public class AlbumService {
 
     @Transactional(readOnly = true)
     public AlbumInfoResponse read(Long albumId) {
-        final Album album = albumRepository.findById(albumId).orElseThrow(()-> new AlbumException("Invalid album"));
+        final Album album = albumRepository.findById(albumId).orElseThrow(() -> new AlbumException("Invalid album"));
         return AlbumInfoResponse.of(album);
     }
 
     @Transactional
-    public AlbumInfoResponse update(Long albumId, AlbumInfoRequest albumInfo, Optional<MultipartFile> optionalThumbnail) {
+    public AlbumInfoResponse update(Long albumId, AlbumInfoRequest albumInfo,
+                                    Optional<MultipartFile> optionalThumbnail) {
         final Long userId = 1L;
         final Album album = albumRepository.findById(albumId).orElseThrow(() -> new AlbumException("Invalid album"));
         album.updateName(albumInfo.getName());
@@ -76,11 +82,19 @@ public class AlbumService {
     }
 
     @Transactional(readOnly = true)
-    public List<AlbumInfoResponse> cursorByOrder(int limit, int prev) {
+    public List<AlbumInfoResponse> cursorBasedFetch(Long userId, int limit, Optional<AlbumSearchCursor> cursor) {
+        final Sort sortByCreatedAtAsc = Sort.by(Direction.ASC, Album_.CREATED_AT);
+        if(cursor.isEmpty()) {
+            final Slice<Album> albums = albumRepository.findAllByUserId(userId, PageRequest.of(0, limit, sortByCreatedAtAsc));
+            return AlbumInfoResponse.listOf(albums.getContent());
+        }
+        final AlbumSearchCursor prev = cursor.orElseThrow();
         final List<Album> albums = albumRepository.fetch(
-            where(createdLater(prev)),
+            where(isUser(userId))
+                .and(createdLater(prev.getCreatedAt())
+                .or(equalsCreatedTime(prev.getCreatedAt()).and(greaterId(prev.getId())))),
             limit,
-            Sort.by(Direction.ASC, Album_.CREATED_AT)
+            sortByCreatedAtAsc
         );
         return AlbumInfoResponse.listOf(albums);
     }

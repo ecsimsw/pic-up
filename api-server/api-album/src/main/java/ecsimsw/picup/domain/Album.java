@@ -34,16 +34,16 @@ public class Album {
     public Album() {
     }
 
-    public Album(Long id, Long userId, String name, String resourceKey) {
+    public Album(Long id, Long userId, String name, String resourceKey, LocalDateTime createdAt) {
         this.id = id;
         this.userId = userId;
         this.name = name;
         this.resourceKey = resourceKey;
-        this.createdAt = LocalDateTime.now();
+        this.createdAt = createdAt;
     }
 
     public Album(Long userId, String name, String resourceKey) {
-        this(null, userId, name, resourceKey);
+        this(null, userId, name, resourceKey, LocalDateTime.now());
     }
 
     public void updateName(String name) {
