@@ -34,7 +34,7 @@ public class AlbumController {
         @RequestPart MultipartFile thumbnail,
         @RequestPart AlbumInfoRequest albumInfo
     ) {
-        final AlbumInfoResponse album = albumService.create(albumInfo, thumbnail);
+        final AlbumInfoResponse album = albumService.create(1L, albumInfo, thumbnail);
         return ResponseEntity.ok(album);
     }
 
@@ -44,7 +44,7 @@ public class AlbumController {
         @RequestPart AlbumInfoRequest albumInfo,
         @RequestPart Optional<MultipartFile> thumbnail
     ) {
-        final AlbumInfoResponse album = albumService.update(albumId, albumInfo, thumbnail);
+        final AlbumInfoResponse album = albumService.update(1L, albumId, albumInfo, thumbnail);
         return ResponseEntity.ok(album);
     }
 
@@ -52,7 +52,7 @@ public class AlbumController {
     public ResponseEntity<Void> deleteAlbum(
         @PathVariable Long albumId
     ) {
-        albumService.delete(albumId);
+        albumService.delete(1L, albumId);
         return ResponseEntity.ok().build();
     }
 
@@ -60,7 +60,7 @@ public class AlbumController {
     public ResponseEntity<AlbumInfoResponse> getAlbum(
         @PathVariable Long albumId
     ) {
-        final AlbumInfoResponse album = albumService.read(albumId);
+        final AlbumInfoResponse album = albumService.read(1L, albumId);
         return ResponseEntity.ok(album);
     }
 
@@ -70,7 +70,7 @@ public class AlbumController {
         @RequestParam(defaultValue = "10") int limit,
         @RequestBody Optional<AlbumSearchCursor> cursor
     ) {
-        final List<AlbumInfoResponse> albums = albumService.cursorBasedFetch(userInfo.getId(), limit, cursor);
+        final List<AlbumInfoResponse> albums = albumService.cursorBasedFetch(1L, limit, cursor);
         return ResponseEntity.ok(albums);
     }
 }

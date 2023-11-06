@@ -38,8 +38,7 @@ public class AlbumService {
     }
 
     @Transactional
-    public AlbumInfoResponse create(AlbumInfoRequest albumInfo, MultipartFile thumbnail) {
-        final Long userId = 1L;
+    public AlbumInfoResponse create(Long userId, AlbumInfoRequest albumInfo, MultipartFile thumbnail) {
         final String resourceKey = fileService.upload(thumbnail, userId.toString());
         final Album album = new Album(userId, albumInfo.getName(), resourceKey);
         albumRepository.save(album);
@@ -47,14 +46,13 @@ public class AlbumService {
     }
 
     @Transactional(readOnly = true)
-    public AlbumInfoResponse read(Long albumId) {
+    public AlbumInfoResponse read(Long userId, Long albumId) {
         final Album album = albumRepository.findById(albumId).orElseThrow(() -> new AlbumException("Invalid album"));
         return AlbumInfoResponse.of(album);
     }
 
     @Transactional
-    public AlbumInfoResponse update(Long albumId, AlbumInfoRequest albumInfo, Optional<MultipartFile> optionalThumbnail) {
-        final Long userId = 1L;
+    public AlbumInfoResponse update(Long userId, Long albumId, AlbumInfoRequest albumInfo, Optional<MultipartFile> optionalThumbnail) {
         final Album album = albumRepository.findById(albumId).orElseThrow(() -> new AlbumException("Invalid album"));
         album.updateName(albumInfo.getName());
         optionalThumbnail.ifPresent(file -> {
@@ -68,7 +66,7 @@ public class AlbumService {
     }
 
     @Transactional
-    public void delete(Long albumId) {
+    public void delete(Long userId, Long albumId) {
         final Album album = albumRepository.findById(albumId).orElseThrow(() -> new AlbumException("Invalid album"));
         albumRepository.delete(album);
         fileService.delete(album.getResourceKey());

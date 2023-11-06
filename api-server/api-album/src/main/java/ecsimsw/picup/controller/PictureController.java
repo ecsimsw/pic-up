@@ -33,7 +33,7 @@ public class PictureController {
         @RequestPart MultipartFile imageFile,
         @RequestPart PictureInfoRequest pictureInfo
     ) {
-        final PictureInfoResponse response = pictureService.create(albumId, pictureInfo, imageFile);
+        final PictureInfoResponse response = pictureService.create(1L, albumId, pictureInfo, imageFile);
         return ResponseEntity.ok(response);
     }
 
@@ -43,7 +43,7 @@ public class PictureController {
         @RequestParam(defaultValue = "10") int limit,
         @RequestBody Optional<PictureSearchCursor> cursor
     ) {
-        final List<PictureInfoResponse> response = pictureService.cursorBasedFetch(albumId, limit, cursor);
+        final List<PictureInfoResponse> response = pictureService.cursorBasedFetch(1L, albumId, limit, cursor);
         return ResponseEntity.ok(response);
     }
 
@@ -52,7 +52,7 @@ public class PictureController {
         @PathVariable Long albumId,
         @PathVariable Long pictureId
     ) {
-        pictureService.delete(albumId, pictureId);
+        pictureService.delete(1L, albumId, pictureId);
         return ResponseEntity.ok().build();
     }
 
@@ -63,7 +63,7 @@ public class PictureController {
         @RequestBody PictureInfoRequest pictureInfo,
         @RequestPart Optional<MultipartFile> imageFile
     ) {
-        final PictureInfoResponse response = pictureService.update(albumId, pictureId, pictureInfo, imageFile);
+        final PictureInfoResponse response = pictureService.update(1L, albumId, pictureId, pictureInfo, imageFile);
         return ResponseEntity.ok(response);
     }
 }
