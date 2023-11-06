@@ -8,8 +8,9 @@ import javax.servlet.http.Cookie;
 public class TestFixture {
 
     public static final Long MEMBER_ID = 1L;
-    public static final Long ALBUM_ID = 1L;
     public static final String MEMBER_USERNAME = "ecsimsw";
+    public static final Long ALBUM_ID = 1L;
+    public static final String ALBUM_NAME = "album name";
     public static final String THUMBNAIL_RESOURCE_KEY = "this is thumbnail resource key";
     public static final String RESOURCE_KEY = "this is resource key";
     public static final String DESCRIPTION = "this is description of picture";
