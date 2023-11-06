@@ -1,6 +1,6 @@
 package ecsimsw.picup.service;
 
-import static ecsimsw.picup.domain.AlbumRepository.AlbumSearchSpecs.greaterOrder;
+import static ecsimsw.picup.domain.AlbumRepository.AlbumSearchSpecs.createdLater;
 import static ecsimsw.picup.domain.AlbumRepository.AlbumSearchSpecs.where;
 
 import ecsimsw.picup.domain.Album;
@@ -8,16 +8,12 @@ import ecsimsw.picup.domain.AlbumRepository;
 import ecsimsw.picup.domain.Album_;
 import ecsimsw.picup.dto.AlbumInfoRequest;
 import ecsimsw.picup.dto.AlbumInfoResponse;
-import ecsimsw.picup.dto.UpdateAlbumOrderRequest;
 import ecsimsw.picup.event.AlbumDeletionEvent;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 import ecsimsw.picup.exception.AlbumException;
 import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
@@ -45,7 +41,7 @@ public class AlbumService {
     public AlbumInfoResponse create(AlbumInfoRequest albumInfo, MultipartFile thumbnail) {
         final Long userId = 1L;
         final String resourceKey = fileService.upload(thumbnail, userId.toString());
-        final Album album = new Album(userId, albumInfo.getName(), resourceKey, lastOrder(userId) + 1);
+        final Album album = new Album(userId, albumInfo.getName(), resourceKey);
         albumRepository.save(album);
         return AlbumInfoResponse.of(album);
     }
@@ -82,32 +78,10 @@ public class AlbumService {
     @Transactional(readOnly = true)
     public List<AlbumInfoResponse> cursorByOrder(int limit, int prev) {
         final List<Album> albums = albumRepository.fetch(
-            where(greaterOrder(prev)),
+            where(createdLater(prev)),
             limit,
-            Sort.by(Direction.ASC, Album_.ORDER_NUMBER)
+            Sort.by(Direction.ASC, Album_.CREATED_AT)
         );
         return AlbumInfoResponse.listOf(albums);
-    }
-
-    @Transactional
-    public void updateOrder(List<UpdateAlbumOrderRequest> orderInfos) {
-        final Set<Integer> usedOrder = new HashSet<>();
-        albumRepository.findAll().forEach(album -> {
-            orderInfos.stream()
-                .filter(it -> it.isAlbum(album))
-                .forEach(it -> album.updateOrder(it.getOrder()));
-            if (usedOrder.contains(album.getOrderNumber())) {
-                throw new AlbumException("Order can't be duplicated");
-            }
-            usedOrder.add(album.getOrderNumber());
-        });
-    }
-
-    private Integer lastOrder(Long userId) {
-        final PageRequest requestTop1 = PageRequest.of(0, 1, Sort.by(Direction.DESC, Album_.ORDER_NUMBER, Album_.ID));
-        return albumRepository.findAllByUserId(userId, requestTop1).stream()
-            .map(Album::getOrderNumber)
-            .findFirst()
-            .orElse(0);
     }
 }

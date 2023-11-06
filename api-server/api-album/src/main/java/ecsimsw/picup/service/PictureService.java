@@ -46,7 +46,7 @@ public class PictureService {
         final Long userId = 1L;
         final Album album = albumRepository.findById(albumId).orElseThrow();
         final String resourceKey = fileService.upload(imageFile, userId.toString());
-        final Picture picture = new Picture(albumId, resourceKey, pictureInfo.getDescription(), lastOrderNumber(albumId) + 1);
+        final Picture picture = new Picture(albumId, resourceKey, pictureInfo.getDescription());
         pictureRepository.save(picture);
         return PictureInfoResponse.of(picture);
     }
@@ -62,9 +62,9 @@ public class PictureService {
         final List<Picture> pictures = pictureRepository.fetch(
             where()
                 .and(isAlbum(albumId))
-                .and(greaterOrderThan(prev)),
+                .and(createdLater(prev)),
             limit,
-            Sort.by(Direction.ASC, Picture_.ORDER_NUMBER)
+            Sort.by(Direction.ASC, Picture_.CREATED_AT)
         );
         return PictureInfoResponse.listOf(pictures);
     }
@@ -78,6 +78,7 @@ public class PictureService {
         pictureRepository.delete(picture);
     }
 
+    @Async
     @Transactional
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     public void deleteAllInAlbum(AlbumDeletionEvent event) {
@@ -104,31 +105,5 @@ public class PictureService {
         });
         pictureRepository.save(picture);
         return PictureInfoResponse.of(picture);
-    }
-
-    @Transactional
-    public List<PictureInfoResponse> updateOrder(Long albumId, List<UpdatePictureOrderRequest> orderInfos) {
-        final Album album = albumRepository.findById(albumId).orElseThrow(() -> new AlbumException("Invalid album"));
-        final List<Picture> pictures = pictureRepository.findAllByAlbumId(albumId);
-        final Set<Integer> usedOrder = new HashSet<>();
-        pictures.forEach(picture -> {
-            orderInfos.stream()
-                .filter(it -> it.isPicture(picture))
-                .forEach(it -> picture.updateOrder(it.getOrder()));
-            if (usedOrder.contains(picture.getOrderNumber())) {
-                throw new AlbumException("Order can't be duplicated");
-            }
-            usedOrder.add(picture.getOrderNumber());
-        });
-        final List<Picture> updated = pictureRepository.findAllByAlbumId(albumId);
-        return PictureInfoResponse.listOf(updated);
-    }
-
-    private int lastOrderNumber(Long albumId) {
-        final PageRequest requestTop1 = PageRequest.of(0, 1, Sort.by(Direction.DESC, Picture_.ORDER_NUMBER, Picture_.ID));
-        return pictureRepository.findAllByAlbumId(albumId, requestTop1).stream()
-            .map(Picture::getOrderNumber)
-            .findFirst()
-            .orElse(0);
     }
 }

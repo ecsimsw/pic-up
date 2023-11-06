@@ -1,6 +1,7 @@
 package ecsimsw.picup.domain;
 
 import ecsimsw.picup.ecrypt.AES256Converter;
+import java.time.LocalDateTime;
 import javax.persistence.Convert;
 import javax.persistence.Converter;
 
@@ -31,21 +32,21 @@ public class Picture {
     @Convert(converter = AES256Converter.class)
     private String description;
 
-    private int orderNumber;
+    private LocalDateTime createdAt;
 
     public Picture() {
     }
 
-    public Picture(Long id, Long albumId, String resourceKey, String description, int orderNumber) {
+    public Picture(Long id, Long albumId, String resourceKey, String description) {
         this.id = id;
         this.albumId = albumId;
         this.resourceKey = resourceKey;
         this.description = description;
-        this.orderNumber = orderNumber;
+        this.createdAt = LocalDateTime.now();
     }
 
-    public Picture(Long albumId, String resourceKey, String description, int orderNumber) {
-        this(null, albumId, resourceKey, description, orderNumber);
+    public Picture(Long albumId, String resourceKey, String description) {
+        this(null, albumId, resourceKey, description);
     }
 
     public void updateDescription(String description) {
@@ -54,10 +55,6 @@ public class Picture {
 
     public void updateImage(String resourceKey) {
         this.resourceKey = resourceKey;
-    }
-
-    public void updateOrder(int orderNumber) {
-        this.orderNumber = orderNumber;
     }
 
     public void validateAlbum(Long albumId) {

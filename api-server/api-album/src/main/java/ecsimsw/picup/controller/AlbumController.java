@@ -35,7 +35,7 @@ public class AlbumController {
         @RequestPart AlbumInfoRequest albumInfo
     ) {
         final AlbumInfoResponse response = albumService.create(albumInfo, thumbnail);
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(null);
     }
 
     @PutMapping("/api/album/{albumId}")
@@ -71,14 +71,6 @@ public class AlbumController {
         @RequestParam(defaultValue = "0") int prevOrder
     ) {
         final List<AlbumInfoResponse> response = albumService.cursorByOrder(limit, prevOrder);
-        return ResponseEntity.ok(response);
-    }
-
-    @PutMapping("/api/album/order")
-    public ResponseEntity<Void> updateOrder(
-        @RequestBody List<UpdateAlbumOrderRequest> orders
-    ) {
-        albumService.updateOrder(orders);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok(null);
     }
 }

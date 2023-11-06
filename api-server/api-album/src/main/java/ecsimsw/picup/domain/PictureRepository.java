@@ -27,8 +27,8 @@ public interface PictureRepository extends JpaRepository<Picture, Long>, JpaSpec
             return Specification.<Picture>where(null).and(spec);
         }
 
-        static Specification<Picture> greaterOrderThan(int orderNumber) {
-            return (root, query, criteriaBuilder) -> criteriaBuilder.greaterThan(root.get(Picture_.ORDER_NUMBER), orderNumber);
+        static Specification<Picture> createdLater(int orderNumber) {
+            return (root, query, criteriaBuilder) -> criteriaBuilder.greaterThan(root.get(Picture_.CREATED_AT), orderNumber);
         }
 
         static Specification<Picture> isAlbum(long albumId) {

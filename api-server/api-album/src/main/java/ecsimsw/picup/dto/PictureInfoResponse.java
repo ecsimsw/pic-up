@@ -1,6 +1,7 @@
 package ecsimsw.picup.dto;
 
 import ecsimsw.picup.domain.Picture;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.Getter;
@@ -13,14 +14,14 @@ public class PictureInfoResponse {
     private final Long albumId;
     private final String description;
     private final String resourceKey;
-    private final int order;
+    private final LocalDateTime createdAt;
 
-    public PictureInfoResponse(Long id, Long albumId, String description, String resourceKey, int order) {
+    public PictureInfoResponse(Long id, Long albumId, String description, String resourceKey, LocalDateTime createdAt) {
         this.id = id;
         this.albumId = albumId;
         this.description = description;
         this.resourceKey = resourceKey;
-        this.order = order;
+        this.createdAt = createdAt;
     }
 
     public static PictureInfoResponse of(Picture picture) {
@@ -29,7 +30,7 @@ public class PictureInfoResponse {
             picture.getAlbumId(),
             picture.getDescription(),
             picture.getResourceKey(),
-            picture.getOrderNumber()
+            picture.getCreatedAt()
         );
     }
 

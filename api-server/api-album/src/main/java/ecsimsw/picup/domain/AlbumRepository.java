@@ -25,8 +25,8 @@ public interface AlbumRepository extends JpaRepository<Album, Long>, JpaSpecific
             return where().and(spec);
         }
 
-        static Specification<Album> greaterOrder(int orderNumber) {
-            return (root, query, criteriaBuilder) -> criteriaBuilder.greaterThan(root.get(Album_.ORDER_NUMBER), orderNumber);
+        static Specification<Album> createdLater(int orderNumber) {
+            return (root, query, criteriaBuilder) -> criteriaBuilder.greaterThan(root.get(Album_.CREATED_AT), orderNumber);
         }
     }
 }
