@@ -42,6 +42,10 @@ public class Album {
         this.createdAt = createdAt;
     }
 
+    public Album(Long userId, String name, String resourceKey, LocalDateTime createdAt) {
+        this(null, userId, name, resourceKey, createdAt);
+    }
+
     public Album(Long userId, String name, String resourceKey) {
         this(null, userId, name, resourceKey, LocalDateTime.now());
     }

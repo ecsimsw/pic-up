@@ -9,6 +9,7 @@ public class TestFixture {
 
     public static final Long MEMBER_ID = 1L;
     public static final String MEMBER_USERNAME = "ecsimsw";
+    public static final String THUMBNAIL_RESOURCE_KEY = "this is thumbnail resource key";
 
     public static final String VALID_ACCESS_TOKEN = "this is valid access token";
     public static final String VALID_REFRESH_TOKEN = "this is valid refresh token";
