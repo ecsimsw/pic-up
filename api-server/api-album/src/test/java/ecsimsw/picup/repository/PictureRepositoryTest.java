@@ -6,9 +6,7 @@ import static ecsimsw.picup.domain.PictureRepository.PictureSearchSpecs.greaterI
 import static ecsimsw.picup.domain.PictureRepository.PictureSearchSpecs.isAlbum;
 import static ecsimsw.picup.domain.PictureRepository.PictureSearchSpecs.sortByCreatedAtAsc;
 import static ecsimsw.picup.domain.PictureRepository.PictureSearchSpecs.where;
-import static ecsimsw.picup.env.TestFixture.ALBUM_ID;
-import static ecsimsw.picup.env.TestFixture.DESCRIPTION;
-import static ecsimsw.picup.env.TestFixture.RESOURCE_KEY;
+import static ecsimsw.picup.env.AlbumFixture.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 

@@ -1,8 +1,8 @@
 package ecsimsw.picup.domain;
 
 import static ecsimsw.picup.domain.StorageKey.LOCAL_FILE_STORAGE;
-import static ecsimsw.picup.env.FileFixture.fakeTag;
-import static ecsimsw.picup.env.FileFixture.mockMultipartFile;
+import static ecsimsw.picup.env.FileFixture.FILE_TAG;
+import static ecsimsw.picup.env.FileFixture.MULTIPART_FILE;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
@@ -25,14 +25,14 @@ public class ResourceRepositoryTest {
 
     @BeforeEach
     private void initAll() {
-        var resource = resourceRepository.save(Resource.createRequested(fakeTag, mockMultipartFile));
+        var resource = resourceRepository.save(Resource.createRequested(FILE_TAG, MULTIPART_FILE));
         this.saved = resourceRepository.findById(resource.getResourceKey()).orElseThrow();
     }
 
     @DisplayName("Resource 생성 요청시 임의의 resourceKey 를 생성하고 createdDate 를 표시한다.")
     @Test
     public void created() {
-        var saved = resourceRepository.save(Resource.createRequested(fakeTag, mockMultipartFile));
+        var saved = resourceRepository.save(Resource.createRequested(FILE_TAG, MULTIPART_FILE));
 
         assertAll(
             () -> assertThat(saved.getResourceKey()).isNotNull(),
@@ -58,7 +58,7 @@ public class ResourceRepositoryTest {
     @DisplayName("stored storage key 정보를 저장한다.")
     @Test
     public void storedAtMain() {
-        var notStored = resourceRepository.save(Resource.createRequested(fakeTag, mockMultipartFile));
+        var notStored = resourceRepository.save(Resource.createRequested(FILE_TAG, MULTIPART_FILE));
         assertThat(notStored.getStoredStorages()).isEmpty();
 
         var storedToMain = notStored;

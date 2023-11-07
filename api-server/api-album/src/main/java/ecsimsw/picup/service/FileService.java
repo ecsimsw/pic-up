@@ -2,6 +2,7 @@ package ecsimsw.picup.service;
 
 import com.google.common.collect.Iterables;
 import ecsimsw.picup.domain.FileExtension;
+import ecsimsw.picup.dto.ImageFileInfo;
 import ecsimsw.picup.exception.AlbumException;
 import java.util.List;
 import java.util.Objects;
@@ -22,10 +23,13 @@ public class FileService {
         this.storageMessageQueue = storageMessageQueue;
     }
 
-    public String upload(MultipartFile file, String tag) {
+    public ImageFileInfo upload(MultipartFile file, Long tag) {
+        return upload(file, tag.toString());
+    }
+
+    public ImageFileInfo upload(MultipartFile file, String tag) {
         validateFileType(file.getOriginalFilename());
-        var response = storageHttpClient.requestUpload(file, tag);
-        return response.getResourceKey();
+        return storageHttpClient.requestUpload(file, tag);
     }
 
     public void delete(String resourceKey) {

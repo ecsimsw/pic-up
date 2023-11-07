@@ -1,14 +1,14 @@
 package ecsimsw.picup.controller;
 
-import static ecsimsw.picup.env.TestFixture.INVALID_ACCESS_TOKEN;
-import static ecsimsw.picup.env.TestFixture.INVALID_ACCESS_TOKEN_COOKIE;
-import static ecsimsw.picup.env.TestFixture.INVALID_REFRESH_TOKEN_COOKIE;
-import static ecsimsw.picup.env.TestFixture.MEMBER_ID;
-import static ecsimsw.picup.env.TestFixture.MEMBER_USERNAME;
-import static ecsimsw.picup.env.TestFixture.VALID_ACCESS_TOKEN;
-import static ecsimsw.picup.env.TestFixture.VALID_ACCESS_TOKEN_COOKIE;
-import static ecsimsw.picup.env.TestFixture.VALID_REFRESH_TOKEN;
-import static ecsimsw.picup.env.TestFixture.VALID_REFRESH_TOKEN_COOKIE;
+import static ecsimsw.picup.env.MemberFixture.INVALID_ACCESS_TOKEN;
+import static ecsimsw.picup.env.MemberFixture.INVALID_ACCESS_TOKEN_COOKIE;
+import static ecsimsw.picup.env.MemberFixture.INVALID_REFRESH_TOKEN_COOKIE;
+import static ecsimsw.picup.env.MemberFixture.MEMBER_ID;
+import static ecsimsw.picup.env.MemberFixture.MEMBER_USERNAME;
+import static ecsimsw.picup.env.MemberFixture.VALID_ACCESS_TOKEN;
+import static ecsimsw.picup.env.MemberFixture.VALID_ACCESS_TOKEN_COOKIE;
+import static ecsimsw.picup.env.MemberFixture.VALID_REFRESH_TOKEN;
+import static ecsimsw.picup.env.MemberFixture.VALID_REFRESH_TOKEN_COOKIE;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;

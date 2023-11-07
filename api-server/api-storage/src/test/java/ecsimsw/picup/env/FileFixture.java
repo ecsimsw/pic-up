@@ -11,11 +11,11 @@ import java.util.List;
 
 public class FileFixture {
 
-    public static String fakeTag = "TAG";
+    public static String FILE_TAG = "TAG";
 
-    public static MultipartFile mockMultipartFile = new MockMultipartFile("name", "name.png", "png", "Image binary file for test".getBytes());
+    public static MultipartFile MULTIPART_FILE = new MockMultipartFile("name", "name.png", "png", "Image binary file for test".getBytes());
 
-    public static ImageFile fakeImageFile = ImageFile.of(mockMultipartFile);
+    public static ImageFile IMAGE_FILE = ImageFile.of(MULTIPART_FILE);
 
     public static Resource createdResource(String key) {
         return new Resource(

@@ -5,10 +5,10 @@ import ecsimsw.picup.domain.AlbumRepository;
 import ecsimsw.picup.dto.AlbumInfoRequest;
 import ecsimsw.picup.dto.AlbumInfoResponse;
 import ecsimsw.picup.dto.AlbumSearchCursor;
+import ecsimsw.picup.dto.ImageFileInfo;
 import ecsimsw.picup.event.AlbumDeletionEvent;
 import ecsimsw.picup.exception.AlbumException;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.context.ApplicationEventPublisher;
@@ -39,8 +39,8 @@ public class AlbumService {
 
     @Transactional
     public AlbumInfoResponse create(Long userId, AlbumInfoRequest albumInfo, MultipartFile thumbnail) {
-        final String resourceKey = fileService.upload(thumbnail, userId.toString());
-        final Album album = new Album(userId, albumInfo.getName(), resourceKey);
+        final ImageFileInfo imageFile = fileService.upload(thumbnail, userId);
+        final Album album = new Album(userId, albumInfo.getName(), imageFile.getResourceKey());
         albumRepository.save(album);
         return AlbumInfoResponse.of(album);
     }
@@ -57,7 +57,7 @@ public class AlbumService {
         album.updateName(albumInfo.getName());
         optionalThumbnail.ifPresent(file -> {
             final String oldImage = album.getResourceKey();
-            final String newImage = fileService.upload(file, userId.toString());
+            final String newImage = fileService.upload(file, userId).getResourceKey();
             album.updateThumbnail(newImage);
             fileService.delete(oldImage);
         });

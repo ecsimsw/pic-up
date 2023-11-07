@@ -69,7 +69,7 @@ public class StorageServiceTest {
         @DisplayName("업로드 성공")
         @Test
         public void uploadSuccessfully() {
-            var result = storageService.upload(fakeTag, mockMultipartFile);
+            var result = storageService.upload(FILE_TAG, MULTIPART_FILE);
             verify(resourceRepository, atLeast(3))
                 .save(resourceArgumentCaptor.capture());
 
@@ -89,7 +89,7 @@ public class StorageServiceTest {
             doThrow(StorageException.class)
                 .when(mainStorage).create(any(String.class), any(ImageFile.class));
 
-            assertThrows(StorageException.class, () -> storageService.upload(fakeTag, mockMultipartFile));
+            assertThrows(StorageException.class, () -> storageService.upload(FILE_TAG, MULTIPART_FILE));
             verify(resourceRepository, atLeast(1))
                 .save(resourceArgumentCaptor.capture());
 
@@ -107,7 +107,7 @@ public class StorageServiceTest {
             doThrow(StorageException.class)
                 .when(backUpStorage).create(any(String.class), any(ImageFile.class));
 
-            assertThrows(StorageException.class, () -> storageService.upload(fakeTag, mockMultipartFile));
+            assertThrows(StorageException.class, () -> storageService.upload(FILE_TAG, MULTIPART_FILE));
             verify(resourceRepository, atLeast(2))
                 .save(resourceArgumentCaptor.capture());
 
@@ -130,7 +130,7 @@ public class StorageServiceTest {
 
         @BeforeEach
         private void init() {
-            resourceKey = storageService.upload(fakeTag, mockMultipartFile).getResourceKey();
+            resourceKey = storageService.upload(FILE_TAG, MULTIPART_FILE).getResourceKey();
             when(resourceRepository.findById(resourceKey))
                 .thenReturn(Optional.of(createdResource(resourceKey)));
         }
@@ -263,7 +263,7 @@ public class StorageServiceTest {
 
         @BeforeEach
         private void init() {
-            resourceKey = storageService.upload(fakeTag, mockMultipartFile).getResourceKey();
+            resourceKey = storageService.upload(FILE_TAG, MULTIPART_FILE).getResourceKey();
             when(resourceRepository.findById(resourceKey))
                 .thenReturn(Optional.of(createdResource(resourceKey)));
         }

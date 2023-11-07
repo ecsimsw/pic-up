@@ -1,7 +1,7 @@
 package ecsimsw.picup.service;
 
 import ecsimsw.picup.dto.StorageImageUploadRequest;
-import ecsimsw.picup.dto.StorageImageUploadResponse;
+import ecsimsw.picup.dto.ImageFileInfo;
 import ecsimsw.picup.exception.InvalidStorageServerResponseException;
 import ecsimsw.picup.exception.StorageServerDownException;
 import org.assertj.core.util.Strings;
@@ -46,13 +46,13 @@ public class StorageHttpClient {
         backoff = @Backoff(delay = SERVER_CONNECTION_RETRY_DELAY_TIME_MS),
         recover = "recoverUploadApi"
     )
-    public StorageImageUploadResponse requestUpload(MultipartFile file, String tag) {
+    public ImageFileInfo requestUpload(MultipartFile file, String tag) {
         try {
             var response = restTemplate.exchange(
                 STORAGE_SERVER_URL + "/api/file",
                 HttpMethod.POST,
                 StorageImageUploadRequest.of(file, tag).toHttpEntity(),
-                new ParameterizedTypeReference<StorageImageUploadResponse>() {
+                new ParameterizedTypeReference<ImageFileInfo>() {
                 });
             if (Objects.isNull(response.getBody()) || Objects.isNull(response.getBody().getResourceKey())) {
                 throw new InvalidStorageServerResponseException("Failed to upload resources.\nStorage server is on, but invalid response body.");
@@ -64,7 +64,7 @@ public class StorageHttpClient {
     }
 
     @Recover
-    public StorageImageUploadResponse recoverUploadApi(Throwable exception, MultipartFile file, String tag) {
+    public ImageFileInfo recoverUploadApi(Throwable exception, MultipartFile file, String tag) {
         throw new StorageServerDownException("Failed to connect server", exception);
     }
 

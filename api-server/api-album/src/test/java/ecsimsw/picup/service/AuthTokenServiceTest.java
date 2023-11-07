@@ -1,8 +1,8 @@
 package ecsimsw.picup.service;
 
 import static ecsimsw.picup.auth.config.AuthTokenJwtConfig.TOKEN_JWT_PAYLOAD_KEY;
-import static ecsimsw.picup.env.TestFixture.MEMBER_ID;
-import static ecsimsw.picup.env.TestFixture.MEMBER_USERNAME;
+import static ecsimsw.picup.env.MemberFixture.MEMBER_ID;
+import static ecsimsw.picup.env.MemberFixture.MEMBER_USERNAME;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
@@ -33,9 +33,9 @@ public class AuthTokenServiceTest {
 
     private static final String TOKEN_KEY = "ecsimswtemptokensecretqwertyqwerty123123123";
 
-    private static final Key key = JwtUtils.createSecretKey(TOKEN_KEY);
+    private static final Key SECRET_KEY = JwtUtils.createSecretKey(TOKEN_KEY);
 
-    private static final Map<String, Object> payload = Map.of(TOKEN_JWT_PAYLOAD_KEY, new AuthTokenPayload(MEMBER_ID, MEMBER_USERNAME));
+    private static final Map<String, Object> PAYLOAD = Map.of(TOKEN_JWT_PAYLOAD_KEY, new AuthTokenPayload(MEMBER_ID, MEMBER_USERNAME));
 
     @Mock
     private AuthTokensCacheRepository authTokensCacheRepository;
@@ -54,7 +54,7 @@ public class AuthTokenServiceTest {
         @DisplayName("유효함을 반환한다.")
         @Test
         public void isValidToken() {
-            var accessToken = JwtUtils.createToken(key, payload, Integer.MAX_VALUE);
+            var accessToken = JwtUtils.createToken(SECRET_KEY, PAYLOAD, Integer.MAX_VALUE);
             var expectValid = authTokenService.isValidToken(accessToken);
             assertThat(expectValid).isTrue();
 
@@ -70,7 +70,7 @@ public class AuthTokenServiceTest {
         @DisplayName("유효한 토큰으로부터 payload 를 가져온다.")
         @Test
         public void payloadFromValidToken() {
-            var accessToken = JwtUtils.createToken(key, payload, Integer.MAX_VALUE);
+            var accessToken = JwtUtils.createToken(SECRET_KEY, PAYLOAD, Integer.MAX_VALUE);
             var payloadFromToken = authTokenService.getPayloadFromToken(accessToken);
             assertAll(
                 () -> assertThat(payloadFromToken.getId()).isEqualTo(MEMBER_ID),
@@ -124,8 +124,8 @@ public class AuthTokenServiceTest {
 
         private final Key key = JwtUtils.createSecretKey(TOKEN_KEY);
 
-        private final String expiredAccessToken = JwtUtils.createToken(key, payload, 0);
-        private final String livedRefreshToken = JwtUtils.createToken(key, payload, Integer.MAX_VALUE);
+        private final String expiredAccessToken = JwtUtils.createToken(key, PAYLOAD, 0);
+        private final String livedRefreshToken = JwtUtils.createToken(key, PAYLOAD, Integer.MAX_VALUE);
 
         @DisplayName("Access token 은 만료되어 있고, Refresh token 은 만료되어 있지 않아야 한다.")
         @Test
@@ -139,7 +139,7 @@ public class AuthTokenServiceTest {
         @DisplayName("Access token 이 만료되어 있지 않다면 예외를 발생한다.")
         @Test
         public void accessTokenShouldBeExpired() {
-            var livedAccessToken = JwtUtils.createToken(key, payload, Integer.MAX_VALUE);
+            var livedAccessToken = JwtUtils.createToken(key, PAYLOAD, Integer.MAX_VALUE);
             assertThatThrownBy(
                 () -> authTokenService.reissue(livedAccessToken, livedRefreshToken)
             ).isInstanceOf(TokenException.class);
@@ -148,7 +148,7 @@ public class AuthTokenServiceTest {
         @DisplayName("Refresh token 이 만료되었다면 예외를 발생한다.")
         @Test
         public void refreshTokenShouldBeLived() {
-            var expiredRefreshToken = JwtUtils.createToken(key, payload, 0);
+            var expiredRefreshToken = JwtUtils.createToken(key, PAYLOAD, 0);
             assertThatThrownBy(
                 () -> authTokenService.reissue(expiredRefreshToken, expiredRefreshToken)
             ).isInstanceOf(TokenException.class);

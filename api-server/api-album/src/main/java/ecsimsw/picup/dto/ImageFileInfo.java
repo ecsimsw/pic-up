@@ -10,12 +10,12 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 
 @Getter
-public class StorageImageUploadResponse {
+public class ImageFileInfo {
 
     private final String resourceKey;
     private final long size;
 
-    public StorageImageUploadResponse(String resourceKey, long size) {
+    public ImageFileInfo(String resourceKey, long size) {
         this.resourceKey = resourceKey;
         this.size = size;
     }

@@ -15,7 +15,8 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import static ecsimsw.picup.domain.AlbumRepository.AlbumSearchSpecs.*;
-import static ecsimsw.picup.env.TestFixture.*;
+import static ecsimsw.picup.env.AlbumFixture.*;
+import static ecsimsw.picup.env.MemberFixture.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
