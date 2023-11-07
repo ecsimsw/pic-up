@@ -47,77 +47,6 @@ public class AuthTokenServiceTest {
         authTokenService = new AuthTokenService(TOKEN_KEY, authTokensCacheRepository);
     }
 
-    @DisplayName("토큰의 유효성을 확인한다.")
-    @Nested
-    class ValidateToken {
-
-        @DisplayName("유효함을 반환한다.")
-        @Test
-        public void isValidToken() {
-            var accessToken = JwtUtils.createToken(SECRET_KEY, PAYLOAD, Integer.MAX_VALUE);
-            var expectValid = authTokenService.isValidToken(accessToken);
-            assertThat(expectValid).isTrue();
-
-            var expectInvalid = authTokenService.isValidToken("INVALID_TOKEN");
-            assertThat(expectInvalid).isFalse();
-        }
-    }
-
-    @DisplayName("토큰으로부터 payload 를 가져온다.")
-    @Nested
-    class GetPayloadFromToken {
-
-        @DisplayName("유효한 토큰으로부터 payload 를 가져온다.")
-        @Test
-        public void payloadFromValidToken() {
-            var accessToken = JwtUtils.createToken(SECRET_KEY, PAYLOAD, Integer.MAX_VALUE);
-            var payloadFromToken = authTokenService.getPayloadFromToken(accessToken);
-            assertAll(
-                () -> assertThat(payloadFromToken.getId()).isEqualTo(MEMBER_ID),
-                () -> assertThat(payloadFromToken.getUsername()).isEqualTo(MEMBER_USERNAME)
-            );
-        }
-
-        @DisplayName("유효하지 않은 토큰으로부터 payload 를 가져올 경우 예외가 발생한다.")
-        @Test
-        public void payloadFromInvalidToken() {
-            assertThatThrownBy(
-                () -> authTokenService.getPayloadFromToken("INVALID_TOKEN.INVALID_TOKEN")
-            ).isInstanceOf(Exception.class);
-        }
-    }
-
-    @DisplayName("AuthTokens 를 생성한다.")
-    @Nested
-    class IssueNewAuthTokens {
-
-        @DisplayName("생성된 AuthTokens 엔 Access token, Refresh token 이 포함된다.")
-        @Test
-        public void issue() {
-            var authTokens = authTokenService.issueAuthTokens(MEMBER_ID, MEMBER_USERNAME);
-
-            var payloadFromAT = authTokenService.getPayloadFromToken(authTokens.getAccessToken());
-            assertAll(
-                () -> assertThat(payloadFromAT.getId()).isEqualTo(MEMBER_ID),
-                () -> assertThat(payloadFromAT.getUsername()).isEqualTo(MEMBER_USERNAME)
-            );
-
-            var payloadFromRT = authTokenService.getPayloadFromToken(authTokens.getRefreshToken());
-            assertAll(
-                () -> assertThat(payloadFromRT.getId()).isEqualTo(MEMBER_ID),
-                () -> assertThat(payloadFromRT.getUsername()).isEqualTo(MEMBER_USERNAME)
-            );
-        }
-
-        @DisplayName("토큰 발행시 기존 캐시를 제거하고 새로 생성한다.")
-        @Test
-        public void storeInCache() {
-            var authTokens = authTokenService.issueAuthTokens(MEMBER_ID, MEMBER_USERNAME);
-            verify(authTokensCacheRepository, atLeastOnce()).deleteById(any());
-            verify(authTokensCacheRepository, atLeastOnce()).save(authTokens);
-        }
-    }
-
     @DisplayName("Refresh 토큰으로 새로운 인증 토큰을 발행한다.")
     @Nested
     class ReissueWithRefreshToken {
@@ -187,6 +116,77 @@ public class AuthTokenServiceTest {
             assertThatThrownBy(
                 () -> authTokenService.reissue(expiredAccessToken, livedRefreshToken)
             ).isInstanceOf(TokenException.class);
+        }
+    }
+
+    @DisplayName("AuthTokens 를 생성한다.")
+    @Nested
+    class IssueNewAuthTokens {
+
+        @DisplayName("생성된 AuthTokens 엔 Access token, Refresh token 이 포함된다.")
+        @Test
+        public void issue() {
+            var authTokens = authTokenService.issueAuthTokens(MEMBER_ID, MEMBER_USERNAME);
+
+            var payloadFromAT = authTokenService.getPayloadFromToken(authTokens.getAccessToken());
+            assertAll(
+                () -> assertThat(payloadFromAT.getId()).isEqualTo(MEMBER_ID),
+                () -> assertThat(payloadFromAT.getUsername()).isEqualTo(MEMBER_USERNAME)
+            );
+
+            var payloadFromRT = authTokenService.getPayloadFromToken(authTokens.getRefreshToken());
+            assertAll(
+                () -> assertThat(payloadFromRT.getId()).isEqualTo(MEMBER_ID),
+                () -> assertThat(payloadFromRT.getUsername()).isEqualTo(MEMBER_USERNAME)
+            );
+        }
+
+        @DisplayName("토큰 발행시 기존 캐시를 제거하고 새로 생성한다.")
+        @Test
+        public void storeInCache() {
+            var authTokens = authTokenService.issueAuthTokens(MEMBER_ID, MEMBER_USERNAME);
+            verify(authTokensCacheRepository, atLeastOnce()).deleteById(any());
+            verify(authTokensCacheRepository, atLeastOnce()).save(authTokens);
+        }
+    }
+
+    @DisplayName("토큰의 유효성을 확인한다.")
+    @Nested
+    class ValidateToken {
+
+        @DisplayName("유효함을 반환한다.")
+        @Test
+        public void isValidToken() {
+            var accessToken = JwtUtils.createToken(SECRET_KEY, PAYLOAD, Integer.MAX_VALUE);
+            var expectValid = authTokenService.isValidToken(accessToken);
+            assertThat(expectValid).isTrue();
+
+            var expectInvalid = authTokenService.isValidToken("INVALID_TOKEN");
+            assertThat(expectInvalid).isFalse();
+        }
+    }
+
+    @DisplayName("토큰으로부터 payload 를 가져온다.")
+    @Nested
+    class GetPayloadFromToken {
+
+        @DisplayName("유효한 토큰으로부터 payload 를 가져온다.")
+        @Test
+        public void payloadFromValidToken() {
+            var accessToken = JwtUtils.createToken(SECRET_KEY, PAYLOAD, Integer.MAX_VALUE);
+            var payloadFromToken = authTokenService.getPayloadFromToken(accessToken);
+            assertAll(
+                () -> assertThat(payloadFromToken.getId()).isEqualTo(MEMBER_ID),
+                () -> assertThat(payloadFromToken.getUsername()).isEqualTo(MEMBER_USERNAME)
+            );
+        }
+
+        @DisplayName("유효하지 않은 토큰으로부터 payload 를 가져올 경우 예외가 발생한다.")
+        @Test
+        public void payloadFromInvalidToken() {
+            assertThatThrownBy(
+                () -> authTokenService.getPayloadFromToken("INVALID_TOKEN.INVALID_TOKEN")
+            ).isInstanceOf(Exception.class);
         }
     }
 }

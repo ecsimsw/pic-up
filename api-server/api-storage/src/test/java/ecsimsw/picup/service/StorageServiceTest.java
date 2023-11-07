@@ -53,73 +53,6 @@ public class StorageServiceTest {
         storageService = new StorageService(resourceRepository, mainStorage, backUpStorage);
     }
 
-    @DisplayName("Upload")
-    @Nested
-    class UploadTest {
-
-        @Captor
-        private ArgumentCaptor<Resource> resourceArgumentCaptor;
-
-        @BeforeEach
-        public void initRepository() {
-            when(resourceRepository.save(any(Resource.class)))
-                .thenAnswer(i -> i.getArguments()[0]);
-        }
-
-        @DisplayName("업로드 성공")
-        @Test
-        public void uploadSuccessfully() {
-            var result = storageService.upload(FILE_TAG, MULTIPART_FILE);
-            verify(resourceRepository, atLeast(3))
-                .save(resourceArgumentCaptor.capture());
-
-            var savedResource = resourceArgumentCaptor.getValue();
-            assertAll(
-                () -> assertNotNull(result.getResourceKey()),
-                () -> assertThat(savedResource.getResourceKey()).isEqualTo(result.getResourceKey()),
-                () -> assertThat(savedResource.getStoredStorages()).isEqualTo(
-                    List.of(LOCAL_FILE_STORAGE, StorageKey.S3_OBJECT_STORAGE)
-                )
-            );
-        }
-
-        @DisplayName("Main storage 에 저장 실패시 업로드에 실패한다. 단, 리소스 생성 기록은 남긴다.")
-        @Test
-        public void uploadFailWithMainStorage() {
-            doThrow(StorageException.class)
-                .when(mainStorage).create(any(String.class), any(ImageFile.class));
-
-            assertThrows(StorageException.class, () -> storageService.upload(FILE_TAG, MULTIPART_FILE));
-            verify(resourceRepository, atLeast(1))
-                .save(resourceArgumentCaptor.capture());
-
-            var savedResource = resourceArgumentCaptor.getValue();
-            assertAll(
-                () -> assertThat(savedResource.getResourceKey()).isNotNull(),
-                () -> assertThat(savedResource.getCreateRequested()).isNotNull(),
-                () -> assertThat(savedResource.getStoredStorages()).isEqualTo(Collections.emptyList())
-            );
-        }
-
-        @DisplayName("BackUp storage 에 저장 실패시 업로드에 실패한다. 단, Main 스토리지까지의 저장 기록은 남긴다.")
-        @Test
-        public void uploadFailWithBackUpStorage() {
-            doThrow(StorageException.class)
-                .when(backUpStorage).create(any(String.class), any(ImageFile.class));
-
-            assertThrows(StorageException.class, () -> storageService.upload(FILE_TAG, MULTIPART_FILE));
-            verify(resourceRepository, atLeast(2))
-                .save(resourceArgumentCaptor.capture());
-
-            var savedResource = resourceArgumentCaptor.getValue();
-            assertAll(
-                () -> assertThat(savedResource.getResourceKey()).isNotNull(),
-                () -> assertThat(savedResource.getCreateRequested()).isNotNull(),
-                () -> assertThat(savedResource.getStoredStorages()).isEqualTo(List.of(LOCAL_FILE_STORAGE))
-            );
-        }
-    }
-
     @Nested
     class ReadTest {
 
@@ -347,6 +280,73 @@ public class StorageServiceTest {
             var saved = resourceArgumentCaptor.getValue();
             assertThat(saved.getStoredStorages()).contains(LOCAL_FILE_STORAGE, S3_OBJECT_STORAGE);
             assertThat(saved.getDeleteRequested()).isNotNull();
+        }
+    }
+
+    @DisplayName("Upload")
+    @Nested
+    class UploadTest {
+
+        @Captor
+        private ArgumentCaptor<Resource> resourceArgumentCaptor;
+
+        @BeforeEach
+        public void initRepository() {
+            when(resourceRepository.save(any(Resource.class)))
+                .thenAnswer(i -> i.getArguments()[0]);
+        }
+
+        @DisplayName("업로드 성공")
+        @Test
+        public void uploadSuccessfully() {
+            var result = storageService.upload(FILE_TAG, MULTIPART_FILE);
+            verify(resourceRepository, atLeast(3))
+                .save(resourceArgumentCaptor.capture());
+
+            var savedResource = resourceArgumentCaptor.getValue();
+            assertAll(
+                () -> assertNotNull(result.getResourceKey()),
+                () -> assertThat(savedResource.getResourceKey()).isEqualTo(result.getResourceKey()),
+                () -> assertThat(savedResource.getStoredStorages()).isEqualTo(
+                    List.of(LOCAL_FILE_STORAGE, StorageKey.S3_OBJECT_STORAGE)
+                )
+            );
+        }
+
+        @DisplayName("Main storage 에 저장 실패시 업로드에 실패한다. 단, 리소스 생성 기록은 남긴다.")
+        @Test
+        public void uploadFailWithMainStorage() {
+            doThrow(StorageException.class)
+                .when(mainStorage).create(any(String.class), any(ImageFile.class));
+
+            assertThrows(StorageException.class, () -> storageService.upload(FILE_TAG, MULTIPART_FILE));
+            verify(resourceRepository, atLeast(1))
+                .save(resourceArgumentCaptor.capture());
+
+            var savedResource = resourceArgumentCaptor.getValue();
+            assertAll(
+                () -> assertThat(savedResource.getResourceKey()).isNotNull(),
+                () -> assertThat(savedResource.getCreateRequested()).isNotNull(),
+                () -> assertThat(savedResource.getStoredStorages()).isEqualTo(Collections.emptyList())
+            );
+        }
+
+        @DisplayName("BackUp storage 에 저장 실패시 업로드에 실패한다. 단, Main 스토리지까지의 저장 기록은 남긴다.")
+        @Test
+        public void uploadFailWithBackUpStorage() {
+            doThrow(StorageException.class)
+                .when(backUpStorage).create(any(String.class), any(ImageFile.class));
+
+            assertThrows(StorageException.class, () -> storageService.upload(FILE_TAG, MULTIPART_FILE));
+            verify(resourceRepository, atLeast(2))
+                .save(resourceArgumentCaptor.capture());
+
+            var savedResource = resourceArgumentCaptor.getValue();
+            assertAll(
+                () -> assertThat(savedResource.getResourceKey()).isNotNull(),
+                () -> assertThat(savedResource.getCreateRequested()).isNotNull(),
+                () -> assertThat(savedResource.getStoredStorages()).isEqualTo(List.of(LOCAL_FILE_STORAGE))
+            );
         }
     }
 }

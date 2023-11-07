@@ -32,19 +32,6 @@ public class AlbumRepositoryTest {
         albumRepository.deleteAll();
     }
 
-    @DisplayName("Album 을 저장한다. id와 생성 시각이 함께 저장된다.")
-    @Test
-    public void createAlbum() {
-        var saved = albumRepository.save(new Album(MEMBER_ID, ALBUM_NAME, THUMBNAIL_RESOURCE_KEY));
-        assertAll(
-            () -> assertThat(saved.getId()).isNotNull(),
-            () -> assertThat(saved.getUserId()).isEqualTo(MEMBER_ID),
-            () -> assertThat(saved.getName()).isEqualTo(ALBUM_NAME),
-            () -> assertThat(saved.getResourceKey()).isEqualTo(THUMBNAIL_RESOURCE_KEY),
-            () -> assertThat(saved.getCreatedAt()).isNotNull()
-        );
-    }
-
     @DisplayName("정보의 성격에 따라 특정 컬럼은 AES256 으로 암호화되어 저장된다.")
     @Test
     public void encryptConverter(@Autowired JdbcTemplate jdbcTemplate) {
@@ -107,5 +94,18 @@ public class AlbumRepositoryTest {
             ), limit, sortByCreatedAtAsc
         );
         assertThat(albums).isEqualTo(List.of(album3, album5, album7, album9, album8));
+    }
+
+    @DisplayName("Album 을 저장한다. id와 생성 시각이 함께 저장된다.")
+    @Test
+    public void createAlbum() {
+        var saved = albumRepository.save(new Album(MEMBER_ID, ALBUM_NAME, THUMBNAIL_RESOURCE_KEY));
+        assertAll(
+            () -> assertThat(saved.getId()).isNotNull(),
+            () -> assertThat(saved.getUserId()).isEqualTo(MEMBER_ID),
+            () -> assertThat(saved.getName()).isEqualTo(ALBUM_NAME),
+            () -> assertThat(saved.getResourceKey()).isEqualTo(THUMBNAIL_RESOURCE_KEY),
+            () -> assertThat(saved.getCreatedAt()).isNotNull()
+        );
     }
 }

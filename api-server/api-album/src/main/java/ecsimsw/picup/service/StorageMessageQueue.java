@@ -1,8 +1,5 @@
 package ecsimsw.picup.service;
 
-import static ecsimsw.picup.config.RabbitMQConfig.MQ_SERVER_CONNECTION_RETRY_CNT;
-import static ecsimsw.picup.config.RabbitMQConfig.MQ_SERVER_CONNECTION_RETRY_DELAY_TIME_MS;
-
 import ecsimsw.picup.exception.MessageQueueServerDownException;
 import java.util.List;
 import org.assertj.core.util.Strings;
@@ -30,9 +27,9 @@ public class StorageMessageQueue {
 
     @Retryable(
         label = "Retry when message server is down",
-        maxAttempts = MQ_SERVER_CONNECTION_RETRY_CNT,
+        maxAttemptsExpression = "${mq.server.connection.retry.cnt}",
         value = AmqpConnectException.class,
-        backoff = @Backoff(delay = MQ_SERVER_CONNECTION_RETRY_DELAY_TIME_MS),
+        backoff = @Backoff(delayExpression = "${mq.server.connection.retry.delay.time.ms}"),
         recover = "recoverServerConnection"
     )
     public void pollDeleteRequest(List<String> resources) {

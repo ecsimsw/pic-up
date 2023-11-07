@@ -29,19 +29,6 @@ public class PictureRepositoryTest {
     @Autowired
     private PictureRepository pictureRepository;
 
-    @DisplayName("Picture 을 저장한다. id와 생성 시각이 함께 저장된다.")
-    @Test
-    public void createAlbum() {
-        var saved = pictureRepository.save(new Picture(ALBUM_ID, RESOURCE_KEY, DESCRIPTION));
-        assertAll(
-            () -> assertThat(saved.getId()).isNotNull(),
-            () -> assertThat(saved.getAlbumId()).isEqualTo(ALBUM_ID),
-            () -> assertThat(saved.getResourceKey()).isEqualTo(RESOURCE_KEY),
-            () -> assertThat(saved.getDescription()).isEqualTo(DESCRIPTION),
-            () -> assertThat(saved.getCreatedAt()).isNotNull()
-        );
-    }
-
     @DisplayName("정보의 성격에 따라 특정 컬럼은 AES256 으로 암호화되어 저장된다.")
     @Test
     public void encryptConverter(@Autowired JdbcTemplate jdbcTemplate) {
@@ -106,5 +93,18 @@ public class PictureRepositoryTest {
             limit, sortByCreatedAtAsc
         );
         assertThat(pictures).isEqualTo(List.of(picture3, picture5, picture7, picture9, picture8));
+    }
+
+    @DisplayName("Picture 을 저장한다. id와 생성 시각이 함께 저장된다.")
+    @Test
+    public void createAlbum() {
+        var saved = pictureRepository.save(new Picture(ALBUM_ID, RESOURCE_KEY, DESCRIPTION));
+        assertAll(
+            () -> assertThat(saved.getId()).isNotNull(),
+            () -> assertThat(saved.getAlbumId()).isEqualTo(ALBUM_ID),
+            () -> assertThat(saved.getResourceKey()).isEqualTo(RESOURCE_KEY),
+            () -> assertThat(saved.getDescription()).isEqualTo(DESCRIPTION),
+            () -> assertThat(saved.getCreatedAt()).isNotNull()
+        );
     }
 }
