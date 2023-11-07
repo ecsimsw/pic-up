@@ -1,6 +1,7 @@
 package ecsimsw.picup.domain;
 
 import ecsimsw.picup.exception.UnsupportedFileTypeException;
+
 import java.util.Arrays;
 
 public enum FileExtension {

@@ -21,4 +21,10 @@ public class AlbumFixture {
     public static final MultipartFile INVALID_MULTIPART_FILE = new MockMultipartFile("name", "name", "png", "Image binary file for test".getBytes());
 
     public static final String TAG = "tag";
+
+    public static final String STORAGE_SERVER_URL = "storage server url";
+
+    public static MultipartFile mockMultipartFile(String fileName) {
+        return new MockMultipartFile(fileName, fileName, "png", "Image binary file for test".getBytes());
+    }
 }
