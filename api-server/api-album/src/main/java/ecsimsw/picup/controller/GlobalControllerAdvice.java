@@ -4,7 +4,7 @@ import ecsimsw.picup.auth.exception.UnauthorizedException;
 import ecsimsw.picup.exception.AlbumException;
 import ecsimsw.picup.exception.InvalidStorageServerResponseException;
 import ecsimsw.picup.exception.MessageQueueServerDownException;
-import ecsimsw.picup.exception.StorageServerDownException;
+import ecsimsw.picup.exception.FileUploadFailException;
 import ecsimsw.picup.exception.UnsupportedFileTypeException;
 import ecsimsw.picup.logging.CustomLogger;
 import org.springframework.http.HttpStatus;
@@ -35,7 +35,7 @@ public class GlobalControllerAdvice {
         return ResponseEntity.internalServerError().body("unhandled server exception");
     }
 
-    @ExceptionHandler({StorageServerDownException.class, MessageQueueServerDownException.class})
+    @ExceptionHandler({FileUploadFailException.class, MessageQueueServerDownException.class})
     public ResponseEntity<String> serverDownException(IllegalArgumentException e) {
         e.printStackTrace();
         LOGGER.error(e.getCause().toString());

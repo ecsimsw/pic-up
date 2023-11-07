@@ -1,5 +1,6 @@
 package ecsimsw.picup.config;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -12,17 +13,15 @@ import java.time.Duration;
 @Configuration
 public class RestTemplateConfig {
 
-    public static final int SERVER_CONNECTION_RETRY_CNT = 5;
-    public static final int SERVER_CONNECTION_RETRY_DELAY_TIME_MS = 1000;
-
-    public static final int SERVER_CONNECTION_TIMEOUT_SEC = 5;
-    public static final int SERVER_READ_TIMEOUT_SEC = 5;
-
     @Bean
-    public RestTemplate restTemplate(RestTemplateBuilder builder) {
+    public RestTemplate restTemplate(
+        RestTemplateBuilder builder,
+        @Value("${rt.server.connection.timeout.sec}") int connectionTimeOut,
+        @Value("${rt.server.response.timeout.sec}") int responseTimeOut
+    ) {
         return builder.requestFactory(() -> new BufferingClientHttpRequestFactory(new SimpleClientHttpRequestFactory()))
-            .setConnectTimeout(Duration.ofSeconds(SERVER_CONNECTION_TIMEOUT_SEC))
-            .setReadTimeout(Duration.ofSeconds(SERVER_READ_TIMEOUT_SEC))
+            .setConnectTimeout(Duration.ofSeconds(connectionTimeOut))
+            .setReadTimeout(Duration.ofSeconds(responseTimeOut))
             .build();
     }
 }
