@@ -59,6 +59,14 @@ public class PictureRepositoryTest {
         var picture6 = pictureRepository.save(new Picture(2L, "resource6", "description6"));
         var picture7 = pictureRepository.save(new Picture(1L, "resource7", "description7"));
 
+        pictureRepository.save(picture1);
+        pictureRepository.save(picture2);
+        pictureRepository.save(picture3);
+        pictureRepository.save(picture4);
+        pictureRepository.save(picture5);
+        pictureRepository.save(picture6);
+        pictureRepository.save(picture7);
+
         var prev = new PictureSearchCursor(picture2);
         var limit = 2;
         final List<Picture> pictures = pictureRepository.fetch(
@@ -67,7 +75,9 @@ public class PictureRepositoryTest {
                     equalsCreatedTime(prev.getCreatedAt()).and(greaterId(prev.getId())))),
             limit, sortByCreatedAtAsc
         );
-        assertThat(pictures).isEqualTo(List.of(picture3, picture5));
+        assertThat(pictures)
+            .usingRecursiveComparison()
+            .isEqualTo(List.of(picture3, picture5));
     }
 
     @DisplayName("동일한 생성 시각일 경우 id 로 비교하여 조회 순서를 정할 수 있다.")
@@ -94,16 +104,6 @@ public class PictureRepositoryTest {
         pictureRepository.save(picture8);
         pictureRepository.save(picture9);
 
-        System.out.println(picture1.getId());
-        System.out.println(picture2.getId());
-        System.out.println(picture3.getId());
-        System.out.println(picture4.getId());
-        System.out.println(picture5.getId());
-        System.out.println(picture6.getId());
-        System.out.println(picture7.getId());
-        System.out.println(picture8.getId());
-        System.out.println(picture9.getId());
-
         var prev = new PictureSearchCursor(picture2);
         var limit = 5;
         final List<Picture> pictures = pictureRepository.fetch(
@@ -111,7 +111,9 @@ public class PictureRepositoryTest {
                 .and(createdLater(prev.getCreatedAt()).or(equalsCreatedTime(prev.getCreatedAt()).and(greaterId(prev.getId()))))
             ), limit, sortByCreatedAtAsc
         );
-        assertThat(pictures).isEqualTo(List.of(picture3, picture5, picture7, picture9, picture8));
+        assertThat(pictures)
+            .usingRecursiveComparison()
+            .isEqualTo(List.of(picture3, picture5, picture7, picture9, picture8));
     }
 
     @DisplayName("Picture 을 저장한다. id와 생성 시각이 함께 저장된다.")
