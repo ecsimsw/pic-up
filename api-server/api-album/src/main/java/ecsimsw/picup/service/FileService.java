@@ -6,6 +6,8 @@ import ecsimsw.picup.dto.ImageFileInfo;
 import ecsimsw.picup.exception.AlbumException;
 import java.util.List;
 import java.util.Objects;
+
+import ecsimsw.picup.exception.MessageQueueServerDownException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 

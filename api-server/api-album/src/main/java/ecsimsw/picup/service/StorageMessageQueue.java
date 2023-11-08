@@ -37,8 +37,7 @@ public class StorageMessageQueue {
     }
 
     @Recover
-    public List<String> recoverServerConnection(Throwable exception, List<String> resources) {
-        // TODO :: Manage server, resources to be deleted
+    public void recoverServerConnection(Throwable exception, List<String> resources) {
         var errorMessage = "Failed to connect server while deleting resources\nResources to be deleted : " + Strings.join(resources).with(", ");
         throw new MessageQueueServerDownException(errorMessage, exception);
     }
