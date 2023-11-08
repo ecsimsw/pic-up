@@ -2,6 +2,7 @@ package ecsimsw.picup.service;
 
 import ecsimsw.picup.domain.Album;
 import ecsimsw.picup.domain.AlbumRepository;
+import ecsimsw.picup.domain.FileResource;
 import ecsimsw.picup.dto.AlbumInfoRequest;
 import ecsimsw.picup.dto.AlbumInfoResponse;
 import ecsimsw.picup.dto.AlbumSearchCursor;
@@ -39,8 +40,8 @@ public class AlbumService {
 
     @Transactional
     public AlbumInfoResponse create(Long userId, AlbumInfoRequest albumInfo, MultipartFile thumbnail) {
-        final ImageFileInfo imageFile = fileService.upload(thumbnail, userId);
-        final Album album = new Album(userId, albumInfo.getName(), imageFile.getResourceKey());
+        final FileResource resource = fileService.upload(thumbnail, userId.toString());
+        final Album album = new Album(userId, albumInfo.getName(), resource.getResourceKey());
         albumRepository.save(album);
         return AlbumInfoResponse.of(album);
     }
@@ -57,7 +58,7 @@ public class AlbumService {
         album.updateName(albumInfo.getName());
         optionalThumbnail.ifPresent(file -> {
             final String oldImage = album.getResourceKey();
-            final String newImage = fileService.upload(file, userId).getResourceKey();
+            final String newImage = fileService.upload(file, userId.toString()).getResourceKey();
             album.updateThumbnail(newImage);
             fileService.delete(oldImage);
         });

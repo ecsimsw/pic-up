@@ -1,7 +1,9 @@
 package ecsimsw.picup.service;
 
+import ecsimsw.picup.domain.FileResourceRepository;
 import ecsimsw.picup.dto.ImageFileInfo;
 import ecsimsw.picup.exception.AlbumException;
+import ecsimsw.picup.exception.MessageQueueServerDownException;
 import ecsimsw.picup.exception.UnsupportedFileTypeException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -17,6 +19,7 @@ import static ecsimsw.picup.service.FileService.FILE_DELETION_SEGMENT_UNIT;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -28,16 +31,19 @@ class FileServiceTest {
     @Mock
     private StorageMessageQueue storageMessageQueue;
 
+    @Mock
+    private FileResourceRepository fileResourceRepository;
+
     private FileService fileService;
 
     @BeforeEach
     private void init() {
-        fileService = new FileService(storageHttpClient, storageMessageQueue);
+        fileService = new FileService(fileResourceRepository, storageHttpClient, storageMessageQueue);
     }
 
     @DisplayName("파일 다중 삭제는 지정된 개수로 나눠 처리된다.")
     @Test
-    void deleteAll() {
+    void deleteAll() throws MessageQueueServerDownException {
         var resources = List.of(RESOURCE_KEY, RESOURCE_KEY, RESOURCE_KEY, RESOURCE_KEY, RESOURCE_KEY, RESOURCE_KEY);
         fileService.deleteAll(resources);
 
@@ -61,11 +67,28 @@ class FileServiceTest {
 
     @DisplayName("파일을 삭제 처리한다.")
     @Test
-    void delete() {
+    void delete() throws MessageQueueServerDownException {
         fileService.delete(RESOURCE_KEY);
 
         verify(storageMessageQueue, atLeastOnce())
             .pollDeleteRequest(List.of(RESOURCE_KEY));
+    }
+
+    @DisplayName("MessageQueue 의 오류로 파일 삭제에 실패한 리소스는 Garbage file 이라는 이름으로 영속된다.")
+    @Test
+    void failedAfterRetry() throws MessageQueueServerDownException {
+        doThrow(MessageQueueServerDownException.class)
+            .when(storageMessageQueue).pollDeleteRequest(List.of(RESOURCE_KEY));
+
+        assertDoesNotThrow(
+            () -> fileService.delete(RESOURCE_KEY)
+        );
+
+        verify(storageMessageQueue, atLeastOnce())
+            .pollDeleteRequest(List.of(RESOURCE_KEY));
+
+        verify(fileResourceRepository, atLeastOnce())
+            .saveAll(any());
     }
 
     @DisplayName("파일 업로드시 올바르지 않은 파일 이름을 확인하고 예외를 발생시킨다.")

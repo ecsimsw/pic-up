@@ -18,6 +18,7 @@ import org.springframework.test.context.TestPropertySource;
 
 import static ecsimsw.picup.env.AlbumFixture.RESOURCES;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.mockito.Mockito.*;
 
 // XXX :: Need to test in spring container env, for using @Retryable
@@ -48,7 +49,9 @@ class StorageMessageQueueTest {
             .doNothing()
             .when(rabbitTemplate).convertAndSend(anyString(), any(Object.class));
 
-        storageMessageQueue.pollDeleteRequest(RESOURCES);
+        assertDoesNotThrow(
+            () -> storageMessageQueue.pollDeleteRequest(RESOURCES)
+        );
 
         verify(rabbitTemplate, times(2))
             .convertAndSend(queue.getName(), RESOURCES);
@@ -73,6 +76,8 @@ class StorageMessageQueueTest {
     @DisplayName("파일 삭제시 메시지 큐에 작업 요청, 비동기 처리한다.")
     @Test
     void delete() {
-        storageMessageQueue.pollDeleteRequest(RESOURCES);
+        assertDoesNotThrow(
+            () -> storageMessageQueue.pollDeleteRequest(RESOURCES)
+        );
     }
 }

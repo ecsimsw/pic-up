@@ -42,7 +42,7 @@ public class PictureService {
     @Transactional
     public PictureInfoResponse create(Long userId, Long albumId, PictureInfoRequest pictureInfo, MultipartFile imageFile) {
         final Album album = albumRepository.findById(albumId).orElseThrow();
-        final String resourceKey = fileService.upload(imageFile, userId).getResourceKey();
+        final String resourceKey = fileService.upload(imageFile, userId.toString()).getResourceKey();
         final Picture picture = new Picture(albumId, resourceKey, pictureInfo.getDescription());
         pictureRepository.save(picture);
         return PictureInfoResponse.of(picture);
@@ -103,7 +103,7 @@ public class PictureService {
         picture.updateDescription(pictureInfo.getDescription());
         optionalImageFile.ifPresent(file -> {
             final String oldImage = picture.getResourceKey();
-            final String newImage = fileService.upload(file, userId).getResourceKey();
+            final String newImage = fileService.upload(file, userId.toString()).getResourceKey();
             picture.updateImage(newImage);
             fileService.delete(oldImage);
         });

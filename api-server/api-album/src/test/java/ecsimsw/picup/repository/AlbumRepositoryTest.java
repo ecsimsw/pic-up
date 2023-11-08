@@ -20,7 +20,7 @@ import static ecsimsw.picup.env.MemberFixture.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
-@TestPropertySource(locations = "/testDatabaseConfig.properties")
+@TestPropertySource(locations = "/databaseConfig.properties")
 @DataJpaTest
 public class AlbumRepositoryTest {
 

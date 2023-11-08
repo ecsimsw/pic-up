@@ -1,6 +1,6 @@
 package ecsimsw.picup.exception;
 
-public class MessageQueueServerDownException extends IllegalArgumentException {
+public class MessageQueueServerDownException extends Exception {
 
     public MessageQueueServerDownException(String message) {
         super(message);

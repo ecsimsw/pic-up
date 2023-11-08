@@ -22,7 +22,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.TestPropertySource;
 
-@TestPropertySource(locations = "/testDatabaseConfig.properties")
+@TestPropertySource(locations = "/databaseConfig.properties")
 @DataJpaTest
 public class PictureRepositoryTest {
 
@@ -74,23 +74,42 @@ public class PictureRepositoryTest {
     @Test
     public void testCursorBasedSameCreateTime() {
         LocalDateTime sameTime = LocalDateTime.now();
-        var picture1 = pictureRepository.save(new Picture(1L, 1L, "resource1", "description1", sameTime));
-        var picture2 = pictureRepository.save(new Picture(2L, 1L, "resource2", "description2", sameTime));
-        var picture3 = pictureRepository.save(new Picture(3L, 1L, "resource3", "description3", sameTime));
-        var picture4 = pictureRepository.save(new Picture(4L, 2L, "resource4", "description4", sameTime));
-        var picture5 = pictureRepository.save(new Picture(5L, 1L, "resource5", "description5", sameTime));
-        var picture6 = pictureRepository.save(new Picture(6L, 2L, "resource6", "description6", sameTime));
-        var picture7 = pictureRepository.save(new Picture(7L, 1L, "resource7", "description7", sameTime));
-        var picture8 = pictureRepository.save(new Picture(8L, 1L, "resource8", "description7", LocalDateTime.now()));
-        var picture9 = pictureRepository.save(new Picture(9L, 1L, "resource9", "description7", sameTime));
+        var picture1 = new Picture(1L, 1L, "resource1", "description1", sameTime);
+        var picture2 = new Picture(2L, 1L, "resource2", "description2", sameTime);
+        var picture3 = new Picture(3L, 1L, "resource3", "description3", sameTime);
+        var picture4 = new Picture(4L, 2L, "resource4", "description4", sameTime);
+        var picture5 = new Picture(5L, 1L, "resource5", "description5", sameTime);
+        var picture6 = new Picture(6L, 2L, "resource6", "description6", sameTime);
+        var picture7 = new Picture(7L, 1L, "resource7", "description7", sameTime);
+        var picture8 = new Picture(8L, 1L, "resource8", "description8", LocalDateTime.now());
+        var picture9 = new Picture(9L, 1L, "resource9", "description9", sameTime);
+
+        pictureRepository.save(picture1);
+        pictureRepository.save(picture2);
+        pictureRepository.save(picture3);
+        pictureRepository.save(picture4);
+        pictureRepository.save(picture5);
+        pictureRepository.save(picture6);
+        pictureRepository.save(picture7);
+        pictureRepository.save(picture8);
+        pictureRepository.save(picture9);
+
+        System.out.println(picture1.getId());
+        System.out.println(picture2.getId());
+        System.out.println(picture3.getId());
+        System.out.println(picture4.getId());
+        System.out.println(picture5.getId());
+        System.out.println(picture6.getId());
+        System.out.println(picture7.getId());
+        System.out.println(picture8.getId());
+        System.out.println(picture9.getId());
 
         var prev = new PictureSearchCursor(picture2);
         var limit = 5;
         final List<Picture> pictures = pictureRepository.fetch(
-            where(isAlbum(1L))
-                .and(createdLater(prev.getCreatedAt()).or(
-                    equalsCreatedTime(prev.getCreatedAt()).and(greaterId(prev.getId())))),
-            limit, sortByCreatedAtAsc
+            where(isAlbum(1L)
+                .and(createdLater(prev.getCreatedAt()).or(equalsCreatedTime(prev.getCreatedAt()).and(greaterId(prev.getId()))))
+            ), limit, sortByCreatedAtAsc
         );
         assertThat(pictures).isEqualTo(List.of(picture3, picture5, picture7, picture9, picture8));
     }
