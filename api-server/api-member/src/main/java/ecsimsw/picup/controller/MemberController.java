@@ -39,8 +39,6 @@ public class MemberController {
 
     @GetMapping("/api/auth/me")
     public ResponseEntity<String> me(@LoginUser LoginUserInfo userInfo) {
-        System.out.println(userInfo.getUsername());
-        System.out.println(userInfo.getId());
         return ResponseEntity.ok(userInfo.getUsername());
     }
 }

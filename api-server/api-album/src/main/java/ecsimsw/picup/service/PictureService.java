@@ -41,7 +41,8 @@ public class PictureService {
 
     @Transactional
     public PictureInfoResponse create(Long userId, Long albumId, PictureInfoRequest pictureInfo, MultipartFile imageFile) {
-        final Album album = albumRepository.findById(albumId).orElseThrow();
+        checkUserAuthInAlbum(userId, albumId);
+
         final String resourceKey = fileService.upload(imageFile, userId.toString()).getResourceKey();
         final Picture picture = new Picture(albumId, resourceKey, pictureInfo.getDescription());
         pictureRepository.save(picture);
@@ -49,13 +50,9 @@ public class PictureService {
     }
 
     @Transactional(readOnly = true)
-    public PictureInfoResponse read(Long userId, Long pictureId) {
-        final Picture picture = pictureRepository.findById(pictureId).orElseThrow();
-        return PictureInfoResponse.of(picture);
-    }
+    public List<PictureInfoResponse> cursorBasedFetch(Long userId, Long albumId, int limit, Optional<PictureSearchCursor> cursor) {
+        checkUserAuthInAlbum(userId, albumId);
 
-    @Transactional(readOnly = true)
-    public List<PictureInfoResponse> cursorBasedFetch(Long UserId, Long albumId, int limit, Optional<PictureSearchCursor> cursor) {
         if(cursor.isEmpty()) {
             return fetchFirstPage(albumId, limit, sortByCreatedAtAsc);
         }
@@ -76,7 +73,8 @@ public class PictureService {
 
     @Transactional
     public void delete(Long userId, Long albumId, Long pictureId) {
-        final Album album = albumRepository.findById(albumId).orElseThrow(() -> new AlbumException("Invalid album"));
+        checkUserAuthInAlbum(userId, albumId);
+
         final Picture picture = pictureRepository.findById(pictureId).orElseThrow(() -> new AlbumException("Invalid picture"));
         picture.validateAlbum(albumId);
         fileService.delete(picture.getResourceKey());
@@ -97,7 +95,8 @@ public class PictureService {
 
     @Transactional
     public PictureInfoResponse update(Long userId, Long albumId, Long pictureId, PictureInfoRequest pictureInfo, Optional<MultipartFile> optionalImageFile) {
-        final Album album = albumRepository.findById(albumId).orElseThrow(() -> new AlbumException("Invalid album"));
+        checkUserAuthInAlbum(userId, albumId);
+
         final Picture picture = pictureRepository.findById(pictureId).orElseThrow(() -> new AlbumException("Invalid picture"));
         picture.validateAlbum(albumId);
         picture.updateDescription(pictureInfo.getDescription());
@@ -109,5 +108,10 @@ public class PictureService {
         });
         pictureRepository.save(picture);
         return PictureInfoResponse.of(picture);
+    }
+
+    private void checkUserAuthInAlbum(Long userId, Long albumId) {
+        final Album album = albumRepository.findById(albumId).orElseThrow(() -> new AlbumException("Invalid album"));
+        album.authorize(userId);
     }
 }

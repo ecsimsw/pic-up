@@ -48,13 +48,13 @@ public class AlbumService {
 
     @Transactional(readOnly = true)
     public AlbumInfoResponse read(Long userId, Long albumId) {
-        final Album album = albumRepository.findById(albumId).orElseThrow(() -> new AlbumException("Invalid album"));
+        final Album album = getUserAlbum(userId, albumId);
         return AlbumInfoResponse.of(album);
     }
 
     @Transactional
     public AlbumInfoResponse update(Long userId, Long albumId, AlbumInfoRequest albumInfo, Optional<MultipartFile> optionalThumbnail) {
-        final Album album = albumRepository.findById(albumId).orElseThrow(() -> new AlbumException("Invalid album"));
+        final Album album = getUserAlbum(userId, albumId);
         album.updateName(albumInfo.getName());
         optionalThumbnail.ifPresent(file -> {
             final String oldImage = album.getResourceKey();
@@ -68,7 +68,8 @@ public class AlbumService {
 
     @Transactional
     public void delete(Long userId, Long albumId) {
-        final Album album = albumRepository.findById(albumId).orElseThrow(() -> new AlbumException("Invalid album"));
+        final Album album = getUserAlbum(userId, albumId);
+
         albumRepository.delete(album);
         fileService.delete(album.getResourceKey());
         eventPublisher.publishEvent(new AlbumDeletionEvent(albumId));
@@ -92,5 +93,11 @@ public class AlbumService {
     private List<AlbumInfoResponse> fetchFirstPage(Long userId, int limit) {
         final Slice<Album> albums = albumRepository.findAllByUserId(userId, PageRequest.of(0, limit, sortByCreatedAtAsc));
         return AlbumInfoResponse.listOf(albums.getContent());
+    }
+
+    private Album getUserAlbum(Long userId, Long albumId) {
+        final Album album = albumRepository.findById(albumId).orElseThrow(() -> new AlbumException("Invalid album"));
+        album.authorize(userId);
+        return album;
     }
 }
