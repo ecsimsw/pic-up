@@ -32,12 +32,12 @@ public class StorageMessageQueue {
         backoff = @Backoff(delayExpression = "${mq.server.connection.retry.delay.time.ms}"),
         recover = "recoverServerConnection"
     )
-    public void pollDeleteRequest(List<String> resources) throws MessageQueueServerDownException {
+    public void pollDeleteRequest(List<String> resources) {
         rabbitTemplate.convertAndSend(fileDeletionQueue.getName(), resources);
     }
 
     @Recover
-    public void recoverServerConnection(Throwable exception, List<String> resources) throws MessageQueueServerDownException {
+    public void recoverServerConnection(AmqpConnectException exception, List<String> resources) {
         var errorMessage = "Failed to connect server while deleting resources\nResources to be deleted : " + Strings.join(resources).with(", ");
         throw new MessageQueueServerDownException(errorMessage, exception);
     }

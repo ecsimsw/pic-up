@@ -35,7 +35,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 
-@TestPropertySource(locations = "/authTokenTest.properties")
+@TestPropertySource(locations = "/authToken.properties")
 @ExtendWith(MockitoExtension.class)
 @WebMvcTest(controllers = {AlbumController.class, HealthController.class})
 @AutoConfigureMockMvc
