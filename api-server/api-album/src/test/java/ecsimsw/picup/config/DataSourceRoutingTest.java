@@ -9,13 +9,13 @@ import org.springframework.transaction.annotation.Transactional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-@TestPropertySource(locations = "/databaseConfig.properties")
-@SpringBootTest(classes = { DataSourceConfig.class })
-class DataSourceConfigTest {
+@TestPropertySource(locations = "/application-dev.properties")
+@SpringBootTest()
+class DataSourceRoutingTest {
 
     private final RoutingDataSource routingDataSource;
 
-    public DataSourceConfigTest(@Autowired RoutingDataSource routingDataSource) {
+    public DataSourceRoutingTest(@Autowired RoutingDataSource routingDataSource) {
         this.routingDataSource = routingDataSource;
     }
 
