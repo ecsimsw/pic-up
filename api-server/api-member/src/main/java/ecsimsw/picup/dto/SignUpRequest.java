@@ -20,6 +20,6 @@ public class SignUpRequest {
     }
 
     public Member toEntity() {
-        return new Member(username, password);
+        return Member.fromPlainPassword(username, password);
     }
 }

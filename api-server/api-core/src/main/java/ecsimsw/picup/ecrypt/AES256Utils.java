@@ -1,22 +1,23 @@
 package ecsimsw.picup.ecrypt;
 
-import ecsimsw.picup.logging.CustomLogger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.nio.charset.StandardCharsets;
-import java.security.InvalidAlgorithmParameterException;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
-import java.util.Base64;
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
+import java.nio.charset.StandardCharsets;
+import java.security.InvalidAlgorithmParameterException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
+import java.util.Base64;
 
 public class AES256Utils {
 
-    private static final CustomLogger LOGGER = CustomLogger.init(AES256Utils.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(AES256Utils.class);
 
     private static final String ALGORITHM = "AES/CBC/PKCS5Padding";
     private static final String IV = "0123456789012345"; // 16byte
