@@ -6,7 +6,7 @@ on:
       - main
 jobs:
   server-application:
-    runs-on: ecsimsw-ga
+    runs-on: ubuntu-latest
     permissions: write-all
     steps:
       - name: Checkout
