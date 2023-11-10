@@ -34,7 +34,7 @@ jobs:
           cd ./api-server
           chmod +x ./gradlew
           version=$(./gradlew properties -q | grep "version:" | awk '{print $2}')
-          ./gradlew :api-products:jib -Djib.to.tags=latest,${version}
-          ./gradlew :api-audits:jib -Djib.to.tags=latest,${version}
-          ./gradlew :api-auth:jib -Djib.to.tags=latest,${version}
+          ./gradlew :api-album:jib -Djib.to.tags=latest,${version}
+          ./gradlew :api-member:jib -Djib.to.tags=latest,${version}
+          ./gradlew :api-storage:jib -Djib.to.tags=latest,${version}
 
