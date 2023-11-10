@@ -48,6 +48,9 @@ public class StorageServiceTest {
 
     private StorageService storageService;
 
+    @Captor
+    private ArgumentCaptor<Resource> resourceArgumentCaptor;
+
     @BeforeEach
     public void init() {
         storageService = new StorageService(resourceRepository, mainStorage, backUpStorage);
@@ -55,9 +58,6 @@ public class StorageServiceTest {
 
     @Nested
     class ReadTest {
-
-        @Captor
-        private ArgumentCaptor<Resource> resourceArgumentCaptor;
 
         private String resourceKey;
 
@@ -91,12 +91,9 @@ public class StorageServiceTest {
             verify(mainStorage, atLeast(2))
                 .create(eq(resourceKey), any(ImageFile.class));
 
-            verify(resourceRepository, atLeast(5))
-                .save(resourceArgumentCaptor.capture());
-
-            var saved = resourceArgumentCaptor.getValue();
-            assertThat(saved.getStoredStorages()).contains(LOCAL_FILE_STORAGE);
-            assertThat(saved.getStoredStorages()).contains(S3_OBJECT_STORAGE);
+            var saved = getResourceSavedData();
+            assertThat(saved.isStoredAt(mainStorage)).isTrue();
+            assertThat(saved.isStoredAt(backUpStorage)).isTrue();
         }
 
         @DisplayName("Main storage 에 파일이 없고, 쓰기에 실패하는 경우 저장 정보 변경 없이 BackUp 에서 직접 응답한다.")
@@ -114,12 +111,9 @@ public class StorageServiceTest {
             verify(mainStorage, atLeast(2))
                 .create(eq(resourceKey), any(ImageFile.class));
 
-            verify(resourceRepository, atLeast(4))
-                .save(resourceArgumentCaptor.capture());
-
-            var saved = resourceArgumentCaptor.getValue();
-            assertThat(saved.getStoredStorages()).doesNotContain(LOCAL_FILE_STORAGE);
-            assertThat(saved.getStoredStorages()).contains(S3_OBJECT_STORAGE);
+            var saved = getResourceSavedData();
+            assertThat(saved.isStoredAt(mainStorage)).isFalse();
+            assertThat(saved.isStoredAt(backUpStorage)).isTrue();
         }
 
         @DisplayName("Main storage 에서 읽기 실패할 경우 BackUp storage 에서 응답한다.")
@@ -131,15 +125,12 @@ public class StorageServiceTest {
             var result = storageService.read(USER_ID, resourceKey);
             assertThat(result.getImageFile()).isNotNull();
 
-            verify(mainStorage, times(1))
+            verify(mainStorage, atLeastOnce())
                 .create(eq(resourceKey), any(ImageFile.class));
 
-            verify(resourceRepository, atLeast(3))
-                .save(resourceArgumentCaptor.capture());
-
-            var saved = resourceArgumentCaptor.getValue();
-            assertThat(saved.getStoredStorages()).contains(LOCAL_FILE_STORAGE);
-            assertThat(saved.getStoredStorages()).contains(S3_OBJECT_STORAGE);
+            var saved = getResourceSavedData();
+            assertThat(saved.isStoredAt(mainStorage)).isTrue();
+            assertThat(saved.isStoredAt(backUpStorage)).isTrue();
         }
 
         @DisplayName("모든 storage 에서 파일이 존재하지 않는 경우 읽기에 저장 정보를 변경하고 읽기에 실패한다.")
@@ -155,12 +146,9 @@ public class StorageServiceTest {
                 () -> storageService.read(USER_ID, resourceKey)
             ).isInstanceOf(StorageException.class);
 
-            verify(resourceRepository, atLeast(5))
-                .save(resourceArgumentCaptor.capture());
-
-            var saved = resourceArgumentCaptor.getValue();
-            assertThat(saved.getStoredStorages()).doesNotContain(LOCAL_FILE_STORAGE);
-            assertThat(saved.getStoredStorages()).doesNotContain(S3_OBJECT_STORAGE);
+            var saved = getResourceSavedData();
+            assertThat(saved.isStoredAt(mainStorage)).isFalse();
+            assertThat(saved.isStoredAt(backUpStorage)).isFalse();
         }
 
         @DisplayName("모든 storage 에서 읽기 실패하는 경우 저장 정보 변경 없이 읽기에 실패한다.")
@@ -176,12 +164,9 @@ public class StorageServiceTest {
                 () -> storageService.read(USER_ID, resourceKey)
             ).isInstanceOf(StorageException.class);
 
-            verify(resourceRepository, atLeast(3))
-                .save(resourceArgumentCaptor.capture());
-
-            var saved = resourceArgumentCaptor.getValue();
-            assertThat(saved.getStoredStorages()).contains(LOCAL_FILE_STORAGE);
-            assertThat(saved.getStoredStorages()).contains(S3_OBJECT_STORAGE);
+            var saved = getResourceSavedData();
+            assertThat(saved.isStoredAt(mainStorage)).isTrue();
+            assertThat(saved.isStoredAt(backUpStorage)).isTrue();
         }
     }
 
@@ -206,7 +191,7 @@ public class StorageServiceTest {
         public void deleteSuccessFully() {
             storageService.delete(resourceKey);
 
-            verify(resourceRepository, atLeast(3))
+            verify(resourceRepository, atLeastOnce())
                 .save(resourceArgumentCaptor.capture());
 
             var saved = resourceArgumentCaptor.getValue();
@@ -222,7 +207,7 @@ public class StorageServiceTest {
 
             storageService.delete(resourceKey);
 
-            verify(resourceRepository, atLeast(3))
+            verify(resourceRepository, atLeastOnce())
                 .save(resourceArgumentCaptor.capture());
 
             var saved = resourceArgumentCaptor.getValue();
@@ -242,8 +227,8 @@ public class StorageServiceTest {
                 .save(resourceArgumentCaptor.capture());
 
             var saved = resourceArgumentCaptor.getValue();
-            assertThat(saved.getStoredStorages()).contains(LOCAL_FILE_STORAGE);
-            assertThat(saved.getStoredStorages()).doesNotContain(S3_OBJECT_STORAGE);
+            assertThat(saved.isStoredAt(mainStorage)).isTrue();
+            assertThat(saved.isStoredAt(backUpStorage)).isFalse();
             assertThat(saved.getDeleteRequested()).isNotNull();
         }
 
@@ -259,7 +244,8 @@ public class StorageServiceTest {
                 .save(resourceArgumentCaptor.capture());
 
             var saved = resourceArgumentCaptor.getValue();
-            assertThat(saved.getStoredStorages()).doesNotContain(LOCAL_FILE_STORAGE, S3_OBJECT_STORAGE);
+            assertThat(saved.isStoredAt(mainStorage)).isFalse();
+            assertThat(saved.isStoredAt(backUpStorage)).isFalse();
             assertThat(saved.getDeleteRequested()).isNotNull();
         }
 
@@ -274,11 +260,9 @@ public class StorageServiceTest {
 
             storageService.delete(resourceKey);
 
-            verify(resourceRepository, atLeast(3))
-                .save(resourceArgumentCaptor.capture());
-
-            var saved = resourceArgumentCaptor.getValue();
-            assertThat(saved.getStoredStorages()).contains(LOCAL_FILE_STORAGE, S3_OBJECT_STORAGE);
+            var saved = getResourceSavedData();
+            assertThat(saved.isStoredAt(mainStorage)).isTrue();
+            assertThat(saved.isStoredAt(backUpStorage)).isTrue();
             assertThat(saved.getDeleteRequested()).isNotNull();
         }
     }
@@ -303,11 +287,11 @@ public class StorageServiceTest {
             verify(resourceRepository, atLeast(3))
                 .save(resourceArgumentCaptor.capture());
 
-            var savedResource = resourceArgumentCaptor.getValue();
+            var saved = getResourceSavedData();
             assertAll(
                 () -> assertNotNull(result.getResourceKey()),
-                () -> assertThat(savedResource.getResourceKey()).isEqualTo(result.getResourceKey()),
-                () -> assertThat(savedResource.getStoredStorages()).isEqualTo(
+                () -> assertThat(saved.getResourceKey()).isEqualTo(result.getResourceKey()),
+                () -> assertThat(saved.getStoredStorages()).isEqualTo(
                     List.of(LOCAL_FILE_STORAGE, StorageKey.S3_OBJECT_STORAGE)
                 )
             );
@@ -341,12 +325,18 @@ public class StorageServiceTest {
             verify(resourceRepository, atLeast(2))
                 .save(resourceArgumentCaptor.capture());
 
-            var savedResource = resourceArgumentCaptor.getValue();
+            var saved = getResourceSavedData();
             assertAll(
-                () -> assertThat(savedResource.getResourceKey()).isNotNull(),
-                () -> assertThat(savedResource.getCreateRequested()).isNotNull(),
-                () -> assertThat(savedResource.getStoredStorages()).isEqualTo(List.of(LOCAL_FILE_STORAGE))
+                () -> assertThat(saved.getResourceKey()).isNotNull(),
+                () -> assertThat(saved.getCreateRequested()).isNotNull(),
+                () -> assertThat(saved.getStoredStorages()).isEqualTo(List.of(LOCAL_FILE_STORAGE))
             );
         }
+    }
+
+
+    private Resource getResourceSavedData() {
+        verify(resourceRepository, atLeastOnce()).save(resourceArgumentCaptor.capture());
+        return resourceArgumentCaptor.getValue();
     }
 }

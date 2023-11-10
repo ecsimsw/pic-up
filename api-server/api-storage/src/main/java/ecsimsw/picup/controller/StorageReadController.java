@@ -3,13 +3,9 @@ package ecsimsw.picup.controller;
 import ecsimsw.picup.auth.resolver.LoginUser;
 import ecsimsw.picup.auth.resolver.LoginUserInfo;
 import ecsimsw.picup.dto.ImageResponse;
-import ecsimsw.picup.dto.ImageUploadResponse;
 import ecsimsw.picup.service.StorageService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
-
-import java.util.List;
 
 @RestController
 public class StorageReadController {
