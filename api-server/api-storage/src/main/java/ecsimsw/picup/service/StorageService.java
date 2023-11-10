@@ -30,9 +30,9 @@ public class StorageService {
         this.storages = List.of(localFileStorage, s3ObjectStorage);
     }
 
-    public ImageUploadResponse upload(String tag, MultipartFile file) {
+    public ImageUploadResponse upload(Long userId, String tag, MultipartFile file) {
         final ImageFile imageFile = ImageFile.of(file);
-        final Resource resource = Resource.createRequested(tag, file);
+        final Resource resource = Resource.createRequested(userId, tag, file);
         resourceRepository.save(resource);
 
         for (ImageStorage storage : storages) {
@@ -43,13 +43,15 @@ public class StorageService {
         return new ImageUploadResponse(resource.getResourceKey(), imageFile.getSize());
     }
 
-    public ImageResponse read(String resourceKey) {
+    public ImageResponse read(Long userId, String resourceKey) {
         final Resource resource = findLivedResource(resourceKey);
-        final ImageFile imageFile = readWithLoading(resource, new ArrayList<>(storages));
+        resource.requireSameUser(userId);
+
+        final ImageFile imageFile = readImageFileFromStorage(resource, new ArrayList<>(storages));
         return ImageResponse.of(imageFile);
     }
 
-    public ImageFile readWithLoading(Resource resource, List<ImageStorage> storages) {
+    private ImageFile readImageFileFromStorage(Resource resource, List<ImageStorage> storages) {
         if (storages.isEmpty()) {
             throw new StorageException("Fail to read file from both : " + resource.getResourceKey());
         }
@@ -60,13 +62,13 @@ public class StorageService {
             if (resource.isStoredAt(storage)) {
                 return storage.read(resource.getResourceKey());
             }
-            loadFromBackup = readWithLoading(resource, chainNext(storages));
+            loadFromBackup = readImageFileFromStorage(resource, chainNext(storages));
         } catch (FileNotFoundException fileNotFoundException) {
             resource.deletedFrom(storage);
             resourceRepository.save(resource);
-            loadFromBackup = readWithLoading(resource, chainNext(storages));
+            loadFromBackup = readImageFileFromStorage(resource, chainNext(storages));
         } catch (Exception e) {
-            return readWithLoading(resource, chainNext(storages));
+            return readImageFileFromStorage(resource, chainNext(storages));
         }
 
         try {

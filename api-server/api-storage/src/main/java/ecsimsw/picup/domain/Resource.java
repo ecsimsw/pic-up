@@ -1,5 +1,6 @@
 package ecsimsw.picup.domain;
 
+import ecsimsw.picup.auth.exception.UnauthorizedException;
 import ecsimsw.picup.exception.InvalidResourceException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -18,6 +19,8 @@ public class Resource {
     @Id
     private String resourceKey;
 
+    private Long userId;
+
     private List<StorageKey> storedStorages;
 
     private LocalDateTime createRequested;
@@ -27,22 +30,17 @@ public class Resource {
     public Resource() {
     }
 
-    public Resource(String resourceKey, List<StorageKey> storedStorages, LocalDateTime createRequested, LocalDateTime deletedAt) {
+    public Resource(String resourceKey, Long userId, List<StorageKey> storedStorages, LocalDateTime createRequested, LocalDateTime deletedAt) {
         this.resourceKey = resourceKey;
+        this.userId = userId;
         this.storedStorages = storedStorages;
         this.createRequested = createRequested;
         this.deleteRequested = deletedAt;
     }
 
-    public Resource(List<StorageKey> storedStorages, LocalDateTime createRequested, LocalDateTime deletedAt) {
-        this.storedStorages = storedStorages;
-        this.createRequested = createRequested;
-        this.deleteRequested = deletedAt;
-    }
-
-    public static Resource createRequested(String tag, MultipartFile file) {
+    public static Resource createRequested(Long userId, String tag, MultipartFile file) {
         final String resourceKey = ResourceKeyStrategy.generate(tag, file);
-        return new Resource(resourceKey, new ArrayList<>(), LocalDateTime.now(), null);
+        return new Resource(resourceKey, userId, new ArrayList<>(), LocalDateTime.now(), null);
     }
 
     public void storedTo(ImageStorage storage) {
@@ -80,5 +78,11 @@ public class Resource {
 
     public boolean isStoredAt(ImageStorage storage) {
         return storedStorages.contains(storage.key());
+    }
+
+    public void requireSameUser(Long userId) {
+        if(!this.userId.equals(userId)) {
+            throw new UnauthorizedException("Unauthorized request");
+        }
     }
 }

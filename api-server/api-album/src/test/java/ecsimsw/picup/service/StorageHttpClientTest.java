@@ -19,13 +19,14 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.web.client.RestTemplate;
 
 import static ecsimsw.picup.env.AlbumFixture.*;
+import static ecsimsw.picup.env.MemberFixture.MEMBER_ID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
-// XXX :: Need to test in spring container env, for using @Retryable
+// XXX :: Need to test with spring container, for using @Retryable
 @TestPropertySource(locations = "/restTemplateConfig.properties")
 @EnableRetry
 @ExtendWith(MockitoExtension.class)
@@ -47,7 +48,7 @@ class StorageHttpClientTest {
                 ResponseEntity.ok(new ImageFileInfo(RESOURCE_KEY, SIZE))
             );
 
-        storageHttpClient.requestUpload(MULTIPART_FILE, TAG);
+        storageHttpClient.requestUpload(MEMBER_ID, MULTIPART_FILE, TAG);
 
         verify(restTemplate, times(2))
             .exchange(any(String.class), any(HttpMethod.class), any(HttpEntity.class), any(ParameterizedTypeReference.class));
@@ -62,7 +63,7 @@ class StorageHttpClientTest {
             .thenReturn(ResponseEntity.badRequest().build());
 
         assertThatThrownBy(
-            () -> storageHttpClient.requestUpload(MULTIPART_FILE, TAG)
+            () -> storageHttpClient.requestUpload(MEMBER_ID, MULTIPART_FILE, TAG)
         ).isInstanceOf(FileUploadFailException.class);
 
         verify(restTemplate, times(retryCount))
@@ -75,7 +76,7 @@ class StorageHttpClientTest {
         when(restTemplate.exchange(any(String.class), any(HttpMethod.class), any(HttpEntity.class), any(ParameterizedTypeReference.class)))
             .thenReturn(ResponseEntity.ok(new ImageFileInfo(RESOURCE_KEY, SIZE)));
 
-        var fileInfo = storageHttpClient.requestUpload(MULTIPART_FILE, TAG);
+        var fileInfo = storageHttpClient.requestUpload(MEMBER_ID, MULTIPART_FILE, TAG);
         assertAll(
             () -> assertThat(fileInfo.getResourceKey()).isEqualTo(RESOURCE_KEY),
             () -> assertThat(fileInfo.getSize()).isEqualTo(SIZE)

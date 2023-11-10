@@ -18,19 +18,21 @@ public class StorageImageUploadRequest {
         REQUEST_HEADERS.setContentType(MediaType.MULTIPART_FORM_DATA);
     }
 
+    private final Long userId;
     private final MultipartFile file;
     private final String tag;
 
-    public StorageImageUploadRequest(MultipartFile file, String tag) {
+    public StorageImageUploadRequest(Long userId, MultipartFile file, String tag) {
         if (file.isEmpty()) {
             throw new IllegalArgumentException("File must not be empty");
         }
+        this.userId = userId;
         this.file = file;
         this.tag = tag;
     }
 
-    public static StorageImageUploadRequest of(MultipartFile file, String name) {
-        return new StorageImageUploadRequest(file, name);
+    public static StorageImageUploadRequest of(Long userId, MultipartFile file, String name) {
+        return new StorageImageUploadRequest(userId, file, name);
     }
 
     public LinkedMultiValueMap<String, Object> body() {

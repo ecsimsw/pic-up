@@ -38,12 +38,12 @@ public class StorageHttpClient {
         backoff = @Backoff(delayExpression = "${rt.retry.delay.time.ms}"),
         recover = "recoverUploadApi"
     )
-    public ImageFileInfo requestUpload(MultipartFile file, String tag) {
+    public ImageFileInfo requestUpload(Long userId, MultipartFile file, String tag) {
         try {
             var response = restTemplate.exchange(
                 STORAGE_SERVER_URL + "/api/file",
                 HttpMethod.POST,
-                StorageImageUploadRequest.of(file, tag).toHttpEntity(),
+                StorageImageUploadRequest.of(userId, file, tag).toHttpEntity(),
                 new ParameterizedTypeReference<ImageFileInfo>() {
                 });
             if (Objects.isNull(response.getBody()) || Objects.isNull(response.getBody().getResourceKey())) {
@@ -56,7 +56,7 @@ public class StorageHttpClient {
     }
 
     @Recover
-    public ImageFileInfo recoverUploadApi(Throwable exception, MultipartFile file, String tag) {
+    public ImageFileInfo recoverUploadApi(Throwable exception, Long userId, MultipartFile file, String tag) {
         throw new FileUploadFailException(exception.getMessage(), exception);
     }
 }

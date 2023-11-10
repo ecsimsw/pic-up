@@ -63,7 +63,7 @@ public class StorageServiceTest {
 
         @BeforeEach
         private void init() {
-            resourceKey = storageService.upload(FILE_TAG, MULTIPART_FILE).getResourceKey();
+            resourceKey = storageService.upload(USER_ID, FILE_TAG, MULTIPART_FILE).getResourceKey();
             when(resourceRepository.findById(resourceKey))
                 .thenReturn(Optional.of(createdResource(resourceKey)));
         }
@@ -71,7 +71,7 @@ public class StorageServiceTest {
         @DisplayName("Read")
         @Test
         public void readSuccessfully() {
-            var result = storageService.read(resourceKey);
+            var result = storageService.read(USER_ID, resourceKey);
             assertAll(
                 () -> assertThat(result.getImageFile()).isNotNull(),
                 () -> assertThat(result.getFileType()).isNotNull(),
@@ -85,7 +85,7 @@ public class StorageServiceTest {
             doThrow(FileNotFoundException.class)
                 .when(mainStorage).read(any(String.class));
 
-            var result = storageService.read(resourceKey);
+            var result = storageService.read(USER_ID, resourceKey);
             assertThat(result.getImageFile()).isNotNull();
 
             verify(mainStorage, atLeast(2))
@@ -108,7 +108,7 @@ public class StorageServiceTest {
             doThrow(StorageException.class)
                 .when(mainStorage).create(any(String.class), any(ImageFile.class));
 
-            var result = storageService.read(resourceKey);
+            var result = storageService.read(USER_ID, resourceKey);
             assertThat(result.getImageFile()).isNotNull();
 
             verify(mainStorage, atLeast(2))
@@ -128,7 +128,7 @@ public class StorageServiceTest {
             doThrow(StorageException.class)
                 .when(mainStorage).read(any(String.class));
 
-            var result = storageService.read(resourceKey);
+            var result = storageService.read(USER_ID, resourceKey);
             assertThat(result.getImageFile()).isNotNull();
 
             verify(mainStorage, times(1))
@@ -152,7 +152,7 @@ public class StorageServiceTest {
                 .when(backUpStorage).read(any(String.class));
 
             assertThatThrownBy(
-                () -> storageService.read(resourceKey)
+                () -> storageService.read(USER_ID, resourceKey)
             ).isInstanceOf(StorageException.class);
 
             verify(resourceRepository, atLeast(5))
@@ -173,7 +173,7 @@ public class StorageServiceTest {
                 .when(backUpStorage).read(any(String.class));
 
             assertThatThrownBy(
-                () -> storageService.read(resourceKey)
+                () -> storageService.read(USER_ID, resourceKey)
             ).isInstanceOf(StorageException.class);
 
             verify(resourceRepository, atLeast(3))
@@ -196,7 +196,7 @@ public class StorageServiceTest {
 
         @BeforeEach
         private void init() {
-            resourceKey = storageService.upload(FILE_TAG, MULTIPART_FILE).getResourceKey();
+            resourceKey = storageService.upload(USER_ID, FILE_TAG, MULTIPART_FILE).getResourceKey();
             when(resourceRepository.findById(resourceKey))
                 .thenReturn(Optional.of(createdResource(resourceKey)));
         }
@@ -299,7 +299,7 @@ public class StorageServiceTest {
         @DisplayName("업로드 성공")
         @Test
         public void uploadSuccessfully() {
-            var result = storageService.upload(FILE_TAG, MULTIPART_FILE);
+            var result = storageService.upload(USER_ID, FILE_TAG, MULTIPART_FILE);
             verify(resourceRepository, atLeast(3))
                 .save(resourceArgumentCaptor.capture());
 
@@ -319,7 +319,7 @@ public class StorageServiceTest {
             doThrow(StorageException.class)
                 .when(mainStorage).create(any(String.class), any(ImageFile.class));
 
-            assertThrows(StorageException.class, () -> storageService.upload(FILE_TAG, MULTIPART_FILE));
+            assertThrows(StorageException.class, () -> storageService.upload(USER_ID, FILE_TAG, MULTIPART_FILE));
             verify(resourceRepository, atLeast(1))
                 .save(resourceArgumentCaptor.capture());
 
@@ -337,7 +337,7 @@ public class StorageServiceTest {
             doThrow(StorageException.class)
                 .when(backUpStorage).create(any(String.class), any(ImageFile.class));
 
-            assertThrows(StorageException.class, () -> storageService.upload(FILE_TAG, MULTIPART_FILE));
+            assertThrows(StorageException.class, () -> storageService.upload(USER_ID, FILE_TAG, MULTIPART_FILE));
             verify(resourceRepository, atLeast(2))
                 .save(resourceArgumentCaptor.capture());
 

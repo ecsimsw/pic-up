@@ -11,13 +11,13 @@ import java.util.List;
 import static ecsimsw.picup.config.RabbitMQContainerFactories.FILE_DELETION_QUEUE_CF;
 
 @Controller
-public class StorageMessageController {
+public class StorageDeleteController {
 
-    private static final CustomLogger LOGGER = CustomLogger.init(StorageMessageController.class);
+    private static final CustomLogger LOGGER = CustomLogger.init(StorageDeleteController.class);
 
     private final StorageService storageService;
 
-    public StorageMessageController(StorageService storageService) {
+    public StorageDeleteController(StorageService storageService) {
         this.storageService = storageService;
     }
 

@@ -32,13 +32,13 @@ public class FileService {
         this.storageMessageQueue = storageMessageQueue;
     }
 
-    public FileResource upload(MultipartFile file, String tag) {
+    public FileResource upload(Long userId, MultipartFile file, String tag) {
         final String fileName = file.getOriginalFilename();
         if (Objects.isNull(fileName) || !fileName.contains(".")) {
             throw new AlbumException("Invalid file name");
         }
         FileExtension.fromFileName(fileName);
-        final ImageFileInfo imageFileInfo = storageHttpClient.requestUpload(file, tag);
+        final ImageFileInfo imageFileInfo = storageHttpClient.requestUpload(userId, file, tag);
         final FileResource createdResource = FileResource.created(imageFileInfo);
         fileResourceRepository.save(createdResource);
         return createdResource;

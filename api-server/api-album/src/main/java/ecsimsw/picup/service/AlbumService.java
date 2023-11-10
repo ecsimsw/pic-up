@@ -40,7 +40,8 @@ public class AlbumService {
 
     @Transactional
     public AlbumInfoResponse create(Long userId, AlbumInfoRequest albumInfo, MultipartFile thumbnail) {
-        final FileResource resource = fileService.upload(thumbnail, userId.toString());
+        final String fileTag = userId.toString();
+        final FileResource resource = fileService.upload(userId, thumbnail, fileTag);
         final Album album = new Album(userId, albumInfo.getName(), resource.getResourceKey());
         albumRepository.save(album);
         return AlbumInfoResponse.of(album);
@@ -58,7 +59,8 @@ public class AlbumService {
         album.updateName(albumInfo.getName());
         optionalThumbnail.ifPresent(file -> {
             final String oldImage = album.getResourceKey();
-            final String newImage = fileService.upload(file, userId.toString()).getResourceKey();
+            final String fileTag = userId.toString();
+            final String newImage = fileService.upload(userId, file, fileTag).getResourceKey();
             album.updateThumbnail(newImage);
             fileService.delete(oldImage);
         });

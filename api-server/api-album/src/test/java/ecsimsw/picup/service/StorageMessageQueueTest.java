@@ -21,7 +21,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.mockito.Mockito.*;
 
-// XXX :: Need to test in spring container env, for using @Retryable
+// XXX :: Need to test with spring container, for using @Retryable
 @TestPropertySource(locations = "/mq.properties")
 @EnableRetry
 @ExtendWith(MockitoExtension.class)
