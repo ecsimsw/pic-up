@@ -1,6 +1,5 @@
-package ecsimsw.picup.config;
+package ecsimsw.picup.mq;
 
-import ecsimsw.picup.exception.MessageQueueServerDownException;
 import ecsimsw.picup.logging.CustomLogger;
 import java.util.Map;
 import org.springframework.amqp.core.Binding;

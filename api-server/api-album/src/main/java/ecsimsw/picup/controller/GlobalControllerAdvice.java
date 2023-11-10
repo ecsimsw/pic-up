@@ -3,7 +3,7 @@ package ecsimsw.picup.controller;
 import ecsimsw.picup.auth.exception.UnauthorizedException;
 import ecsimsw.picup.exception.AlbumException;
 import ecsimsw.picup.exception.InvalidStorageServerResponseException;
-import ecsimsw.picup.exception.MessageQueueServerDownException;
+import ecsimsw.picup.mq.MessageQueueServerDownException;
 import ecsimsw.picup.exception.FileUploadFailException;
 import ecsimsw.picup.exception.UnsupportedFileTypeException;
 import ecsimsw.picup.logging.CustomLogger;

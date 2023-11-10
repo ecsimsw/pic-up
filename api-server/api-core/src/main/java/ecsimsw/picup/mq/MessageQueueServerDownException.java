@@ -1,4 +1,4 @@
-package ecsimsw.picup.exception;
+package ecsimsw.picup.mq;
 
 public class MessageQueueServerDownException extends IllegalArgumentException {
 

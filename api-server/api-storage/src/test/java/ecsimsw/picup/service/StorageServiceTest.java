@@ -5,6 +5,7 @@ import ecsimsw.picup.domain.Resource;
 import ecsimsw.picup.domain.ResourceRepository;
 import ecsimsw.picup.domain.StorageKey;
 import ecsimsw.picup.exception.StorageException;
+import ecsimsw.picup.mq.StorageMessageQueue;
 import ecsimsw.picup.storage.ImageStorage;
 import ecsimsw.picup.env.MockImageStorage;
 import org.junit.jupiter.api.BeforeEach;
@@ -30,7 +31,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.hibernate.validator.internal.util.Contracts.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertAll;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -39,6 +39,9 @@ public class StorageServiceTest {
 
     @Mock
     private ResourceRepository resourceRepository;
+
+    @Mock
+    private StorageMessageQueue storageMessageQueue;
 
     @Spy
     private ImageStorage mainStorage = new MockImageStorage(LOCAL_FILE_STORAGE);
@@ -53,7 +56,7 @@ public class StorageServiceTest {
 
     @BeforeEach
     public void init() {
-        storageService = new StorageService(resourceRepository, mainStorage, backUpStorage);
+        storageService = new StorageService(storageMessageQueue, resourceRepository, mainStorage, backUpStorage);
     }
 
     @Nested
@@ -280,7 +283,7 @@ public class StorageServiceTest {
                 .thenAnswer(i -> i.getArguments()[0]);
         }
 
-        @DisplayName("업로드 성공")
+        @DisplayName("업로드에 성공하고 저장된 리소스 정보를 기록한다.")
         @Test
         public void uploadSuccessfully() {
             var result = storageService.upload(USER_ID, FILE_TAG, MULTIPART_FILE);
@@ -303,34 +306,29 @@ public class StorageServiceTest {
             doThrow(StorageException.class)
                 .when(mainStorage).create(any(String.class), any(ImageFile.class));
 
-            assertThrows(StorageException.class, () -> storageService.upload(USER_ID, FILE_TAG, MULTIPART_FILE));
-            verify(resourceRepository, atLeast(1))
-                .save(resourceArgumentCaptor.capture());
-
-            var savedResource = resourceArgumentCaptor.getValue();
-            assertAll(
-                () -> assertThat(savedResource.getResourceKey()).isNotNull(),
-                () -> assertThat(savedResource.getCreateRequested()).isNotNull(),
-                () -> assertThat(savedResource.getStoredStorages()).isEqualTo(Collections.emptyList())
-            );
-        }
-
-        @DisplayName("BackUp storage 에 저장 실패시 업로드에 실패한다. 단, Main 스토리지까지의 저장 기록은 남긴다.")
-        @Test
-        public void uploadFailWithBackUpStorage() {
-            doThrow(StorageException.class)
-                .when(backUpStorage).create(any(String.class), any(ImageFile.class));
-
-            assertThrows(StorageException.class, () -> storageService.upload(USER_ID, FILE_TAG, MULTIPART_FILE));
-            verify(resourceRepository, atLeast(2))
-                .save(resourceArgumentCaptor.capture());
+            assertThatThrownBy(
+                () -> storageService.upload(USER_ID, FILE_TAG, MULTIPART_FILE)
+            ).isInstanceOf(StorageException.class);
 
             var saved = getResourceSavedData();
             assertAll(
                 () -> assertThat(saved.getResourceKey()).isNotNull(),
                 () -> assertThat(saved.getCreateRequested()).isNotNull(),
-                () -> assertThat(saved.getStoredStorages()).isEqualTo(List.of(LOCAL_FILE_STORAGE))
+                () -> assertThat(saved.getStoredStorages()).isEqualTo(Collections.emptyList())
             );
+        }
+
+        @DisplayName("BackUp storage 에 저장 실패시 업로드에 실패하고 더미 파일 정보를 MQ 에 등록한다.")
+        @Test
+        public void uploadFailWithBackUpStorage() {
+            doThrow(StorageException.class)
+                .when(backUpStorage).create(any(String.class), any(ImageFile.class));
+
+            assertThatThrownBy(
+                () -> storageService.upload(USER_ID, FILE_TAG, MULTIPART_FILE)
+            ).isInstanceOf(StorageException.class);
+
+            verify(storageMessageQueue, atLeastOnce()).pollDeleteRequest(any());
         }
     }
 

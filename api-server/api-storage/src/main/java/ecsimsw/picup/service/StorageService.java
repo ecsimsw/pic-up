@@ -7,6 +7,7 @@ import ecsimsw.picup.dto.ImageResponse;
 import ecsimsw.picup.dto.ImageUploadResponse;
 import ecsimsw.picup.exception.InvalidResourceException;
 import ecsimsw.picup.exception.StorageException;
+import ecsimsw.picup.mq.StorageMessageQueue;
 import ecsimsw.picup.storage.ImageStorage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,15 +22,18 @@ public class StorageService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(StorageService.class);
 
+    private final StorageMessageQueue storageMessageQueue;
     private final ResourceRepository resourceRepository;
     private final ImageStorage mainStorage;
     private final ImageStorage backUpStorage;
 
     public StorageService(
+        StorageMessageQueue storageMessageQueue,
         ResourceRepository resourceRepository,
         ImageStorage localFileStorage,
         ImageStorage s3ObjectStorage
     ) {
+        this.storageMessageQueue = storageMessageQueue;
         this.resourceRepository = resourceRepository;
         this.mainStorage = localFileStorage;
         this.backUpStorage = s3ObjectStorage;
@@ -44,9 +48,15 @@ public class StorageService {
         resource.storedTo(mainStorage);
         resourceRepository.save(resource);
 
-        backUpStorage.create(resource.getResourceKey(), imageFile);
-        resource.storedTo(backUpStorage);
-        resourceRepository.save(resource);
+        try {
+            backUpStorage.create(resource.getResourceKey(), imageFile);
+            resource.storedTo(backUpStorage);
+            resourceRepository.save(resource);
+        } catch (Exception e) {
+            final List<String> dummyFiles = List.of(resource.getResourceKey());
+            storageMessageQueue.pollDeleteRequest(dummyFiles);
+            throw e;
+        }
         return new ImageUploadResponse(resource.getResourceKey(), imageFile.getSize());
     }
 
