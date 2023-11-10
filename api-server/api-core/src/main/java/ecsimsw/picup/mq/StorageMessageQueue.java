@@ -39,6 +39,6 @@ public class StorageMessageQueue {
     @Recover
     public void recoverServerConnection(AmqpConnectException exception, List<String> resources) {
         var errorMessage = "Failed to connect server while deleting resources\nResources to be deleted : " + Strings.join(resources).with(", ");
-        throw new MessageQueueServerDownException(errorMessage, exception);
+        throw new MessageBrokerDownException(errorMessage, exception);
     }
 }

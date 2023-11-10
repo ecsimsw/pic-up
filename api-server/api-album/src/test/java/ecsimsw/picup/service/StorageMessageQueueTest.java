@@ -1,6 +1,6 @@
 package ecsimsw.picup.service;
 
-import ecsimsw.picup.mq.MessageQueueServerDownException;
+import ecsimsw.picup.mq.MessageBrokerDownException;
 import ecsimsw.picup.mq.StorageMessageQueue;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -68,7 +68,7 @@ class StorageMessageQueueTest {
 
         assertThatThrownBy(
             () -> storageMessageQueue.pollDeleteRequest(RESOURCES)
-        ).isInstanceOf(MessageQueueServerDownException.class);
+        ).isInstanceOf(MessageBrokerDownException.class);
 
         verify(rabbitTemplate, times(retryCount))
             .convertAndSend(queue.getName(), RESOURCES);

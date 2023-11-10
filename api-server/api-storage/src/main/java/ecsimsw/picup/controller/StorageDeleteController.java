@@ -1,7 +1,10 @@
 package ecsimsw.picup.controller;
 
+import ecsimsw.picup.alert.SlackMessageSender;
 import ecsimsw.picup.logging.CustomLogger;
 import ecsimsw.picup.service.StorageService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.messaging.Message;
 import org.springframework.stereotype.Controller;
@@ -13,7 +16,7 @@ import static ecsimsw.picup.config.RabbitMQContainerFactories.FILE_DELETION_QUEU
 @Controller
 public class StorageDeleteController {
 
-    private static final CustomLogger LOGGER = CustomLogger.init(StorageDeleteController.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(StorageDeleteController.class);
 
     private final StorageService storageService;
 
@@ -28,7 +31,8 @@ public class StorageDeleteController {
 
     @RabbitListener(queues = "${mq.file.deletion.recover.queue.name}")
     public void deleteAllRecover(Message failedMessage) {
-        LOGGER.error("dead letter from file deletion queue \n" +
-            "body : " + failedMessage.getPayload());
+        final String alertMessage = "dead letter from file deletion queue \n" + "body : " + failedMessage.getPayload();
+        LOGGER.error(alertMessage);
+        SlackMessageSender.send(alertMessage);
     }
 }

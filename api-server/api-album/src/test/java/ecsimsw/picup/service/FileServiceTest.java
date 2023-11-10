@@ -3,7 +3,7 @@ package ecsimsw.picup.service;
 import ecsimsw.picup.domain.FileResourceRepository;
 import ecsimsw.picup.dto.ImageFileInfo;
 import ecsimsw.picup.exception.AlbumException;
-import ecsimsw.picup.mq.MessageQueueServerDownException;
+import ecsimsw.picup.mq.MessageBrokerDownException;
 import ecsimsw.picup.exception.UnsupportedFileTypeException;
 import ecsimsw.picup.mq.StorageMessageQueue;
 import org.junit.jupiter.api.BeforeEach;
@@ -45,7 +45,7 @@ class FileServiceTest {
 
     @DisplayName("파일 다중 삭제는 지정된 개수로 나눠 처리된다.")
     @Test
-    void deleteAll() throws MessageQueueServerDownException {
+    void deleteAll() throws MessageBrokerDownException {
         var resources = List.of(RESOURCE_KEY, RESOURCE_KEY, RESOURCE_KEY, RESOURCE_KEY, RESOURCE_KEY, RESOURCE_KEY);
         fileService.deleteAll(resources);
 
@@ -69,7 +69,7 @@ class FileServiceTest {
 
     @DisplayName("파일을 삭제 처리한다.")
     @Test
-    void delete() throws MessageQueueServerDownException {
+    void delete() throws MessageBrokerDownException {
         fileService.delete(RESOURCE_KEY);
 
         verify(storageMessageQueue, atLeastOnce())
@@ -78,8 +78,8 @@ class FileServiceTest {
 
     @DisplayName("MessageQueue 의 오류로 파일 삭제에 실패한 리소스는 Garbage file 이라는 이름으로 영속된다.")
     @Test
-    void failedAfterRetry() throws MessageQueueServerDownException {
-        doThrow(MessageQueueServerDownException.class)
+    void failedAfterRetry() throws MessageBrokerDownException {
+        doThrow(MessageBrokerDownException.class)
             .when(storageMessageQueue).pollDeleteRequest(List.of(RESOURCE_KEY));
 
         assertDoesNotThrow(

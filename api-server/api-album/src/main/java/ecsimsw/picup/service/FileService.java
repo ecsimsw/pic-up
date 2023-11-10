@@ -9,7 +9,7 @@ import ecsimsw.picup.exception.AlbumException;
 import java.util.List;
 import java.util.Objects;
 
-import ecsimsw.picup.mq.MessageQueueServerDownException;
+import ecsimsw.picup.mq.MessageBrokerDownException;
 import ecsimsw.picup.mq.StorageMessageQueue;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -56,7 +56,7 @@ public class FileService {
                 storageMessageQueue.pollDeleteRequest(keySegment);
                 resources.forEach(FileResource::deleted);
                 fileResourceRepository.saveAll(resources);
-            } catch (MessageQueueServerDownException e) {
+            } catch (MessageBrokerDownException e) {
                 resources.forEach(FileResource::markAsGarbage);
                 fileResourceRepository.saveAll(resources);
             }

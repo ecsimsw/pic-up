@@ -1,5 +1,6 @@
 package ecsimsw.picup.controller;
 
+import ecsimsw.picup.alert.SlackMessageSender;
 import ecsimsw.picup.exception.InvalidResourceException;
 import ecsimsw.picup.logging.CustomLogger;
 import org.apache.tomcat.util.http.fileupload.impl.SizeLimitExceededException;
@@ -27,7 +28,9 @@ public class GlobalControllerAdvice {
     @ExceptionHandler(Throwable.class)
     public ResponseEntity<String> unhandledException(Throwable e) {
         e.printStackTrace();
-        LOGGER.error(e.getMessage());
+        final String alertMessage = "[UNHANDLED] : " + e.getMessage();
+        LOGGER.error(alertMessage);
+        SlackMessageSender.send(alertMessage);
         return ResponseEntity.internalServerError().body("unhandled server exception");
     }
 }
