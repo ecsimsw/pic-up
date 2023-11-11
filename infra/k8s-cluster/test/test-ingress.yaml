@@ -22,12 +22,12 @@ spec:
       http:
         paths:
           - path: /echo-client-ip-test
-              pathType: ImplementationSpecific
-              backend:
-                service:
-                  name: test-svc-echo-ip
-                  port:
-                    number: 80
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: test-svc-echo-ip
+                port:
+                  number: 80
 
 #  HOST=$(kubectl get svc --namespace kong kong-gateway-proxy -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
 #  PORT=$(kubectl get svc --namespace kong kong-gateway-proxy -o jsonpath='{.spec.ports[0].port}')
