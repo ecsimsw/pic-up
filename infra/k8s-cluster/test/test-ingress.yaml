@@ -18,6 +18,9 @@ spec:
                 name: nginx-svc-clusterip
                 port:
                   number: 80
+    - host: kube.ecsimsw.com
+      http:
+        paths:
           - path: /echo-client-ip-test
               pathType: ImplementationSpecific
               backend:
