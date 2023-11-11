@@ -1,4 +1,0 @@
-helm install redis oci://registry-1.docker.io/bitnamicharts/redis \
-    -f redis-helm-values.yaml \
-    -n mymarket \
-    --create-namespace

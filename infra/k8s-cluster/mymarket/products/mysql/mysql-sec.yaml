@@ -1,7 +1,0 @@
-apiVersion: v1
-kind: Secret
-metadata:
-  name: products-mysql-secret
-  namespace: mymarket
-data:
-  MYSQL_ROOT_PASSWORD: cGFzc3dvcmQ=
