@@ -11,7 +11,7 @@ spec:
     - host: kube.ecsimsw.com
       http:
         paths:
-          - path: /nginx-test
+          - path: /ingress-test-clusterip
             pathType: ImplementationSpecific
             backend:
               service:
@@ -21,11 +21,11 @@ spec:
     - host: kube.ecsimsw.com
       http:
         paths:
-          - path: /echo-client-ip-test
+          - path: /ingress-test-nodeport
             pathType: ImplementationSpecific
             backend:
               service:
-                name: test-svc-echo-ip
+                name: nginx-svc-nodeport
                 port:
                   number: 80
 
