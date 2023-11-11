@@ -18,5 +18,16 @@ spec:
                 name: nginx-svc-clusterip
                 port:
                   number: 80
+          - path: /echo-client-ip-test
+              pathType: ImplementationSpecific
+              backend:
+                service:
+                  name: test-svc-echo-ip
+                  port:
+                    number: 80
 
-# curl -i http://kube.ecsimsw.com/nginx-test --resolve kube.ecsimsw.com:80:192.168.52.21
+#  HOST=$(kubectl get svc --namespace kong kong-gateway-proxy -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
+#  PORT=$(kubectl get svc --namespace kong kong-gateway-proxy -o jsonpath='{.spec.ports[0].port}')
+#  export PROXY_IP=${HOST}:${PORT}
+#  echo $PROXY_IP
+#  curl -i -H 'Host:kube.ecsimsw.com' $PROXY_IP/nginx-test
