@@ -29,34 +29,34 @@ spec:
               weight: 100
       containers:
         - name: album-server
-          image: ghcr.io/ecsimsw/picup/album:latest
+          image: ghcr.io/ecsimsw/picup/api-album:latest
 #          envFrom:
 #          - configMapRef:
 #              name: album-server-config
           ports:
-            - containerPort: 8080
-          startupProbe:
-            httpGet:
-              path: /
-              port: 8080
-            failureThreshold: 20
-            periodSeconds: 10
-          readinessProbe:
-            httpGet:
-              path: /actuator/health/readiness
-              port: 8080
-            initialDelaySeconds: 5
-            periodSeconds: 120
-          livenessProbe:
-            httpGet:
-              path: /actuator/health/liveness
-              port: 8080
-            failureThreshold: 20
-            periodSeconds: 120
+            - containerPort: 8084
+#          startupProbe:
+#            httpGet:
+#              path: /
+#              port: 8084
+#            failureThreshold: 20
+#            periodSeconds: 10
+#          readinessProbe:
+#            httpGet:
+#              path: /actuator/health/readiness
+#              port: 8084
+#            initialDelaySeconds: 5
+#            periodSeconds: 120
+#          livenessProbe:
+#            httpGet:
+#              path: /actuator/health/liveness
+#              port: 8084
+#            failureThreshold: 20
+#            periodSeconds: 120
           resources:
             requests:
               memory: 256Mi
             limits:
               memory: 256Mi
       imagePullSecrets:
-        - name: ghcr-secret
+        - name: ghcr-login-secret

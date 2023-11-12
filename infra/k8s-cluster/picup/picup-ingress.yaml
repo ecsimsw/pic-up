@@ -1,0 +1,26 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: picup-ingress
+  namespace: picup
+  annotations:
+    konghq.com/strip-path: 'true'
+spec:
+  ingressClassName: kong
+  rules:
+    - host: picup.ecsimsw.com
+      http:
+        paths:
+          - path: /picup
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: album-server-svc
+                port:
+                  number: 8084
+
+#  HOST=$(kubectl get svc --namespace kong kong-gateway-proxy -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
+#  PORT=$(kubectl get svc --namespace kong kong-gateway-proxy -o jsonpath='{.spec.ports[0].port}')
+#  export PROXY_IP=${HOST}:${PORT}
+#  echo $PROXY_IP
+#  curl -i -H 'Host:picup.ecsimsw.com' $PROXY_IP/picup
