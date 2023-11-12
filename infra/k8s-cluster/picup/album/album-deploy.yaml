@@ -1,0 +1,62 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: album-server
+  namespace: picup
+  labels:
+    app: album-server
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: album-server
+  template:
+    metadata:
+      labels:
+        app: album-server
+    spec:
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - podAffinityTerm:
+                labelSelector:
+                  matchExpressions:
+                    - key: app
+                      operator: In
+                      values:
+                        - album-server
+                topologyKey: kubernetes.io/hostname
+              weight: 100
+      containers:
+        - name: album-server
+          image: ghcr.io/ecsimsw/picup/album:latest
+#          envFrom:
+#          - configMapRef:
+#              name: album-server-config
+          ports:
+            - containerPort: 8080
+          startupProbe:
+            httpGet:
+              path: /
+              port: 8080
+            failureThreshold: 20
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /actuator/health/readiness
+              port: 8080
+            initialDelaySeconds: 5
+            periodSeconds: 120
+          livenessProbe:
+            httpGet:
+              path: /actuator/health/liveness
+              port: 8080
+            failureThreshold: 20
+            periodSeconds: 120
+          resources:
+            requests:
+              memory: 256Mi
+            limits:
+              memory: 256Mi
+      imagePullSecrets:
+        - name: ghcr-secret
