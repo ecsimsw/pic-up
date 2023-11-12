@@ -9,8 +9,11 @@ import ecsimsw.picup.exception.InvalidResourceException;
 import ecsimsw.picup.exception.StorageException;
 import ecsimsw.picup.mq.StorageMessageQueue;
 import ecsimsw.picup.storage.ImageStorage;
+import ecsimsw.picup.storage.LocalFileStorage;
+import ecsimsw.picup.storage.ObjectStorage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -30,13 +33,13 @@ public class StorageService {
     public StorageService(
         StorageMessageQueue storageMessageQueue,
         ResourceRepository resourceRepository,
-        ImageStorage localFileStorage,
-        ImageStorage s3ObjectStorage
+        @Qualifier(value="localFileStorage") ImageStorage localFileStorage,
+        @Qualifier(value="objectStorage") ImageStorage ObjectStorage
     ) {
         this.storageMessageQueue = storageMessageQueue;
         this.resourceRepository = resourceRepository;
         this.mainStorage = localFileStorage;
-        this.backUpStorage = s3ObjectStorage;
+        this.backUpStorage = ObjectStorage;
     }
 
     public ImageUploadResponse upload(Long userId, String tag, MultipartFile file) {

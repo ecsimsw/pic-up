@@ -1,4 +1,4 @@
-package ecsimsw.picup.config;
+package ecsimsw.picup.mq;
 
 import java.time.Duration;
 import org.springframework.amqp.rabbit.config.RetryInterceptorBuilder;

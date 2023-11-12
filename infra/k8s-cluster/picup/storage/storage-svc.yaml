@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: storage-server
+  name: storage-server-svc
+  namespace: picup
+spec:
+  ports:
+    - port: 8083
+      name: http
+      protocol: TCP
+      targetPort: 8083
+  selector:
+    app: storage-server

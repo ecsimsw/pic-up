@@ -11,13 +11,20 @@ spec:
     - host: picup.ecsimsw.com
       http:
         paths:
-          - path: /picup
+          - path: /api/album
             pathType: ImplementationSpecific
             backend:
               service:
                 name: album-server-svc
                 port:
                   number: 8084
+          - path: /api/storage
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: storage-server-svc
+                port:
+                  number: 8083
 
 #  HOST=$(kubectl get svc --namespace kong kong-gateway-proxy -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
 #  PORT=$(kubectl get svc --namespace kong kong-gateway-proxy -o jsonpath='{.spec.ports[0].port}')

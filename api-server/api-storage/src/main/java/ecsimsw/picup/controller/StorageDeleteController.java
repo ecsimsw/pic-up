@@ -1,7 +1,6 @@
 package ecsimsw.picup.controller;
 
 import ecsimsw.picup.alert.SlackMessageSender;
-import ecsimsw.picup.logging.CustomLogger;
 import ecsimsw.picup.service.StorageService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,7 +10,7 @@ import org.springframework.stereotype.Controller;
 
 import java.util.List;
 
-import static ecsimsw.picup.config.RabbitMQContainerFactories.FILE_DELETION_QUEUE_CF;
+import static ecsimsw.picup.mq.RabbitMQContainerFactories.FILE_DELETION_QUEUE_CF;
 
 @Controller
 public class StorageDeleteController {

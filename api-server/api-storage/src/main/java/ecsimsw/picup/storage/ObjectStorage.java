@@ -18,28 +18,29 @@ import java.io.ByteArrayInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
-@Service
-public class S3ObjectStorage implements ImageStorage {
+@Component(value = "objectStorage")
+public class ObjectStorage implements ImageStorage {
 
     public static final StorageKey KEY = StorageKey.S3_OBJECT_STORAGE;
 
-    private final AmazonS3 s3Client;
+    private final AmazonS3 storageClient;
     private final String bucketName;
 
-    public S3ObjectStorage(
-        @Value("${s3.vultr.bucket.name}") String bucketName,
+    public ObjectStorage(
+        @Value("${object.storage.vultr.bucket.name}") String bucketName,
         AmazonS3 s3Client
     ) {
-        this.s3Client = s3Client;
+        this.storageClient = s3Client;
         this.bucketName = bucketName;
     }
 
     @Override
     public void create(String resourceKey, ImageFile imageFile) {
         try {
-            if(s3Client.doesObjectExist(bucketName, resourceKey)) {
+            if(storageClient.doesObjectExist(bucketName, resourceKey)) {
                 throw new StorageException("resource already exists");
             }
             final ObjectMetadata metadata = new ObjectMetadata();
@@ -52,34 +53,34 @@ public class S3ObjectStorage implements ImageStorage {
             final InputStream inputStream = new ByteArrayInputStream(imageFile.getFile());
             final PutObjectRequest request = new PutObjectRequest(bucketName, resourceKey, inputStream, metadata);
             request.setAccessControlList(accessControlList);
-            s3Client.putObject(request);
+            storageClient.putObject(request);
         } catch (Exception e) {
-            throw new StorageException("S3 server exception while uploading", e);
+            throw new StorageException("Object storage server exception while uploading", e);
         }
     }
 
     @Override
     public ImageFile read(String resourceKey) {
         try {
-            if (!s3Client.doesObjectExist(bucketName, resourceKey)) {
+            if (!storageClient.doesObjectExist(bucketName, resourceKey)) {
                 throw new FileNotFoundException("file not exists : " + resourceKey);
             }
-            final S3Object object = s3Client.getObject(new GetObjectRequest(bucketName, resourceKey));
+            final S3Object object = storageClient.getObject(new GetObjectRequest(bucketName, resourceKey));
             final byte[] file = IOUtils.toByteArray(object.getObjectContent());
             return ImageFile.of(resourceKey, file);
         } catch (AmazonS3Exception e) {
             throw new InvalidResourceException("Fail to read : " + resourceKey + ", please check access key or resource key");
         } catch (Exception e) {
-            throw new StorageException("S3 server exception while reading", e);
+            throw new StorageException("Object storage server exception while reading", e);
         }
     }
 
     @Override
     public void delete(String resourceKey) throws FileNotFoundException {
-        if (!s3Client.doesObjectExist(bucketName, resourceKey)) {
+        if (!storageClient.doesObjectExist(bucketName, resourceKey)) {
             throw new FileNotFoundException("file not exists : " + resourceKey);
         }
-        s3Client.deleteObject(bucketName, resourceKey);
+        storageClient.deleteObject(bucketName, resourceKey);
     }
 
     @Override

@@ -11,7 +11,7 @@ import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
-@Component
+@Component(value = "localFileStorage")
 public class LocalFileStorage implements ImageStorage {
 
     public static final StorageKey KEY = StorageKey.LOCAL_FILE_STORAGE;

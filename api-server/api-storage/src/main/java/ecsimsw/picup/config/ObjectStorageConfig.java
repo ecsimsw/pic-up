@@ -10,14 +10,14 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-public class S3Config {
+public class ObjectStorageConfig {
 
     @Bean
-    public AmazonS3 s3Client(
-        @Value("${s3.vultr.host.url}") String hostUrl,
-        @Value("${s3.vultr.host.region}") String region,
-        @Value("${s3.vultr.credential.accessKey}") String accessKey,
-        @Value("${s3.vultr.credential.secretKey}") String secretKey
+    public AmazonS3 objectStorageClient(
+        @Value("${object.storage.vultr.host.url}") String hostUrl,
+        @Value("${object.storage.vultr.host.region}") String region,
+        @Value("${object.storage.vultr.credential.accessKey}") String accessKey,
+        @Value("${object.storage.vultr.credential.secretKey}") String secretKey
     ) {
         AmazonS3ClientBuilder s3ClientBuilder = AmazonS3ClientBuilder.standard().withCredentials(
             new AWSStaticCredentialsProvider(new BasicAWSCredentials(accessKey, secretKey))

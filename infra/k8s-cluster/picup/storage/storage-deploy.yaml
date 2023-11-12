@@ -1,0 +1,62 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: storage-server
+  namespace: picup
+  labels:
+    app: storage-server
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: storage-server
+  template:
+    metadata:
+      labels:
+        app: storage-server
+    spec:
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - podAffinityTerm:
+                labelSelector:
+                  matchExpressions:
+                    - key: app
+                      operator: In
+                      values:
+                        - storage-server
+                topologyKey: kubernetes.io/hostname
+              weight: 100
+      containers:
+        - name: storage-server
+          image: ghcr.io/ecsimsw/picup/api-storage:latest
+#          envFrom:
+#          - configMapRef:
+#              name: album-server-config
+          ports:
+            - containerPort: 8083
+#          startupProbe:
+#            httpGet:
+#              path: /
+#              port: 8084
+#            failureThreshold: 20
+#            periodSeconds: 10
+#          readinessProbe:
+#            httpGet:
+#              path: /actuator/health/readiness
+#              port: 8084
+#            initialDelaySeconds: 5
+#            periodSeconds: 120
+#          livenessProbe:
+#            httpGet:
+#              path: /actuator/health/liveness
+#              port: 8084
+#            failureThreshold: 20
+#            periodSeconds: 120
+          resources:
+            requests:
+              memory: 256Mi
+            limits:
+              memory: 256Mi
+      imagePullSecrets:
+        - name: ghcr-login-secret
