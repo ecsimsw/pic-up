@@ -4,7 +4,7 @@ metadata:
   name: picup-ingress
   namespace: picup
   annotations:
-    konghq.com/strip-path: 'true'
+    konghq.com/strip-path: 'false'
 spec:
   ingressClassName: kong
   rules:
@@ -25,6 +25,13 @@ spec:
                 name: storage-server-svc
                 port:
                   number: 8083
+          - path: /api/member
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: member-server-svc
+                port:
+                  number: 8082
 
 #  HOST=$(kubectl get svc --namespace kong kong-gateway-proxy -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
 #  PORT=$(kubectl get svc --namespace kong kong-gateway-proxy -o jsonpath='{.spec.ports[0].port}')

@@ -8,6 +8,12 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 }
 
+configurations {
+    all {
+        exclude group: 'org.springframework.boot', module: 'spring-boot-starter-logging'
+    }
+}
+
 test {
     useJUnitPlatform()
 }

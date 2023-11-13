@@ -23,21 +23,21 @@ public class MemberController {
         this.memberService = memberService;
     }
 
-    @PostMapping("/api/auth/signin")
+    @PostMapping("/api/member/signin")
     public ResponseEntity<Void> signIn(@RequestBody @Valid SignInRequest request,
                                        HttpServletResponse response) {
         memberService.signIn(request, response);
         return ResponseEntity.ok().build();
     }
 
-    @PostMapping("/api/auth/signup")
+    @PostMapping("/api/member/signup")
     public ResponseEntity<Void> signUp(@RequestBody @Valid SignUpRequest request,
                                        HttpServletResponse response) {
         memberService.signUp(request, response);
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping("/api/auth/me")
+    @GetMapping("/api/member/me")
     public ResponseEntity<String> me(@LoginUser LoginUserInfo userInfo) {
         return ResponseEntity.ok(userInfo.getUsername());
     }

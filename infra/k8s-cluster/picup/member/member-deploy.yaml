@@ -1,19 +1,19 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: storage-server
+  name: member-server
   namespace: picup
   labels:
-    app: storage-server
+    app: member-server
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: storage-server
+      app: member-server
   template:
     metadata:
       labels:
-        app: storage-server
+        app: member-server
     spec:
       affinity:
         podAntiAffinity:
@@ -24,17 +24,35 @@ spec:
                     - key: app
                       operator: In
                       values:
-                        - storage-server
+                        - member-server
                 topologyKey: kubernetes.io/hostname
               weight: 100
       containers:
-        - name: storage-server
-          image: ghcr.io/ecsimsw/picup/api-storage:latest
+        - name: member-server
+          image: ghcr.io/ecsimsw/picup/api-member:latest
 #          envFrom:
 #          - configMapRef:
 #              name: album-server-config
           ports:
-            - containerPort: 8083
+            - containerPort: 8082
+#          startupProbe:
+#            httpGet:
+#              path: /
+#              port: 8084
+#            failureThreshold: 20
+#            periodSeconds: 10
+#          readinessProbe:
+#            httpGet:
+#              path: /actuator/health/readiness
+#              port: 8084
+#            initialDelaySeconds: 5
+#            periodSeconds: 120
+#          livenessProbe:
+#            httpGet:
+#              path: /actuator/health/liveness
+#              port: 8084
+#            failureThreshold: 20
+#            periodSeconds: 120
           resources:
             requests:
               memory: 256Mi
