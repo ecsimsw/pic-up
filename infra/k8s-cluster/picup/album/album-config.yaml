@@ -7,3 +7,4 @@ data:
   SPRING_PROFILES_ACTIVE: "prod"
   TOKEN_SECRET: "ecsimswtemptokensecretqwertyqwerty123123123"
   DATA_AES_ENCRYPTION_KEY: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+  STORAGE_SERVER_URL: "album-server-svc.picup.svc.cluster.local"
