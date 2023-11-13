@@ -43,18 +43,22 @@ public class StorageService {
     }
 
     public ImageUploadResponse upload(Long userId, String tag, MultipartFile file) {
+        System.out.println("1");
         final ImageFile imageFile = ImageFile.of(file);
         final Resource resource = Resource.createRequested(userId, tag, file);
         resourceRepository.save(resource);
+        System.out.println("3");
 
         mainStorage.create(resource.getResourceKey(), imageFile);
         resource.storedTo(mainStorage);
         resourceRepository.save(resource);
 
+        System.out.println("4");
         try {
             backUpStorage.create(resource.getResourceKey(), imageFile);
             resource.storedTo(backUpStorage);
             resourceRepository.save(resource);
+            System.out.println("5");
         } catch (Exception e) {
             final List<String> dummyFiles = List.of(resource.getResourceKey());
             storageMessageQueue.pollDeleteRequest(dummyFiles);

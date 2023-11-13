@@ -21,14 +21,17 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 public class AlbumController {
 
+    private final StorageHttpClient storageHttpClient;
     private final AlbumService albumService;
 
-    public AlbumController(AlbumService albumService) {
+    public AlbumController(StorageHttpClient storageHttpClient, AlbumService albumService) {
+        this.storageHttpClient = storageHttpClient;
         this.albumService = albumService;
     }
 
@@ -77,9 +80,9 @@ public class AlbumController {
         return ResponseEntity.ok(albums);
     }
 
-    @GetMapping("/api/album/up")
-    public ResponseEntity<String> up(@Autowired StorageHttpClient httpClient) {
-        httpClient.requestUp();
+    @GetMapping("/api/album/up/storage-connection")
+    public ResponseEntity<String> upStorageConnection() {
+        storageHttpClient.requestUp();
         return ResponseEntity.ok().build();
     }
 }

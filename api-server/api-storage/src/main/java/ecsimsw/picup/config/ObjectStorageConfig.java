@@ -1,5 +1,6 @@
 package ecsimsw.picup.config;
 
+import com.amazonaws.ClientConfiguration;
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.client.builder.AwsClientBuilder.EndpointConfiguration;
@@ -19,11 +20,17 @@ public class ObjectStorageConfig {
         @Value("${object.storage.vultr.credential.accessKey}") String accessKey,
         @Value("${object.storage.vultr.credential.secretKey}") String secretKey
     ) {
-        AmazonS3ClientBuilder s3ClientBuilder = AmazonS3ClientBuilder.standard().withCredentials(
+        var s3ClientBuilder = AmazonS3ClientBuilder.standard().withCredentials(
             new AWSStaticCredentialsProvider(new BasicAWSCredentials(accessKey, secretKey))
         );
-        EndpointConfiguration endPoint = new EndpointConfiguration(hostUrl, region);
+        var endPoint = new EndpointConfiguration(hostUrl, region);
         s3ClientBuilder.setEndpointConfiguration(endPoint);
+        s3ClientBuilder.withClientConfiguration(
+            new ClientConfiguration()
+                .withConnectionTimeout(100)
+                .withSocketTimeout(1000)
+                .withMaxConnections(100)
+        );
         return s3ClientBuilder.build();
     }
 }

@@ -1,9 +1,9 @@
 package ecsimsw.picup.service;
 
-import ecsimsw.picup.dto.StorageImageUploadRequest;
 import ecsimsw.picup.dto.ImageFileInfo;
-import ecsimsw.picup.exception.InvalidStorageServerResponseException;
+import ecsimsw.picup.dto.StorageImageUploadRequest;
 import ecsimsw.picup.exception.FileUploadFailException;
+import ecsimsw.picup.exception.InvalidStorageServerResponseException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
@@ -62,12 +62,11 @@ public class StorageHttpClient {
     }
 
     public void requestUp() {
-        var response = restTemplate.exchange(
+        restTemplate.exchange(
             STORAGE_SERVER_URL + "/api/file/up",
             HttpMethod.GET,
             HttpEntity.EMPTY,
             new ParameterizedTypeReference<Void>() {
             });
-        System.out.println(response);
     }
 }
