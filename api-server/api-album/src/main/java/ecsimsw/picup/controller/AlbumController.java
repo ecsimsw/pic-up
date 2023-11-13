@@ -11,6 +11,7 @@ import java.util.Optional;
 
 import ecsimsw.picup.service.StorageHttpClient;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -82,7 +83,7 @@ public class AlbumController {
 
     @GetMapping("/api/album/up/storageConnection")
     public ResponseEntity<String> upStorageConnection() {
-        storageHttpClient.requestUp();
-        return ResponseEntity.ok().build();
+        final HttpStatus httpStatus = storageHttpClient.requestUp();
+        return ResponseEntity.ok(httpStatus.toString());
     }
 }

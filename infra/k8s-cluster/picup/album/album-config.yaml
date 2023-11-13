@@ -7,4 +7,4 @@ data:
   SPRING_PROFILES_ACTIVE: "prod"
   TOKEN_SECRET: "ecsimswtemptokensecretqwertyqwerty123123123"
   DATA_AES_ENCRYPTION_KEY: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
-  STORAGE_SERVER_URL: "storage-server-svc.picup.svc.cluster.local"
+  STORAGE_SERVER_URL: "http://storage-server-svc.picup.svc.cluster.local:8083"
