@@ -24,8 +24,8 @@ public class StorageDeleteController {
     }
 
     @RabbitListener(queues = "${mq.file.deletion.queue.name}", containerFactory = FILE_DELETION_QUEUE_CF)
-    public void deleteAll(String resources) {
-        storageService.delete(resources);
+    public void deleteAll(List<String> resources) {
+        storageService.deleteAll(resources);
     }
 
     @RabbitListener(queues = "${mq.file.deletion.recover.queue.name}")

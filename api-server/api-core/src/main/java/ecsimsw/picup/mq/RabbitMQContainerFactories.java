@@ -7,6 +7,7 @@ import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.listener.RabbitListenerContainerFactory;
 import org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer;
 import org.springframework.amqp.rabbit.retry.RejectAndDontRequeueRecoverer;
+import org.springframework.amqp.support.converter.MessageConverter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -24,9 +25,11 @@ public class RabbitMQContainerFactories {
     @Bean
     public RabbitListenerContainerFactory<SimpleMessageListenerContainer> fileDeletionQueueContainerFactory(
         ConnectionFactory connectionFactory,
-        @Value("${mq.file.deletion.queue.prefetch:20}") int prefetch
+        @Value("${mq.file.deletion.queue.prefetch:20}") int prefetch,
+        MessageConverter messageConverter
     ) {
         var factory = new SimpleRabbitListenerContainerFactory();
+        factory.setMessageConverter(messageConverter);
         factory.setPrefetchCount(prefetch);
         factory.setConnectionFactory(connectionFactory);
         factory.setAdviceChain(RetryInterceptorBuilder.stateless()

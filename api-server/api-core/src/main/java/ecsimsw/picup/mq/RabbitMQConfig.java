@@ -25,11 +25,10 @@ public class RabbitMQConfig {
 
     @Bean
     public RabbitTemplate rabbitTemplate(
-        ConnectionFactory connectionFactory,
-        MessageConverter messageConverter
+        ConnectionFactory connectionFactory
     ) {
         RabbitTemplate rabbitTemplate = new RabbitTemplate(connectionFactory);
-        rabbitTemplate.setMessageConverter(messageConverter);
+        rabbitTemplate.setMessageConverter(messageConverter());
         return rabbitTemplate;
     }
 
@@ -121,7 +120,7 @@ public class RabbitMQConfig {
     }
 
     @Bean
-    MessageConverter messageConverter() {
+    public MessageConverter messageConverter() {
         return new Jackson2JsonMessageConverter();
     }
 }
