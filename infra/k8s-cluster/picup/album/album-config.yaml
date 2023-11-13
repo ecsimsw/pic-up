@@ -2,7 +2,7 @@ kind: ConfigMap
 apiVersion: v1
 metadata:
   name: products-server-config
-  namespace: mymarket
+  namespace: picup
 data:
   SPRING_PROFILES_ACTIVE: "prod"
   TOKEN_SECRET: "ecsimswtemptokensecretqwertyqwerty123123123"
