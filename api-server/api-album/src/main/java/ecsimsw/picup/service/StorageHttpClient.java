@@ -6,6 +6,7 @@ import ecsimsw.picup.exception.InvalidStorageServerResponseException;
 import ecsimsw.picup.exception.FileUploadFailException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Recover;
@@ -58,5 +59,15 @@ public class StorageHttpClient {
     @Recover
     public ImageFileInfo recoverUploadApi(Throwable exception, Long userId, MultipartFile file, String tag) {
         throw new FileUploadFailException(exception.getMessage(), exception);
+    }
+
+    public void requestUp() {
+        var response = restTemplate.exchange(
+            STORAGE_SERVER_URL + "/api/file/up",
+            HttpMethod.GET,
+            HttpEntity.EMPTY,
+            new ParameterizedTypeReference<Void>() {
+            });
+        System.out.println(response);
     }
 }

@@ -8,6 +8,9 @@ import ecsimsw.picup.dto.AlbumSearchCursor;
 import ecsimsw.picup.service.AlbumService;
 import java.util.List;
 import java.util.Optional;
+
+import ecsimsw.picup.service.StorageHttpClient;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -72,5 +75,11 @@ public class AlbumController {
     ) {
         final List<AlbumInfoResponse> albums = albumService.cursorBasedFetch(1L, limit, cursor);
         return ResponseEntity.ok(albums);
+    }
+
+    @GetMapping("/api/album/up")
+    public ResponseEntity<String> up(@Autowired StorageHttpClient httpClient) {
+        httpClient.requestUp();
+        return ResponseEntity.ok().build();
     }
 }

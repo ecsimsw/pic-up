@@ -24,4 +24,9 @@ public class StorageUploadController {
         final ImageUploadResponse uploadedInfo = storageService.upload(userId, tag, file);
         return ResponseEntity.ok(uploadedInfo);
     }
+
+    @GetMapping("/api/file/up")
+    public ResponseEntity<Void> up() {
+        return ResponseEntity.ok().build();
+    }
 }
