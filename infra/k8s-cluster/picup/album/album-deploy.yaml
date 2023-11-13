@@ -30,9 +30,9 @@ spec:
       containers:
         - name: album-server
           image: ghcr.io/ecsimsw/picup/api-album:latest
-#          envFrom:
-#          - configMapRef:
-#              name: album-server-config
+          envFrom:
+          - configMapRef:
+              name: album-server-config
           ports:
             - containerPort: 8084
 #          startupProbe:
