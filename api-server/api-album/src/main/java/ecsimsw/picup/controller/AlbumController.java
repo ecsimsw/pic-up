@@ -80,7 +80,7 @@ public class AlbumController {
         return ResponseEntity.ok(albums);
     }
 
-    @GetMapping("/api/album/up/storage-connection")
+    @GetMapping("/api/album/up/storageConnection")
     public ResponseEntity<String> upStorageConnection() {
         storageHttpClient.requestUp();
         return ResponseEntity.ok().build();

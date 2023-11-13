@@ -62,8 +62,9 @@ public class StorageHttpClient {
     }
 
     public void requestUp() {
+        System.out.println(STORAGE_SERVER_URL);
         restTemplate.exchange(
-            STORAGE_SERVER_URL + "/api/file/up",
+            "http://10.98.208.138/api/storage/up",
             HttpMethod.GET,
             HttpEntity.EMPTY,
             new ParameterizedTypeReference<Void>() {

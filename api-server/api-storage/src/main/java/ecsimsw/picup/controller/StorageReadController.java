@@ -16,7 +16,7 @@ public class StorageReadController {
         this.storageService = storageService;
     }
 
-    @GetMapping("/api/file/{resourceKey}")
+    @GetMapping("/api/storage/{resourceKey}")
     public ResponseEntity<byte[]> read(
         @LoginUser LoginUserInfo loginUser,
         @PathVariable String resourceKey

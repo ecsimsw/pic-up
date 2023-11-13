@@ -15,7 +15,7 @@ public class StorageUploadController {
         this.storageService = storageService;
     }
 
-    @PostMapping("/api/file")
+    @PostMapping("/api/storage")
     public ResponseEntity<ImageUploadResponse> upload(
         Long userId,
         String tag,
@@ -25,7 +25,7 @@ public class StorageUploadController {
         return ResponseEntity.ok(uploadedInfo);
     }
 
-    @GetMapping("/api/file/up")
+    @GetMapping("/api/storage/up")
     public ResponseEntity<Void> up() {
         return ResponseEntity.ok().build();
     }
