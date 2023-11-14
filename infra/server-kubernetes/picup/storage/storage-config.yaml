@@ -4,13 +4,6 @@ metadata:
   name: storage-server-config
   namespace: picup
 data:
-  SPRING_PROFILES_ACTIVE: "prod"
-  TOKEN_SECRET: "ecsimswtemptokensecretqwertyqwerty123123123"
-  DATA_AES_ENCRYPTION_KEY: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
-  PICUP_MESSAGE_QUEUE_HOST: "cloud.ecsimsw.com"
-  PICUP_MESSAGE_QUEUE_PORT: "5672"
-  PICUP_MESSAGE_QUEUE_USERNAME: "admin"
-  PICUP_MESSAGE_QUEUE_PASSWORD: "password"
   PICUP_OBJECT_STORAGE_URL: "https://ewr1.vultrobjects.com"
   PICUP_OBJECT_STORAGE_HOST_REGION: "ewr1"
   PICUP_OBJECT_STORAGE_BUCKET_ACCESS_KEY: "O8O860F9QI5C3X3EN1OS"

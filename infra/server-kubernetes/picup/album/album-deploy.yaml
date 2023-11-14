@@ -32,6 +32,8 @@ spec:
           image: ghcr.io/ecsimsw/picup/api-album:latest
           envFrom:
           - configMapRef:
+              name: picup-common-config
+          - configMapRef:
               name: album-server-config
           ports:
             - containerPort: 8084

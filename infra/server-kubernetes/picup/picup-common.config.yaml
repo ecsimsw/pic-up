@@ -1,0 +1,13 @@
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: picup-common-config
+  namespace: picup
+data:
+  SPRING_PROFILES_ACTIVE: "prod"
+  TOKEN_SECRET: "ecsimswtemptokensecretqwertyqwerty123123123"
+  DATA_AES_ENCRYPTION_KEY: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+  PICUP_MESSAGE_QUEUE_HOST: "cloud.ecsimsw.com"
+  PICUP_MESSAGE_QUEUE_PORT: "5672"
+  PICUP_MESSAGE_QUEUE_USERNAME: "admin"
+  PICUP_MESSAGE_QUEUE_PASSWORD: "password"

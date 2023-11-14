@@ -32,6 +32,8 @@ spec:
           image: ghcr.io/ecsimsw/picup/api-member:latest
           envFrom:
           - configMapRef:
+              name: picup-common-config
+          - configMapRef:
               name: member-server-config
           ports:
             - containerPort: 8082
