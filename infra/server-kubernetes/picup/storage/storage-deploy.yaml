@@ -30,15 +30,15 @@ spec:
       containers:
         - name: storage-server
           image: ghcr.io/ecsimsw/picup/api-storage:latest
-#          envFrom:
-#          - configMapRef:
-#              name: album-server-config
+          envFrom:
+          - configMapRef:
+              name: member-server-config
           ports:
             - containerPort: 8083
           resources:
             requests:
-              memory: 256Mi
+              memory: 512Mi
             limits:
-              memory: 256Mi
+              memory: 512Mi
       imagePullSecrets:
         - name: ghcr-login-secret

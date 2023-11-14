@@ -30,9 +30,9 @@ spec:
       containers:
         - name: member-server
           image: ghcr.io/ecsimsw/picup/api-member:latest
-#          envFrom:
-#          - configMapRef:
-#              name: album-server-config
+          envFrom:
+          - configMapRef:
+              name: member-server-config
           ports:
             - containerPort: 8082
 #          startupProbe:

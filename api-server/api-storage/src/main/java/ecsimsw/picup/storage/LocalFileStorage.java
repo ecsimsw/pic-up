@@ -21,7 +21,7 @@ public class LocalFileStorage implements ImageStorage {
 
     public LocalFileStorage(
         @Value("${file.root.directory}") String rootPath,
-        @Value("${file.aes.encryption.key}") String encryptKey
+        @Value("${data.aes.encryption.key}") String encryptKey
     ) {
         this.rootPath = rootPath;
         this.encryptKey = encryptKey;
