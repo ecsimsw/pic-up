@@ -1,10 +1,9 @@
-#kind: ConfigMap
-#apiVersion: v1
-#metadata:
-#  name: products-server-config
-#  namespace: mymarket
-#data:
-#  SPRING_PROFILES_ACTIVE: "prod"
-#  MYSQL_DATASOURCE_URL: "jdbc:mysql://products-mysql-svc:3306/mymarket?allowPublicKeyRetrieval=true&useSSL=false&useUnicode=true&serverTimezone=Asia/Seoul"
-#  KAFKA_HOST: "kafka-0.kafka-headless.mymarket.svc.cluster.local"
-#  KAFKA_PORT: "9092"
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: member-server-config
+  namespace: picup
+data:
+  SPRING_PROFILES_ACTIVE: "prod"
+  TOKEN_SECRET: "ecsimswtemptokensecretqwertyqwerty123123123"
+  DATA_AES_ENCRYPTION_KEY: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
