@@ -14,6 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.multipart.MaxUploadSizeExceededException;
 
 @ControllerAdvice
@@ -35,6 +36,11 @@ public class GlobalControllerAdvice {
     @ExceptionHandler(UnauthorizedException.class)
     public ResponseEntity<String> unauthorizedException() {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("unauthorized user request");
+    }
+
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    public ResponseEntity<String> methodArgumentTypeMismatchException() {
+        return ResponseEntity.badRequest().body("wrong type of api path variable or quest parameter");
     }
 
     @ExceptionHandler({MessageBrokerDownException.class})
