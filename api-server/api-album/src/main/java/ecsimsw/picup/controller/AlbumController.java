@@ -28,11 +28,9 @@ import org.springframework.web.multipart.MultipartFile;
 @RestController
 public class AlbumController {
 
-    private final StorageHttpClient storageHttpClient;
     private final AlbumService albumService;
 
-    public AlbumController(StorageHttpClient storageHttpClient, AlbumService albumService) {
-        this.storageHttpClient = storageHttpClient;
+    public AlbumController(AlbumService albumService) {
         this.albumService = albumService;
     }
 
@@ -79,11 +77,5 @@ public class AlbumController {
     ) {
         final List<AlbumInfoResponse> albums = albumService.cursorBasedFetch(1L, limit, cursor);
         return ResponseEntity.ok(albums);
-    }
-
-    @GetMapping("/api/album/up/storageConnection")
-    public ResponseEntity<String> upStorageConnection() {
-        final HttpStatus httpStatus = storageHttpClient.requestUp();
-        return ResponseEntity.ok(httpStatus.toString());
     }
 }
