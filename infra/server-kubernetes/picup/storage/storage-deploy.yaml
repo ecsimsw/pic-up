@@ -32,7 +32,7 @@ spec:
           image: ghcr.io/ecsimsw/picup/api-storage:latest
           volumeMounts:
           - name: local-storage
-            mountPath: ~/picup/localStorage
+            mountPath: /picup/localStorage
           envFrom:
           - configMapRef:
               name: picup-common-config

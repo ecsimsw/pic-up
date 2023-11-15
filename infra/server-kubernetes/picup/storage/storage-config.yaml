@@ -4,7 +4,7 @@ metadata:
   name: storage-server-config
   namespace: picup
 data:
-  PICUP_LOCAL_STORAGE_ROOT_PATH: "~/picup/localStorage"
+  PICUP_LOCAL_STORAGE_ROOT_PATH: "/picup/localStorage"
   PICUP_OBJECT_STORAGE_URL: "ewr1.vultrobjects.com"
   PICUP_OBJECT_STORAGE_HOST_REGION: "ewr1"
   PICUP_OBJECT_STORAGE_BUCKET_ACCESS_KEY: "O8O860F9QI5C3X3EN1OS"
