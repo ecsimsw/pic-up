@@ -2,7 +2,8 @@
 
 ### Application architecture
 
-<img width="1201" alt="image" src="https://github.com/ecsimsw/pic-up/assets/46060746/ea40c53a-a005-4b8b-955b-f7008dd52bcc">
+<img width="1197" alt="image" src="https://github.com/ecsimsw/pic-up/assets/46060746/97752176-96cf-4a85-96e2-ef84370be5d2">
+
 
 </br> </br>
 
