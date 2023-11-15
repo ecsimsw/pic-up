@@ -29,8 +29,8 @@ public class ObjectStorageConfig {
         s3ClientBuilder.setEndpointConfiguration(endPoint);
         s3ClientBuilder.withClientConfiguration(
             new ClientConfiguration()
-                .withConnectionTimeout(100)
-                .withSocketTimeout(1000)
+                .withConnectionTimeout(3000)
+                .withSocketTimeout(3000)
                 .withMaxConnections(100)
         );
         return s3ClientBuilder.build();

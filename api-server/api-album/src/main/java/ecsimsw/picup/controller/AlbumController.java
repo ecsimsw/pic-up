@@ -36,10 +36,11 @@ public class AlbumController {
 
     @PostMapping("/api/album")
     public ResponseEntity<AlbumInfoResponse> createAlbum(
+        @LoginUser LoginUserInfo loginUserInfo,
         @RequestPart MultipartFile thumbnail,
         @RequestPart AlbumInfoRequest albumInfo
     ) {
-        final AlbumInfoResponse album = albumService.create(1L, albumInfo, thumbnail);
+        final AlbumInfoResponse album = albumService.create(loginUserInfo.getId(), albumInfo, thumbnail);
         return ResponseEntity.ok(album);
     }
 

@@ -43,7 +43,7 @@ public class StorageHttpClient {
     public ImageFileInfo requestUpload(Long userId, MultipartFile file, String tag) {
         try {
             var response = restTemplate.exchange(
-                STORAGE_SERVER_URL + "/api/file",
+                STORAGE_SERVER_URL + "/api/storage",
                 HttpMethod.POST,
                 StorageImageUploadRequest.of(userId, file, tag).toHttpEntity(),
                 new ParameterizedTypeReference<ImageFileInfo>() {
