@@ -5,6 +5,7 @@ import ecsimsw.picup.auth.resolver.LoginUserInfo;
 import ecsimsw.picup.dto.AlbumInfoRequest;
 import ecsimsw.picup.dto.AlbumInfoResponse;
 import ecsimsw.picup.dto.AlbumSearchCursor;
+import ecsimsw.picup.exception.AlbumException;
 import ecsimsw.picup.service.AlbumService;
 import java.util.List;
 import java.util.Optional;
@@ -37,36 +38,43 @@ public class AlbumController {
     @PostMapping("/api/album")
     public ResponseEntity<AlbumInfoResponse> createAlbum(
         @LoginUser LoginUserInfo loginUserInfo,
-        @RequestPart MultipartFile thumbnail,
+        @RequestPart Optional<MultipartFile> thumbnail,
         @RequestPart AlbumInfoRequest albumInfo
     ) {
-        final AlbumInfoResponse album = albumService.create(loginUserInfo.getId(), albumInfo, thumbnail);
+        final AlbumInfoResponse album = albumService.create(
+            loginUserInfo.getId(),
+            albumInfo,
+            thumbnail.orElseThrow(() -> new AlbumException("요청에 썸네일 누락"))
+        );
         return ResponseEntity.ok(album);
     }
 
     @PutMapping("/api/album/{albumId}")
     public ResponseEntity<AlbumInfoResponse> updateAlbum(
+        @LoginUser LoginUserInfo userInfo,
         @PathVariable Long albumId,
         @RequestPart AlbumInfoRequest albumInfo,
         @RequestPart Optional<MultipartFile> thumbnail
     ) {
-        final AlbumInfoResponse album = albumService.update(1L, albumId, albumInfo, thumbnail);
+        final AlbumInfoResponse album = albumService.update(userInfo.getId(), albumId, albumInfo, thumbnail);
         return ResponseEntity.ok(album);
     }
 
     @DeleteMapping("/api/album/{albumId}")
     public ResponseEntity<Void> deleteAlbum(
+        @LoginUser LoginUserInfo userInfo,
         @PathVariable Long albumId
     ) {
-        albumService.delete(1L, albumId);
+        albumService.delete(userInfo.getId(), albumId);
         return ResponseEntity.ok().build();
     }
 
     @GetMapping("/api/album/{albumId}")
     public ResponseEntity<AlbumInfoResponse> getAlbum(
+        @LoginUser LoginUserInfo userInfo,
         @PathVariable Long albumId
     ) {
-        final AlbumInfoResponse album = albumService.read(1L, albumId);
+        final AlbumInfoResponse album = albumService.read(userInfo.getId(), albumId);
         return ResponseEntity.ok(album);
     }
 
@@ -76,7 +84,7 @@ public class AlbumController {
         @RequestParam(defaultValue = "10") int limit,
         @RequestBody Optional<AlbumSearchCursor> cursor
     ) {
-        final List<AlbumInfoResponse> albums = albumService.cursorBasedFetch(1L, limit, cursor);
+        final List<AlbumInfoResponse> albums = albumService.cursorBasedFetch(userInfo.getId(), limit, cursor);
         return ResponseEntity.ok(albums);
     }
 }
