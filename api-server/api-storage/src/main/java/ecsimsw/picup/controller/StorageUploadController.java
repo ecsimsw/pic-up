@@ -26,9 +26,8 @@ public class StorageUploadController {
         MultipartFile file
     ) {
         final long start = System.currentTimeMillis();
-        LOGGER.info("Upload requested by " + userId);
         final ImageUploadResponse uploadedInfo = storageService.upload(userId, tag, file);
-        LOGGER.info("Upload response by " + userId + " " + (System.currentTimeMillis() - start));
+        LOGGER.info("Upload response by user " + userId + ", this took " + (System.currentTimeMillis() - start) / 1000.0 + "sec");
         return ResponseEntity.ok(uploadedInfo);
     }
 

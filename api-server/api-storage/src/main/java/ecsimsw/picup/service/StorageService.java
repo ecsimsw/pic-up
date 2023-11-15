@@ -47,9 +47,9 @@ public class StorageService {
         final Resource resource = Resource.createRequested(userId, tag, file);
         resourceRepository.save(resource);
 
-//        mainStorage.create(resource.getResourceKey(), imageFile);
-//        resource.storedTo(mainStorage);
-//        resourceRepository.save(resource);
+        mainStorage.create(resource.getResourceKey(), imageFile);
+        resource.storedTo(mainStorage);
+        resourceRepository.save(resource);
 
         try {
             backUpStorage.create(resource.getResourceKey(), imageFile);
