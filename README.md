@@ -1,5 +1,5 @@
 ## Pic-up
-개인 사진 서버 || 연습장
+개인 앨범 스토리지 || 연습장
 
 ### Skills
 - Backend : Java, Spring boot, JPA, RabbitMQ, MongoDB, Mysql, Redis, JUnit5
@@ -16,7 +16,7 @@
 
 ### Application architecture
 
-<img width="1197" alt="image" src="https://github.com/ecsimsw/pic-up/assets/46060746/97752176-96cf-4a85-96e2-ef84370be5d2">
+<img width="1146" alt="image" src="https://github.com/ecsimsw/pic-up/assets/46060746/def429ee-2cbf-4d62-ac36-7bfcf02886d9">
 
 ### TODOS
 - [ ] Cache
