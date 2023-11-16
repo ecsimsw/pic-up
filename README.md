@@ -19,7 +19,7 @@
 <img width="1197" alt="image" src="https://github.com/ecsimsw/pic-up/assets/46060746/97752176-96cf-4a85-96e2-ef84370be5d2">
 
 ### TODOS
-- [] Cache
-- [] Image file compression
-- [] Gateway rate limiting
-- [] Monitoring system
+- [ ] Cache
+- [ ] Image file compression
+- [ ] Gateway rate limiting
+- [ ] Monitoring system
