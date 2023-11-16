@@ -5,14 +5,19 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.Getter;
+import lombok.Setter;
 
+@Setter
 @Getter
 public class AlbumInfoResponse {
 
-    private final Long id;
-    private final String name;
-    private final String thumbnailImage;
-    private final LocalDateTime createdAt;
+    private Long id;
+    private String name;
+    private String thumbnailImage;
+    private LocalDateTime createdAt;
+
+    public AlbumInfoResponse() {
+    }
 
     public AlbumInfoResponse(Long id, String name, String thumbnailImage, LocalDateTime createdAt) {
         this.id = id;
