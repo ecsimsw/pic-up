@@ -170,3 +170,5 @@ gradle-app.setting
 *.hprof
 
 api-server/logs
+
+*.terraform
