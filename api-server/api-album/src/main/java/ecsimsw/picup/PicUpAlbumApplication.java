@@ -10,9 +10,9 @@ public class PicUpAlbumApplication {
 
     public static void main(String[] args) throws InterruptedException {
         SpringApplication app = new SpringApplication(PicUpAlbumApplication.class);
-//        if(app.getAdditionalProfiles().isEmpty()) {
-//            app.setAdditionalProfiles("dev");
-//        }
+        if(app.getAdditionalProfiles().isEmpty()) {
+            app.setAdditionalProfiles("dev");
+        }
         app.run(args);
     }
 }
