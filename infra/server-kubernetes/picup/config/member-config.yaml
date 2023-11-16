@@ -4,7 +4,7 @@ metadata:
   name: member-server-config
   namespace: picup
 data:
-  PICUP_MEMBER_DB_DRIVER_CLASS: "org.h2.Driver"
-  PICUP_MEMBER_DB_URL: "jdbc:h2:mem:test;Mode=MYSQL"
-  PICUP_MEMBER_DB_USERNAME: "sa"
-  PICUP_MEMBER_DB_PASSWORD: ""
+  PICUP_MEMBER_DB_DRIVER_CLASS: "com.mysql.cj.jdbc.Driver"
+  PICUP_MEMBER_DB_URL: "cloud.ecsimsw.com:13303/picup"
+  PICUP_MEMBER_DB_USERNAME: "root"
+  PICUP_MEMBER_DB_PASSWORD: "password"
