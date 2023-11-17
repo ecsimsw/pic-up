@@ -35,7 +35,7 @@ spec:
             mountPath: /picup/localStorage
           envFrom:
           - configMapRef:
-              name: picup-common-config
+              name: common-config
           - configMapRef:
               name: storage-server-config
           ports:
