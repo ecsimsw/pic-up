@@ -16,6 +16,7 @@ import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.stereotype.Service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @EnableCaching
 @ImportAutoConfiguration(classes = {
@@ -47,36 +48,77 @@ public class DataCacheSampleTest {
         assertThat(toBeCached).isNotEqualTo(dataCacheSampleService.entryBasedCache(entry2));
     }
 
-    @DisplayName("메서드 파라미터의 key 외 다른 변수는 무시된다. / key 만 동일하면 캐시 값을 사용하도록 한다")
+    @DisplayName("메서드 파라미터의 key 외 다른 변수는 무시된다. key 만 동일하면 캐시 값을 사용하도록 한다")
     @Test
     public void cacheByEntryHashCode() {
         var entry1 = new SampleEntity(10);
-
         var toBeCached = dataCacheSampleService.entryBasedCache(entry1, 1);
         assertThat(toBeCached).isEqualTo(dataCacheSampleService.entryBasedCache(entry1, 1));
         assertThat(toBeCached).isEqualTo(dataCacheSampleService.entryBasedCache(entry1, 2));
     }
 
-    @DisplayName("cacheable Value 가 동일할 때 API에 상관없이 cache 된 값을 사용한다.")
+    @DisplayName("cacheable Value 가 동일할 때 Api 와 상관없이 cache 된 값을 사용한다.")
     @Test
     public void testSameValue() {
         var expectValue = dataCacheSampleService.sameCacheValue1();
         assertThat(dataCacheSampleService.sameCacheValue2()).isEqualTo(expectValue);
+    }
+
+    @DisplayName("Condition 을 이용하여 cache 여부를 결정할 수 있다")
+    @Test
+    public void cacheByCondition() {
+        var conditionKeyToCache = new SampleEntity(0);
+        dataCacheSampleService.cacheByCondition(conditionKeyToCache);
+        dataCacheSampleService.cacheApiResult();
+
+        assertThatThrownBy(
+            () -> {
+                var conditionKeyNotToCache = new SampleEntity(1);
+                dataCacheSampleService.cacheByCondition(conditionKeyNotToCache);
+                dataCacheSampleService.cacheApiResult();
+            }
+        ).isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @DisplayName("Unless 을 이용하여 응답에 따라 cache 여부를 결정할 수 있다")
+    @Test
+    public void cacheByUnless() {
+        assertThatThrownBy(
+            () -> {
+                var unlessConditionNotToCache = new SampleEntity(1);
+                dataCacheSampleService.cacheByResultUnless(unlessConditionNotToCache);
+                dataCacheSampleService.cacheByResultUnless(unlessConditionNotToCache);
+            }
+        ).isInstanceOf(IllegalArgumentException.class);
     }
 }
 
 @Service
 class DataCacheSampleService {
 
-    private int cacheCount = 0;
+    private boolean isCached = false;
 
     @Cacheable(value = "cacheValue")
     public int cacheApiResult() {
-        if (cacheCount > 0) {
+        if (isCached) {
             throw new IllegalArgumentException();
         }
-        cacheCount++;
+        isCached = true;
         return 1;
+    }
+
+    @Cacheable(value = "cacheValue", key="#sampleEntity", unless = "#result == null")
+    public Integer cacheByResultUnless(SampleEntity sampleEntity) {
+        if( isCached ) {
+            throw new IllegalArgumentException();
+        }
+        isCached = true;
+        return null;
+    }
+
+    @Cacheable(value = "cacheValue", key = "#sampleEntity", condition = "#sampleEntity.i == 0")
+    public int cacheByCondition(SampleEntity sampleEntity) {
+        return sampleEntity.getI();
     }
 
     @Cacheable(value = "cacheByEntry", key = "#sampleEntity")
