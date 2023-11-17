@@ -69,13 +69,13 @@ public class DataCacheSampleTest {
     public void cacheByCondition() {
         var conditionKeyToCache = new SampleEntity(0);
         dataCacheSampleService.cacheByCondition(conditionKeyToCache);
-        dataCacheSampleService.cacheApiResult();
+        dataCacheSampleService.cacheByCondition(conditionKeyToCache);
 
         assertThatThrownBy(
             () -> {
                 var conditionKeyNotToCache = new SampleEntity(1);
                 dataCacheSampleService.cacheByCondition(conditionKeyNotToCache);
-                dataCacheSampleService.cacheApiResult();
+                dataCacheSampleService.cacheByCondition(conditionKeyNotToCache);
             }
         ).isInstanceOf(IllegalArgumentException.class);
     }
@@ -107,7 +107,7 @@ class DataCacheSampleService {
         return 1;
     }
 
-    @Cacheable(value = "cacheValue", key="#sampleEntity", unless = "#result == null")
+    @Cacheable(value = "cacheByUnless", key="#sampleEntity", unless = "#result == null")
     public Integer cacheByResultUnless(SampleEntity sampleEntity) {
         if( isCached ) {
             throw new IllegalArgumentException();
@@ -116,8 +116,12 @@ class DataCacheSampleService {
         return null;
     }
 
-    @Cacheable(value = "cacheValue", key = "#sampleEntity", condition = "#sampleEntity.i == 0")
+    @Cacheable(value = "cacheByCondition", key = "#sampleEntity", condition = "#sampleEntity.i == 0")
     public int cacheByCondition(SampleEntity sampleEntity) {
+        if( isCached ) {
+            throw new IllegalArgumentException();
+        }
+        isCached = true;
         return sampleEntity.getI();
     }
 
