@@ -5,6 +5,6 @@ metadata:
   namespace: picup
 data:
   PICUP_MEMBER_DB_DRIVER_CLASS: "com.mysql.cj.jdbc.Driver"
-  PICUP_MEMBER_DB_URL: "cloud.ecsimsw.com:13303/picup"
+  PICUP_MEMBER_DB_URL: "cloud.ecsimsw.com:13303/picup-member"
   PICUP_MEMBER_DB_USERNAME: "root"
   PICUP_MEMBER_DB_PASSWORD: "password"

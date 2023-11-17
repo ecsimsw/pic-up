@@ -5,9 +5,9 @@ metadata:
   namespace: picup
 data:
   PICUP_STORAGE_SERVER_URL: "http://storage-server-svc.picup.svc.cluster.local:8083"
-  PICUP_ALBUM_MYSQL_MASTER_URL: "cloud.ecsimsw.com:13301/picup"
+  PICUP_ALBUM_MYSQL_MASTER_URL: "cloud.ecsimsw.com:13301/picup-album"
   PICUP_ALBUM_MYSQL_MASTER_USERNAME: "root"
   PICUP_ALBUM_MYSQL_MASTER_PASSWORD: "password"
-  PICUP_ALBUM_MYSQL_SLAVE_URL: "cloud.ecsimsw.com:13302/picup"
+  PICUP_ALBUM_MYSQL_SLAVE_URL: "cloud.ecsimsw.com:13302/picup-album"
   PICUP_ALBUM_MYSQL_SLAVE_USERNAME: "root"
   PICUP_ALBUM_MYSQL_SLAVE_PASSWORD: "password"
