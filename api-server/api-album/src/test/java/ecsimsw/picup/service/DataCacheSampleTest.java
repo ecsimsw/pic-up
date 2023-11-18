@@ -1,6 +1,5 @@
 package ecsimsw.picup.service;
 
-import ecsimsw.picup.config.RedisDataCacheConfig;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -9,7 +8,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.autoconfigure.cache.CacheAutoConfiguration;
-import org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.EnableCaching;
@@ -20,20 +18,23 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @EnableCaching
 @ImportAutoConfiguration(classes = {
-    CacheAutoConfiguration.class,
-    RedisAutoConfiguration.class
+    CacheAutoConfiguration.class
 })
-@SpringBootTest(classes = {RedisDataCacheConfig.class, DataCacheSampleService.class})
+@SpringBootTest(classes = { DataCacheSampleService.class })
 public class DataCacheSampleTest {
 
     @Autowired
     private DataCacheSampleService dataCacheSampleService;
 
-    @DisplayName("예외가 출력되지 않는 것으로 cache 됨을 확인일 수 있다.")
+    @DisplayName("같은 key 로 cache 된 서로 다른 return 의 api 를 호출하는 것으로 cache 여부를 확인한다.")
     @Test
     public void cacheApiResult() {
-        dataCacheSampleService.cacheApiResult();
-        dataCacheSampleService.cacheApiResult();
+        var val1 = dataCacheSampleService.alwaysSameCacheKey(1);
+        var val2 = dataCacheSampleService.alwaysSameCacheKey(2);
+        var val3 = dataCacheSampleService.alwaysSameCacheKey(3);
+
+        assertThat(val1).isEqualTo(val2);
+        assertThat(val1).isEqualTo(val3);
     }
 
     @DisplayName("value 로 지정한 메서드 파라미터의 entry 에 따라 캐시된다.")
@@ -98,18 +99,14 @@ class DataCacheSampleService {
 
     private boolean isCached = false;
 
-    @Cacheable(value = "cacheValue")
-    public int cacheApiResult() {
-        if (isCached) {
-            throw new IllegalArgumentException();
-        }
-        isCached = true;
-        return 1;
+    @Cacheable(value = "cacheValue", key = "0")
+    public int alwaysSameCacheKey(int result) {
+        return result;
     }
 
-    @Cacheable(value = "cacheByUnless", key="#sampleEntity", unless = "#result == null")
+    @Cacheable(value = "cacheByUnless", key = "#sampleEntity", unless = "#result == null")
     public Integer cacheByResultUnless(SampleEntity sampleEntity) {
-        if( isCached ) {
+        if (isCached) {
             throw new IllegalArgumentException();
         }
         isCached = true;
@@ -118,7 +115,7 @@ class DataCacheSampleService {
 
     @Cacheable(value = "cacheByCondition", key = "#sampleEntity", condition = "#sampleEntity.i == 0")
     public int cacheByCondition(SampleEntity sampleEntity) {
-        if( isCached ) {
+        if (isCached) {
             throw new IllegalArgumentException();
         }
         isCached = true;
@@ -135,14 +132,18 @@ class DataCacheSampleService {
         return ignored;
     }
 
-    @Cacheable(value = "sameCacheValue1")
+    @Cacheable(value = "sameCacheValue")
     public int sameCacheValue1() {
         return 1;
     }
 
-    @Cacheable(value = "sameCacheValue1")
+    @Cacheable(value = "sameCacheValue")
     public int sameCacheValue2() {
         return 10;
+    }
+
+    public void clearCache() {
+        this.isCached = false;
     }
 }
 
