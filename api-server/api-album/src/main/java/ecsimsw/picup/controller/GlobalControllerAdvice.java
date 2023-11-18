@@ -46,7 +46,7 @@ public class GlobalControllerAdvice {
     @ExceptionHandler({MessageBrokerDownException.class})
     public ResponseEntity<String> messageBrokerDownException(IllegalArgumentException e) {
         final String alertMessage = "[MESSAGE_BROKER_CONNECTION] : " + e.getMessage();
-        LOGGER.error(alertMessage);
+        LOGGER.error(alertMessage + "\n" + e.getCause());
         SlackMessageSender.send(alertMessage);
         return ResponseEntity.internalServerError().body("unhandled server exception");
     }
@@ -54,7 +54,7 @@ public class GlobalControllerAdvice {
     @ExceptionHandler({FileUploadFailException.class, InvalidStorageServerResponseException.class})
     public ResponseEntity<String> storageUploadFailedException(IllegalArgumentException e) {
         final String alertMessage = "[STORAGE_SERVER_CONNECTION] : " + e.getMessage();
-        LOGGER.error(alertMessage);
+        LOGGER.error(alertMessage + "\n" + e.getCause());
         SlackMessageSender.send(alertMessage);
         return ResponseEntity.internalServerError().body("unhandled server exception");
     }
@@ -63,7 +63,7 @@ public class GlobalControllerAdvice {
     public ResponseEntity<String> unhandledException(Throwable e) {
         e.printStackTrace();
         final String alertMessage = "[UNHANDLED] : " + e.getMessage();
-        LOGGER.error(alertMessage);
+        LOGGER.error(alertMessage + "\n" + e.getCause());
         SlackMessageSender.send(alertMessage);
         return ResponseEntity.internalServerError().body("unhandled server exception");
     }
