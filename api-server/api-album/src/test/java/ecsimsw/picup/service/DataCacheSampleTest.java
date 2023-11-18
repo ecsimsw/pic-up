@@ -3,6 +3,7 @@ package ecsimsw.picup.service;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,17 +17,26 @@ import org.springframework.stereotype.Service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+/*
+Test cache without redis, using default cacheManager that @EnableCaching created
+ */
+
 @EnableCaching
 @ImportAutoConfiguration(classes = {
     CacheAutoConfiguration.class
 })
-@SpringBootTest(classes = { DataCacheSampleService.class })
+@SpringBootTest(classes = {DataCacheSampleService.class})
 public class DataCacheSampleTest {
 
     @Autowired
     private DataCacheSampleService dataCacheSampleService;
 
-    @DisplayName("같은 key 로 cache 된 서로 다른 return 의 api 를 호출하는 것으로 cache 여부를 확인한다.")
+    @BeforeEach
+    private void makeCacheClear() {
+        dataCacheSampleService.clearCache();
+    }
+
+    @DisplayName("캐시에 실패했다면 예외를 발생시킨다.")
     @Test
     public void cacheApiResult() {
         var val1 = dataCacheSampleService.alwaysSameCacheKey(1);
@@ -101,6 +111,10 @@ class DataCacheSampleService {
 
     @Cacheable(value = "cacheValue", key = "0")
     public int alwaysSameCacheKey(int result) {
+        if (isCached) {
+            throw new IllegalArgumentException();
+        }
+        isCached = true;
         return result;
     }
 
@@ -113,7 +127,7 @@ class DataCacheSampleService {
         return null;
     }
 
-    @Cacheable(value = "cacheByCondition", key = "#sampleEntity", condition = "#sampleEntity.i == 0")
+    @Cacheable(value = "cacheValue", key = "#sampleEntity", condition = "#sampleEntity.i == 0")
     public int cacheByCondition(SampleEntity sampleEntity) {
         if (isCached) {
             throw new IllegalArgumentException();
