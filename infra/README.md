@@ -1,5 +1,14 @@
-# Infra
-Home kubernetes cluster infra
+# Infrastructure
+
+<img width="1400" alt="image" src="https://github.com/ecsimsw/pic-up/assets/46060746/69f9c2c8-c351-4988-be02-f28d72fc4064">
+
+</br></br>
+
+1. prod server : 홈 서버에 쿠버네티스 관리 / Gateway, WAS, DB, Cache 
+2. cloud server : 데이터 백업을 위한 클라우드 서버 / Back up db, Back up file storage
+3. development env : 개발 환경 / JDK11, IDEA, docker, docker compose, Terraform, Git, Vagrant, In memory db
+
+</br>
 
 ## Architecture
 <img width="1009" alt="image" src="https://github.com/ecsimsw/A-to-Z/assets/46060746/81a910dc-8b72-4e71-949e-78626eb9b33f">
