@@ -5,7 +5,8 @@ Picup 에서는 사진 파일을 한번에 많은 양 삭제 할 수 있어야 �
 
 파일이 100개 삭제 처리해야 한다고 100개를 한 스레드에서 하나의 흐름으로 처리하지 않는다. 파일 처리는 느리기 때문에 처리 중 문제가 생겼을 경우 처리되지 않은 자원들을 관리하기가 까다로워질 수 있어 삭제 처리의 주기를 잘게 나눴다. 다중 삭제 요청이 들어오면 이를 기준 개수로 나눠 여러 스레드에서 처리하도록 하는 것이다. 처리 과정에서 문제가 생길 경우 최악의 경우로 기준 개수의 리소스만 문제가 되는 것이다.
 
-<img width="840" alt="image" src="https://github.com/ecsimsw/pic-up/assets/46060746/b86727e8-0d7c-4763-a38e-21c697c61812">
+<img width="918" alt="image" src="https://github.com/ecsimsw/pic-up/assets/46060746/017c4489-1c63-4179-aa98-fd02b556ceeb">
+
 
 
 그래서 구조를 위 그림처럼 그렸다. 파일을 논리 삭제하고 사용자 요청을 직접 받는 서버와 파일만을 관리하는 서버로 나누고, 처리량에 따라 파일 서버의 개수를 유동적으로 늘리고 처리를 분산했다. Kubernetes 로 배포하고 HPA 를 사용했다.
@@ -14,7 +15,7 @@ Picup 에서는 사진 파일을 한번에 많은 양 삭제 할 수 있어야 �
 
 또 Storage 서버의 처리 과정 중에 문제가 생기는 상황에 대한 재시도 전략이나 스토리지 서버를 최대로 늘렸음에도 처리량이 너무 많은 상황 등 단순히 서버 관리를 넘어 고려해야 할 재앙 상황들이 너무 많았다.
 
-<img width="952" alt="image" src="https://github.com/ecsimsw/pic-up/assets/46060746/c724b0fa-5322-49b8-a640-2f1f668b1090">
+<img width="1027" alt="image" src="https://github.com/ecsimsw/pic-up/assets/46060746/46c68e00-c15b-4b98-a3f4-ed5d906cc99a">
 
 
 Message queue 사용 후에는 한결 여유로워졌다. 요청을 MQ 서버에서 받기 때문에 처리 서버가 일시적으로 다운되었거나 처리량이 너무 많은 상황에서도 안전하다. 처리 서버가 다시 복구되면 그 때 처리를 시도하면 되고, 처리량이 너무 많은 상황에서도 요청을 각 처리 서버가 아니라 MQ에 저장하기 때문에 혹 처리 서버가 도중 문제로 유실 피해를 최소화 할 수 있다.
@@ -66,11 +67,13 @@ Rabbit MQ의 기본 prefetch 값은 20이다.
 
 이때 '사진은 항상 메인 / 백업 둘 다 저장된다'라는 요구 사항을 넣었다. Picup 은 유저의 사진을 기록하는 서비스로 데이터 안전이 가장 중요했고, 메인과 백업 스토리지 최소 두 곳에 파일이 저장되지 않으면 업로드 요청은 실패로 처리한다.
 
-<img width="1354" alt="image" src="https://github.com/ecsimsw/pic-up/assets/46060746/13c21e93-c6cc-4d6a-a5d8-17b6133bd08a">
+<img width="1026" alt="image" src="https://github.com/ecsimsw/pic-up/assets/46060746/a1189a93-56ab-43c1-b97a-255cb4b4fb22">
+
 
 메인 스토리지에는 파일이 제대로 저장되었으나 백업 스토리지 업로드에 문제가 생긴 경우 Main 스토리지에는 업로드 실패한 사용자의 사진이 남게 된다. 용자에게는 실패로 처리되어 따로 관리해주지 않으면 영원히 남지만 사용되지는 않는 더미 파일로 남을 것이다.
 
-<img width="1401" alt="image" src="https://github.com/ecsimsw/pic-up/assets/46060746/d22ffd41-814b-478b-bae1-13a8bb4c2ad9">
+<img width="1034" alt="image" src="https://github.com/ecsimsw/pic-up/assets/46060746/c0532e1a-d279-4a45-95fc-29588f538c5c">
+
 
 이런 더미 파일에 대한 처리는 사용자의 요청 처리 시나리오에서 벗어나 비동기로 처리한다. 사용자 요청-응답 흐름은 그대로 지속하여 업로드 실패를 응답함에는 불필요한 지연을 없애면서도, 제거해야 하는 파일은 처리 가능한 Storage 서버가 처리 할 수 있도록 한다.
 
@@ -78,7 +81,8 @@ Rabbit MQ의 기본 prefetch 값은 20이다.
 
 정상적인 다중 사진 파일 제거에 메시지 큐를 사용한다. 사용자가 앨범을 삭제하는 경우 리소스를 논리 삭제 처리하고 큐에 넣는 것으로 응답하는 것으로 실제 파일이 제거되는 처리 시간과 관계 없이 응답 받을 수 있다.
 
-<img width="1405" alt="image" src="https://github.com/ecsimsw/pic-up/assets/46060746/d28f9a1c-a492-4ce6-a266-104392f43430">
+<img width="1031" alt="image" src="https://github.com/ecsimsw/pic-up/assets/46060746/f0434e1d-e2a2-440a-89fd-66515681a22a">
+
 
 Storage 서버는 이를 prefetch 수만큼 메모리에 임시 저장해뒀다가 처리가 가능한 상황에서 처리하게 하게 된다.
 
@@ -88,7 +92,8 @@ Storage 서버는 이를 prefetch 수만큼 메모리에 임시 저장해뒀다�
 
 Message queue 는 처리 중 오류로 NACK 응답받게 되거나 지정한 시간을 벗어나 Time out 된 메시지를 "처리 되지 않음"으로 확인하고 삭제 처리를 재시도 할 수 있다. 삭제 도중 서버가 다운 되면 Time out으로, 처리 중 생긴 문제는 NACK로 받아 재시도 하는 것으로 더미 파일을 피할 수 있는 것이다.
 
-<img width="1402" alt="image" src="https://github.com/ecsimsw/pic-up/assets/46060746/667eefe5-1404-4224-8bd4-c70c7eb0fbf6">
+<img width="1035" alt="image" src="https://github.com/ecsimsw/pic-up/assets/46060746/23e1eeab-e306-41f1-a467-22d36226fdd5">
+
 
 
 지정된 재시도 후에도 여전히 삭제 처리에 문제가 있는 Message는 재시도를 더 이상 반복하지 않고 Dead letter 로 처리한다. Message 헤더에 Dead letter 시 처리할 Exchange 와 처리 노드를 결정할 routing key 정보를 추가하는 것으로 재시도 반복 후에도 처리되지 않는 문제의 리소스를 다른 처리 로직으로 다루게 된다.
