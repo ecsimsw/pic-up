@@ -18,9 +18,18 @@
 - [Code - Cloud server](https://github.com/ecsimsw/pic-up/tree/main/infra/server-cloud)
 - [그 외 개발 DOCS](https://github.com/ecsimsw/pic-up/tree/main/docs)
 
-### Application architecture
+### Architecture
 
-<img width="1146" alt="image" src="https://github.com/ecsimsw/pic-up/assets/46060746/def429ee-2cbf-4d62-ac36-7bfcf02886d9">
+<img width="1263" alt="image" src="https://github.com/ecsimsw/pic-up/assets/46060746/6160245d-ae12-430a-950a-cc70b09ed24b">
+
+</br></br>
+
+<img width="1386" alt="image" src="https://github.com/ecsimsw/pic-up/assets/46060746/3e1517db-9823-48b1-8eea-4828ec856df1">
+
+</br></br>
+
+<img width="1299" alt="image" src="https://github.com/ecsimsw/pic-up/assets/46060746/2fc85f4c-9f20-4142-bdc5-b2ecb72c7092">
+
 
 ### TODOS
 - [ ] Cache
