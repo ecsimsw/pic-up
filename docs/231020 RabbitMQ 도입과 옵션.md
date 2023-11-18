@@ -1,62 +1,96 @@
-# 20231020 RabbitMQ 도입과 옵션
+## 1. Message queue 도입 배경
+Picup 에서는 사진 파일을 한번에 많은 양 삭제 할 수 있어야 한다. 사용자가 앨범 삭제를 요청하면 서버에선 앨범 내에 들어있는 관련 사진들을 삭제해야 한다.
 
-## RestTemplate
-기존에는 서버간 비동기 통신에 RestTemplate 을 사용했다.
-Album -> Storage 에서 Storage server 가 제대로 파일을 처리하지 못하고 응답하는 경우, 그 재시도나 후처리는 Storage server 가 한다.
-그래서 당장은 이벤트를 Storage server 가 제대로 수신하기만 하면 Album server 에선 더 이상 신경 쓸 일이 없다.
+이때 사용자가 그 파일들이 실제로 삭제 처리 될 때까지 그 시간을 기다릴 필요는 없다. 요청이 들어오면 서버는 파일들을 논리 삭제만 하고 바로 응답하고 비동기로 파일을 삭제 처리하게 된다.
 
-문제는 Storage 서버 상태에 있었다.
-응답 서버가 down 되면 connection 재시도 정책이 각각의 서버마다 필요했고, connection을 요청하는 쪽에서 재시도 시간 동안 스레드가 물려있다는 문제도 있었다.
-또 재시도를 포기한다고 하면 그 이벤트를 어떻게 관리할지 고민이 필요했다.
+파일이 100개 삭제 처리해야 한다고 100개를 한 스레드에서 하나의 흐름으로 처리하지 않는다. 파일 처리는 느리기 때문에 처리 중 문제가 생겼을 경우 처리되지 않은 자원들을 관리하기가 까다로워질 수 있어 삭제 처리의 주기를 잘게 나눴다. 다중 삭제 요청이 들어오면 이를 기준 개수로 나눠 여러 스레드에서 처리하도록 하는 것이다. 처리 과정에서 문제가 생길 경우 최악의 경우로 기준 개수의 리소스만 문제가 되는 것이다.
 
-## Message queue
-Message queue 를 도입하게 되었다. Storage server 나 그 외 서버간 통신해야 하는 각각 서버의 HA에 대한 집중을 조금이나마 여유롭게 할 수 있겠다는 생각이었다.
-MQ 서버 하나만 확실하게 HA가 보장된다면 설사 각 서버들 중 하나가 잠시 다운 타임이 생겼다가 켜져도 그 때 MQ 에서 처리해야 할 다음 일을 전달하면 그만일 뿐이다.
+<img width="840" alt="image" src="https://github.com/ecsimsw/pic-up/assets/46060746/b86727e8-0d7c-4763-a38e-21c697c61812">
 
-응답 서버가 잠시 다운되어 있을 때 요청 서버는 기존에는 그 응답 서버의 복구를 기다리거나, 포기한다면 그 이벤트를 어떻게 저장해뒀다가 다시 전송해야 했을지를 고민했다면,
-이제는 MQ에 한번 전송해두고 응답 서버가 다시 복구 되었을 때 MQ 에서 이벤트를 전달하면 된다.
 
-마지막으로 MQ 는 fully managed system 들이 선택지가 될 수 있음을 확인했다.
-각 모듈별 WAS 의 HA 를 고민하는 것과, Amazon MQ 처럼 사용 시스템의 HA 를 고민하는 것 중에 후자가 더 안전할 것이라 생각했다.
-(물론 MQ 의 HA 가 완벽하더라도 각 모듈별 WAS 의 HA 를 완전히 신경쓰지 않아도 된다는 것은 아니다.)
+그래서 구조를 위 그림처럼 그렸다. 파일을 논리 삭제하고 사용자 요청을 직접 받는 서버와 파일만을 관리하는 서버로 나누고, 처리량에 따라 파일 서버의 개수를 유동적으로 늘리고 처리를 분산했다. Kubernetes 로 배포하고 HPA 를 사용했다.
 
-## RabbitMQ
+기존에는 서버 간 직접 통신을 사용했는데 서버 관리와 처리 도중 실패 등 생각해야 할 것들, 처리해줘야하는 문제 시나리오가 너무 많았다. Storage 서버의 상태가 다운되어 있는 잠깐의 상태도 큰 재앙이었고, 재시도 처리를 한다고 해도 그 시간만큼 스레드가 물리는 문제도 있었다.
 
-### Process
-Producer -> Exchange (Binding rule) -> Queue -> Consumer
+또 Storage 서버의 처리 과정 중에 문제가 생기는 상황에 대한 재시도 전략이나 스토리지 서버를 최대로 늘렸음에도 처리량이 너무 많은 상황 등 단순히 서버 관리를 넘어 고려해야 할 재앙 상황들이 너무 많았다.
 
-### Exchange
-메시지를 받고 queue 에 전달한다.
+<img width="952" alt="image" src="https://github.com/ecsimsw/pic-up/assets/46060746/c724b0fa-5322-49b8-a640-2f1f668b1090">
+
+
+Message queue 사용 후에는 한결 여유로워졌다. 요청을 MQ 서버에서 받기 때문에 처리 서버가 일시적으로 다운되었거나 처리량이 너무 많은 상황에서도 안전하다. 처리 서버가 다시 복구되면 그 때 처리를 시도하면 되고, 처리량이 너무 많은 상황에서도 요청을 각 처리 서버가 아니라 MQ에 저장하기 때문에 혹 처리 서버가 도중 문제로 유실 피해를 최소화 할 수 있다.
+
+심지어 처리 중인 요청마저 리스너에서 처리 도중 문제가 생겨 NACK를 MQ에 응답하거나, 지정된 시간 동안 처리하지 못해 Time out 이 나는 경우 Message queue 의 재시도 전략으로 대응할 수 있게 된다. 예를 들면 발행한 message를 바로 삭제하지 않고 ACK를 기다렸다가 NACK 또는 Time out 이 되는 상황에서 다시 queue 에 돌리는 등의 예외 처리를 할 수 있게 되는 것이다.
+
+그리고 이런 설정들, 요청을 몇개까지 대기할 것인가, 각 리스너는 몇개의 요청을 받을 것인가, NACK나 Time out 에 어떻게 처리할 것인가를 이전에는 개발자가 직접 고민하고 설정해야 했다면 MQ를 도입한 이후에는 MQ의 기능에 따라 설정만 추가하는 것으로 처리할 수 있어 코드나 관리 해야하는 요소들도 줄었다.
+
+물론 MQ 서버 상태를 확인하는 또 다른 전략이 필요하다. MQ 서버가 다운되었을 경우의 재시도, 복구 시나리오는 여전히 문제가 될 것이다. 다만 처리 서버가 늘어났을 때 각 서버별 상태를 확인하고 HA를 고민하는 것보다 Message queue 하나의 HA 를 관리하는 것이 편하다는 생각이었다. 그리고 Amazon MQ 처럼 Fully managed system 을 사용한다는 하나의 옵션이 추가되어 비용은 발생해도 서버간 통신에서 큰 관리 포인트인 목적 서버의 HA 문제가 해결되지 않나라는 생각에 MQ를 도입하게 되었다.
+
+## 2. Rabbit MQ 의 주요 옵션
+
+### Exchange 타입별 라우팅 방식
 - Direct Exchange : Queue 의 routing key 에 따라 전달된다. 한 개의 queue 가 여러 key 를 갖을 수 있고, 여러 queue 가 같은 키를 갖을 수도 있다.
 - Fanout Exchange : Binding 되어 있는 모든 queue 에 전달된다.
 - Topic Exchange : routing key 의 패턴을 만족하는 모든 queue 에 전달한다.
 - Headers Exchange : 메시지 헤더의 속성에 만족하는 모든 queue 에 전달한다.
 
-### Durability (Queue or Message)
-- durable 은 Message 가 queue 에 저장될 때 disk 에 저장되게 하고, transient 는 메모리에 저장되게 한다.
+### Durability
 
-### Round robin dispatch / Fair dispatch
-- queue 에서 consumer 에게 메시지를 반드시 하나씩 전달해야 하는 것은 아니다.
-- queue 는 dispatch 알고리즘에 따라 번갈아 메시지를 전달하고 consumer 는 이를 메모리에 저장해뒀다가 하나씩 꺼내 처리한다.
-- 이 consumer 가 메모리에 쌓아둘 수 있는 메시지 최대 개수를 prefetch 라고 한다.
+Message 가 queue에 저장될 때 디스크에 저장될지, Memory에 저장될지를 결정할 수 있다. 디스크에 저장하는 경우 메시지 큐가 다운되었다가 복구되었을 때도 이전 큐 내용을 보존하고 있을 수 있을 것이고, 메모리에 저장하는 경우 유실이 크게 중요하지 않은 이벤트에 적은 비용으로 운영할 수 있을 것이다.
 
-- 만약 작업의 처리 시간이 길고 불균등이 크다면 최대 처리 가능 개수를 작게하는 것이 좋다. 그 값이 작을 수록 여러 작업자들이 동시 처리에 유리해진다.
-- 반대로 작업의 처리 시간이 짧고 균등하다면 최대 처리 가능 개수를 크게 하는 것이 좋다. 작업 스위치가 빠른 상황에선 처리 대기 큐에 쌓여 있는 작업만 많아질 뿐이다.
+Dispatch strategy / (Round robin vs Fairly dispatched)Queue 에서 consumer 에게 메시지를 반드시 하나씩 전달해야 하는 것은 아니다. MQ는 설정된 dispatch 알고리즘에 따라 번갈아 메시지를 전달하고 consumer 는 이를 메모리에 저장해뒀다가 하나씩 꺼내 처리한다. 이 이 consumer 가 메모리에 쌓아둘 수 있는 메시지 최대 개수를 prefetch 옵션으로 설정 할 수 있다.
 
-- Queue 에서 consumer 에게 일을 전달할 때는 기본적으로 Round robin 방식을 사용하지만, prefetch 를 지정하는 것으로 consumer 의 상태와 처리 속도에 따라 다르게 분배할 수도 있다.
-- Consumer 는 일 처리가 끝나면 이를 ACK 로 알리는데 최대 처리 가능 수보다 더 많은 일을 dispatch 하지 않는다.
+Picup 프로젝트처럼 작업의 처리 주기가 길고 작업간 처리 시간이 불균등한 경우에 특히 더 중요시 봐야할 옵션이다. 만약 그렇다면 가능한 prefetch 를 적게하여 작업 노드간 불균형을 줄이고, 그렇지 않다면 prefetch 를 크게하여 MQ에서 담아두고 있어야 할 메시지 개수를 줄이는 것이 도움될 것이다.
 
-- The default value of prefetch count is 20.
+Rabbit MQ의 기본 prefetch 값은 20이다.
 
 ### Options for cost
-- Auto delete : Consumer 가 없다면 queue 를 자동 삭제한다.
+
+- Auto delete : Consumer 가 없다면 Queue 를 자동 삭제한다.
 - Message TTL : 각 메시지에 TTL 를 적용하여 메시지 삭제 기간을 지정 할 수 있다.
-- Queue length limit : Messages will be dropped or dead-lettered from the front of the queue to make room for new messages once the limit is reached.
-- ACK, Time out : Consumer 는 작업 처리를 마치면 ACK 로 응답한다. Time out 시간 동안 ACK 응답이 없으면 Consumer 가 처리 도중 문제가 생겼다고 생각하고 해당 message 를 다시 Queue 에 삽입한다.
-- delivery-mode : default 1 은 메시지를 메모리에 저장, 2로 설정할 경우 디스크에 저장해서 메시지를 영속한다. 
+- Length limit : 메시지 크기에 제한을 둬 그 이상의 메시지는 유실 처리하거나 Dead letter 로 유도할 수 있다.
+- Time out : 처리 노드가 너무 많은 시간을 메시지에 사용하고 있으면 이를 문제 사항으로 여길 수 있다.
 
-- Message TTL 이 다 지나도 큐에서 Message 가 지워지는 것은 아니다.
-- Messages with expired ttl will stay in queue as long as they not reached queue head. Don't worry, they will not be send to consumer, but they will take some resources until they reach head.
+### Dead letter queue
 
-### REF
-https://medium.com/javarevisited/getting-started-with-rabbitmq-in-spring-boot-6323b9179247
+메시지 처리 중 문제가 생긴다면 재시도 정책에 따라 처리를 재시도 할 수 있다. 만약 재시도가 불가능한 경우는 어떨까. 다른 처리가 없다면 재시도 중 문제 발생 -> 재시도 처리를 무한 반복하게 될 것이다.
+
+이런 재시도 전략에 의해 재시도 처리 후에도 실패하는 메시지를 Dead letter 라고 한다. Rabbit MQ에선 메시지의 헤더에 "x-dead-letter-exchange", "x-dead-letter-routing-key" 를 키로 Dead letter 판정시 어떤 exchange 에서, 어떤 라우팅 키로 처리될 것인지 설정하게 된다.
+
+이런 Dead letter 를 위한 처리 방식을 따로 갖는 것으로 재시도 끝에도 처리되지 못한 메시지 처리 로직을 정의할 수 있다.
+
+
+## 3. 프로젝트에서의 사용 시나리오 / 재앙 시나리오
+
+### 3-1 사진 업로드 중 저장 실패
+정상적인 파일 업로드는 아래와 같다. 사진 저장 내역을 DB 에 기록하고, 메인 / 백업 스토리지에 파일을 기록한다.
+
+이때 '사진은 항상 메인 / 백업 둘 다 저장된다'라는 요구 사항을 넣었다. Picup 은 유저의 사진을 기록하는 서비스로 데이터 안전이 가장 중요했고, 메인과 백업 스토리지 최소 두 곳에 파일이 저장되지 않으면 업로드 요청은 실패로 처리한다.
+
+<img width="1354" alt="image" src="https://github.com/ecsimsw/pic-up/assets/46060746/13c21e93-c6cc-4d6a-a5d8-17b6133bd08a">
+
+메인 스토리지에는 파일이 제대로 저장되었으나 백업 스토리지 업로드에 문제가 생긴 경우 Main 스토리지에는 업로드 실패한 사용자의 사진이 남게 된다. 용자에게는 실패로 처리되어 따로 관리해주지 않으면 영원히 남지만 사용되지는 않는 더미 파일로 남을 것이다.
+
+<img width="1401" alt="image" src="https://github.com/ecsimsw/pic-up/assets/46060746/d22ffd41-814b-478b-bae1-13a8bb4c2ad9">
+
+이런 더미 파일에 대한 처리는 사용자의 요청 처리 시나리오에서 벗어나 비동기로 처리한다. 사용자 요청-응답 흐름은 그대로 지속하여 업로드 실패를 응답함에는 불필요한 지연을 없애면서도, 제거해야 하는 파일은 처리 가능한 Storage 서버가 처리 할 수 있도록 한다.
+
+### 3-2 다중 사진 파일 비동기 삭제
+
+정상적인 다중 사진 파일 제거에 메시지 큐를 사용한다. 사용자가 앨범을 삭제하는 경우 리소스를 논리 삭제 처리하고 큐에 넣는 것으로 응답하는 것으로 실제 파일이 제거되는 처리 시간과 관계 없이 응답 받을 수 있다.
+
+<img width="1405" alt="image" src="https://github.com/ecsimsw/pic-up/assets/46060746/d28f9a1c-a492-4ce6-a266-104392f43430">
+
+Storage 서버는 이를 prefetch 수만큼 메모리에 임시 저장해뒀다가 처리가 가능한 상황에서 처리하게 하게 된다.
+
+### 3-3  삭제 실패 시 재시도 / Dead letter 처리
+
+이렇게 비동기로 파일이 삭제되는 과정에서 Storage 서버가 다운되거나 예외가 발생한다면 삭제 처리해야 하는 리소스들을 잃고 더미 파일로 남게 될 것이다.
+
+Message queue 는 처리 중 오류로 NACK 응답받게 되거나 지정한 시간을 벗어나 Time out 된 메시지를 "처리 되지 않음"으로 확인하고 삭제 처리를 재시도 할 수 있다. 삭제 도중 서버가 다운 되면 Time out으로, 처리 중 생긴 문제는 NACK로 받아 재시도 하는 것으로 더미 파일을 피할 수 있는 것이다.
+
+<img width="1402" alt="image" src="https://github.com/ecsimsw/pic-up/assets/46060746/667eefe5-1404-4224-8bd4-c70c7eb0fbf6">
+
+
+지정된 재시도 후에도 여전히 삭제 처리에 문제가 있는 Message는 재시도를 더 이상 반복하지 않고 Dead letter 로 처리한다. Message 헤더에 Dead letter 시 처리할 Exchange 와 처리 노드를 결정할 routing key 정보를 추가하는 것으로 재시도 반복 후에도 처리되지 않는 문제의 리소스를 다른 처리 로직으로 다루게 된다.
+
+지금의 Picup 에선 처리되지 않은 리소스를 DB에 표시하고 에러 로그 저장, 슬랙으로 알람하여 개발자가 직접 처리할 수 있도록 기록하는 역할을 한다
