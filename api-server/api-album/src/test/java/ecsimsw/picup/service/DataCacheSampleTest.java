@@ -1,15 +1,14 @@
 package ecsimsw.picup.service;
 
-import ecsimsw.picup.config.RedisDataCacheConfig;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.autoconfigure.cache.CacheAutoConfiguration;
-import org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.EnableCaching;
@@ -18,22 +17,34 @@ import org.springframework.stereotype.Service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+/*
+Test cache without redis, using default cacheManager that @EnableCaching created
+ */
+
 @EnableCaching
 @ImportAutoConfiguration(classes = {
-    CacheAutoConfiguration.class,
-    RedisAutoConfiguration.class
+    CacheAutoConfiguration.class
 })
-@SpringBootTest(classes = {RedisDataCacheConfig.class, DataCacheSampleService.class})
+@SpringBootTest(classes = {DataCacheSampleService.class})
 public class DataCacheSampleTest {
 
     @Autowired
     private DataCacheSampleService dataCacheSampleService;
 
-    @DisplayName("예외가 출력되지 않는 것으로 cache 됨을 확인일 수 있다.")
+    @BeforeEach
+    private void makeCacheClear() {
+        dataCacheSampleService.clearCache();
+    }
+
+    @DisplayName("캐시에 실패했다면 예외를 발생시킨다.")
     @Test
     public void cacheApiResult() {
-        dataCacheSampleService.cacheApiResult();
-        dataCacheSampleService.cacheApiResult();
+        var val1 = dataCacheSampleService.alwaysSameCacheKey(1);
+        var val2 = dataCacheSampleService.alwaysSameCacheKey(2);
+        var val3 = dataCacheSampleService.alwaysSameCacheKey(3);
+
+        assertThat(val1).isEqualTo(val2);
+        assertThat(val1).isEqualTo(val3);
     }
 
     @DisplayName("value 로 지정한 메서드 파라미터의 entry 에 따라 캐시된다.")
@@ -98,27 +109,27 @@ class DataCacheSampleService {
 
     private boolean isCached = false;
 
-    @Cacheable(value = "cacheValue")
-    public int cacheApiResult() {
+    @Cacheable(value = "cacheValue", key = "0")
+    public int alwaysSameCacheKey(int result) {
         if (isCached) {
             throw new IllegalArgumentException();
         }
         isCached = true;
-        return 1;
+        return result;
     }
 
-    @Cacheable(value = "cacheByUnless", key="#sampleEntity", unless = "#result == null")
+    @Cacheable(value = "cacheByUnless", key = "#sampleEntity", unless = "#result == null")
     public Integer cacheByResultUnless(SampleEntity sampleEntity) {
-        if( isCached ) {
+        if (isCached) {
             throw new IllegalArgumentException();
         }
         isCached = true;
         return null;
     }
 
-    @Cacheable(value = "cacheByCondition", key = "#sampleEntity", condition = "#sampleEntity.i == 0")
+    @Cacheable(value = "cacheValue", key = "#sampleEntity", condition = "#sampleEntity.i == 0")
     public int cacheByCondition(SampleEntity sampleEntity) {
-        if( isCached ) {
+        if (isCached) {
             throw new IllegalArgumentException();
         }
         isCached = true;
@@ -135,14 +146,18 @@ class DataCacheSampleService {
         return ignored;
     }
 
-    @Cacheable(value = "sameCacheValue1")
+    @Cacheable(value = "sameCacheValue")
     public int sameCacheValue1() {
         return 1;
     }
 
-    @Cacheable(value = "sameCacheValue1")
+    @Cacheable(value = "sameCacheValue")
     public int sameCacheValue2() {
         return 10;
+    }
+
+    public void clearCache() {
+        this.isCached = false;
     }
 }
 
