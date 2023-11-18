@@ -11,6 +11,7 @@ import org.springframework.web.multipart.MultipartFile;
 public class StorageImageUploadRequest {
 
     private static final HttpHeaders REQUEST_HEADERS = new HttpHeaders();
+    private static final String ID_REQUEST_KEY_NAME = "userId";
     private static final String FILE_REQUEST_KEY_NAME = "file";
     private static final String TAG_REQUEST_KEY_NAME = "tag";
 
@@ -37,6 +38,7 @@ public class StorageImageUploadRequest {
 
     public LinkedMultiValueMap<String, Object> body() {
         final LinkedMultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
+        body.add(ID_REQUEST_KEY_NAME, userId);
         body.add(FILE_REQUEST_KEY_NAME, file.getResource());
         body.add(TAG_REQUEST_KEY_NAME, tag);
         return body;

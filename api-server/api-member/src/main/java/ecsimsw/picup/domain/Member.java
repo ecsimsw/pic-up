@@ -41,6 +41,6 @@ public class Member {
         if(this.password.isSame(password)) {
             return;
         }
-        throw new MemberException("Invalid authenticate");
+        throw new LoginFailedException("Invalid authenticate");
     }
 }

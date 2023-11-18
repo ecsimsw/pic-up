@@ -34,7 +34,7 @@ public class LocalFileStorage implements ImageStorage {
             final byte[] encrypted = AES256Utils.encrypt(imageFile.getFile(), encryptKey);
             Files.write(Paths.get(storagePath), encrypted);
         } catch (IOException e) {
-            throw new StorageException("Fail to create image file : " + resourceKey);
+            throw new StorageException("Fail to create image file : " + resourceKey, e);
         }
     }
 
@@ -46,7 +46,7 @@ public class LocalFileStorage implements ImageStorage {
         ) {
             final File file = new File(storagePath);
             if(!file.exists()) {
-                throw new FileNotFoundException();
+                throw new FileNotFoundException("file not exists : " + resourceKey);
             }
             final byte[] encrypted = new byte[(int) file.length()];
             inputStream.read(encrypted);
@@ -55,7 +55,7 @@ public class LocalFileStorage implements ImageStorage {
         } catch (FileNotFoundException e) {
             throw new FileNotFoundException("file not exists : " + resourceKey);
         } catch (Exception e) {
-            throw new StorageException("Fail to read image : " + resourceKey);
+            throw new StorageException("Fail to read image : " + resourceKey, e);
         }
     }
 
@@ -63,7 +63,7 @@ public class LocalFileStorage implements ImageStorage {
     public void delete(String resourceKey) throws FileNotFoundException {
         final File file = new File(storagePath(resourceKey));
         if(!file.exists()) {
-            throw new FileNotFoundException();
+            throw new FileNotFoundException("file not exists : " + resourceKey);
         }
         file.delete();
     }

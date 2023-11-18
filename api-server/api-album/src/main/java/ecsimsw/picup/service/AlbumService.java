@@ -10,8 +10,13 @@ import ecsimsw.picup.dto.ImageFileInfo;
 import ecsimsw.picup.event.AlbumDeletionEvent;
 import ecsimsw.picup.exception.AlbumException;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Slice;
@@ -47,12 +52,14 @@ public class AlbumService {
         return AlbumInfoResponse.of(album);
     }
 
+    @Cacheable(key = "#albumId", value = "album")
     @Transactional(readOnly = true)
     public AlbumInfoResponse read(Long userId, Long albumId) {
         final Album album = getUserAlbum(userId, albumId);
         return AlbumInfoResponse.of(album);
     }
 
+    @CacheEvict(key = "#albumId", value = "album")
     @Transactional
     public AlbumInfoResponse update(Long userId, Long albumId, AlbumInfoRequest albumInfo, Optional<MultipartFile> optionalThumbnail) {
         final Album album = getUserAlbum(userId, albumId);
@@ -68,6 +75,7 @@ public class AlbumService {
         return AlbumInfoResponse.of(album);
     }
 
+    @CacheEvict(key = "#albumId", value = "album")
     @Transactional
     public void delete(Long userId, Long albumId) {
         final Album album = getUserAlbum(userId, albumId);
@@ -77,6 +85,7 @@ public class AlbumService {
         eventPublisher.publishEvent(new AlbumDeletionEvent(albumId));
     }
 
+//    @Cacheable(key = "{#userId, #limit}", value = "userAlbumFirstPage", condition = "{#limit == 1 && #id == 2}")
     @Transactional(readOnly = true)
     public List<AlbumInfoResponse> cursorBasedFetch(Long userId, int limit, Optional<AlbumSearchCursor> cursor) {
         if(cursor.isEmpty()) {

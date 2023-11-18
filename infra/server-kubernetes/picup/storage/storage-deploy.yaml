@@ -30,9 +30,12 @@ spec:
       containers:
         - name: storage-server
           image: ghcr.io/ecsimsw/picup/api-storage:latest
+          volumeMounts:
+          - name: local-storage
+            mountPath: /picup/localStorage
           envFrom:
           - configMapRef:
-              name: picup-common-config
+              name: common-config
           - configMapRef:
               name: storage-server-config
           ports:
@@ -42,5 +45,9 @@ spec:
               memory: 512Mi
             limits:
               memory: 512Mi
+      volumes:
+      - name: local-storage
+        persistentVolumeClaim:
+          claimName: storage-server-main-file-storage
       imagePullSecrets:
         - name: ghcr-login-secret

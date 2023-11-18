@@ -6,7 +6,7 @@ plugins {
 }
 
 group = 'ecsimsw.picup'
-version = '1.0.0'
+version = '1.1.0'
 sourceCompatibility = '11'
 
 repositories {
@@ -43,7 +43,13 @@ subprojects {
         // lombok
         compileOnly 'org.projectlombok:lombok'
         annotationProcessor 'org.projectlombok:lombok'
-        testImplementation 'org.projectlombok:lombok'
+        testCompileOnly 'org.projectlombok:lombok'
+        testAnnotationProcessor 'org.projectlombok:lombok'
+
+        //jwt
+        implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
+        implementation 'io.jsonwebtoken:jjwt-jackson:0.11.5'
+        implementation 'io.jsonwebtoken:jjwt-impl:0.11.5'
     }
 
     jib {

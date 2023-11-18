@@ -5,10 +5,10 @@ import ecsimsw.picup.auth.service.AuthTokenService;
 import ecsimsw.picup.auth.service.TokenCookieUtils;
 import ecsimsw.picup.domain.Member;
 import ecsimsw.picup.domain.MemberRepository;
-import ecsimsw.picup.domain.Password;
 import ecsimsw.picup.dto.SignInRequest;
 import ecsimsw.picup.dto.SignUpRequest;
 import ecsimsw.picup.exception.LoginFailedException;
+import ecsimsw.picup.exception.MemberException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -42,7 +42,7 @@ public class MemberService {
     @Transactional
     public void signUp(SignUpRequest request, HttpServletResponse response) {
         if (memberRepository.existsByUsername(request.getUsername())) {
-            throw new IllegalArgumentException("Duplicated username");
+            throw new MemberException("Duplicated username");
         }
         final Member member = request.toEntity();
         memberRepository.save(member);

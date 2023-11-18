@@ -4,6 +4,9 @@ import ecsimsw.picup.auth.exception.TokenException;
 import lombok.Getter;
 import lombok.Setter;
 
+// XXX :: Do not remove default constructor
+//  This dto is deserialized with jackson, and it needs default constructor.
+
 @Setter
 @Getter
 public class AuthTokenPayload {

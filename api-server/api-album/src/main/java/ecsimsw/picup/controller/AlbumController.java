@@ -5,6 +5,7 @@ import ecsimsw.picup.auth.resolver.LoginUserInfo;
 import ecsimsw.picup.dto.AlbumInfoRequest;
 import ecsimsw.picup.dto.AlbumInfoResponse;
 import ecsimsw.picup.dto.AlbumSearchCursor;
+import ecsimsw.picup.exception.AlbumException;
 import ecsimsw.picup.service.AlbumService;
 import java.util.List;
 import java.util.Optional;
@@ -28,20 +29,22 @@ import org.springframework.web.multipart.MultipartFile;
 @RestController
 public class AlbumController {
 
-    private final StorageHttpClient storageHttpClient;
     private final AlbumService albumService;
 
-    public AlbumController(StorageHttpClient storageHttpClient, AlbumService albumService) {
-        this.storageHttpClient = storageHttpClient;
+    public AlbumController(AlbumService albumService) {
         this.albumService = albumService;
     }
 
     @PostMapping("/api/album")
     public ResponseEntity<AlbumInfoResponse> createAlbum(
-        @RequestPart MultipartFile thumbnail,
+//        @LoginUser LoginUserInfo loginUserInfo,
+        @RequestPart Optional<MultipartFile> thumbnail,
         @RequestPart AlbumInfoRequest albumInfo
     ) {
-        final AlbumInfoResponse album = albumService.create(1L, albumInfo, thumbnail);
+        final AlbumInfoResponse album = albumService.create(1L,
+            albumInfo,
+            thumbnail.orElseThrow(() -> new AlbumException("요청에 썸네일 누락"))
+        );
         return ResponseEntity.ok(album);
     }
 
@@ -51,39 +54,53 @@ public class AlbumController {
         @RequestPart AlbumInfoRequest albumInfo,
         @RequestPart Optional<MultipartFile> thumbnail
     ) {
-        final AlbumInfoResponse album = albumService.update(1L, albumId, albumInfo, thumbnail);
+        final AlbumInfoResponse album = albumService.update(
+            1L,
+            albumId,
+            albumInfo,
+            thumbnail
+        );
         return ResponseEntity.ok(album);
     }
 
     @DeleteMapping("/api/album/{albumId}")
     public ResponseEntity<Void> deleteAlbum(
+//        @LoginUser LoginUserInfo userInfo,
         @PathVariable Long albumId
     ) {
-        albumService.delete(1L, albumId);
+        albumService.delete(
+            1L,
+//            userInfo.getId(),
+            albumId
+        );
         return ResponseEntity.ok().build();
     }
 
     @GetMapping("/api/album/{albumId}")
     public ResponseEntity<AlbumInfoResponse> getAlbum(
+//        @LoginUser LoginUserInfo userInfo,
         @PathVariable Long albumId
     ) {
-        final AlbumInfoResponse album = albumService.read(1L, albumId);
+        final AlbumInfoResponse album = albumService.read(
+//            userInfo.getId(),
+1L,
+            albumId
+        );
         return ResponseEntity.ok(album);
     }
 
     @GetMapping("/api/album")
     public ResponseEntity<List<AlbumInfoResponse>> getAlbums(
-        @LoginUser LoginUserInfo userInfo,
+//        @LoginUser LoginUserInfo userInfo,
         @RequestParam(defaultValue = "10") int limit,
         @RequestBody Optional<AlbumSearchCursor> cursor
     ) {
-        final List<AlbumInfoResponse> albums = albumService.cursorBasedFetch(1L, limit, cursor);
+        final List<AlbumInfoResponse> albums = albumService.cursorBasedFetch(
+//            userInfo.getId(),
+    1L,
+            limit,
+            cursor
+        );
         return ResponseEntity.ok(albums);
-    }
-
-    @GetMapping("/api/album/up/storageConnection")
-    public ResponseEntity<String> upStorageConnection() {
-        final HttpStatus httpStatus = storageHttpClient.requestUp();
-        return ResponseEntity.ok(httpStatus.toString());
     }
 }

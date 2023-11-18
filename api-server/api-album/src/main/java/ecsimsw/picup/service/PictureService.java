@@ -6,6 +6,8 @@ import ecsimsw.picup.dto.PictureInfoResponse;
 import ecsimsw.picup.dto.PictureSearchCursor;
 import ecsimsw.picup.event.AlbumDeletionEvent;
 import ecsimsw.picup.exception.AlbumException;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.Sort;

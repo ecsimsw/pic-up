@@ -20,7 +20,6 @@ import ecsimsw.picup.auth.domain.AuthTokens;
 import ecsimsw.picup.auth.domain.AuthTokensCacheRepository;
 import ecsimsw.picup.auth.dto.AuthTokenPayload;
 import ecsimsw.picup.auth.service.AuthTokenService;
-import ecsimsw.picup.health.HealthController;
 import ecsimsw.picup.service.AlbumService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -37,7 +36,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 @TestPropertySource(locations = "/authToken.properties")
 @ExtendWith(MockitoExtension.class)
-@WebMvcTest(controllers = {AlbumController.class, HealthController.class})
+@WebMvcTest(controllers = {AlbumController.class})
 @AutoConfigureMockMvc
 public class AuthTokenScenarioTest {
 
@@ -56,16 +55,6 @@ public class AuthTokenScenarioTest {
     @DisplayName("Access token 을 확인한다.")
     @Nested
     class LoginNeeded {
-
-        @DisplayName("인증 과정이 필요없는 url 에 요청시 인증 시나리오는 수행되지 않는다.")
-        @Test
-        public void withOutAuth() throws Exception {
-            mockMvc.perform(
-                get("/api/health")
-            ).andExpect(status().isOk());
-
-            verify(authTokenService, never()).isValidToken(any());
-        }
 
         @DisplayName("유효한 로그인 토큰을 갖고 있는 경우 토큰에서 로그인 정보를 확인한다.")
         @Test

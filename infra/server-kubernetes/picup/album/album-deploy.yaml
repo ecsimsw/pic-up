@@ -32,7 +32,7 @@ spec:
           image: ghcr.io/ecsimsw/picup/api-album:latest
           envFrom:
           - configMapRef:
-              name: picup-common-config
+              name: common-config
           - configMapRef:
               name: album-server-config
           ports:

@@ -60,4 +60,15 @@ public class Picture {
             throw new AlbumException("Invalid album");
         }
     }
+
+    @Override
+    public String toString() {
+        return "Picture{" +
+            "id=" + id +
+            ", albumId=" + albumId +
+            ", resourceKey='" + resourceKey + '\'' +
+            ", description='" + description + '\'' +
+            ", createdAt=" + createdAt +
+            '}';
+    }
 }
