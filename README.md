@@ -1,5 +1,5 @@
 ## Pic-up
-제 부모님이 쉽게 쓸 수 있는 사진 스토리지를 만들고 있어요.
+제 부모님이 쉽게 사용하실 수 있는 쉬운 사진 스토리지를 만들고 있어요.
 
 ### Skills
 - Backend : Java, Spring boot, JPA, RabbitMQ, MongoDB, Mysql, Redis, CriteriaAPI, JUnit5, JWT, AES256/SHA256   
