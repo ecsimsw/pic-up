@@ -13,7 +13,7 @@
 - [Mysql DB Replication 으로 데이터 백업, 쿼리 분산](https://ecsimsw.tistory.com/entry/Mysql-DB-Replication-%EC%9C%BC%EB%A1%9C-%EB%8D%B0%EC%9D%B4%ED%84%B0-%EB%B0%B1%EC%97%85-%EC%BF%BC%EB%A6%AC-%EB%B6%84%EC%82%B0)
 - [Mysql DB Multi source replication 으로 여러 소스 데이터 백업](https://www.blog.ecsimsw.com/entry/Mysql-DB-Multi-source-replication-%EC%9C%BC%EB%A1%9C-%EB%B0%B1%EC%97%85-%EB%A1%9C%EA%B7%B8-%EB%8D%B0%EC%9D%B4%ED%84%B0-%EC%A4%91%EC%95%99%ED%99%94)
 - [Picup 에서 사진 파일을 다루는 방법, AWS S3 대신 Vultr object storage](https://ecsimsw.tistory.com/entry/Vultr-S3-%EC%99%80-%EC%9D%B4%EB%AF%B8%EC%A7%80-%EB%B0%B1%EC%97%85-%EC%A0%95%EC%B1%85)
-- [Spring, java code - Application server](https://github.com/ecsimsw/pic-up/tree/main/api-server)
+- [Application server](https://github.com/ecsimsw/pic-up/tree/main/api-server)
 - [Kubernetes configuration - Home server](https://github.com/ecsimsw/pic-up/tree/main/infra/server-kubernetes)
 - [Terraform - Cloud server](https://github.com/ecsimsw/pic-up/tree/main/infra/server-cloud)
 - [그 외 개발 DOCS](https://github.com/ecsimsw/pic-up/tree/main/docs)
