@@ -9,7 +9,7 @@ spec:
     kind: Deployment
     name: album-server
   minReplicas: 1
-  maxReplicas: 3
+  maxReplicas: 5
   metrics:
     - type: Resource
       resource:
@@ -22,19 +22,19 @@ spec:
       stabilizationWindowSeconds: 0        # The number of seconds for which past recommendations should be considered while scaling up or down
       policies:
       - type: Pods
-        value: 4
+        value: 5
         periodSeconds: 15
       - type: Percent
         value: 100
         periodSeconds: 15                   # There are 2 policies where 4 pods or a 100% of the currently running replicas may at most be added every 15 seconds till the HPA reaches its steady state.
       selectPolicy: Max
     scaleDown:
-      stabilizationWindowSeconds: 300
+      stabilizationWindowSeconds: 10
       policies:
       - type: Pods
         value: 5
-        periodSeconds: 60                   # To ensure that no more than 5 Pods are removed per minute, you can add a second scale-down policy with a fixed size of 5
+        periodSeconds: 15                  # To ensure that no more than 5 Pods are removed per minute, you can add a second scale-down policy with a fixed size of 5
       - type: Percent
         value: 100                          # The scaling target can be scaled down to the minimum allowed replicas.
-        periodSeconds: 30
+        periodSeconds: 15
       selectPolicy: Min                     # Setting selectPolicy to Min means that the autoscaler chooses the policy that affects the smallest number of Pods:
