@@ -34,7 +34,8 @@ grale 파일과 gradlew properties 파일들을 해시하여 postfix 하는 것�
 cache load 에서 약간의 시간이 걸린다. 당연하겠지만 그 시간이 빌드 시간보다 길면 의미가 없을 것 같다.    
 나는 HA / HPA를 위해 k8s cluster에 actions-runner-controller 를 따로 띄워 runner를 실행하는데, 그래서 느린건지 더 지켜봐야겠다.    
 
-<img width="1008" alt="image" src="https://github.com/ecsimsw/pic-up/assets/46060746/20cb3c75-3902-4bda-80ee-77608d61e7c8">
+<img width="1409" alt="image" src="https://github.com/ecsimsw/pic-up/assets/46060746/9c6b078e-3802-4d59-8045-16e99dc688d9">
+
 
 
 #### build and push
@@ -46,8 +47,10 @@ cache load 에서 약간의 시간이 걸린다. 당연하겠지만 그 시간�
 모듈 중에 가장 짧은 빌드 시간인 모듈은 5초인데 만약 모듈이 하나고 빌드 시간이 이렇게 짧았으면 캐시가 더 방해됬을 거라고 생각한다.
 
 before : max module -> avg 23s    
-<img width="427" alt="image" src="https://github.com/ecsimsw/pic-up/assets/46060746/268c748d-d59c-4c1d-99d4-0a887dc0b4c0">
+<img width="588" alt="image" src="https://github.com/ecsimsw/pic-up/assets/46060746/e31eac61-c500-40fe-8d8b-89c0a34614d4">
+
 
 after : max module -> avg 7s    
-<img width="422" alt="image" src="https://github.com/ecsimsw/pic-up/assets/46060746/7f2dc9c5-55e8-4c16-b882-b445aceea1dc">
+<img width="599" alt="image" src="https://github.com/ecsimsw/pic-up/assets/46060746/a5ceca76-1fc9-40b2-b5c9-d821ec19f38a">
+
 
