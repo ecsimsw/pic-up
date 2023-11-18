@@ -10,12 +10,12 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import java.util.List;
 
 @Configuration
-public class WebConfig implements WebMvcConfigurer {
+public class AuthInterceptorConfig implements WebMvcConfigurer {
 
     private final AuthInterceptor authInterceptor;
     private final LoginUserArgumentResolver loginUserArgumentResolver;
 
-    public WebConfig(AuthInterceptor authInterceptor, LoginUserArgumentResolver loginUserArgumentResolver) {
+    public AuthInterceptorConfig(AuthInterceptor authInterceptor, LoginUserArgumentResolver loginUserArgumentResolver) {
         this.authInterceptor = authInterceptor;
         this.loginUserArgumentResolver = loginUserArgumentResolver;
     }

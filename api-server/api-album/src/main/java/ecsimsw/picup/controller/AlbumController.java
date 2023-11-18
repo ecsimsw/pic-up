@@ -37,11 +37,11 @@ public class AlbumController {
 
     @PostMapping("/api/album")
     public ResponseEntity<AlbumInfoResponse> createAlbum(
-//        @LoginUser LoginUserInfo loginUserInfo,
+        @LoginUser LoginUserInfo loginUserInfo,
         @RequestPart Optional<MultipartFile> thumbnail,
         @RequestPart AlbumInfoRequest albumInfo
     ) {
-        final AlbumInfoResponse album = albumService.create(1L,
+        final AlbumInfoResponse album = albumService.create(loginUserInfo.getId(),
             albumInfo,
             thumbnail.orElseThrow(() -> new AlbumException("요청에 썸네일 누락"))
         );
@@ -50,12 +50,13 @@ public class AlbumController {
 
     @PutMapping("/api/album/{albumId}")
     public ResponseEntity<AlbumInfoResponse> updateAlbum(
+        @LoginUser LoginUserInfo loginUserInfo,
         @PathVariable Long albumId,
         @RequestPart AlbumInfoRequest albumInfo,
         @RequestPart Optional<MultipartFile> thumbnail
     ) {
         final AlbumInfoResponse album = albumService.update(
-            1L,
+            loginUserInfo.getId(),
             albumId,
             albumInfo,
             thumbnail
@@ -65,12 +66,11 @@ public class AlbumController {
 
     @DeleteMapping("/api/album/{albumId}")
     public ResponseEntity<Void> deleteAlbum(
-//        @LoginUser LoginUserInfo userInfo,
+        @LoginUser LoginUserInfo userInfo,
         @PathVariable Long albumId
     ) {
         albumService.delete(
-            1L,
-//            userInfo.getId(),
+            userInfo.getId(),
             albumId
         );
         return ResponseEntity.ok().build();
@@ -78,12 +78,11 @@ public class AlbumController {
 
     @GetMapping("/api/album/{albumId}")
     public ResponseEntity<AlbumInfoResponse> getAlbum(
-//        @LoginUser LoginUserInfo userInfo,
+        @LoginUser LoginUserInfo userInfo,
         @PathVariable Long albumId
     ) {
         final AlbumInfoResponse album = albumService.read(
-//            userInfo.getId(),
-1L,
+            userInfo.getId(),
             albumId
         );
         return ResponseEntity.ok(album);
@@ -91,13 +90,12 @@ public class AlbumController {
 
     @GetMapping("/api/album")
     public ResponseEntity<List<AlbumInfoResponse>> getAlbums(
-//        @LoginUser LoginUserInfo userInfo,
+        @LoginUser LoginUserInfo userInfo,
         @RequestParam(defaultValue = "10") int limit,
         @RequestBody Optional<AlbumSearchCursor> cursor
     ) {
         final List<AlbumInfoResponse> albums = albumService.cursorBasedFetch(
-//            userInfo.getId(),
-    1L,
+            userInfo.getId(),
             limit,
             cursor
         );

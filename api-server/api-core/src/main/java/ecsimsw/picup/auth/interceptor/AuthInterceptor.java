@@ -2,12 +2,16 @@ package ecsimsw.picup.auth.interceptor;
 
 import static ecsimsw.picup.auth.config.AuthTokenWebConfig.ACCESS_TOKEN_COOKIE_KEY;
 import static ecsimsw.picup.auth.config.AuthTokenWebConfig.REFRESH_TOKEN_COOKIE_KEY;
+import static ecsimsw.picup.auth.service.TokenCookieUtils.createAuthCookies;
 import static ecsimsw.picup.auth.service.TokenCookieUtils.getTokenFromCookies;
 
+import ecsimsw.picup.auth.exception.TokenException;
 import ecsimsw.picup.auth.exception.UnauthorizedException;
 import ecsimsw.picup.auth.resolver.LoginUser;
 import ecsimsw.picup.auth.service.AuthTokenService;
 import java.util.Arrays;
+import java.util.List;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -33,15 +37,20 @@ public class AuthInterceptor implements HandlerInterceptor {
         }
         try {
             var cookies = request.getCookies();
-            var accessToken = getTokenFromCookies(cookies, ACCESS_TOKEN_COOKIE_KEY);
-            if (!authTokenService.isValidToken(accessToken)) {
-                var reissued = authTokenService.reissue(
-                    getTokenFromCookies(cookies, ACCESS_TOKEN_COOKIE_KEY),
-                    getTokenFromCookies(cookies, REFRESH_TOKEN_COOKIE_KEY)
-                );
-                TokenCookieUtils.createAuthCookies(reissued).forEach(response::addCookie);
+            var accessToken = accessToken(cookies);
+            if(authTokenService.isValidToken(accessToken)) {
+                return true;
             }
-            return true;
+            var refreshToken = refreshToken(cookies);
+            if (!authTokenService.isValidToken(accessToken) && authTokenService.isValidToken(refreshToken)) {
+                var reissued = authTokenService.reissue(accessToken, refreshToken);
+                var newAuthCookies = createAuthCookies(reissued);
+                newAuthCookies.forEach(response::addCookie);
+                response.setHeader("Location", request.getRequestURI());
+                response.setStatus(302);
+                return false;
+            }
+            throw new TokenException("Invalid token");
         } catch (Exception e) {
             response.setStatus(HttpStatus.UNAUTHORIZED.value());
             throw new UnauthorizedException("Unauthorized request");
@@ -52,5 +61,13 @@ public class AuthInterceptor implements HandlerInterceptor {
         return Arrays.stream(method.getMethodParameters())
             .anyMatch(methodParameter -> methodParameter.hasParameterAnnotation(LoginUser.class)
         );
+    }
+
+    private String accessToken(Cookie[] cookies) {
+        return getTokenFromCookies(cookies, ACCESS_TOKEN_COOKIE_KEY);
+    }
+
+    private String refreshToken(Cookie[] cookies) {
+        return getTokenFromCookies(cookies, REFRESH_TOKEN_COOKIE_KEY);
     }
 }

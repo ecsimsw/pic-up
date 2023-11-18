@@ -94,7 +94,7 @@ public class AuthTokenScenarioTest {
                 get("/api/album")
                     .cookie(INVALID_ACCESS_TOKEN_COOKIE)
                     .cookie(VALID_REFRESH_TOKEN_COOKIE)
-            ).andExpect(status().isOk());
+            ).andExpect(status().is3xxRedirection());
         }
 
         @DisplayName("Refresh token 이 존재하지 않는다면 재발급 없이 401 status 를 응답한다.")
@@ -126,6 +126,9 @@ public class AuthTokenScenarioTest {
             .thenReturn(new AuthTokens(MEMBER_USERNAME, VALID_ACCESS_TOKEN, VALID_REFRESH_TOKEN));
 
         when(authTokenService.isValidToken(VALID_ACCESS_TOKEN))
+            .thenReturn(true);
+
+        when(authTokenService.isValidToken(VALID_REFRESH_TOKEN))
             .thenReturn(true);
 
         when(authTokenService.isValidToken(INVALID_ACCESS_TOKEN))
