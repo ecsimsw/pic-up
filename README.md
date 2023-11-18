@@ -19,7 +19,7 @@
 
 ### Architecture
 
-<img width="1263" alt="image" src="https://github.com/ecsimsw/pic-up/assets/46060746/6160245d-ae12-430a-950a-cc70b09ed24b">
+<img width="1263" alt="image" src="https://github.com/ecsimsw/pic-up/assets/46060746/b60fc9b9-5bfa-4502-8013-7a1aea59772e">
 
 </br></br>
 
