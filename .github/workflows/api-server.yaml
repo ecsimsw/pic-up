@@ -24,7 +24,7 @@ jobs:
           key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
       - name : test
         run: |
-          cd ./api-server
+          cd ./server-api
           chmod +x ./gradlew
           ./gradlew :api-album:test
           ./gradlew :api-member:test
@@ -38,7 +38,7 @@ jobs:
           logout: true
       - name: Build and push
         run: |
-          cd ./api-server
+          cd ./server-api
           chmod +x ./gradlew
           version=$(./gradlew properties -q | grep "version:" | awk '{print $2}')
           ./gradlew :api-album:jib -Djib.to.tags=latest,${version}
