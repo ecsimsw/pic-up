@@ -6,17 +6,15 @@ import ecsimsw.picup.domain.FileResource;
 import ecsimsw.picup.dto.AlbumInfoRequest;
 import ecsimsw.picup.dto.AlbumInfoResponse;
 import ecsimsw.picup.dto.AlbumSearchCursor;
-import ecsimsw.picup.dto.ImageFileInfo;
 import ecsimsw.picup.event.AlbumDeletionEvent;
 import ecsimsw.picup.exception.AlbumException;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
 import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Slice;
@@ -43,6 +41,7 @@ public class AlbumService {
         this.eventPublisher = eventPublisher;
     }
 
+    @CacheEvict(value = "userAlbumFirstPageDefaultSize", key = "#userId")
     @Transactional
     public AlbumInfoResponse create(Long userId, AlbumInfoRequest albumInfo, MultipartFile thumbnail) {
         final String fileTag = userId.toString();
@@ -52,14 +51,17 @@ public class AlbumService {
         return AlbumInfoResponse.of(album);
     }
 
-    @Cacheable(key = "#albumId", value = "album")
+    @Cacheable(value = "album", key = "#albumId")
     @Transactional(readOnly = true)
     public AlbumInfoResponse read(Long userId, Long albumId) {
         final Album album = getUserAlbum(userId, albumId);
         return AlbumInfoResponse.of(album);
     }
 
-    @CacheEvict(key = "#albumId", value = "album")
+    @Caching(evict = {
+        @CacheEvict(value = "album", key = "#albumId"),
+        @CacheEvict(value = "userAlbumFirstPageDefaultSize", key = "#userId")
+    })
     @Transactional
     public AlbumInfoResponse update(Long userId, Long albumId, AlbumInfoRequest albumInfo, Optional<MultipartFile> optionalThumbnail) {
         final Album album = getUserAlbum(userId, albumId);
@@ -75,7 +77,10 @@ public class AlbumService {
         return AlbumInfoResponse.of(album);
     }
 
-    @CacheEvict(key = "#albumId", value = "album")
+    @Caching(evict = {
+        @CacheEvict(value = "album", key = "#albumId"),
+        @CacheEvict(value = "userAlbumFirstPageDefaultSize", key = "#userId")
+    })
     @Transactional
     public void delete(Long userId, Long albumId) {
         final Album album = getUserAlbum(userId, albumId);
@@ -85,25 +90,21 @@ public class AlbumService {
         eventPublisher.publishEvent(new AlbumDeletionEvent(albumId));
     }
 
-//    @Cacheable(key = "{#userId, #limit}", value = "userAlbumFirstPage", condition = "{#limit == 1 && #id == 2}")
+    @Cacheable(key="{#userId}", value = "userAlbumFirstPageDefaultSize", condition = "{ #cursor.isEmpty() && #limit == 10 }")
     @Transactional(readOnly = true)
     public List<AlbumInfoResponse> cursorBasedFetch(Long userId, int limit, Optional<AlbumSearchCursor> cursor) {
         if(cursor.isEmpty()) {
-            return fetchFirstPage(userId, limit);
+            final Slice<Album> albums = albumRepository.findAllByUserId(userId, PageRequest.of(0, limit, ascByCreatedAt));
+            return AlbumInfoResponse.listOf(albums.getContent());
         }
         final AlbumSearchCursor prev = cursor.orElseThrow();
         final List<Album> albums = albumRepository.fetch(
             where(isUser(userId))
                 .and(createdLater(prev.getCreatedAt()).or(equalsCreatedTime(prev.getCreatedAt()).and(greaterId(prev.getId())))),
             limit,
-            sortByCreatedAtAsc
+            ascByCreatedAt
         );
         return AlbumInfoResponse.listOf(albums);
-    }
-
-    private List<AlbumInfoResponse> fetchFirstPage(Long userId, int limit) {
-        final Slice<Album> albums = albumRepository.findAllByUserId(userId, PageRequest.of(0, limit, sortByCreatedAtAsc));
-        return AlbumInfoResponse.listOf(albums.getContent());
     }
 
     private Album getUserAlbum(Long userId, Long albumId) {
