@@ -60,7 +60,7 @@ public class PictureController {
     public ResponseEntity<PictureInfoResponse> updatePicture(
         @PathVariable Long albumId,
         @PathVariable Long pictureId,
-        @RequestBody PictureInfoRequest pictureInfo,
+        @RequestPart PictureInfoRequest pictureInfo,
         @RequestPart Optional<MultipartFile> imageFile
     ) {
         final PictureInfoResponse response = pictureService.update(1L, albumId, pictureId, pictureInfo, imageFile);

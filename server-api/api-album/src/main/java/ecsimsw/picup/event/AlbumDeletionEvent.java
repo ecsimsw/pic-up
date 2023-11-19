@@ -7,9 +7,11 @@ import lombok.Getter;
 public class AlbumDeletionEvent {
 
     private final LocalDateTime creationTime = LocalDateTime.now();
+    private final Long userId;
     private final Long albumId;
 
-    public AlbumDeletionEvent(Long albumId) {
+    public AlbumDeletionEvent(Long userId, Long albumId) {
+        this.userId = userId;
         this.albumId = albumId;
     }
 }

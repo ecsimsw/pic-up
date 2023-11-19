@@ -41,6 +41,7 @@ public class PictureService {
         this.fileService = fileService;
     }
 
+    @CacheEvict(key = "{#userId, #albumId}", value = "userPictureFirstPageDefaultSize")
     @Transactional
     public PictureInfoResponse create(Long userId, Long albumId, PictureInfoRequest pictureInfo, MultipartFile imageFile) {
         checkUserAuthInAlbum(userId, albumId);
@@ -52,50 +53,7 @@ public class PictureService {
         return PictureInfoResponse.of(picture);
     }
 
-    @Transactional(readOnly = true)
-    public List<PictureInfoResponse> cursorBasedFetch(Long userId, Long albumId, int limit, Optional<PictureSearchCursor> cursor) {
-        checkUserAuthInAlbum(userId, albumId);
-
-        if(cursor.isEmpty()) {
-            return fetchFirstPage(albumId, limit, sortByCreatedAtAsc);
-        }
-        final PictureSearchCursor prev = cursor.orElseThrow();
-        final List<Picture> pictures = pictureRepository.fetch(
-            where(isAlbum(albumId))
-                .and(createdLater(prev.getCreatedAt()).or(equalsCreatedTime(prev.getCreatedAt()).and(greaterId(prev.getId())))),
-            limit,
-            sortByCreatedAtAsc
-        );
-        return PictureInfoResponse.listOf(pictures);
-    }
-
-    private List<PictureInfoResponse> fetchFirstPage(Long albumId, int limit, Sort sortByCreatedAtAsc) {
-        final Slice<Picture> pictures = pictureRepository.findAllByAlbumId(albumId, PageRequest.of(0, limit, sortByCreatedAtAsc));
-        return PictureInfoResponse.listOf(pictures.getContent());
-    }
-
-    @Transactional
-    public void delete(Long userId, Long albumId, Long pictureId) {
-        checkUserAuthInAlbum(userId, albumId);
-
-        final Picture picture = pictureRepository.findById(pictureId).orElseThrow(() -> new AlbumException("Invalid picture"));
-        picture.validateAlbum(albumId);
-        fileService.delete(picture.getResourceKey());
-        pictureRepository.delete(picture);
-    }
-
-    @Async
-    @Transactional
-    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
-    public void deleteAllInAlbum(AlbumDeletionEvent event) {
-        final List<Picture> pictures = pictureRepository.findAllByAlbumId(event.getAlbumId());
-        final List<String> imagesToDelete = pictures.stream()
-            .map(Picture::getResourceKey)
-            .collect(Collectors.toList());
-        fileService.deleteAll(imagesToDelete);
-        pictureRepository.deleteAll(pictures);
-    }
-
+    @CacheEvict(key = "{#userId, #albumId}", value = "userPictureFirstPageDefaultSize")
     @Transactional
     public PictureInfoResponse update(Long userId, Long albumId, Long pictureId, PictureInfoRequest pictureInfo, Optional<MultipartFile> optionalImageFile) {
         checkUserAuthInAlbum(userId, albumId);
@@ -112,6 +70,49 @@ public class PictureService {
         });
         pictureRepository.save(picture);
         return PictureInfoResponse.of(picture);
+    }
+
+    @CacheEvict(key = "{#userId, #albumId}", value = "userPictureFirstPageDefaultSize")
+    @Transactional
+    public void delete(Long userId, Long albumId, Long pictureId) {
+        checkUserAuthInAlbum(userId, albumId);
+
+        final Picture picture = pictureRepository.findById(pictureId).orElseThrow(() -> new AlbumException("Invalid picture"));
+        picture.validateAlbum(albumId);
+        fileService.delete(picture.getResourceKey());
+        pictureRepository.delete(picture);
+    }
+
+    @CacheEvict(key = "{#event.userId, #event.albumId}", value = "userPictureFirstPageDefaultSize")
+    @Async
+    @Transactional
+    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
+    public void deleteAllInAlbum(AlbumDeletionEvent event) {
+        final List<Picture> pictures = pictureRepository.findAllByAlbumId(event.getAlbumId());
+        final List<String> imagesToDelete = pictures.stream()
+            .map(Picture::getResourceKey)
+            .collect(Collectors.toList());
+        fileService.deleteAll(imagesToDelete);
+        pictureRepository.deleteAll(pictures);
+    }
+
+    @Cacheable(key = "{#userId, #albumId}",  value = "userPictureFirstPageDefaultSize",condition = "{ #cursor.isEmpty() && #limit == 10 }")
+    @Transactional(readOnly = true)
+    public List<PictureInfoResponse> cursorBasedFetch(Long userId, Long albumId, int limit, Optional<PictureSearchCursor> cursor) {
+        System.out.println("db query");
+        checkUserAuthInAlbum(userId, albumId);
+        if(cursor.isEmpty()) {
+            final Slice<Picture> pictures = pictureRepository.findAllByAlbumId(albumId, PageRequest.of(0, limit, sortByCreatedAtAsc));
+            return PictureInfoResponse.listOf(pictures.getContent());
+        }
+        final PictureSearchCursor prev = cursor.orElseThrow();
+        final List<Picture> pictures = pictureRepository.fetch(
+            where(isAlbum(albumId))
+                .and(createdLater(prev.getCreatedAt()).or(equalsCreatedTime(prev.getCreatedAt()).and(greaterId(prev.getId())))),
+            limit,
+            sortByCreatedAtAsc
+        );
+        return PictureInfoResponse.listOf(pictures);
     }
 
     private void checkUserAuthInAlbum(Long userId, Long albumId) {

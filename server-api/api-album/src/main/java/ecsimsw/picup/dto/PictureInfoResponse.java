@@ -10,11 +10,14 @@ import lombok.Setter;
 @Getter
 public class PictureInfoResponse {
 
-    private final Long id;
-    private final Long albumId;
-    private final String description;
-    private final String resourceKey;
-    private final LocalDateTime createdAt;
+    private Long id;
+    private Long albumId;
+    private String description;
+    private String resourceKey;
+    private LocalDateTime createdAt;
+
+    public PictureInfoResponse() {
+    }
 
     public PictureInfoResponse(Long id, Long albumId, String description, String resourceKey, LocalDateTime createdAt) {
         this.id = id;

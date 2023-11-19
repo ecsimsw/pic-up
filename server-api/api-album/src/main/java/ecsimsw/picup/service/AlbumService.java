@@ -87,10 +87,10 @@ public class AlbumService {
 
         albumRepository.delete(album);
         fileService.delete(album.getResourceKey());
-        eventPublisher.publishEvent(new AlbumDeletionEvent(albumId));
+        eventPublisher.publishEvent(new AlbumDeletionEvent(userId, albumId));
     }
 
-    @Cacheable(key="{#userId}", value = "userAlbumFirstPageDefaultSize", condition = "{ #cursor.isEmpty() && #limit == 10 }")
+    @Cacheable(key="#userId", value = "userAlbumFirstPageDefaultSize", condition = "{ #cursor.isEmpty() && #limit == 10 }")
     @Transactional(readOnly = true)
     public List<AlbumInfoResponse> cursorBasedFetch(Long userId, int limit, Optional<AlbumSearchCursor> cursor) {
         if(cursor.isEmpty()) {
