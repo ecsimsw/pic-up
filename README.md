@@ -6,7 +6,7 @@
 - Dev/Test env : JUnit5, H2, Docker, Guava, Lombok,
   [Embed mongo](https://github.com/flapdoodle-oss/de.flapdoodle.embed.mongo),
   [S3mock](https://github.com/findify/s3mock)
-- Infrastructure : kubernetes, Vagrant, NFS, Kong gateway, Cert-manager, MetalLB, AWS EC2, AWS S3, Terraform
+- Infrastructure : kubernetes, Terraform, NFS, Kong gateway, Cert-manager, MetalLB, EC2, S3, Vagrant
 - CI/CD : JIB, Github actions, GHCR
 
 ### Docs
@@ -49,5 +49,6 @@
 ### 이번 스프린트
 - [x] Cache first page
 - [x] Set NFS volume for main image storage
+- [x] S3 mocking for dev, test
 - [ ] Gateway rate limiting
 - [ ] Configure monitoring system
