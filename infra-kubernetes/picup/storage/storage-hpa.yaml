@@ -1,0 +1,40 @@
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: storage-server-hpa
+  namespace: picup
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: storage-server
+  minReplicas: 1
+  maxReplicas: 3
+  metrics:
+    - type: Resource
+      resource:
+        name: memory                       # Percentage of requested memory
+        target:
+          type: Utilization
+          averageUtilization: 80           # HPA controller scales the target such that the average utilization of the cpu in the application container of all the pods is 80%.
+  behavior:
+    scaleUp:
+      stabilizationWindowSeconds: 0         # 조건이 확인되자마자 바로 동작을 수행한다.
+      policies:
+      - type: Pods
+        value: 4
+        periodSeconds: 15                   # 안정 상태까지 pod 개수를 15초 간격으로 최대 4개씩 올리겠다.
+      - type: Percent
+        value: 100
+        periodSeconds: 15                   # 안정 상태까지 pod 개수를 15초 간격으로 최대 100% (MAX)까지 올리겠다.
+      selectPolicy: Max                     # 여러 정책에서 최대치의 값으로 스케일 아웃한다.
+    scaleDown:
+      stabilizationWindowSeconds: 10        # 조건이 확인되고 10초 후에 동작한다.
+      policies:
+      - type: Pods
+        value: 5
+        periodSeconds: 15                  # To ensure that no more than 5 Pods are removed per minute, you can add a second scale-down policy with a fixed size of 5
+      - type: Percent
+        value: 100                          # 100%까지 스케일 다운을 하겠다는 말이다. 즉 minimum
+        periodSeconds: 15
+      selectPolicy: Min                     # Setting selectPolicy to Min means that the autoscaler chooses the policy that affects the smallest number of Pods:

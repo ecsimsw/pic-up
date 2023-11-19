@@ -1,0 +1,23 @@
+dependencies {
+    implementation project(':api-core')
+
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+    runtimeOnly 'com.h2database:h2:1.4.199'
+
+    implementation 'com.amazonaws:aws-java-sdk-s3:1.11.343'
+    implementation 'org.springframework.boot:spring-boot-starter-data-mongodb'
+    implementation "io.findify:s3mock_2.13:0.2.6"
+
+    // embedded mongo db for test env
+    testImplementation 'de.flapdoodle.embed:de.flapdoodle.embed.mongo'
+}
+
+test {
+    useJUnitPlatform()
+}
+
+configurations {
+    all {
+        exclude group: 'org.springframework.boot', module: 'spring-boot-starter-logging'
+    }
+}

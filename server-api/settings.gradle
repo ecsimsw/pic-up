@@ -1,0 +1,6 @@
+rootProject.name = 'picup'
+
+include 'api-album'
+include 'api-member'
+include 'api-core'
+include 'api-storage'
