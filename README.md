@@ -39,7 +39,7 @@
 </br></br>
 
 ### 이번 스프린트
-- [ ] Cache first page
-- [ ] Image file compression
+- [x] Cache first page
+- [x] Set NFS volume for main image storage
 - [ ] Gateway rate limiting
 - [ ] Configure monitoring system
