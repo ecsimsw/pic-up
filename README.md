@@ -3,10 +3,10 @@
 
 ### Skills
 - Backend : Java, Spring boot, JPA, RabbitMQ, MongoDB, Mysql, Redis, CriteriaAPI, JWT, AES256/SHA256
-- Dev / Test env : JUnit5, H2, docker, Guava, Lombok,
+- Dev/Test env : JUnit5, H2, Docker, Guava, Lombok,
   [Embed mongo](https://github.com/flapdoodle-oss/de.flapdoodle.embed.mongo),
-  [s3mock](https://github.com/findify/s3mock)
-- Infra : kubernetes, vagrant, NFS, Kong gateway, cert-manager, metalLB, AWS EC2, AWS S3, Terraform
+  [S3mock](https://github.com/findify/s3mock)
+- Infrastructure : kubernetes, Vagrant, NFS, Kong gateway, Cert-manager, MetalLB, AWS EC2, AWS S3, Terraform
 - CI/CD : JIB, Github actions, GHCR
 
 ### Docs
@@ -23,7 +23,7 @@
 
 </br>
 
-### application architecture
+### Application architecture
 
 <img width="1263" alt="image" src="https://github.com/ecsimsw/pic-up/assets/46060746/b60fc9b9-5bfa-4502-8013-7a1aea59772e">
 
