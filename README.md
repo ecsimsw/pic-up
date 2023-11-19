@@ -5,8 +5,8 @@
 
 ### Skills
 - Backend : Java, Spring boot, JPA, RabbitMQ, MongoDB, Mysql, Redis, CriteriaAPI, JWT, AES256/SHA256
-- Dev/Test env : JUnit5, Docker, Guava, Lombok, H2, Embed mongo, S3mock
-- Infrastructure : Kubernetes, Terraform, NFS, Kong gateway, Cert-manager, MetalLB, EC2, S3, Vagrant
+- Dev, Test : JUnit5, Docker, Guava, Lombok, H2, Embedded mongo, S3mock
+- Infrastructure : Kubernetes, Terraform, NFS, Kong gateway, Nginx, Cert-manager, MetalLB, EC2, S3, Vagrant
 - CI/CD : JIB, Github actions, GHCR
 
 ### Application
