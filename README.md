@@ -2,7 +2,10 @@
 저희 부모님도 사용하실 수 있는 쉬운 사진 스토리지를 만들고 있어요.
 
 ### Skills
-- Backend : Java, Spring boot, JPA, RabbitMQ, MongoDB, Mysql, Redis, CriteriaAPI, JUnit5, JWT, AES256/SHA256   
+- Backend : Java, Spring boot, JPA, RabbitMQ, MongoDB, Mysql, Redis, CriteriaAPI, JWT, AES256/SHA256
+- Dev / Test env : JUnit5, H2, docker, Guava, Lombok,
+  [Embed mongo](https://github.com/flapdoodle-oss/de.flapdoodle.embed.mongo),
+  [s3mock](https://github.com/findify/s3mock)
 - Infra : kubernetes, vagrant, NFS, Kong gateway, cert-manager, metalLB, AWS EC2, AWS S3, Terraform
 - CI/CD : JIB, Github actions, GHCR
 
@@ -20,22 +23,27 @@
 
 </br>
 
-### 애플리케이션 구조 
+### application architecture
 
 <img width="1263" alt="image" src="https://github.com/ecsimsw/pic-up/assets/46060746/b60fc9b9-5bfa-4502-8013-7a1aea59772e">
 
 </br></br>
 
-### 배포 구성
+### Infrastructure
 
 <img width="1386" alt="image" src="https://github.com/ecsimsw/pic-up/assets/46060746/3e1517db-9823-48b1-8eea-4828ec856df1">
 
 </br></br>
 
-### CI/CD 흐름
+### CI/CD
 
 <img width="1299" alt="image" src="https://github.com/ecsimsw/pic-up/assets/46060746/2fc85f4c-9f20-4142-bdc5-b2ecb72c7092">
 
+#### Released container images
+- [album](https://github.com/users/ecsimsw/packages/container/package/picup%2Fapi-album)
+- [storage](https://github.com/users/ecsimsw/packages/container/package/picup%2Fapi-storage)
+- [member](https://github.com/users/ecsimsw/packages/container/package/picup%2Fapi-member)
+  
 </br></br>
 
 ### 이번 스프린트
