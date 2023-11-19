@@ -35,17 +35,15 @@
   
 <img width="1386" alt="image" src="https://github.com/ecsimsw/pic-up/assets/46060746/3e1517db-9823-48b1-8eea-4828ec856df1">
 
-</br></br>
+<br>
 
 ### CI/CD
 
 - Released container images : [GHCR-picup](https://github.com/ecsimsw?tab=packages&tab=packages&q=picup)
 - Gradle cache
 - JIB
- 
 <img width="1299" alt="image" src="https://github.com/ecsimsw/pic-up/assets/46060746/2fc85f4c-9f20-4142-bdc5-b2ecb72c7092">
 
-</br></br>
 
 ### 이번 스프린트
 - [x] Cache first page
