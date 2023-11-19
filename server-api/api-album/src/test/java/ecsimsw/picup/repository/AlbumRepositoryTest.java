@@ -67,7 +67,7 @@ public class AlbumRepositoryTest {
         final List<Album> albums = albumRepository.fetch(
             where(isUser(1L))
                 .and(createdLater(prev.getCreatedAt()).or(equalsCreatedTime(prev.getCreatedAt()).and(greaterId(prev.getId())))),
-            limit, sortByCreatedAtAsc
+            limit, ascByCreatedAt
         );
         assertThat(albums).isEqualTo(List.of(album3, album5));
     }
@@ -91,7 +91,7 @@ public class AlbumRepositoryTest {
         final List<Album> albums = albumRepository.fetch(
             where(isUser(1L))
                 .and(createdLater(prev.getCreatedAt()).or(equalsCreatedTime(prev.getCreatedAt()).and(greaterId(prev.getId())))
-            ), limit, sortByCreatedAtAsc
+            ), limit, ascByCreatedAt
         );
         assertThat(albums).isEqualTo(List.of(album3, album5, album7, album9, album8));
     }

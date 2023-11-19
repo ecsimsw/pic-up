@@ -5,9 +5,15 @@ import ecsimsw.picup.service.StorageService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+
+@Validated
 @RestController
 public class StorageUploadController {
 
@@ -21,9 +27,9 @@ public class StorageUploadController {
 
     @PostMapping("/api/storage")
     public ResponseEntity<ImageUploadResponse> upload(
-        Long userId,
-        String tag,
-        MultipartFile file
+        @Valid @NotNull Long userId,
+        @Valid @NotBlank String tag,
+        @Valid @NotNull MultipartFile file
     ) {
         final long start = System.currentTimeMillis();
         final ImageUploadResponse uploadedInfo = storageService.upload(userId, tag, file);

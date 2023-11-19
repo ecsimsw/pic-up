@@ -4,6 +4,7 @@ import ecsimsw.picup.auth.resolver.LoginUser;
 import ecsimsw.picup.auth.resolver.LoginUserInfo;
 import ecsimsw.picup.dto.SignInRequest;
 import ecsimsw.picup.dto.SignUpRequest;
+import ecsimsw.picup.dto.MemberInfoResponse;
 import ecsimsw.picup.service.MemberService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -24,21 +25,28 @@ public class MemberController {
     }
 
     @PostMapping("/api/member/signin")
-    public ResponseEntity<Void> signIn(@RequestBody @Valid SignInRequest request,
-                                       HttpServletResponse response) {
-        memberService.signIn(request, response);
-        return ResponseEntity.ok().build();
+    public ResponseEntity<MemberInfoResponse> signIn(
+        @Valid @RequestBody SignInRequest request,
+        HttpServletResponse response
+    ) {
+        final MemberInfoResponse me = memberService.signIn(request, response);
+        return ResponseEntity.ok(me);
     }
 
     @PostMapping("/api/member/signup")
-    public ResponseEntity<Void> signUp(@RequestBody @Valid SignUpRequest request,
-                                       HttpServletResponse response) {
-        memberService.signUp(request, response);
-        return ResponseEntity.ok().build();
+    public ResponseEntity<MemberInfoResponse> signUp(
+        @Valid @RequestBody SignUpRequest request,
+        HttpServletResponse response
+    ) {
+        final MemberInfoResponse me = memberService.signUp(request, response);
+        return ResponseEntity.ok(me);
     }
 
     @GetMapping("/api/member/me")
-    public ResponseEntity<String> me(@LoginUser LoginUserInfo userInfo) {
-        return ResponseEntity.ok(userInfo.getUsername());
+    public ResponseEntity<MemberInfoResponse> me(
+        @LoginUser LoginUserInfo userInfo
+    ) {
+        final MemberInfoResponse me = memberService.me(userInfo.getId());
+        return ResponseEntity.ok(me);
     }
 }

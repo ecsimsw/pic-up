@@ -33,7 +33,7 @@ public class GlobalControllerAdvice {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<String> methodArgumentNotValidException(MethodArgumentNotValidException e) {
-        return ResponseEntity.badRequest().body("적절하지 않은 요청 파라미터");
+        return ResponseEntity.badRequest().body("Invalid request data");
     }
 
 

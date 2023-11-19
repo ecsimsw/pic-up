@@ -18,7 +18,7 @@ public interface AlbumRepository extends JpaRepository<Album, Long>, JpaSpecific
 
     interface AlbumSearchSpecs {
 
-        Sort sortByCreatedAtAsc = Sort.by(Sort.Direction.ASC, Album_.CREATED_AT, Album_.ID);
+        Sort ascByCreatedAt = Sort.by(Sort.Direction.ASC, Album_.CREATED_AT, Album_.ID);
 
         static Specification<Album> where() {
             return Specification.where(null);

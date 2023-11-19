@@ -30,7 +30,7 @@ public class ObjectStorage implements ImageStorage {
     private final String bucketName;
 
     public ObjectStorage(
-        @Value("${object.storage.vultr.bucket.name}") String bucketName,
+        @Value("${object.storage.bucket.name}") String bucketName,
         AmazonS3 s3Client
     ) {
         this.storageClient = s3Client;

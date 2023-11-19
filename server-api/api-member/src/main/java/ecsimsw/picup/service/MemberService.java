@@ -5,6 +5,7 @@ import ecsimsw.picup.auth.service.AuthTokenService;
 import ecsimsw.picup.auth.service.TokenCookieUtils;
 import ecsimsw.picup.domain.Member;
 import ecsimsw.picup.domain.MemberRepository;
+import ecsimsw.picup.dto.MemberInfoResponse;
 import ecsimsw.picup.dto.SignInRequest;
 import ecsimsw.picup.dto.SignUpRequest;
 import ecsimsw.picup.exception.LoginFailedException;
@@ -28,25 +29,27 @@ public class MemberService {
     }
 
     @Transactional
-    public void signIn(SignInRequest request, HttpServletResponse response) {
+    public MemberInfoResponse signIn(SignInRequest request, HttpServletResponse response) {
         try {
             final Member member = memberRepository.findByUsername(request.getUsername())
                 .orElseThrow(() -> new LoginFailedException("Invalid login info"));
             member.authenticate(request.getPassword());
             responseAuthTokens(member, response);
+            return MemberInfoResponse.of(member);
         } catch (Exception e) {
             throw new LoginFailedException("Invalid login info");
         }
     }
 
     @Transactional
-    public void signUp(SignUpRequest request, HttpServletResponse response) {
+    public MemberInfoResponse signUp(SignUpRequest request, HttpServletResponse response) {
         if (memberRepository.existsByUsername(request.getUsername())) {
             throw new MemberException("Duplicated username");
         }
         final Member member = request.toEntity();
         memberRepository.save(member);
         responseAuthTokens(member, response);
+        return MemberInfoResponse.of(member);
     }
 
     private void responseAuthTokens(Member member, HttpServletResponse response) {
@@ -55,5 +58,12 @@ public class MemberService {
         for (var cookie : cookies) {
             response.addCookie(cookie);
         }
+    }
+
+    public MemberInfoResponse me(Long id) {
+        final Member member = memberRepository.findById(id).orElseThrow(
+            () -> new MemberException("Invalid member")
+        );
+        return MemberInfoResponse.of(member);
     }
 }
