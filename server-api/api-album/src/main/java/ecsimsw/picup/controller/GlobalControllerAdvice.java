@@ -3,15 +3,15 @@ package ecsimsw.picup.controller;
 import ecsimsw.picup.alert.SlackMessageSender;
 import ecsimsw.picup.auth.exception.UnauthorizedException;
 import ecsimsw.picup.exception.AlbumException;
-import ecsimsw.picup.exception.InvalidStorageServerResponseException;
-import ecsimsw.picup.mq.MessageBrokerDownException;
 import ecsimsw.picup.exception.FileUploadFailException;
+import ecsimsw.picup.exception.InvalidStorageServerResponseException;
 import ecsimsw.picup.exception.UnsupportedFileTypeException;
-import ecsimsw.picup.logging.CustomLogger;
+import ecsimsw.picup.mq.MessageBrokerDownException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
@@ -41,6 +41,11 @@ public class GlobalControllerAdvice {
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
     public ResponseEntity<String> methodArgumentTypeMismatchException() {
         return ResponseEntity.badRequest().body("wrong type of api path variable or quest parameter");
+    }
+
+    @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
+    public ResponseEntity<String> wrongRequestMethod(HttpRequestMethodNotSupportedException e) {
+        return ResponseEntity.badRequest().body(e.getMessage());
     }
 
     @ExceptionHandler({MessageBrokerDownException.class})

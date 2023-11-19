@@ -62,7 +62,7 @@ public class AuthTokenServiceTest {
             when(authTokensCacheRepository.findById(MEMBER_USERNAME))
                 .thenReturn(Optional.of(new AuthTokens(MEMBER_USERNAME, expiredAccessToken, livedRefreshToken)));
 
-            authTokenService.reissue(expiredAccessToken, livedRefreshToken);
+            authTokenService.validateAndReissue(expiredAccessToken, livedRefreshToken);
         }
 
         @DisplayName("Access token 이 만료되어 있지 않다면 예외를 발생한다.")
@@ -70,7 +70,7 @@ public class AuthTokenServiceTest {
         public void accessTokenShouldBeExpired() {
             var livedAccessToken = JwtUtils.createToken(key, PAYLOAD, Integer.MAX_VALUE);
             assertThatThrownBy(
-                () -> authTokenService.reissue(livedAccessToken, livedRefreshToken)
+                () -> authTokenService.validateAndReissue(livedAccessToken, livedRefreshToken)
             ).isInstanceOf(TokenException.class);
         }
 
@@ -79,7 +79,7 @@ public class AuthTokenServiceTest {
         public void refreshTokenShouldBeLived() {
             var expiredRefreshToken = JwtUtils.createToken(key, PAYLOAD, 0);
             assertThatThrownBy(
-                () -> authTokenService.reissue(expiredRefreshToken, expiredRefreshToken)
+                () -> authTokenService.validateAndReissue(expiredRefreshToken, expiredRefreshToken)
             ).isInstanceOf(TokenException.class);
         }
 
@@ -92,7 +92,7 @@ public class AuthTokenServiceTest {
             var accessToken = JwtUtils.createToken(key, payloadFromUser1, 0);
             var refreshToken = JwtUtils.createToken(key, payloadFromUser2, Integer.MAX_VALUE);
             assertThatThrownBy(
-                () -> authTokenService.reissue(accessToken, refreshToken)
+                () -> authTokenService.validateAndReissue(accessToken, refreshToken)
             ).isInstanceOf(TokenException.class);
         }
 
@@ -103,7 +103,7 @@ public class AuthTokenServiceTest {
                 .thenReturn(Optional.of(new AuthTokens("DIF_USER", "DIF_AT", "DIF_RT")));
 
             assertThatThrownBy(
-                () -> authTokenService.reissue(expiredAccessToken, livedRefreshToken)
+                () -> authTokenService.validateAndReissue(expiredAccessToken, livedRefreshToken)
             ).isInstanceOf(TokenException.class);
         }
 
@@ -114,7 +114,7 @@ public class AuthTokenServiceTest {
                 .thenReturn(Optional.empty());
 
             assertThatThrownBy(
-                () -> authTokenService.reissue(expiredAccessToken, livedRefreshToken)
+                () -> authTokenService.validateAndReissue(expiredAccessToken, livedRefreshToken)
             ).isInstanceOf(TokenException.class);
         }
     }

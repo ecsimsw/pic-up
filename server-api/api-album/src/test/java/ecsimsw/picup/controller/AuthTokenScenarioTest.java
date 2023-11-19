@@ -1,21 +1,5 @@
 package ecsimsw.picup.controller;
 
-import static ecsimsw.picup.env.MemberFixture.INVALID_ACCESS_TOKEN;
-import static ecsimsw.picup.env.MemberFixture.INVALID_ACCESS_TOKEN_COOKIE;
-import static ecsimsw.picup.env.MemberFixture.INVALID_REFRESH_TOKEN_COOKIE;
-import static ecsimsw.picup.env.MemberFixture.MEMBER_ID;
-import static ecsimsw.picup.env.MemberFixture.MEMBER_USERNAME;
-import static ecsimsw.picup.env.MemberFixture.VALID_ACCESS_TOKEN;
-import static ecsimsw.picup.env.MemberFixture.VALID_ACCESS_TOKEN_COOKIE;
-import static ecsimsw.picup.env.MemberFixture.VALID_REFRESH_TOKEN;
-import static ecsimsw.picup.env.MemberFixture.VALID_REFRESH_TOKEN_COOKIE;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
 import ecsimsw.picup.auth.domain.AuthTokens;
 import ecsimsw.picup.auth.domain.AuthTokensCacheRepository;
 import ecsimsw.picup.auth.dto.AuthTokenPayload;
@@ -33,6 +17,11 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
+
+import static ecsimsw.picup.env.MemberFixture.*;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @TestPropertySource(locations = "/authToken.properties")
 @ExtendWith(MockitoExtension.class)
@@ -122,7 +111,7 @@ public class AuthTokenScenarioTest {
         when(authTokenService.getPayloadFromToken(VALID_ACCESS_TOKEN))
             .thenReturn(new AuthTokenPayload(MEMBER_ID, MEMBER_USERNAME));
 
-        when(authTokenService.reissue(INVALID_ACCESS_TOKEN, VALID_REFRESH_TOKEN))
+        when(authTokenService.validateAndReissue(INVALID_ACCESS_TOKEN, VALID_REFRESH_TOKEN))
             .thenReturn(new AuthTokens(MEMBER_USERNAME, VALID_ACCESS_TOKEN, VALID_REFRESH_TOKEN));
 
         when(authTokenService.isValidToken(VALID_ACCESS_TOKEN))

@@ -39,7 +39,7 @@ public class AuthTokenService {
         return authTokens;
     }
 
-    public AuthTokens reissue(String accessToken, String refreshToken) {
+    public AuthTokens validateAndReissue(String accessToken, String refreshToken) {
         JwtUtils.requireExpired(jwtSecretKey, accessToken);
         JwtUtils.requireLived(jwtSecretKey, refreshToken);
 

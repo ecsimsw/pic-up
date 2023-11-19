@@ -42,7 +42,7 @@ public class AuthTokenFilter extends OncePerRequestFilter {
                 filterChain.doFilter(request, response);
                 return;
             }
-            var reissued = tokenService.reissue(
+            var reissued = tokenService.validateAndReissue(
                 getTokenFromCookies(cookies, ACCESS_TOKEN_COOKIE_KEY),
                 getTokenFromCookies(cookies, REFRESH_TOKEN_COOKIE_KEY)
             );
