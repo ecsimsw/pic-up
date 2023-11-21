@@ -1,5 +1,7 @@
 package ecsimsw.picup.dto;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import lombok.Getter;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -19,8 +21,13 @@ public class StorageImageUploadRequest {
         REQUEST_HEADERS.setContentType(MediaType.MULTIPART_FORM_DATA);
     }
 
+    @NotBlank
     private final Long userId;
+
+    @NotNull
     private final MultipartFile file;
+
+    @NotBlank
     private final String tag;
 
     public StorageImageUploadRequest(Long userId, MultipartFile file, String tag) {
