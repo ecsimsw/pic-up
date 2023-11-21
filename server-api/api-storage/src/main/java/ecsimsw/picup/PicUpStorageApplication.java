@@ -8,7 +8,6 @@ public class PicUpStorageApplication {
 
     public static void main(String[] args) {
         SpringApplication app = new SpringApplication(PicUpStorageApplication.class);
-        app.setAdditionalProfiles("dev");
         app.run(args);
     }
 }
