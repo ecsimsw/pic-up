@@ -99,7 +99,6 @@ public class PictureService {
     @Cacheable(key = "{#userId, #albumId}",  value = "userPictureFirstPageDefaultSize",condition = "{ #cursor.isEmpty() && #limit == 10 }")
     @Transactional(readOnly = true)
     public List<PictureInfoResponse> cursorBasedFetch(Long userId, Long albumId, int limit, Optional<PictureSearchCursor> cursor) {
-        System.out.println("db query");
         checkUserAuthInAlbum(userId, albumId);
         if(cursor.isEmpty()) {
             final Slice<Picture> pictures = pictureRepository.findAllByAlbumId(albumId, PageRequest.of(0, limit, sortByCreatedAtAsc));

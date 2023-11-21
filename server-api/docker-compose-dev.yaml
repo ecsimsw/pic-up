@@ -12,7 +12,12 @@ services:
       - "name=redis"
       - "mode=standalone"
     restart: always
-    command: redis-server /usr/local/conf/redis.conf
+    command:
+      redis-server --save "" --appendonly no --databases 1 --maxmemory 256mb --maxmemory-policy allkeys-lru
+    deploy:
+      resources:
+        limits:
+          memory: 300M
 
   rabbitmq:
     image: rabbitmq:3-management-alpine
