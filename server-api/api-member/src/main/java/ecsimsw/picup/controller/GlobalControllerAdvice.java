@@ -1,5 +1,6 @@
 package ecsimsw.picup.controller;
 
+import ecsimsw.picup.auth.exception.UnauthorizedException;
 import ecsimsw.picup.exception.LoginFailedException;
 import ecsimsw.picup.exception.MemberException;
 import org.slf4j.Logger;
@@ -17,8 +18,8 @@ public class GlobalControllerAdvice {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(GlobalControllerAdvice.class);
 
-    @ExceptionHandler(LoginFailedException.class)
-    public ResponseEntity<String> loginFailedException(LoginFailedException e) {
+    @ExceptionHandler({LoginFailedException.class, UnauthorizedException.class})
+    public ResponseEntity<String> loginFailedException(IllegalArgumentException e) {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized request");
     }
 
@@ -44,7 +45,8 @@ public class GlobalControllerAdvice {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<String> unhandledException(Exception e) {
-        LOGGER.error("[SERV_ERR] {}", e.getMessage());
+        LOGGER.error("[SERV_ERR] {}" + e.getMessage(), e.getCause());
+        e.printStackTrace();
         return ResponseEntity.internalServerError().body("Unhandled exception");
     }
 }
