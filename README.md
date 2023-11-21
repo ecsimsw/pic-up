@@ -16,8 +16,8 @@
 - Cursor based pagination : [인덱스 기반에서 커서 기반 페이지네이션으로 / 더미 데이터 준비와 쿼리 테스트](https://ecsimsw.tistory.com/entry/%EC%BB%A4%EC%84%9C-%EA%B8%B0%EB%B0%98-%ED%8E%98%EC%9D%B4%EC%A7%80%EB%84%A4%EC%9D%B4%EC%85%98-%EB%8D%94%EB%AF%B8-%EB%8D%B0%EC%9D%B4%ED%84%B0-%EC%A4%80%EB%B9%84%EC%99%80-%EC%BF%BC%EB%A6%AC-%ED%85%8C%EC%8A%A4%ED%8A%B8)
 - DB replication : [Mysql DB Replication 으로 데이터 백업, 쿼리 분산](https://ecsimsw.tistory.com/entry/Mysql-DB-Replication-%EC%9C%BC%EB%A1%9C-%EB%8D%B0%EC%9D%B4%ED%84%B0-%EB%B0%B1%EC%97%85-%EC%BF%BC%EB%A6%AC-%EB%B6%84%EC%82%B0)
 - MSR for data backup : [Mysql DB Multi source replication 으로 여러 소스 데이터 백업](https://www.blog.ecsimsw.com/entry/Mysql-DB-Multi-source-replication-%EC%9C%BC%EB%A1%9C-%EB%B0%B1%EC%97%85-%EB%A1%9C%EA%B7%B8-%EB%8D%B0%EC%9D%B4%ED%84%B0-%EC%A4%91%EC%95%99%ED%99%94)
+- Data cache with Redis : [Picup의 캐시 사용 전략, 레디스 주요 옵션 정리](https://www.blog.ecsimsw.com/entry/%EC%BA%90%EC%8B%9C%EB%A1%9C-%EC%A1%B0%ED%9A%8C-%EC%84%B1%EB%8A%A5-%EA%B0%9C%EC%84%A0-%EB%A0%88%EB%94%94%EC%8A%A4-%EC%BA%90%EC%8B%9C-%EC%82%AC%EC%9A%A9-%EC%9D%B4%EC%9C%A0%EC%99%80-%EC%A0%84%EB%9E%B5)
 - File CRUD scenario : [Picup 에서 사진 파일을 다루는 방법, AWS S3 대신 Vultr object storage](https://ecsimsw.tistory.com/entry/Vultr-S3-%EC%99%80-%EC%9D%B4%EB%AF%B8%EC%A7%80-%EB%B0%B1%EC%97%85-%EC%A0%95%EC%B1%85)
-- Data cache with Redis
 - Retry, recover strategy, Dead letter queue
 - Jwt auth flow / Access token, Refresh token
 - Encryption, Decryption
