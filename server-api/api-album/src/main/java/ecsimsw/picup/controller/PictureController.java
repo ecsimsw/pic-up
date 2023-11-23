@@ -1,5 +1,7 @@
 package ecsimsw.picup.controller;
 
+import ecsimsw.auth.anotations.JwtPayload;
+import ecsimsw.picup.auth.AuthTokenPayload;
 import ecsimsw.picup.dto.PictureInfoRequest;
 import ecsimsw.picup.dto.PictureInfoResponse;
 import ecsimsw.picup.dto.PictureSearchCursor;
@@ -29,41 +31,45 @@ public class PictureController {
 
     @PostMapping("/api/album/{albumId}/picture")
     public ResponseEntity<PictureInfoResponse> createPicture(
+        @JwtPayload AuthTokenPayload userInfo,
         @PathVariable Long albumId,
         @RequestPart MultipartFile imageFile,
         @RequestPart PictureInfoRequest pictureInfo
     ) {
-        final PictureInfoResponse response = pictureService.create(1L, albumId, pictureInfo, imageFile);
+        final PictureInfoResponse response = pictureService.create(userInfo.getId(), albumId, pictureInfo, imageFile);
         return ResponseEntity.ok(response);
     }
 
     @GetMapping("/api/album/{albumId}/picture")
     public ResponseEntity<List<PictureInfoResponse>> getPictures(
+        @JwtPayload AuthTokenPayload userInfo,
         @PathVariable Long albumId,
         @RequestParam(defaultValue = "10") int limit,
         @RequestBody Optional<PictureSearchCursor> cursor
     ) {
-        final List<PictureInfoResponse> response = pictureService.cursorBasedFetch(1L, albumId, limit, cursor);
+        final List<PictureInfoResponse> response = pictureService.cursorBasedFetch(userInfo.getId(), albumId, limit, cursor);
         return ResponseEntity.ok(response);
     }
 
     @DeleteMapping("/api/album/{albumId}/picture/{pictureId}")
     public ResponseEntity<Void> deletePicture(
+        @JwtPayload AuthTokenPayload userInfo,
         @PathVariable Long albumId,
         @PathVariable Long pictureId
     ) {
-        pictureService.delete(1L, albumId, pictureId);
+        pictureService.delete(userInfo.getId(), albumId, pictureId);
         return ResponseEntity.ok().build();
     }
 
     @PutMapping("/api/album/{albumId}/picture/{pictureId}")
     public ResponseEntity<PictureInfoResponse> updatePicture(
+        @JwtPayload AuthTokenPayload userInfo,
         @PathVariable Long albumId,
         @PathVariable Long pictureId,
         @RequestPart PictureInfoRequest pictureInfo,
         @RequestPart Optional<MultipartFile> imageFile
     ) {
-        final PictureInfoResponse response = pictureService.update(1L, albumId, pictureId, pictureInfo, imageFile);
+        final PictureInfoResponse response = pictureService.update(userInfo.getId(), albumId, pictureId, pictureInfo, imageFile);
         return ResponseEntity.ok(response);
     }
 }

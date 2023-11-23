@@ -1,6 +1,6 @@
 package ecsimsw.picup.domain;
 
-import ecsimsw.picup.auth.exception.UnauthorizedException;
+import ecsimsw.picup.auth.UnauthorizedException;
 import ecsimsw.picup.exception.InvalidResourceException;
 
 import java.io.FileNotFoundException;

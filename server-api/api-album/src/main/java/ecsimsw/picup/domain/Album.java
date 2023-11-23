@@ -1,6 +1,6 @@
 package ecsimsw.picup.domain;
 
-import ecsimsw.picup.auth.exception.UnauthorizedException;
+import ecsimsw.picup.auth.UnauthorizedException;
 import ecsimsw.picup.ecrypt.AES256Converter;
 import java.time.LocalDateTime;
 import javax.persistence.Convert;

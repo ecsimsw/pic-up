@@ -1,10 +1,10 @@
 package ecsimsw.picup.controller;
 
-import ecsimsw.picup.auth.resolver.LoginUser;
-import ecsimsw.picup.auth.resolver.LoginUserInfo;
+import ecsimsw.auth.anotations.JwtPayload;
+import ecsimsw.picup.auth.AuthTokenPayload;
+import ecsimsw.picup.dto.MemberInfoResponse;
 import ecsimsw.picup.dto.SignInRequest;
 import ecsimsw.picup.dto.SignUpRequest;
-import ecsimsw.picup.dto.MemberInfoResponse;
 import ecsimsw.picup.service.MemberService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -44,7 +44,7 @@ public class MemberController {
 
     @GetMapping("/api/member/me")
     public ResponseEntity<MemberInfoResponse> me(
-        @LoginUser LoginUserInfo userInfo
+        @JwtPayload AuthTokenPayload userInfo
     ) {
         final MemberInfoResponse me = memberService.me(userInfo.getId());
         return ResponseEntity.ok(me);
