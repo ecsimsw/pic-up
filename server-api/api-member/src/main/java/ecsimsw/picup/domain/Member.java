@@ -32,15 +32,9 @@ public class Member {
         this(null, username, password);
     }
 
-    public static Member fromPlainPassword(String username, String password) {
-        final Password encrypted = Password.encryptFrom(password);
-        return new Member(username, encrypted);
-    }
-
-    public void authenticate(String password) {
-        if(this.password.isSame(password)) {
-            return;
+    public void authenticate(Password password) {
+        if(!this.password.isSame(password)) {
+            throw new LoginFailedException("Invalid authenticate");
         }
-        throw new LoginFailedException("Invalid authenticate");
     }
 }

@@ -1,9 +1,7 @@
 package ecsimsw.picup.controller;
 
-import ecsimsw.picup.auth.domain.AuthTokens;
-import ecsimsw.picup.auth.domain.AuthTokensCacheRepository;
-import ecsimsw.picup.auth.dto.AuthTokenPayload;
-import ecsimsw.picup.auth.service.AuthTokenService;
+import ecsimsw.auth.domain.AuthTokensCacheRepository;
+import ecsimsw.auth.service.AuthTokenService;
 import ecsimsw.picup.service.AlbumService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -19,7 +17,6 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static ecsimsw.picup.env.MemberFixture.*;
-import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -108,19 +105,19 @@ public class AuthTokenScenarioTest {
 
     @BeforeEach
     public void mockAuthTokenServiceBehavior() {
-        when(authTokenService.getPayloadFromToken(VALID_ACCESS_TOKEN))
-            .thenReturn(new AuthTokenPayload(MEMBER_ID, MEMBER_USERNAME));
-
-        when(authTokenService.validateAndReissue(INVALID_ACCESS_TOKEN, VALID_REFRESH_TOKEN))
-            .thenReturn(new AuthTokens(MEMBER_USERNAME, VALID_ACCESS_TOKEN, VALID_REFRESH_TOKEN));
-
-        when(authTokenService.isValidToken(VALID_ACCESS_TOKEN))
-            .thenReturn(true);
-
-        when(authTokenService.isValidToken(VALID_REFRESH_TOKEN))
-            .thenReturn(true);
-
-        when(authTokenService.isValidToken(INVALID_ACCESS_TOKEN))
-            .thenReturn(false);
+//        when(authTokenService.getPayloadFromToken(VALID_ACCESS_TOKEN))
+//            .thenReturn(new AuthTokenPayload(MEMBER_ID, MEMBER_USERNAME));
+//
+//        when(authTokenService.validateAndReissue(INVALID_ACCESS_TOKEN, VALID_REFRESH_TOKEN))
+//            .thenReturn(new AuthTokens(MEMBER_USERNAME, VALID_ACCESS_TOKEN, VALID_REFRESH_TOKEN));
+//
+//        when(authTokenService.isValidToken(VALID_ACCESS_TOKEN))
+//            .thenReturn(true);
+//
+//        when(authTokenService.isValidToken(VALID_REFRESH_TOKEN))
+//            .thenReturn(true);
+//
+//        when(authTokenService.isValidToken(INVALID_ACCESS_TOKEN))
+//            .thenReturn(false);
     }
 }

@@ -1,5 +1,6 @@
 package ecsimsw.picup.dto;
 
+import ecsimsw.picup.auth.AuthTokenPayload;
 import ecsimsw.picup.domain.Member;
 import lombok.Getter;
 import lombok.Setter;
@@ -21,5 +22,9 @@ public class MemberInfoResponse {
             member.getId(),
             member.getUsername()
         );
+    }
+
+    public AuthTokenPayload toTokenPayload() {
+        return new AuthTokenPayload(id, username);
     }
 }

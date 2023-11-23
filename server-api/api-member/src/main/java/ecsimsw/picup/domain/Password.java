@@ -1,6 +1,5 @@
 package ecsimsw.picup.domain;
 
-import ecsimsw.picup.ecrypt.Sha256Utils;
 import lombok.Getter;
 
 import javax.persistence.Embeddable;
@@ -21,14 +20,7 @@ public class Password {
         this.salt = salt;
     }
 
-    public static Password encryptFrom(String originPassword) {
-        final String salt = Sha256Utils.getSalt();
-        final String encrypted = Sha256Utils.encrypt(originPassword, salt);
-        return new Password(encrypted, salt);
-    }
-
-    public boolean isSame(String otherOriginPassword) {
-        final String otherEncrypted = Sha256Utils.encrypt(otherOriginPassword, salt);
-        return this.encrypted.equals(otherEncrypted);
+    public boolean isSame(Password other) {
+        return this.encrypted.equals(other.encrypted);
     }
 }

@@ -10,7 +10,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
-@EnableSimpleAuth
 @Configuration
 public class SimpleAuthConfig implements WebMvcConfigurer {
 
@@ -21,8 +20,8 @@ public class SimpleAuthConfig implements WebMvcConfigurer {
     private final int refreshTokenTTL;
 
     public SimpleAuthConfig(
-        @Value("ecsimsw.access.token.ttl.sec") int accessTokenTTL,
-        @Value("ecsimsw.refresh.token.ttl.sec") int refreshTokenTTL
+        @Value("${ecsimsw.access.token.ttl.sec}") int accessTokenTTL,
+        @Value("${ecsimsw.refresh.token.ttl.sec}") int refreshTokenTTL
     ) {
         this.accessTokenTTL = accessTokenTTL;
         this.refreshTokenTTL = refreshTokenTTL;
