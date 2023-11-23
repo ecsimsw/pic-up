@@ -1,6 +1,5 @@
 package ecsimsw.picup.dto;
 
-import ecsimsw.picup.domain.Member;
 import lombok.Getter;
 
 import javax.validation.constraints.NotBlank;
@@ -17,9 +16,5 @@ public class SignUpRequest {
     public SignUpRequest(String username, String password) {
         this.username = username;
         this.password = password;
-    }
-
-    public Member toEntity() {
-        return Member.fromPlainPassword(username, password);
     }
 }

@@ -1,5 +1,8 @@
 package ecsimsw.picup.repository;
 
+import ecsimsw.auth.anotations.EnableSimpleAuth;
+import ecsimsw.auth.interceptor.AuthInterceptor;
+import ecsimsw.auth.service.AuthTokenService;
 import ecsimsw.picup.domain.Album;
 import ecsimsw.picup.domain.AlbumRepository;
 import ecsimsw.picup.dto.AlbumSearchCursor;
@@ -7,6 +10,8 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.TestPropertySource;
@@ -16,7 +21,7 @@ import java.util.List;
 
 import static ecsimsw.picup.domain.AlbumRepository.AlbumSearchSpecs.*;
 import static ecsimsw.picup.env.AlbumFixture.*;
-import static ecsimsw.picup.env.MemberFixture.*;
+import static ecsimsw.picup.env.MemberFixture.MEMBER_ID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
@@ -84,14 +89,14 @@ public class AlbumRepositoryTest {
         var album6 = albumRepository.save(new Album(2L, "albumName6", "resource6", sameTime));
         var album7 = albumRepository.save(new Album(1L, "albumName7", "resource7", sameTime));
         var album8 = albumRepository.save(new Album(1L, "albumName8", "resource8", LocalDateTime.now()));
-        var album9 = albumRepository.save(new Album( 1L, "albumName9", "resource9", sameTime));
+        var album9 = albumRepository.save(new Album(1L, "albumName9", "resource9", sameTime));
 
         var prev = new AlbumSearchCursor(album2);
         var limit = 5;
         final List<Album> albums = albumRepository.fetch(
             where(isUser(1L))
                 .and(createdLater(prev.getCreatedAt()).or(equalsCreatedTime(prev.getCreatedAt()).and(greaterId(prev.getId())))
-            ), limit, ascByCreatedAt
+                ), limit, ascByCreatedAt
         );
         assertThat(albums).isEqualTo(List.of(album3, album5, album7, album9, album8));
     }

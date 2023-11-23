@@ -1,6 +1,7 @@
 package ecsimsw.picup.controller;
 
 import ecsimsw.auth.anotations.JwtPayload;
+import ecsimsw.auth.service.AuthTokenService;
 import ecsimsw.picup.auth.AuthTokenPayload;
 import ecsimsw.picup.dto.MemberInfoResponse;
 import ecsimsw.picup.dto.SignInRequest;
@@ -19,9 +20,11 @@ import javax.validation.Valid;
 public class MemberController {
 
     private final MemberService memberService;
+    private final AuthTokenService<AuthTokenPayload> authTokenService;
 
-    public MemberController(MemberService memberService) {
+    public MemberController(MemberService memberService, AuthTokenService<AuthTokenPayload> authTokenService) {
         this.memberService = memberService;
+        this.authTokenService = authTokenService;
     }
 
     @PostMapping("/api/member/signin")
@@ -29,7 +32,8 @@ public class MemberController {
         @Valid @RequestBody SignInRequest request,
         HttpServletResponse response
     ) {
-        final MemberInfoResponse me = memberService.signIn(request, response);
+        final MemberInfoResponse me = memberService.signIn(request);
+        authTokenService.issue(response, me.toTokenPayload());
         return ResponseEntity.ok(me);
     }
 
@@ -38,7 +42,8 @@ public class MemberController {
         @Valid @RequestBody SignUpRequest request,
         HttpServletResponse response
     ) {
-        final MemberInfoResponse me = memberService.signUp(request, response);
+        final MemberInfoResponse me = memberService.signUp(request);
+        authTokenService.issue(response, me.toTokenPayload());
         return ResponseEntity.ok(me);
     }
 

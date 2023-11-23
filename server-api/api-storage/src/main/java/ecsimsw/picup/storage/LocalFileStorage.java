@@ -2,7 +2,7 @@ package ecsimsw.picup.storage;
 
 import ecsimsw.picup.domain.ImageFile;
 import ecsimsw.picup.domain.StorageKey;
-import ecsimsw.picup.ecrypt.AES256Utils;
+import ecsimsw.picup.ecrypt.EncryptService;
 import ecsimsw.picup.exception.StorageException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -18,20 +18,23 @@ public class LocalFileStorage implements ImageStorage {
 
     private final String rootPath;
     private final String encryptKey;
+    private final EncryptService encryptService;
 
     public LocalFileStorage(
         @Value("${file.root.directory}") String rootPath,
-        @Value("${data.aes.encryption.key}") String encryptKey
+        @Value("${data.aes.encryption.key}") String encryptKey,
+        EncryptService encryptService
     ) {
         this.rootPath = rootPath;
         this.encryptKey = encryptKey;
+        this.encryptService = encryptService;
     }
 
     @Override
     public void create(String resourceKey, ImageFile imageFile) {
         try {
             final String storagePath = storagePath(resourceKey);
-            final byte[] encrypted = AES256Utils.encrypt(imageFile.getFile(), encryptKey);
+            final byte[] encrypted = encryptService.encryptWithAES256(imageFile.getFile());
             Files.write(Paths.get(storagePath), encrypted);
         } catch (IOException e) {
             throw new StorageException("Fail to create image file : " + resourceKey, e);
@@ -50,7 +53,7 @@ public class LocalFileStorage implements ImageStorage {
             }
             final byte[] encrypted = new byte[(int) file.length()];
             inputStream.read(encrypted);
-            final byte[] decrypted = AES256Utils.decrypt(encrypted, encryptKey);
+            final byte[] decrypted = encryptService.encryptWithAES256(encrypted);
             return ImageFile.of(resourceKey, decrypted);
         } catch (FileNotFoundException e) {
             throw new FileNotFoundException("file not exists : " + resourceKey);
