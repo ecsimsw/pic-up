@@ -10,6 +10,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
+@EnableSimpleAuth
 @Configuration
 public class SimpleAuthConfig implements WebMvcConfigurer {
 

@@ -1,18 +1,15 @@
 package ecsimsw.picup.repository;
 
-import ecsimsw.auth.anotations.EnableSimpleAuth;
-import ecsimsw.auth.interceptor.AuthInterceptor;
-import ecsimsw.auth.service.AuthTokenService;
 import ecsimsw.picup.domain.Album;
 import ecsimsw.picup.domain.AlbumRepository;
 import ecsimsw.picup.dto.AlbumSearchCursor;
+import ecsimsw.picup.ecrypt.EncryptService;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.TestPropertySource;
 
@@ -28,6 +25,9 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 @TestPropertySource(locations = "/databaseConfig.properties")
 @DataJpaTest
 public class AlbumRepositoryTest {
+
+    @MockBean
+    private EncryptService encryptService;
 
     @Autowired
     private AlbumRepository albumRepository;

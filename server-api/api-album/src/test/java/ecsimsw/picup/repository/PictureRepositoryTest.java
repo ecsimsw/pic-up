@@ -15,17 +15,23 @@ import ecsimsw.picup.domain.PictureRepository;
 import ecsimsw.picup.dto.PictureSearchCursor;
 import java.time.LocalDateTime;
 import java.util.List;
+
+import ecsimsw.picup.ecrypt.EncryptService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.TestPropertySource;
 
 @TestPropertySource(locations = "/databaseConfig.properties")
 @DataJpaTest
 public class PictureRepositoryTest {
+
+    @MockBean
+    private EncryptService encryptService;
 
     @Autowired
     private PictureRepository pictureRepository;
