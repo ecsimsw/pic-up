@@ -7,6 +7,7 @@
     │   ├── kong-helm-values-2.9.yaml
     │   ├── kong-v2.25.yaml
     │   ├── kube-state-metrics-v2.8.yaml
+    │   ├── nginx-ingress-v1.8.2.yaml
     │   └── redis-7.0.11-helm-values.yaml
     ├── 01_cluster-nodes.md
     ├── 02_master-node.md
@@ -26,5 +27,4 @@
     ├── 16_vagrant network.md
     ├── 17_github-actions-runner-controller.md
     ├── 18_metric-server.md
-    ├── 19_digging-vagrant-public-network.md
-    └── 20_kong ingress 설정기.md
+    └── 19_digging-vagrant-public-network.md
