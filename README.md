@@ -18,8 +18,8 @@
 - MSR for data backup : [Mysql DB Multi source replication 으로 여러 소스 데이터 백업](https://www.blog.ecsimsw.com/entry/Mysql-DB-Multi-source-replication-%EC%9C%BC%EB%A1%9C-%EB%B0%B1%EC%97%85-%EB%A1%9C%EA%B7%B8-%EB%8D%B0%EC%9D%B4%ED%84%B0-%EC%A4%91%EC%95%99%ED%99%94)
 - Data cache with Redis : [Picup의 캐시 사용 전략, 레디스 주요 옵션 정리](https://www.blog.ecsimsw.com/entry/%EC%BA%90%EC%8B%9C%EB%A1%9C-%EC%A1%B0%ED%9A%8C-%EC%84%B1%EB%8A%A5-%EA%B0%9C%EC%84%A0-%EB%A0%88%EB%94%94%EC%8A%A4-%EC%BA%90%EC%8B%9C-%EC%82%AC%EC%9A%A9-%EC%9D%B4%EC%9C%A0%EC%99%80-%EC%A0%84%EB%9E%B5)
 - File CRUD scenario : [Picup 에서 사진 파일을 다루는 방법, AWS S3 대신 Vultr object storage](https://ecsimsw.tistory.com/entry/Vultr-S3-%EC%99%80-%EC%9D%B4%EB%AF%B8%EC%A7%80-%EB%B0%B1%EC%97%85-%EC%A0%95%EC%B1%85)
+- Jwt auth flow / library : [simple-auth / 토큰 인증 시나리오를 대신해주는 라이브러리](https://ecsimsw.tistory.com/entry/simple-auth-%ED%86%A0%ED%81%B0-%EC%9D%B8%EC%A6%9D-%EC%8B%9C%EB%82%98%EB%A6%AC%EC%98%A4%EB%A5%BC-%EB%8C%80%EC%8B%A0%ED%95%B4%EC%A3%BC%EB%8A%94-%EB%9D%BC%EC%9D%B4%EB%B8%8C%EB%9F%AC%EB%A6%AC)
 - Retry, recover strategy, Dead letter queue
-- Jwt auth flow / Access token, Refresh token
 - Encryption, Decryption
 - Test with JUnit5, Mockito, Embedded DB
 
