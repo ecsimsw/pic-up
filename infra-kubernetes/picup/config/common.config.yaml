@@ -5,8 +5,9 @@ metadata:
   namespace: picup
 data:
   SPRING_PROFILES_ACTIVE: "prod"
-  TOKEN_SECRET: "ecsimswtemptokensecretqwertyqwerty123123123"
-  DATA_AES_ENCRYPTION_KEY: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+  TOKEN_SECRET: "ecsimswtemptokensecretqyqwerty123123123"
+  DATA_AES_ENCRYPTION_KEY: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaabbb"
+  DATA_AES_ENCRYPTION_IV: "0123456789012345"
   PICUP_MESSAGE_QUEUE_HOST: "cloud.ecsimsw.com"
   PICUP_MESSAGE_QUEUE_PORT: "5672"
   PICUP_MESSAGE_QUEUE_USERNAME: "admin"
