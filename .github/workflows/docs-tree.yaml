@@ -1,8 +1,7 @@
 name: directory list
 on:
   push:
-    branches:
-      - release
+    branches: [ release ]
 jobs:
   docs-server:
     runs-on: ubuntu-latest

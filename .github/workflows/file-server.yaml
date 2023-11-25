@@ -1,10 +1,6 @@
-#name: directory list
-#on:
-#  workflow_dispatch:
-#  push:
-#    branches:
-#      - main
-#jobs:
+name: build file server
+on: workflow_dispatch
+jobs:
 #  server-static-files:
 #    runs-on: ecsimsw-ga
 #    permissions: write-all
