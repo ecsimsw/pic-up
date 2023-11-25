@@ -1,8 +1,8 @@
-#name: directory list
-#on:
-#  push:
-#    branches: [ release ]
-#jobs:
+name: directory list
+on:
+  push:
+    branches: [ release ]
+jobs:
 #  server-static-files:
 #    runs-on: ecsimsw-ga
 #    permissions: write-all
