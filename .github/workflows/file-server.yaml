@@ -1,7 +1,5 @@
 name: build file server
-on:
-  push:
-    branches: [ release ]
+on: workflow_dispatch
 jobs:
 #  server-static-files:
 #    runs-on: ecsimsw-ga
