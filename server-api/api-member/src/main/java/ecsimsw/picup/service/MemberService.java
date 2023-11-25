@@ -1,40 +1,38 @@
 package ecsimsw.picup.service;
 
-import ecsimsw.picup.auth.domain.AuthTokens;
-import ecsimsw.picup.auth.service.AuthTokenService;
-import ecsimsw.picup.auth.service.TokenCookieUtils;
+import ecrypt.service.SHA256Hash;
 import ecsimsw.picup.domain.Member;
 import ecsimsw.picup.domain.MemberRepository;
+import ecsimsw.picup.domain.Password;
 import ecsimsw.picup.dto.MemberInfoResponse;
 import ecsimsw.picup.dto.SignInRequest;
 import ecsimsw.picup.dto.SignUpRequest;
+import ecsimsw.picup.ecrypt.EncryptService;
+import ecsimsw.picup.ecrypt.SHA256EncryptResponse;
 import ecsimsw.picup.exception.LoginFailedException;
 import ecsimsw.picup.exception.MemberException;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletResponse;
-import java.util.List;
 
 @Service
 public class MemberService {
 
     private final MemberRepository memberRepository;
-    private final AuthTokenService authTokenService;
+    private final EncryptService encryptService;
 
-    public MemberService(MemberRepository memberRepository, AuthTokenService authTokenService) {
+    public MemberService(MemberRepository memberRepository, EncryptService encryptService) {
         this.memberRepository = memberRepository;
-        this.authTokenService = authTokenService;
+        this.encryptService = encryptService;
     }
 
     @Transactional
-    public MemberInfoResponse signIn(SignInRequest request, HttpServletResponse response) {
+    public MemberInfoResponse signIn(SignInRequest request) {
         try {
+            final Password password = password(request.getPassword());
             final Member member = memberRepository.findByUsername(request.getUsername())
                 .orElseThrow(() -> new LoginFailedException("Invalid login info"));
-            member.authenticate(request.getPassword());
-            responseAuthTokens(member, response);
+            member.authenticate(password);
             return MemberInfoResponse.of(member);
         } catch (Exception e) {
             throw new LoginFailedException("Invalid login info");
@@ -42,28 +40,26 @@ public class MemberService {
     }
 
     @Transactional
-    public MemberInfoResponse signUp(SignUpRequest request, HttpServletResponse response) {
+    public MemberInfoResponse signUp(SignUpRequest request) {
         if (memberRepository.existsByUsername(request.getUsername())) {
             throw new MemberException("Duplicated username");
         }
-        final Member member = request.toEntity();
+        final Password password = password(request.getPassword());
+        final Member member = new Member(request.getUsername(), password);
         memberRepository.save(member);
-        responseAuthTokens(member, response);
         return MemberInfoResponse.of(member);
     }
 
-    private void responseAuthTokens(Member member, HttpServletResponse response) {
-        final AuthTokens authTokens = authTokenService.issueAuthTokens(member.getId(), member.getUsername());
-        final List<Cookie> cookies = TokenCookieUtils.createAuthCookies(authTokens);
-        for (var cookie : cookies) {
-            response.addCookie(cookie);
-        }
-    }
-
+    @Transactional(readOnly = true)
     public MemberInfoResponse me(Long id) {
         final Member member = memberRepository.findById(id).orElseThrow(
             () -> new MemberException("Invalid member")
         );
         return MemberInfoResponse.of(member);
+    }
+
+    private Password password(String plainPassword) {
+        final SHA256EncryptResponse encrypted = encryptService.encryptWithSHA256(plainPassword);
+        return new Password(encrypted.value(), encrypted.salt());
     }
 }

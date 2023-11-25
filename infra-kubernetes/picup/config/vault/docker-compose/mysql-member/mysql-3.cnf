@@ -1,8 +1,0 @@
-[mysqld]
-
-# prefix of binary log
-log-bin=mysql-member-bin
-
-server-id=3
-
-default_authentication_plugin=mysql_native_password

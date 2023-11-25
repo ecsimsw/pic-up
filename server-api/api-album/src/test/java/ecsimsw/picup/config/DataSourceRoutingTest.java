@@ -10,7 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @TestPropertySource(locations = "/application-dev.properties")
-@SpringBootTest()
+@SpringBootTest
 class DataSourceRoutingTest {
 
     private final RoutingDataSource routingDataSource;

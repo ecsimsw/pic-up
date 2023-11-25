@@ -1,11 +1,13 @@
 package ecsimsw.picup.controller;
 
-import ecsimsw.picup.auth.resolver.LoginUser;
-import ecsimsw.picup.auth.resolver.LoginUserInfo;
+import ecsimsw.auth.anotations.JwtPayload;
+import ecsimsw.picup.auth.AuthTokenPayload;
 import ecsimsw.picup.dto.ImageResponse;
 import ecsimsw.picup.service.StorageService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 public class StorageReadController {
@@ -18,7 +20,7 @@ public class StorageReadController {
 
     @GetMapping("/api/storage/{resourceKey}")
     public ResponseEntity<byte[]> read(
-        @LoginUser LoginUserInfo loginUser,
+        @JwtPayload AuthTokenPayload loginUser,
         @PathVariable String resourceKey
     ) {
         final ImageResponse imageResponse = storageService.read(loginUser.getId(), resourceKey);

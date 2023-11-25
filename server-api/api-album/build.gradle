@@ -1,20 +1,11 @@
 dependencies {
     implementation project(':api-core')
 
-    // Spring validation
-    implementation 'org.springframework.boot:spring-boot-starter-validation'
-
     // Spring retry
     implementation 'org.springframework.retry:spring-retry'
 
     // Spring AOP
     implementation 'org.springframework.boot:spring-boot-starter-aop'
-
-    // Redis
-    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
-
-    // Google Guava
-    implementation 'com.google.guava:guava:11.0.2'
 
     // H2
     implementation 'com.h2database:h2:1.4.199'

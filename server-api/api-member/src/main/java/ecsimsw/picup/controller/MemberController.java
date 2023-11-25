@@ -1,10 +1,11 @@
 package ecsimsw.picup.controller;
 
-import ecsimsw.picup.auth.resolver.LoginUser;
-import ecsimsw.picup.auth.resolver.LoginUserInfo;
+import ecsimsw.auth.anotations.JwtPayload;
+import ecsimsw.auth.service.AuthTokenService;
+import ecsimsw.picup.auth.AuthTokenPayload;
+import ecsimsw.picup.dto.MemberInfoResponse;
 import ecsimsw.picup.dto.SignInRequest;
 import ecsimsw.picup.dto.SignUpRequest;
-import ecsimsw.picup.dto.MemberInfoResponse;
 import ecsimsw.picup.service.MemberService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,9 +20,11 @@ import javax.validation.Valid;
 public class MemberController {
 
     private final MemberService memberService;
+    private final AuthTokenService<AuthTokenPayload> authTokenService;
 
-    public MemberController(MemberService memberService) {
+    public MemberController(MemberService memberService, AuthTokenService<AuthTokenPayload> authTokenService) {
         this.memberService = memberService;
+        this.authTokenService = authTokenService;
     }
 
     @PostMapping("/api/member/signin")
@@ -29,7 +32,8 @@ public class MemberController {
         @Valid @RequestBody SignInRequest request,
         HttpServletResponse response
     ) {
-        final MemberInfoResponse me = memberService.signIn(request, response);
+        final MemberInfoResponse me = memberService.signIn(request);
+        authTokenService.issue(response, me.toTokenPayload());
         return ResponseEntity.ok(me);
     }
 
@@ -38,13 +42,14 @@ public class MemberController {
         @Valid @RequestBody SignUpRequest request,
         HttpServletResponse response
     ) {
-        final MemberInfoResponse me = memberService.signUp(request, response);
+        final MemberInfoResponse me = memberService.signUp(request);
+        authTokenService.issue(response, me.toTokenPayload());
         return ResponseEntity.ok(me);
     }
 
     @GetMapping("/api/member/me")
     public ResponseEntity<MemberInfoResponse> me(
-        @LoginUser LoginUserInfo userInfo
+        @JwtPayload AuthTokenPayload userInfo
     ) {
         final MemberInfoResponse me = memberService.me(userInfo.getId());
         return ResponseEntity.ok(me);

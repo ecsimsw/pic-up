@@ -1,8 +1,0 @@
-[mysqld]
-
-# prefix of binary log
-log-bin=mysql-backup-bin
-
-server-id=4
-
-default_authentication_plugin=mysql_native_password

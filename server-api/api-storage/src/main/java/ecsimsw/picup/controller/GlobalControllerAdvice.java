@@ -1,10 +1,11 @@
 package ecsimsw.picup.controller;
 
 import ecsimsw.picup.alert.SlackMessageSender;
-import ecsimsw.picup.auth.exception.UnauthorizedException;
+import ecsimsw.picup.auth.UnauthorizedException;
 import ecsimsw.picup.exception.InvalidResourceException;
 import ecsimsw.picup.logging.CustomLogger;
-import org.apache.tomcat.util.http.fileupload.impl.SizeLimitExceededException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
@@ -17,7 +18,7 @@ import javax.validation.ConstraintViolationException;
 @ControllerAdvice
 public class GlobalControllerAdvice {
 
-    private static final CustomLogger LOGGER = CustomLogger.init(GlobalControllerAdvice.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(GlobalControllerAdvice.class);
 
     @ExceptionHandler(InvalidResourceException.class)
     public ResponseEntity<String> fileIOException(InvalidResourceException e) {

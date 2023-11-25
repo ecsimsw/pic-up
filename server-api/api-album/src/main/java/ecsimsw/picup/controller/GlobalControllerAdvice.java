@@ -1,7 +1,7 @@
 package ecsimsw.picup.controller;
 
 import ecsimsw.picup.alert.SlackMessageSender;
-import ecsimsw.picup.auth.exception.UnauthorizedException;
+import ecsimsw.picup.auth.UnauthorizedException;
 import ecsimsw.picup.exception.AlbumException;
 import ecsimsw.picup.exception.FileUploadFailException;
 import ecsimsw.picup.exception.InvalidStorageServerResponseException;

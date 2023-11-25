@@ -1,5 +1,6 @@
 package ecsimsw.picup.dto;
 
+import javax.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -7,6 +8,7 @@ import lombok.Setter;
 @Getter
 public class PictureInfoRequest {
 
+    @NotBlank
     private String description;
 
     public PictureInfoRequest() {

@@ -2,8 +2,8 @@ dependencies {
     // log4j2
     implementation 'org.springframework.boot:spring-boot-starter-log4j2'
 
-    // redis
-    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+    // encrypt
+    implementation 'com.github.ecsimsw:utils-encrypt:1.0.7'
 }
 
 configurations {

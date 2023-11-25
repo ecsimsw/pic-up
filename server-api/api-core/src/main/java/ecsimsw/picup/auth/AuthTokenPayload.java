@@ -1,6 +1,5 @@
-package ecsimsw.picup.auth.dto;
+package ecsimsw.picup.auth;
 
-import ecsimsw.picup.auth.exception.TokenException;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -20,12 +19,5 @@ public class AuthTokenPayload {
     public AuthTokenPayload(Long id, String username) {
         this.id = id;
         this.username = username;
-    }
-
-    public void checkSameUser(AuthTokenPayload otherAuthToken) {
-        if(this.id.equals(otherAuthToken.id) && this.username.equals(otherAuthToken.username)) {
-            return;
-        }
-        throw new TokenException("Tokens are not from same user");
     }
 }

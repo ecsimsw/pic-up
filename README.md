@@ -1,6 +1,6 @@
 # Pic up
-저희 부모님은 클라우드 사용을 어려워 하십니다.    
-아직도 어렸을 때 인화해 둔 아날로그 식 앨범만을 좋아하십니다.          
+저희 부모님은 클라우드 스토리지 사용을 어려워 하십니다.    
+아직도 어렸을 때 인화해 둔 아날로그 식 앨범을 더 좋아하세요.        
 부모님께서 쉽게 사용하실 수 있는 사진 스토리지를 만들고 있습니다.     
 
 ### Skills
@@ -45,9 +45,8 @@
 <img width="1299" alt="image" src="https://github.com/ecsimsw/pic-up/assets/46060746/2fc85f4c-9f20-4142-bdc5-b2ecb72c7092">
 
 
-### 이번 스프린트
-- [x] Cache first page
-- [x] Set NFS volume for main image storage
+### 다음 스프린트
+- [x] Auth scenario library로 분리하기
 - [x] S3 mocking for dev, test
-- [ ] Gateway rate limiting
+- [ ] Main storage, Backup storage 업로드 동시 처리
 - [ ] Configure monitoring system
