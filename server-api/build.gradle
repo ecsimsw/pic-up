@@ -36,7 +36,6 @@ subprojects {
 
         // redis
         implementation 'org.springframework.boot:spring-boot-starter-data-redis'
-        testImplementation 'it.ozimov:embedded-redis:0.7.2'
 
         // Google Guava
         implementation 'com.google.guava:guava:11.0.2'
