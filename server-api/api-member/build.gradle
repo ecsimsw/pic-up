@@ -1,17 +1,11 @@
 dependencies {
     implementation project(':api-core')
 
-    // Spring validation
-    implementation 'org.springframework.boot:spring-boot-starter-validation'
-
     // H2
     runtimeOnly 'com.h2database:h2:1.4.199'
 
     // Mysql
     runtimeOnly 'com.mysql:mysql-connector-j'
-
-    //redis
-    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 }
 
 configurations {
