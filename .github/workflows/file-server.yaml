@@ -1,9 +1,7 @@
 #name: directory list
 #on:
-#  workflow_dispatch:
 #  push:
-#    branches:
-#      - main
+#    branches: [ release ]
 #jobs:
 #  server-static-files:
 #    runs-on: ecsimsw-ga
