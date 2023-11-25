@@ -1,4 +1,4 @@
-name: directory list
+name: build file server
 on:
   push:
     branches: [ release ]
