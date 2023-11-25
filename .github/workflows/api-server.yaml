@@ -1,9 +1,7 @@
-name: directory list
+name: build api server application
 on:
-  workflow_dispatch:
   push:
-    branches:
-      - release
+    branches: [ release ]
 jobs:
   server-application:
     runs-on: ubuntu-latest
