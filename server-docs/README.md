@@ -21,4 +21,5 @@
     ├── 231115 restTemplate response timeout 과 retry 문제.md
     ├── 231115 파일 관리 정상, 재앙 시나리오.md
     ├── 231116 NFS server set up.md
-    └── 231116 공개 프로젝트로 전환을 위한 보안 리스트.md
+    ├── 231116 공개 프로젝트로 전환을 위한 보안 리스트.md
+    └── picup.postman-v1.5.0.json
