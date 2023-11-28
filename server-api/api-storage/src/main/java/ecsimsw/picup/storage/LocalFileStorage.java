@@ -2,14 +2,18 @@ package ecsimsw.picup.storage;
 
 import ecsimsw.picup.domain.ImageFile;
 import ecsimsw.picup.domain.StorageKey;
+import ecsimsw.picup.dto.StorageUploadResponse;
 import ecsimsw.picup.ecrypt.EncryptService;
 import ecsimsw.picup.exception.StorageException;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.stereotype.Component;
 
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.concurrent.Future;
 
 @Component(value = "localFileStorage")
 public class LocalFileStorage implements ImageStorage {
@@ -17,25 +21,24 @@ public class LocalFileStorage implements ImageStorage {
     public static final StorageKey KEY = StorageKey.LOCAL_FILE_STORAGE;
 
     private final String rootPath;
-    private final String encryptKey;
     private final EncryptService encryptService;
 
     public LocalFileStorage(
         @Value("${file.root.directory}") String rootPath,
-        @Value("${data.aes.encryption.key}") String encryptKey,
         EncryptService encryptService
     ) {
         this.rootPath = rootPath;
-        this.encryptKey = encryptKey;
         this.encryptService = encryptService;
     }
 
+    @Async
     @Override
-    public void create(String resourceKey, ImageFile imageFile) {
+    public Future<StorageUploadResponse> create(String resourceKey, ImageFile imageFile) {
         try {
             final String storagePath = storagePath(resourceKey);
             final byte[] encrypted = encryptService.encryptWithAES256(imageFile.getFile());
             Files.write(Paths.get(storagePath), encrypted);
+            return new AsyncResult<>(new StorageUploadResponse(resourceKey, KEY, imageFile.getSize()));
         } catch (IOException e) {
             throw new StorageException("Fail to create image file : " + resourceKey, e);
         }

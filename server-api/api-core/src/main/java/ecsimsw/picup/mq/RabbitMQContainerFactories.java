@@ -32,6 +32,7 @@ public class RabbitMQContainerFactories {
         factory.setMessageConverter(messageConverter);
         factory.setPrefetchCount(prefetch);
         factory.setConnectionFactory(connectionFactory);
+        factory.setConcurrentConsumers(5);
         factory.setAdviceChain(RetryInterceptorBuilder.stateless()
             .maxAttempts(RETRY_MAX_ATTEMPTS)
             .backOffOptions(

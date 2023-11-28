@@ -12,12 +12,17 @@ import com.amazonaws.services.s3.model.S3Object;
 import com.amazonaws.util.IOUtils;
 import ecsimsw.picup.domain.ImageFile;
 import ecsimsw.picup.domain.StorageKey;
+import ecsimsw.picup.dto.StorageUploadResponse;
 import ecsimsw.picup.exception.InvalidResourceException;
 import ecsimsw.picup.exception.StorageException;
 import java.io.ByteArrayInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
+import java.util.concurrent.Future;
+
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
@@ -37,8 +42,9 @@ public class ObjectStorage implements ImageStorage {
         this.bucketName = bucketName;
     }
 
+    @Async
     @Override
-    public void create(String resourceKey, ImageFile imageFile) {
+    public Future<StorageUploadResponse> create(String resourceKey, ImageFile imageFile) {
         try {
             if(storageClient.doesObjectExist(bucketName, resourceKey)) {
                 throw new StorageException("resource already exists");
@@ -54,6 +60,8 @@ public class ObjectStorage implements ImageStorage {
             final PutObjectRequest request = new PutObjectRequest(bucketName, resourceKey, inputStream, metadata);
             request.setAccessControlList(accessControlList);
             storageClient.putObject(request);
+
+            return new AsyncResult<>(new StorageUploadResponse(resourceKey, KEY, imageFile.getSize()));
         } catch (Exception e) {
             throw new StorageException("Object storage server exception while uploading", e);
         }

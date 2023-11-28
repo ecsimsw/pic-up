@@ -9,8 +9,6 @@ import ecsimsw.picup.exception.InvalidResourceException;
 import ecsimsw.picup.exception.StorageException;
 import ecsimsw.picup.mq.StorageMessageQueue;
 import ecsimsw.picup.storage.ImageStorage;
-import ecsimsw.picup.storage.LocalFileStorage;
-import ecsimsw.picup.storage.ObjectStorage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -19,6 +17,11 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.FileNotFoundException;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 public class StorageService {
@@ -33,8 +36,8 @@ public class StorageService {
     public StorageService(
         StorageMessageQueue storageMessageQueue,
         ResourceRepository resourceRepository,
-        @Qualifier(value="localFileStorage") ImageStorage localFileStorage,
-        @Qualifier(value="objectStorage") ImageStorage ObjectStorage
+        @Qualifier(value = "localFileStorage") ImageStorage localFileStorage,
+        @Qualifier(value = "objectStorage") ImageStorage ObjectStorage
     ) {
         this.storageMessageQueue = storageMessageQueue;
         this.resourceRepository = resourceRepository;
@@ -47,20 +50,28 @@ public class StorageService {
         final Resource resource = Resource.createRequested(userId, tag, file);
         resourceRepository.save(resource);
 
-        mainStorage.create(resource.getResourceKey(), imageFile);
-        resource.storedTo(mainStorage);
-        resourceRepository.save(resource);
+        LOGGER.info("upload resource : " + resource.getResourceKey());
+
+        var responseFutures = Stream.of(mainStorage, backUpStorage)
+            .map(storage -> storage.create(resource.getResourceKey(), imageFile))
+            .collect(Collectors.toList());
 
         try {
-            backUpStorage.create(resource.getResourceKey(), imageFile);
-            resource.storedTo(backUpStorage);
-            resourceRepository.save(resource);
-        } catch (Exception e) {
-            final List<String> dummyFiles = List.of(resource.getResourceKey());
-            storageMessageQueue.pollDeleteRequest(dummyFiles);
-            throw e;
+            for (var future : responseFutures) {
+                var uploadResponse = future.get(3, TimeUnit.SECONDS);
+                resource.storedTo(uploadResponse.getStorageKey());
+                resourceRepository.save(resource);
+            }
+            return new ImageUploadResponse(resource.getResourceKey(), imageFile.getSize());
+        } catch (ExecutionException | InterruptedException | TimeoutException e) {
+            responseFutures.forEach(it -> {
+                if (!it.isDone()) {
+                    it.cancel(true);
+                }
+            });
+            storageMessageQueue.pollDeleteRequest(List.of(resource.getResourceKey()));
+            throw new StorageException("exception while uploading", e);
         }
-        return new ImageUploadResponse(resource.getResourceKey(), imageFile.getSize());
     }
 
     public ImageResponse read(Long userId, String resourceKey) {
@@ -112,6 +123,8 @@ public class StorageService {
     }
 
     public void delete(String resourceKey) {
+        LOGGER.info("delete resource : " + resourceKey);
+
         final Resource resource = resourceRepository.findById(resourceKey)
             .orElseThrow(() -> new InvalidResourceException("Not exists resources for : " + resourceKey));
 
