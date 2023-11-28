@@ -13,6 +13,7 @@ import org.springframework.stereotype.Component;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Future;
 
 @Component(value = "localFileStorage")
@@ -33,12 +34,12 @@ public class LocalFileStorage implements ImageStorage {
 
     @Async
     @Override
-    public Future<StorageUploadResponse> create(String resourceKey, ImageFile imageFile) {
+    public CompletableFuture<StorageUploadResponse> create(String resourceKey, ImageFile imageFile) {
         try {
             final String storagePath = storagePath(resourceKey);
             final byte[] encrypted = encryptService.encryptWithAES256(imageFile.getFile());
             Files.write(Paths.get(storagePath), encrypted);
-            return new AsyncResult<>(new StorageUploadResponse(resourceKey, KEY, imageFile.getSize()));
+            return CompletableFuture.completedFuture(new StorageUploadResponse(resourceKey, KEY, imageFile.getSize()));
         } catch (IOException e) {
             throw new StorageException("Fail to create image file : " + resourceKey, e);
         }

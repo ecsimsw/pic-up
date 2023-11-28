@@ -5,6 +5,7 @@ import ecsimsw.picup.domain.Resource;
 import ecsimsw.picup.domain.ResourceRepository;
 import ecsimsw.picup.dto.ImageResponse;
 import ecsimsw.picup.dto.ImageUploadResponse;
+import ecsimsw.picup.dto.StorageUploadResponse;
 import ecsimsw.picup.exception.InvalidResourceException;
 import ecsimsw.picup.exception.StorageException;
 import ecsimsw.picup.mq.StorageMessageQueue;
@@ -17,9 +18,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.FileNotFoundException;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -52,26 +52,20 @@ public class StorageService {
 
         LOGGER.info("upload resource : " + resource.getResourceKey());
 
-        var responseFutures = Stream.of(mainStorage, backUpStorage)
+        List.of(mainStorage, backUpStorage).stream()
             .map(storage -> storage.create(resource.getResourceKey(), imageFile))
-            .collect(Collectors.toList());
-
-        try {
-            for (var future : responseFutures) {
-                var uploadResponse = future.get(3, TimeUnit.SECONDS);
-                resource.storedTo(uploadResponse.getStorageKey());
-                resourceRepository.save(resource);
-            }
-            return new ImageUploadResponse(resource.getResourceKey(), imageFile.getSize());
-        } catch (ExecutionException | InterruptedException | TimeoutException e) {
-            responseFutures.forEach(it -> {
-                if (!it.isDone()) {
-                    it.cancel(true);
-                }
-            });
-            storageMessageQueue.pollDeleteRequest(List.of(resource.getResourceKey()));
-            throw new StorageException("exception while uploading", e);
-        }
+            .forEach(future -> future
+                .orTimeout(3L, TimeUnit.SECONDS)
+                .thenAccept(result -> {
+                    resource.storedTo(result.getStorageKey());
+                    resourceRepository.save(resource);
+                }).exceptionally(exception -> {
+                    System.out.println("타임 아웃");
+//                    storageMessageQueue.pollDeleteRequest(List.of(resource.getResourceKey()));
+                    throw new StorageException("exception while uploading", exception);
+                })
+            );
+        return new ImageUploadResponse(resource.getResourceKey(), imageFile.getSize());
     }
 
     public ImageResponse read(Long userId, String resourceKey) {

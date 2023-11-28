@@ -18,6 +18,7 @@ import ecsimsw.picup.exception.StorageException;
 import java.io.ByteArrayInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Future;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -44,27 +45,35 @@ public class ObjectStorage implements ImageStorage {
 
     @Async
     @Override
-    public Future<StorageUploadResponse> create(String resourceKey, ImageFile imageFile) {
-        try {
-            if(storageClient.doesObjectExist(bucketName, resourceKey)) {
-                throw new StorageException("resource already exists");
+    public CompletableFuture<StorageUploadResponse> create(String resourceKey, ImageFile imageFile) {
+        while(true) {
+            try {
+                Thread.sleep(2000);
+                System.out.println("hi");
+            } catch (Exception e) {
+
             }
-            final ObjectMetadata metadata = new ObjectMetadata();
-            metadata.setContentType(imageFile.getFileType().name());
-            metadata.setContentLength(imageFile.getSize());
-
-            final AccessControlList accessControlList = new AccessControlList();
-            accessControlList.grantPermission(GroupGrantee.AuthenticatedUsers, Permission.Read);
-
-            final InputStream inputStream = new ByteArrayInputStream(imageFile.getFile());
-            final PutObjectRequest request = new PutObjectRequest(bucketName, resourceKey, inputStream, metadata);
-            request.setAccessControlList(accessControlList);
-            storageClient.putObject(request);
-
-            return new AsyncResult<>(new StorageUploadResponse(resourceKey, KEY, imageFile.getSize()));
-        } catch (Exception e) {
-            throw new StorageException("Object storage server exception while uploading", e);
         }
+//        try {
+//            if(storageClient.doesObjectExist(bucketName, resourceKey)) {
+//                throw new StorageException("resource already exists");
+//            }
+//            final ObjectMetadata metadata = new ObjectMetadata();
+//            metadata.setContentType(imageFile.getFileType().name());
+//            metadata.setContentLength(imageFile.getSize());
+//
+//            final AccessControlList accessControlList = new AccessControlList();
+//            accessControlList.grantPermission(GroupGrantee.AuthenticatedUsers, Permission.Read);
+//
+//            final InputStream inputStream = new ByteArrayInputStream(imageFile.getFile());
+//            final PutObjectRequest request = new PutObjectRequest(bucketName, resourceKey, inputStream, metadata);
+//            request.setAccessControlList(accessControlList);
+//            storageClient.putObject(request);
+//
+//            return CompletableFuture.completedFuture(new StorageUploadResponse(resourceKey, KEY, imageFile.getSize()));
+//        } catch (Exception e) {
+//            throw new StorageException("Object storage server exception while uploading", e);
+//        }
     }
 
     @Override
