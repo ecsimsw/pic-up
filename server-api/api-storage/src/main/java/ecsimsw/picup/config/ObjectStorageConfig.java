@@ -18,10 +18,7 @@ import org.springframework.context.annotation.Primary;
 public class ObjectStorageConfig {
 
     @Primary
-    @ConditionalOnProperty({
-        "object.storage.host.url",
-        "object.storage.host.region"
-    })
+    @ConditionalOnProperty(value = "mock.object.storage.enable", havingValue = "false", matchIfMissing = true)
     @Bean
     public AmazonS3 objectStorageClient(
         @Value("${object.storage.host.url}") String hostUrl,
@@ -43,6 +40,7 @@ public class ObjectStorageConfig {
         return s3ClientBuilder.build();
     }
 
+    @ConditionalOnProperty(value = "mock.object.storage.enable", havingValue = "true")
     @Bean
     public AmazonS3 mockObjectStorageClient(
         @Value("${mock.object.storage.host.url}") String hostUrl,
