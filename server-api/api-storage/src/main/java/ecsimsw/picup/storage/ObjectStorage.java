@@ -18,8 +18,11 @@ import ecsimsw.picup.exception.StorageException;
 import java.io.ByteArrayInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Future;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.AsyncResult;
@@ -28,6 +31,8 @@ import org.springframework.stereotype.Service;
 
 @Component(value = "objectStorage")
 public class ObjectStorage implements ImageStorage {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(ObjectStorage.class);
 
     public static final StorageKey KEY = StorageKey.S3_OBJECT_STORAGE;
 
@@ -44,24 +49,33 @@ public class ObjectStorage implements ImageStorage {
 
     @Async
     @Override
-    public Future<StorageUploadResponse> create(String resourceKey, ImageFile imageFile) {
+    public CompletableFuture<StorageUploadResponse> create(String resourceKey, ImageFile imageFile) {
         try {
-            if(storageClient.doesObjectExist(bucketName, resourceKey)) {
-                throw new StorageException("resource already exists");
+            int count = 0;
+            while(true) {
+                LOGGER.info("A " + count);
+                Thread.sleep(1000);
+                if(count++ > 5) {
+                    break;
+                }
             }
-            final ObjectMetadata metadata = new ObjectMetadata();
-            metadata.setContentType(imageFile.getFileType().name());
-            metadata.setContentLength(imageFile.getSize());
 
-            final AccessControlList accessControlList = new AccessControlList();
-            accessControlList.grantPermission(GroupGrantee.AuthenticatedUsers, Permission.Read);
-
-            final InputStream inputStream = new ByteArrayInputStream(imageFile.getFile());
-            final PutObjectRequest request = new PutObjectRequest(bucketName, resourceKey, inputStream, metadata);
-            request.setAccessControlList(accessControlList);
-            storageClient.putObject(request);
-
-            return new AsyncResult<>(new StorageUploadResponse(resourceKey, KEY, imageFile.getSize()));
+//            if(storageClient.doesObjectExist(bucketName, resourceKey)) {
+//                throw new StorageException("resource already exists");
+//            }
+//            final ObjectMetadata metadata = new ObjectMetadata();
+//            metadata.setContentType(imageFile.getFileType().name());
+//            metadata.setContentLength(imageFile.getSize());
+//
+//            final AccessControlList accessControlList = new AccessControlList();
+//            accessControlList.grantPermission(GroupGrantee.AuthenticatedUsers, Permission.Read);
+//
+//            final InputStream inputStream = new ByteArrayInputStream(imageFile.getFile());
+//            final PutObjectRequest request = new PutObjectRequest(bucketName, resourceKey, inputStream, metadata);
+//            request.setAccessControlList(accessControlList);
+//            storageClient.putObject(request);
+//
+            return new AsyncResult<>(new StorageUploadResponse(resourceKey, KEY, imageFile.getSize())).completable();
         } catch (Exception e) {
             throw new StorageException("Object storage server exception while uploading", e);
         }

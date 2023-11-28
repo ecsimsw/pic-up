@@ -5,6 +5,9 @@ import ecsimsw.picup.domain.StorageKey;
 import ecsimsw.picup.dto.StorageUploadResponse;
 import ecsimsw.picup.ecrypt.EncryptService;
 import ecsimsw.picup.exception.StorageException;
+import java.util.concurrent.CompletableFuture;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.AsyncResult;
@@ -17,6 +20,8 @@ import java.util.concurrent.Future;
 
 @Component(value = "localFileStorage")
 public class LocalFileStorage implements ImageStorage {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(LocalFileStorage.class);
 
     public static final StorageKey KEY = StorageKey.LOCAL_FILE_STORAGE;
 
@@ -33,15 +38,28 @@ public class LocalFileStorage implements ImageStorage {
 
     @Async
     @Override
-    public Future<StorageUploadResponse> create(String resourceKey, ImageFile imageFile) {
-        try {
-            final String storagePath = storagePath(resourceKey);
-            final byte[] encrypted = encryptService.encryptWithAES256(imageFile.getFile());
-            Files.write(Paths.get(storagePath), encrypted);
-            return new AsyncResult<>(new StorageUploadResponse(resourceKey, KEY, imageFile.getSize()));
-        } catch (IOException e) {
-            throw new StorageException("Fail to create image file : " + resourceKey, e);
+    public CompletableFuture<StorageUploadResponse> create(String resourceKey, ImageFile imageFile) {
+        int count = 0;
+        while(true) {
+            LOGGER.info("B " + count);
+            try {
+                Thread.sleep(1000);
+                if(count++ > 5) {
+                    break;
+                }
+            } catch (Exception e) {
+
+            }
         }
+//
+//        try {
+//            final String storagePath = storagePath(resourceKey);
+//            final byte[] encrypted = encryptService.encryptWithAES256(imageFile.getFile());
+//            Files.write(Paths.get(storagePath), encrypted);
+            return new AsyncResult<>(new StorageUploadResponse(resourceKey, KEY, imageFile.getSize())).completable();
+//        } catch (IOException e) {
+//            throw new StorageException("Fail to create image file : " + resourceKey, e);
+//        }
     }
 
     @Override
