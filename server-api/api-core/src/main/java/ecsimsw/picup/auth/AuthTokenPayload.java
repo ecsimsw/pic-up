@@ -1,5 +1,6 @@
 package ecsimsw.picup.auth;
 
+import ecsimsw.auth.anotations.TokenKey;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -11,6 +12,8 @@ import lombok.Setter;
 public class AuthTokenPayload {
 
     private Long id;
+
+    @TokenKey
     private String username;
 
     public AuthTokenPayload() {

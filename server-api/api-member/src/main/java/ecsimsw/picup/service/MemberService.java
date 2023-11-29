@@ -1,6 +1,5 @@
 package ecsimsw.picup.service;
 
-import ecrypt.service.SHA256Hash;
 import ecsimsw.picup.domain.Member;
 import ecsimsw.picup.domain.MemberRepository;
 import ecsimsw.picup.domain.Password;
@@ -29,10 +28,11 @@ public class MemberService {
     @Transactional
     public MemberInfoResponse signIn(SignInRequest request) {
         try {
-            final Password password = password(request.getPassword());
             final Member member = memberRepository.findByUsername(request.getUsername())
                 .orElseThrow(() -> new LoginFailedException("Invalid login info"));
-            member.authenticate(password);
+            final String salt = member.getPassword().getSalt();
+            final Password requestPassword = encryptPassword(request.getPassword(), salt);
+            member.authenticate(requestPassword);
             return MemberInfoResponse.of(member);
         } catch (Exception e) {
             throw new LoginFailedException("Invalid login info");
@@ -44,7 +44,7 @@ public class MemberService {
         if (memberRepository.existsByUsername(request.getUsername())) {
             throw new MemberException("Duplicated username");
         }
-        final Password password = password(request.getPassword());
+        final Password password = encryptPassword(request.getPassword());
         final Member member = new Member(request.getUsername(), password);
         memberRepository.save(member);
         return MemberInfoResponse.of(member);
@@ -58,8 +58,14 @@ public class MemberService {
         return MemberInfoResponse.of(member);
     }
 
-    private Password password(String plainPassword) {
-        final SHA256EncryptResponse encrypted = encryptService.encryptWithSHA256(plainPassword);
-        return new Password(encrypted.value(), encrypted.salt());
+    @NotNull
+    private Password encryptPassword(String plainPassword) {
+        final String salt = encryptService.issueSalt();
+        return new Password(encryptService.encryptWithSHA256(plainPassword, salt), salt);
+    }
+
+    @NotNull
+    private Password encryptPassword(String plainPassword, String salt) {
+        return new Password(encryptService.encryptWithSHA256(plainPassword, salt), salt);
     }
 }

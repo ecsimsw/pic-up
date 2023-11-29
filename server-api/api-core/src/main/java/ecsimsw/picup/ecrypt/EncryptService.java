@@ -31,9 +31,11 @@ public class EncryptService {
         return aes256Cipher.decrypt(encrypted);
     }
 
-    public SHA256EncryptResponse encryptWithSHA256(String plainText) {
-        final String salt = sha256Hash.getSalt();
-        final String encrypted = sha256Hash.convert(plainText, salt);
-        return new SHA256EncryptResponse(encrypted, salt);
+    public String encryptWithSHA256(String plainText, String salt) {
+        return sha256Hash.convert(plainText, salt);
+    }
+
+    public String issueSalt() {
+        return sha256Hash.getSalt();
     }
 }

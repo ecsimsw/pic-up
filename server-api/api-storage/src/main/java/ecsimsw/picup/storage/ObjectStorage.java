@@ -21,6 +21,8 @@ import java.io.InputStream;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Future;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.AsyncResult;
@@ -29,6 +31,8 @@ import org.springframework.stereotype.Service;
 
 @Component(value = "objectStorage")
 public class ObjectStorage implements ImageStorage {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(ObjectStorage.class);
 
     public static final StorageKey KEY = StorageKey.S3_OBJECT_STORAGE;
 
@@ -46,15 +50,16 @@ public class ObjectStorage implements ImageStorage {
     @Async
     @Override
     public CompletableFuture<StorageUploadResponse> create(String resourceKey, ImageFile imageFile) {
-        while(true) {
-            try {
-                Thread.sleep(2000);
-                System.out.println("hi");
-            } catch (Exception e) {
-
+        try {
+            int count = 0;
+            while(true) {
+                LOGGER.info("A " + count);
+                Thread.sleep(1000);
+                if(count++ > 5) {
+                    break;
+                }
             }
-        }
-//        try {
+
 //            if(storageClient.doesObjectExist(bucketName, resourceKey)) {
 //                throw new StorageException("resource already exists");
 //            }
@@ -70,10 +75,10 @@ public class ObjectStorage implements ImageStorage {
 //            request.setAccessControlList(accessControlList);
 //            storageClient.putObject(request);
 //
-//            return CompletableFuture.completedFuture(new StorageUploadResponse(resourceKey, KEY, imageFile.getSize()));
-//        } catch (Exception e) {
-//            throw new StorageException("Object storage server exception while uploading", e);
-//        }
+            return new AsyncResult<>(new StorageUploadResponse(resourceKey, KEY, imageFile.getSize())).completable();
+        } catch (Exception e) {
+            throw new StorageException("Object storage server exception while uploading", e);
+        }
     }
 
     @Override

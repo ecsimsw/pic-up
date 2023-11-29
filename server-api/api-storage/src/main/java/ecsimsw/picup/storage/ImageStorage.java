@@ -6,6 +6,7 @@ import ecsimsw.picup.dto.StorageUploadResponse;
 
 import java.io.FileNotFoundException;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Future;
 
 public interface ImageStorage {
 
