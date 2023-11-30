@@ -40,6 +40,18 @@ spec:
               name: storage-server-config
           ports:
             - containerPort: 8083
+          startupProbe:
+            httpGet:
+              path: /
+              port: 8083
+            failureThreshold: 20
+            periodSeconds: 10
+            livenessProbe:
+              httpGet:
+                path: /actuator/health
+                port: 8083
+              failureThreshold: 20
+              periodSeconds: 120
           resources:
             requests:
               memory: 512Mi
