@@ -2,7 +2,7 @@ package ecsimsw.picup.env;
 
 import ecsimsw.picup.domain.ImageFile;
 import ecsimsw.picup.domain.Resource;
-import ecsimsw.picup.domain.StorageKey;
+import ecsimsw.picup.storage.StorageKey;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
 

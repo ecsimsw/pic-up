@@ -6,7 +6,7 @@ import ecsimsw.picup.exception.AlbumException;
 import ecsimsw.picup.exception.FileUploadFailException;
 import ecsimsw.picup.exception.InvalidStorageServerResponseException;
 import ecsimsw.picup.exception.UnsupportedFileTypeException;
-import ecsimsw.picup.mq.MessageBrokerDownException;
+import ecsimsw.picup.mq.exception.MessageBrokerDownException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;

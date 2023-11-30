@@ -1,4 +1,4 @@
-package ecsimsw.picup.mq;
+package ecsimsw.picup.mq.config;
 
 import ecsimsw.picup.logging.CustomLogger;
 import java.util.Map;
@@ -56,67 +56,6 @@ public class RabbitMQConfig {
             }
         });
         return connectionFactory;
-    }
-
-    @Bean
-    public DirectExchange globalExchange(
-        @Value("${mq.global.exchange}") String globalExchange
-    ) {
-        return new DirectExchange(globalExchange);
-    }
-
-    @Bean
-    public DirectExchange deadLetterExchange(
-        @Value("${mq.dead.letter.exchange}") String deadLetterExchange
-    ) {
-        return new DirectExchange(deadLetterExchange);
-    }
-
-    @Bean
-    public Queue fileDeletionQueue(
-        @Value("${mq.file.deletion.queue.name}") String queueName,
-        @Value("${mq.dead.letter.exchange}") String deadLetterExchange,
-        @Value("${mq.file.deletion.recover.queue.key}") String fileDeletionRecoverQueueKey
-    ) {
-        return QueueBuilder.durable(queueName)
-            .deadLetterExchange(deadLetterExchange)
-            .withArguments(Map.of(
-                "x-dead-letter-exchange", deadLetterExchange,
-                "x-dead-letter-routing-key", fileDeletionRecoverQueueKey
-            ))
-            .build();
-    }
-
-    @Bean
-    public Queue fileDeletionRecoverQueue(
-        @Value("${mq.file.deletion.recover.queue.name}") String queueName
-    ) {
-        return QueueBuilder.durable(queueName)
-            .build();
-    }
-
-    @Bean
-    public Binding fileDeletionQueueBinding(
-        @Value("${mq.file.deletion.queue.key}") String fileDeletionQueueKey,
-        DirectExchange globalExchange,
-        Queue fileDeletionQueue
-    ) {
-        return BindingBuilder
-            .bind(fileDeletionQueue)
-            .to(globalExchange)
-            .with(fileDeletionQueueKey);
-    }
-
-    @Bean
-    public Binding fileDeletionRecoverQueueBinding(
-        @Value("${mq.file.deletion.recover.queue.key}") String fileDeletionRecoverQueueKey,
-        DirectExchange deadLetterExchange,
-        Queue fileDeletionRecoverQueue
-    ) {
-        return BindingBuilder
-            .bind(fileDeletionRecoverQueue)
-            .to(deadLetterExchange)
-            .with(fileDeletionRecoverQueueKey);
     }
 
     @Bean

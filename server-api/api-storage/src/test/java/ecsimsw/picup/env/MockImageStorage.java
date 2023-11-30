@@ -1,15 +1,14 @@
 package ecsimsw.picup.env;
 
 import ecsimsw.picup.domain.ImageFile;
-import ecsimsw.picup.domain.StorageKey;
+import ecsimsw.picup.storage.StorageKey;
 import ecsimsw.picup.dto.StorageUploadResponse;
 import ecsimsw.picup.storage.ImageStorage;
-import java.util.concurrent.CompletableFuture;
 import org.springframework.scheduling.annotation.AsyncResult;
 
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.Future;
 
 public class MockImageStorage implements ImageStorage {
 
@@ -23,6 +22,9 @@ public class MockImageStorage implements ImageStorage {
 
     @Override
     public CompletableFuture<StorageUploadResponse> create(String resourceKey, ImageFile imageFile) {
+        if (imageFile == null) {
+            return new AsyncResult<>(new StorageUploadResponse(resourceKey, KEY, 0)).completable();
+        }
         DATA.put(resourceKey, imageFile.getFile());
         return new AsyncResult<>(new StorageUploadResponse(resourceKey, KEY, imageFile.getSize())).completable();
     }

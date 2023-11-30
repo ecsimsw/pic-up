@@ -1,6 +1,6 @@
 package ecsimsw.picup.dto;
 
-import ecsimsw.picup.domain.StorageKey;
+import ecsimsw.picup.storage.StorageKey;
 import lombok.Getter;
 
 @Getter

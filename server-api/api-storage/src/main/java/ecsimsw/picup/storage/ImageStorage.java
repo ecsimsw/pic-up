@@ -1,12 +1,10 @@
 package ecsimsw.picup.storage;
 
 import ecsimsw.picup.domain.ImageFile;
-import ecsimsw.picup.domain.StorageKey;
 import ecsimsw.picup.dto.StorageUploadResponse;
 
 import java.io.FileNotFoundException;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.Future;
 
 public interface ImageStorage {
 

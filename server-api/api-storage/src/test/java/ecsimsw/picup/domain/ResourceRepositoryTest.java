@@ -1,6 +1,6 @@
 package ecsimsw.picup.domain;
 
-import static ecsimsw.picup.domain.StorageKey.LOCAL_FILE_STORAGE;
+import static ecsimsw.picup.storage.StorageKey.LOCAL_FILE_STORAGE;
 import static ecsimsw.picup.env.FileFixture.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;

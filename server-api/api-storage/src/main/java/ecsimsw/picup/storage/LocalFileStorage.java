@@ -1,7 +1,6 @@
 package ecsimsw.picup.storage;
 
 import ecsimsw.picup.domain.ImageFile;
-import ecsimsw.picup.domain.StorageKey;
 import ecsimsw.picup.dto.StorageUploadResponse;
 import ecsimsw.picup.ecrypt.EncryptService;
 import ecsimsw.picup.exception.StorageException;
@@ -16,7 +15,6 @@ import org.springframework.stereotype.Component;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.concurrent.Future;
 
 @Component(value = "localFileStorage")
 public class LocalFileStorage implements ImageStorage {
