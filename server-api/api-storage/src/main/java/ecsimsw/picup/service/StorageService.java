@@ -5,21 +5,19 @@ import ecsimsw.picup.domain.Resource;
 import ecsimsw.picup.domain.ResourceRepository;
 import ecsimsw.picup.dto.ImageResponse;
 import ecsimsw.picup.dto.ImageUploadResponse;
-import ecsimsw.picup.dto.StorageUploadResponse;
 import ecsimsw.picup.exception.InvalidResourceException;
 import ecsimsw.picup.exception.StorageException;
 import ecsimsw.picup.mq.StorageMessageQueue;
 import ecsimsw.picup.storage.ImageStorage;
-import java.io.FileNotFoundException;
-import java.util.List;
-import java.util.concurrent.CompletableFuture;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.io.FileNotFoundException;
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 @Service
 public class StorageService {
@@ -50,60 +48,23 @@ public class StorageService {
 
         LOGGER.info("upload resource : " + resource.getResourceKey());
 
-//        var responseFutures = Stream.of(mainStorage, backUpStorage)
-//            .map(storage -> storage.create(resource.getResourceKey(), imageFile))
-//            .collect(Collectors.toList());
-
-        CompletableFuture<StorageUploadResponse>[] completableFutures = new CompletableFuture[] {
-            mainStorage.create(resource.getResourceKey(), imageFile),
-            backUpStorage.create(resource.getResourceKey(), imageFile),
-        };
-
-        try {
-            for (var future : completableFutures) {
-//                StorageUploadResponse storageUploadResponse = future.get();
-
-//                LOGGER.info("대기 시작");
-//                int count = 0;
-//                while(true) {
-//                    LOGGER.info("ㅁㅁㅁ " + count);
-//                    try {
-//                        Thread.sleep(1000);
-//                    } catch (InterruptedException e) {
-//                        e.printStackTrace();
-//                    }
-//                    if(count++ > 5) {
-//                        break;
-//                    }
-//                }
-//                LOGGER.info("대기 시작");
-                CompletableFuture<Void> exceptionally = future.thenAccept(
-                    result -> {
-                        LOGGER.info("대기 시작");
-                        int count = 0;
-                        while (true) {
-                            LOGGER.info("++ " + count);
-                            try {
-                                Thread.sleep(1000);
-                            } catch (InterruptedException e) {
-                                e.printStackTrace();
-                            }
-                            if (count++ > 5) {
-                                break;
-                            }
-                        }
-                        LOGGER.info("대기 종료");
-                    }
-                ).exceptionally(it -> {
-                    return null;
-                });
-                future.join();
-            }
-//            CompletableFuture.allOf(completableFutures).join();
-        } catch (Exception e) {
-            storageMessageQueue.pollDeleteRequest(List.of(resource.getResourceKey()));
-            throw new StorageException("exception while uploading");
-        }
+        var completableFutures = List.of(
+            mainStorage.create(resource.getResourceKey(), imageFile).thenAccept(result -> {
+                resource.storedTo(result.getStorageKey());
+                resourceRepository.save(resource);
+            }).exceptionally(it -> {
+                storageMessageQueue.pollDeleteRequest(List.of(resource.getResourceKey()));
+                throw new StorageException("exception while uploading main storage");
+            }),
+            backUpStorage.create(resource.getResourceKey(), imageFile).thenAccept(result -> {
+                resource.storedTo(result.getStorageKey());
+                resourceRepository.save(resource);
+            }).exceptionally(it -> {
+                storageMessageQueue.pollDeleteRequest(List.of(resource.getResourceKey()));
+                throw new StorageException("exception while uploading backup storage");
+            })
+        );
+        completableFutures.forEach(CompletableFuture::join);
         return new ImageUploadResponse(resource.getResourceKey(), imageFile.getSize());
     }
 
