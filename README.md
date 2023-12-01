@@ -50,5 +50,5 @@
 - [x] Auth scenario library로 분리하기
 - [x] S3 mocking for dev, test
 - [x] Main storage, Backup storage 업로드 동시 처리
-- [ ] Health check k8s probes
+- [x] Health check k8s probes
 - [ ] Configure monitoring system
