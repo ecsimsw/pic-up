@@ -1,0 +1,33 @@
+version: '3'
+services:
+  prometheus:
+    image: prom/prometheus:v2.48.0
+    container_name: prometheus
+    volumes:
+      - ./prometheus:/etc/prometheus
+      - ~/prometheus-data/prometheus:/prometheus
+    ports:
+      - 9090:9090
+    command:
+      - '--web.enable-lifecycle'
+      - '--config.file=/etc/prometheus/prometheus.yaml'
+    restart: always
+    networks:
+      - monitorings
+  grafana:
+    image: grafana/grafana:10.2.2
+    container_name: grafana
+    ports:
+      - 3000:3000
+    volumes:
+      - ~/grafana-data:/var/lib/grafana
+    environment:
+      - GF_SERVER_ROOT_URL=http://localhost:3000
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    restart: always
+    networks:
+      - monitorings
+
+networks:
+  monitorings:
+    driver: bridge

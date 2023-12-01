@@ -46,6 +46,9 @@ subprojects {
         // slack alert
         implementation 'com.slack.api:slack-api-client:1.6.2'
 
+        // prometheus
+        runtimeOnly 'io.micrometer:micrometer-registry-prometheus'
+
         // test
         testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.0'
         testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.7.0'
