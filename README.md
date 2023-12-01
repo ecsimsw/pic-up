@@ -49,5 +49,6 @@
 ### 다음 스프린트
 - [x] Auth scenario library로 분리하기
 - [x] S3 mocking for dev, test
-- [ ] Main storage, Backup storage 업로드 동시 처리
+- [x] Main storage, Backup storage 업로드 동시 처리
+- [ ] Health check k8s probes
 - [ ] Configure monitoring system
