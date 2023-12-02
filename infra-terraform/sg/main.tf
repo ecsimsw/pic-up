@@ -11,6 +11,13 @@ resource "aws_security_group" "myCloudSg" {
   }
 
   ingress {
+    from_port   = "7777"
+    to_port     = "7777"
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  ingress {
     from_port   = 0
     to_port     = 0
     protocol    = "-1"
