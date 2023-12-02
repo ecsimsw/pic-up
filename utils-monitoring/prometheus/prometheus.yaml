@@ -10,7 +10,7 @@ rule_files:
   - "rule.yml"
 
 scrape_configs:
-  - job_name: 'storage-server'
+  - job_name: 'jvm-metrics'
     metrics_path: '/actuator/prometheus'
     static_configs:
       - targets: ['host.docker.internal:8083']
