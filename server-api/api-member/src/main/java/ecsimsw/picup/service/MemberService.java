@@ -7,10 +7,8 @@ import ecsimsw.picup.dto.MemberInfoResponse;
 import ecsimsw.picup.dto.SignInRequest;
 import ecsimsw.picup.dto.SignUpRequest;
 import ecsimsw.picup.ecrypt.EncryptService;
-import ecsimsw.picup.ecrypt.SHA256EncryptResponse;
 import ecsimsw.picup.exception.LoginFailedException;
 import ecsimsw.picup.exception.MemberException;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -58,13 +56,11 @@ public class MemberService {
         return MemberInfoResponse.of(member);
     }
 
-    @NotNull
     private Password encryptPassword(String plainPassword) {
         final String salt = encryptService.issueSalt();
         return new Password(encryptService.encryptWithSHA256(plainPassword, salt), salt);
     }
 
-    @NotNull
     private Password encryptPassword(String plainPassword, String salt) {
         return new Password(encryptService.encryptWithSHA256(plainPassword, salt), salt);
     }

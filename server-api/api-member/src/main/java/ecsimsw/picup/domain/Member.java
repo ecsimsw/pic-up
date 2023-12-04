@@ -14,6 +14,7 @@ public class Member {
     @Id
     private Long id;
 
+    @Column(unique = true)
     private String username;
 
     @Embedded

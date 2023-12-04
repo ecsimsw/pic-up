@@ -1,7 +1,11 @@
 import http from 'k6/http';
 import { check, sleep } from 'k6';
+import { scenario } from 'k6/execution';
+import { FormData } from 'https://jslib.k6.io/formdata/0.0.2/index.js';
 
-import apiMember from './apis/apiMember.js'
+/*
+docker run -v ./:/app --rm -i grafana/k6 run /app/integrationTest.js
+ */
 
 /*
 Test scenario
@@ -22,21 +26,49 @@ loop 30 vus:
 
 export const options = {
     vus: 1,
-    duration: '0.01s'
+    duration: '10s'
 };
 
 // test env
-const memberServerUrl = "http://localhost:8082"
-const storageServerUrl = "http://localhost:8083"
-const albumServerUrl = "http://localhost:8084"
+const memberServerUrl = "http://host.docker.internal:8082"
+const storageServerUrl = "http://host.docker.internal:8083"
+const albumServerUrl = "http://host.docker.internal:8084"
+const params = {
+    headers: {
+        'Content-Type': 'application/json',
+        'dataType': 'json'
+    }
+};
 
-let userId = 1
+const binFile = open('./sample-image.png', 'b');
 
 export default function () {
-    let {username, password} = apiMember.signUp();
-    apiMember.signin(username, password);
-    apiMember.memberInfo();
+    let username = "username" + scenario.iterationInTest;
+    let password = "password";
+    let memberData = JSON.stringify({
+        username,
+        password
+    });
+    // var res = http.post(memberServerUrl + "/api/member/signup", memberData, params);
+    // check(res, { 'status was 200': (r) => r.status == 200 });
+    // sleep(1);
 
+    var res = http.post(memberServerUrl + "/api/member/signin", memberData, params);
+    check(res, {'status was 200': (r) => r.status == 200});
+    sleep(1);
+
+    var res = http.get(memberServerUrl + "/api/member/me", "", params);
+    check(res, {'status was 200': (r) => r.status == 200});
+    sleep(1);
+
+    var formdata = new FormData();
+    formdata.append("thumbnail", http.file(binFile, 'thumbnail.png'));
+    formdata.append("albumInfo", "{ \"name\" : \"hi\" }");
+
+    var res = http.post('https://httpbin.test.k6.io/post', formdata.body(), {
+        headers: { 'Content-Type': 'multipart/form-data; boundary=' + formdata.boundary },
+    });
+    check(res, {'status was 200': (r) => r.status == 200});
     sleep(1);
 }
 
