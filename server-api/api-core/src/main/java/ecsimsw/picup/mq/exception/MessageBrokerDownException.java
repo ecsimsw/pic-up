@@ -1,10 +1,6 @@
-package ecsimsw.picup.mq;
+package ecsimsw.picup.mq.exception;
 
 public class MessageBrokerDownException extends IllegalArgumentException {
-
-    public MessageBrokerDownException(String message) {
-        super(message);
-    }
 
     public MessageBrokerDownException(String message, Throwable cause) {
         super(message, cause);

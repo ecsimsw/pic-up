@@ -11,9 +11,12 @@ import java.io.IOException;
 @Getter
 public class ImageFile {
 
-    private final ImageFileType fileType;
-    private final int size;
-    private final byte[] file;
+    private ImageFileType fileType;
+    private int size;
+    private byte[] file;
+
+    public ImageFile() {
+    }
 
     public ImageFile(ImageFileType fileType, int size, byte[] file) {
         this.fileType = fileType;

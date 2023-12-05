@@ -1,6 +1,6 @@
 package ecsimsw.picup.service;
 
-import ecsimsw.picup.mq.MessageBrokerDownException;
+import ecsimsw.picup.mq.exception.MessageBrokerDownException;
 import ecsimsw.picup.mq.StorageMessageQueue;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -51,7 +51,7 @@ class StorageMessageQueueTest {
             .when(rabbitTemplate).convertAndSend(anyString(), any(Object.class));
 
         assertDoesNotThrow(
-            () -> storageMessageQueue.pollDeleteRequest(RESOURCES)
+            () -> storageMessageQueue.offerDeleteAllRequest(RESOURCES)
         );
 
         verify(rabbitTemplate, times(2))
@@ -67,7 +67,7 @@ class StorageMessageQueueTest {
             .when(rabbitTemplate).convertAndSend(anyString(), any(Object.class));
 
         assertThatThrownBy(
-            () -> storageMessageQueue.pollDeleteRequest(RESOURCES)
+            () -> storageMessageQueue.offerDeleteAllRequest(RESOURCES)
         ).isInstanceOf(MessageBrokerDownException.class);
 
         verify(rabbitTemplate, times(retryCount))
@@ -78,7 +78,7 @@ class StorageMessageQueueTest {
     @Test
     void delete() {
         assertDoesNotThrow(
-            () -> storageMessageQueue.pollDeleteRequest(RESOURCES)
+            () -> storageMessageQueue.offerDeleteAllRequest(RESOURCES)
         );
     }
 }

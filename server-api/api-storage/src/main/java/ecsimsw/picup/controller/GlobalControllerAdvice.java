@@ -1,9 +1,9 @@
 package ecsimsw.picup.controller;
 
+import ecsimsw.auth.exception.SimpleAuthException;
 import ecsimsw.picup.alert.SlackMessageSender;
 import ecsimsw.picup.auth.UnauthorizedException;
 import ecsimsw.picup.exception.InvalidResourceException;
-import ecsimsw.picup.logging.CustomLogger;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -40,7 +40,7 @@ public class GlobalControllerAdvice {
         return ResponseEntity.badRequest().body(e.getMessage());
     }
 
-    @ExceptionHandler(UnauthorizedException.class)
+    @ExceptionHandler({UnauthorizedException.class, SimpleAuthException.class})
     public ResponseEntity<String> unauthorizedException() {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("unauthorized user request");
     }

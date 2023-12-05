@@ -37,24 +37,18 @@ spec:
               name: member-server-config
           ports:
             - containerPort: 8082
-#          startupProbe:
-#            httpGet:
-#              path: /
-#              port: 8084
-#            failureThreshold: 20
-#            periodSeconds: 10
-#          readinessProbe:
-#            httpGet:
-#              path: /actuator/health/readiness
-#              port: 8084
-#            initialDelaySeconds: 5
-#            periodSeconds: 120
-#          livenessProbe:
-#            httpGet:
-#              path: /actuator/health/liveness
-#              port: 8084
-#            failureThreshold: 20
-#            periodSeconds: 120
+          startupProbe:
+            httpGet:
+              path: /
+              port: 8082
+            failureThreshold: 20
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /actuator/health/liveness
+              port: 8082
+            failureThreshold: 20
+            periodSeconds: 120
           resources:
             requests:
               memory: 512Mi

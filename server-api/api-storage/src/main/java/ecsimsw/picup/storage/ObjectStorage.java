@@ -1,28 +1,28 @@
 package ecsimsw.picup.storage;
 
 import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.model.AccessControlList;
-import com.amazonaws.services.s3.model.AmazonS3Exception;
-import com.amazonaws.services.s3.model.GetObjectRequest;
-import com.amazonaws.services.s3.model.GroupGrantee;
-import com.amazonaws.services.s3.model.ObjectMetadata;
-import com.amazonaws.services.s3.model.Permission;
-import com.amazonaws.services.s3.model.PutObjectRequest;
-import com.amazonaws.services.s3.model.S3Object;
+import com.amazonaws.services.s3.model.*;
 import com.amazonaws.util.IOUtils;
 import ecsimsw.picup.domain.ImageFile;
-import ecsimsw.picup.domain.StorageKey;
+import ecsimsw.picup.dto.StorageUploadResponse;
 import ecsimsw.picup.exception.InvalidResourceException;
 import ecsimsw.picup.exception.StorageException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.AsyncResult;
+import org.springframework.stereotype.Component;
+
 import java.io.ByteArrayInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
+import java.util.concurrent.CompletableFuture;
 
 @Component(value = "objectStorage")
 public class ObjectStorage implements ImageStorage {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(ObjectStorage.class);
 
     public static final StorageKey KEY = StorageKey.S3_OBJECT_STORAGE;
 
@@ -37,10 +37,11 @@ public class ObjectStorage implements ImageStorage {
         this.bucketName = bucketName;
     }
 
+    @Async
     @Override
-    public void create(String resourceKey, ImageFile imageFile) {
+    public CompletableFuture<StorageUploadResponse> create(String resourceKey, ImageFile imageFile) {
         try {
-            if(storageClient.doesObjectExist(bucketName, resourceKey)) {
+            if (storageClient.doesObjectExist(bucketName, resourceKey)) {
                 throw new StorageException("resource already exists");
             }
             final ObjectMetadata metadata = new ObjectMetadata();
@@ -54,6 +55,8 @@ public class ObjectStorage implements ImageStorage {
             final PutObjectRequest request = new PutObjectRequest(bucketName, resourceKey, inputStream, metadata);
             request.setAccessControlList(accessControlList);
             storageClient.putObject(request);
+
+            return new AsyncResult<>(new StorageUploadResponse(resourceKey, KEY, imageFile.getSize())).completable();
         } catch (Exception e) {
             throw new StorageException("Object storage server exception while uploading", e);
         }

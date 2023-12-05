@@ -2,6 +2,7 @@ package ecsimsw.picup.ecrypt;
 
 import ecrypt.service.AES256Cipher;
 import ecrypt.service.SHA256Hash;
+import ecrypt.utils.SHA256Utils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -31,9 +32,11 @@ public class EncryptService {
         return aes256Cipher.decrypt(encrypted);
     }
 
-    public SHA256EncryptResponse encryptWithSHA256(String plainText) {
-        final String salt = sha256Hash.getSalt();
-        final String encrypted = sha256Hash.convert(plainText, salt);
-        return new SHA256EncryptResponse(encrypted, salt);
+    public String encryptWithSHA256(String plainText, String salt) {
+        return SHA256Utils.encrypt(plainText, salt);
+    }
+
+    public String issueSalt() {
+        return sha256Hash.getSalt();
     }
 }

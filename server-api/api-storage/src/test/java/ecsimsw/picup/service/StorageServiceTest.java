@@ -3,7 +3,7 @@ package ecsimsw.picup.service;
 import ecsimsw.picup.domain.ImageFile;
 import ecsimsw.picup.domain.Resource;
 import ecsimsw.picup.domain.ResourceRepository;
-import ecsimsw.picup.domain.StorageKey;
+import ecsimsw.picup.storage.StorageKey;
 import ecsimsw.picup.exception.StorageException;
 import ecsimsw.picup.mq.StorageMessageQueue;
 import ecsimsw.picup.storage.ImageStorage;
@@ -13,19 +13,17 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
-import org.mockito.Mock;
-import org.mockito.Spy;
+import org.mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.io.FileNotFoundException;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 
-import static ecsimsw.picup.domain.StorageKey.LOCAL_FILE_STORAGE;
-import static ecsimsw.picup.domain.StorageKey.S3_OBJECT_STORAGE;
+import static ecsimsw.picup.storage.StorageKey.LOCAL_FILE_STORAGE;
+import static ecsimsw.picup.storage.StorageKey.S3_OBJECT_STORAGE;
 import static ecsimsw.picup.env.FileFixture.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -321,17 +319,16 @@ public class StorageServiceTest {
         @DisplayName("BackUp storage 에 저장 실패시 업로드에 실패하고 더미 파일 정보를 MQ 에 등록한다.")
         @Test
         public void uploadFailWithBackUpStorage() {
-            doThrow(StorageException.class)
-                .when(backUpStorage).create(any(String.class), any(ImageFile.class));
+            when(backUpStorage.create(any(), any()))
+                .thenReturn(CompletableFuture.failedFuture(new StorageException("storage upload failed")));
 
             assertThatThrownBy(
                 () -> storageService.upload(USER_ID, FILE_TAG, MULTIPART_FILE)
             ).isInstanceOf(StorageException.class);
 
-            verify(storageMessageQueue, atLeastOnce()).pollDeleteRequest(any());
+            verify(storageMessageQueue, atLeastOnce()).offerDeleteAllRequest(any());
         }
     }
-
 
     private Resource getResourceSavedData() {
         verify(resourceRepository, atLeastOnce()).save(resourceArgumentCaptor.capture());

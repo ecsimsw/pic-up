@@ -1,4 +1,4 @@
-package ecsimsw.picup.domain;
+package ecsimsw.picup.storage;
 
 import lombok.Getter;
 
