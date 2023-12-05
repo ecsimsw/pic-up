@@ -8,6 +8,7 @@
     │   ├── kong-v2.25.yaml
     │   ├── kube-state-metrics-v2.8.yaml
     │   ├── nginx-ingress-v1.8.2.yaml
+    │   ├── prometheus-values.yaml
     │   └── redis-7.0.11-helm-values.yaml
     ├── 01_cluster-nodes.md
     ├── 02_master-node.md
