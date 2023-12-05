@@ -326,7 +326,7 @@ public class StorageServiceTest {
                 () -> storageService.upload(USER_ID, FILE_TAG, MULTIPART_FILE)
             ).isInstanceOf(StorageException.class);
 
-            verify(storageMessageQueue, atLeastOnce()).offerDeleteAllRequest(any());
+            verify(storageMessageQueue, atLeastOnce()).offerDeleteByStorage(any(), any());
         }
     }
 
