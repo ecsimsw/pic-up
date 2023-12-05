@@ -24,7 +24,8 @@
 - Encryption, Decryption
 - Test with JUnit5, Mockito, Embedded DB
 
-<img width="1263" alt="image" src="https://github.com/ecsimsw/pic-up/assets/46060746/b60fc9b9-5bfa-4502-8013-7a1aea59772e">
+![image](https://github.com/ecsimsw/pic-up/assets/46060746/228b23f4-c303-44af-96cb-7b7d84557943)
+
 
 ### Infrastructure
 - Setting Up an On-premise Kubernetes : [Infra-docs](https://github.com/ecsimsw/pic-up/tree/main/infra-docs)
