@@ -4,9 +4,10 @@
 부모님께서 쉽게 사용하실 수 있는 사진 스토리지를 만들고 있습니다.     
 
 ### Skills
-- Backend : Java, Spring boot, JPA, RabbitMQ, MongoDB, Mysql, Redis, CriteriaAPI, JWT, CompletableFuture, AES256/SHA256
-- Dev, Test : JUnit5, Docker, Guava, Lombok, H2, Embedded mongo, S3mock
-- Infrastructure : Kubernetes, Terraform, NFS, Kong gateway, Nginx, Cert-manager, MetalLB, EC2, S3, Vagrant
+- Backend : Java, Spring boot, JPA, RabbitMQ, Criteria, CompletableFuture, MongoDB, Mysql, Redis, JWT, AES256/SHA256
+- Dev env : Guava, JUnit5, Mockito, S3mock, Lombok, H2, Embedded mongo, JDK11
+- Infrastructure : Kubernetes, Terraform, NFS, Kong gateway, Nginx, Docker, EC2, S3, Vagrant
+- Monitoring and test : Prometheus, Grafana, K6
 - CI/CD : JIB, Github actions, GHCR
 
 ### Application
@@ -35,7 +36,8 @@
 - Object storage for file backup storage
 - HPA and stress test
   
-![image](https://github.com/ecsimsw/pic-up/assets/46060746/6e16c4a5-2480-477c-84d8-c333e7aa523f)
+![image](https://github.com/ecsimsw/pic-up/assets/46060746/5525c138-a286-4445-b8ab-eeb00a190bfb)
+
 
 <br>
 
