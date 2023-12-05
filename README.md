@@ -35,7 +35,7 @@
 - Object storage for file backup storage
 - HPA and stress test
   
-<img width="1386" alt="image" src="https://github.com/ecsimsw/pic-up/assets/46060746/3e1517db-9823-48b1-8eea-4828ec856df1">
+![image](https://github.com/ecsimsw/pic-up/assets/46060746/6e16c4a5-2480-477c-84d8-c333e7aa523f)
 
 <br>
 
