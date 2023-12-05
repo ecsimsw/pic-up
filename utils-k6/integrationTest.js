@@ -2,6 +2,7 @@ import http from 'k6/http';
 import { check, sleep } from 'k6';
 import { scenario } from 'k6/execution';
 import { FormData } from 'https://jslib.k6.io/formdata/0.0.2/index.js';
+import { uuidv4 } from 'https://jslib.k6.io/k6-utils/1.4.0/index.js';
 
 /*
 docker run -v ./:/app --rm -i grafana/k6 run /app/integrationTest.js
@@ -25,8 +26,8 @@ loop 30 vus:
  */
 
 export const options = {
-    vus: 1,
-    duration: '10s'
+    vus: 2000,
+    duration: '1m'
 };
 
 // test env
@@ -43,15 +44,15 @@ const params = {
 const binFile = open('./sample-image.png', 'b');
 
 export default function () {
-    let username = "username" + scenario.iterationInTest;
+    let username = "username" + uuidv4();
     let password = "password";
     let memberData = JSON.stringify({
         username,
         password
     });
-    // var res = http.post(memberServerUrl + "/api/member/signup", memberData, params);
-    // check(res, { 'status was 200': (r) => r.status == 200 });
-    // sleep(1);
+    var res = http.post(memberServerUrl + "/api/member/signup", memberData, params);
+    check(res, { 'status was 200': (r) => r.status == 200 });
+    sleep(1);
 
     var res = http.post(memberServerUrl + "/api/member/signin", memberData, params);
     check(res, {'status was 200': (r) => r.status == 200});
@@ -61,15 +62,15 @@ export default function () {
     check(res, {'status was 200': (r) => r.status == 200});
     sleep(1);
 
-    var formdata = new FormData();
-    formdata.append("thumbnail", http.file(binFile, 'thumbnail.png'));
-    formdata.append("albumInfo", "{ \"name\" : \"hi\" }");
-
-    var res = http.post('https://httpbin.test.k6.io/post', formdata.body(), {
-        headers: { 'Content-Type': 'multipart/form-data; boundary=' + formdata.boundary },
-    });
-    check(res, {'status was 200': (r) => r.status == 200});
-    sleep(1);
+    // var formdata = new FormData();
+    // formdata.append("thumbnail", http.file(binFile, 'thumbnail.png'));
+    // formdata.append("albumInfo", "{ \"name\" : \"hi\" }");
+    //
+    // var res = http.post('https://httpbin.test.k6.io/post', formdata.body(), {
+    //     headers: { 'Content-Type': 'multipart/form-data; boundary=' + formdata.boundary },
+    // });
+    // check(res, {'status was 200': (r) => r.status == 200});
+    // sleep(1);
 }
 
 

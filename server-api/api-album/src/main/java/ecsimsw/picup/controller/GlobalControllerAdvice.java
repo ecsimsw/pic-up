@@ -40,7 +40,8 @@ public class GlobalControllerAdvice {
     }
 
     @ExceptionHandler({MethodArgumentTypeMismatchException.class, MissingServletRequestPartException.class})
-    public ResponseEntity<String> methodArgumentTypeMismatchException() {
+    public ResponseEntity<String> methodArgumentTypeMismatchException(Exception e) {
+        e.printStackTrace();
         return ResponseEntity.badRequest().body("wrong type of api path variable or quest parameter");
     }
 
