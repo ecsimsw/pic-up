@@ -30,6 +30,8 @@ spec:
       containers:
         - name: member-server
           image: ghcr.io/ecsimsw/picup/api-member:latest
+#          java -Xms=256m -Xmx=1536m -XX:NewSize=32m -XX:MaxNewSize=512m -XX:NewRatio=2 -XXSurvivorRatio=8
+#          args: ["-Xms=256m", "-Xmx=1536m", ]
           envFrom:
           - configMapRef:
               name: common-config

@@ -1,5 +1,6 @@
 package ecsimsw.picup.controller;
 
+import ecsimsw.auth.exception.SimpleAuthException;
 import ecsimsw.picup.auth.UnauthorizedException;
 import ecsimsw.picup.exception.LoginFailedException;
 import ecsimsw.picup.exception.MemberException;
@@ -18,7 +19,7 @@ public class GlobalControllerAdvice {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(GlobalControllerAdvice.class);
 
-    @ExceptionHandler({LoginFailedException.class, UnauthorizedException.class})
+    @ExceptionHandler({LoginFailedException.class, UnauthorizedException.class, SimpleAuthException.class})
     public ResponseEntity<String> loginFailedException() {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized request");
     }

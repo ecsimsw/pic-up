@@ -1,5 +1,6 @@
 package ecsimsw.picup.controller;
 
+import ecsimsw.auth.exception.SimpleAuthException;
 import ecsimsw.picup.alert.SlackMessageSender;
 import ecsimsw.picup.auth.UnauthorizedException;
 import ecsimsw.picup.exception.AlbumException;
@@ -34,7 +35,7 @@ public class GlobalControllerAdvice {
         return ResponseEntity.status(HttpStatus.PAYLOAD_TOO_LARGE).body(e.getMessage());
     }
 
-    @ExceptionHandler(UnauthorizedException.class)
+    @ExceptionHandler({UnauthorizedException.class, SimpleAuthException.class})
     public ResponseEntity<String> unauthorizedException() {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("unauthorized user request");
     }

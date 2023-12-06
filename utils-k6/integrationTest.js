@@ -26,7 +26,7 @@ loop 30 vus:
  */
 
 export const options = {
-    vus: 2000,
+    vus: 10,
     duration: '1m'
 };
 
@@ -72,6 +72,3 @@ export default function () {
     // check(res, {'status was 200': (r) => r.status == 200});
     // sleep(1);
 }
-
-
-// docker run --rm -i grafana/k6 run - <script.js
