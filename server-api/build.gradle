@@ -73,5 +73,9 @@ subprojects {
         to.image = "ghcr.io/ecsimsw/picup/${project.name}"
         to.tags = ["latest"]
         // gradle :{projectName}:jib
+
+        container {
+//            jvmFlags = ['-XX:NewRatio=2', '-XX:SurvivorRatio=10', '-XX:MaxRAMPercentage=20']
+        }
     }
 }

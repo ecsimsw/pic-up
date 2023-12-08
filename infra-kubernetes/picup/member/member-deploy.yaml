@@ -30,7 +30,6 @@ spec:
       containers:
         - name: member-server
           image: ghcr.io/ecsimsw/picup/api-member:latest
-          args: ["-XX:SurvivorRatio=6", "-XX:NewRatio=1.7", ]
           envFrom:
           - configMapRef:
               name: common-config
