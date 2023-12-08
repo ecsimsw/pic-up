@@ -39,7 +39,7 @@ spec:
             - containerPort: 8084
           startupProbe:
             httpGet:
-              path: /
+              path: /actuator/health/liveness
               port: 8084
             failureThreshold: 20
             periodSeconds: 10
