@@ -35,6 +35,9 @@ spec:
       hostNetwork: true
       hostIPC: true
       hostPID: true
+      tolerations:
+      - key: node-role.kubernetes.io/master
+        effect: NoSchedule
       containers:
         - name: node-exporter
           image: prom/node-exporter:v1.0.1
