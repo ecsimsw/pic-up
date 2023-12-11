@@ -72,10 +72,8 @@ subprojects {
         from.image = "adoptopenjdk/openjdk11:jre-11.0.10_9-alpine"
         to.image = "ghcr.io/ecsimsw/picup/${project.name}"
         to.tags = ["latest"]
-        // gradle :{projectName}:jib
-
         container {
-//            jvmFlags = ['-XX:NewRatio=2', '-XX:SurvivorRatio=10', '-XX:MaxRAMPercentage=20']
+            jvmFlags = ['-XX:NewRatio=2', '-XX:SurvivorRatio=8', '-XX:MaxRAMPercentage=25']
         }
     }
 }
