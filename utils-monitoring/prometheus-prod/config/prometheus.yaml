@@ -20,8 +20,9 @@ scrape_configs:
       ]
     params:
       user-id: [ 'ecsimsw@email.com' ]
+  - job_name: 'k8s-state-metric'
+    static_configs:
+      - targets: [ 'host.docker.internal:52090' ]
   - job_name: 'k8s-node-exporter'
     static_configs:
-      - targets: [
-          'host.docker.internal:52910'
-      ]
+      - targets: ['host.docker.internal:52091']
