@@ -50,7 +50,7 @@ revisionHistoryLimit: 10
 extraArgs: []
 
 service:
-  port: 8090
+  port: 8080
   # Default to clusterIP for backward compatibility
   type: ClusterIP
   nodePort: 0
