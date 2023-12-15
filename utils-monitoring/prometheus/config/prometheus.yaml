@@ -28,4 +28,4 @@ scrape_configs:
       - targets: ['host.docker.internal:52091']
   - job_name: 'k8s-cadvisor'
     static_configs:
-      - targets: [ 'host.docker.internal:8080' ]
+      - targets: [ 'host.docker.internal:9091' ]
