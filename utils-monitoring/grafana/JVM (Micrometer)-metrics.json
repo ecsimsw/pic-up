@@ -1703,8 +1703,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -2079,6 +2078,6 @@
   "timezone": "browser",
   "title": "picup",
   "uid": "c20bafb4-a68d-4da3-92d2-c202a3a1f0ac",
-  "version": 6,
+  "version": 7,
   "weekStart": ""
 }
