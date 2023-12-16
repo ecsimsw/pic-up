@@ -8,9 +8,7 @@ services:
       - ./config/route-admin.conf:/etc/nginx/conf.d/route-admin.conf
     ports:
       - "8520:80"       # for api
-      - "8530:3000"     # for admin
-#    environment:
-#      - NGINX_HOST=foobar.com
-#      - NGINX_PORT=80
+      - "8531:3000"     # for grafana
+      - "8532:3000"     # for prometheus
     extra_hosts:
       - "host.docker.internal:host-gateway"
