@@ -7,8 +7,8 @@ services:
       - ./config/route-api.conf:/etc/nginx/conf.d/route-api.conf
       - ./config/route-admin.conf:/etc/nginx/conf.d/route-admin.conf
     ports:
-      - "8080:80"     # for api
-      - "3000:80"     # for admin
+      - "8520:80"     # for api
+      - "8530:3000"     # for admin
 #    environment:
 #      - NGINX_HOST=foobar.com
 #      - NGINX_PORT=80
