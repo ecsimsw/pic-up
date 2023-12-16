@@ -4,11 +4,13 @@ services:
     image: nginx
     volumes:
       - ./config/nginx.conf:/etc/nginx/nginx.conf
-      - ./config/routing.conf:/etc/nginx/conf.d/routing.conf
+      - ./config/route-api.conf:/etc/nginx/conf.d/route-api.conf
+      - ./config/route-admin.conf:/etc/nginx/conf.d/route-admin.conf
     ports:
-      - "8080:80"
-    environment:
+      - "8080:80"     # for api
+      - "3000:80"     # for admin
+#    environment:
 #      - NGINX_HOST=foobar.com
-      - NGINX_PORT=80
+#      - NGINX_PORT=80
     extra_hosts:
       - "host.docker.internal:host-gateway"
