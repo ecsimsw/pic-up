@@ -17,10 +17,10 @@ Test scenario
 
 export const options = {
     vus: 100,
-    duration: '1m'
+    duration: '30s'
 };
 
-const memberServerUrl = "http://picup.ecsimsw.com:52080"
+const memberServerUrl = "http://picup.ecsimsw.com:8520"
 const params = {
     headers: {
         'Content-Type': 'application/json',
