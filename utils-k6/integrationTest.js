@@ -62,13 +62,13 @@ export default function () {
     check(res, {'status was 200': (r) => r.status == 200});
     sleep(1);
 
-    // var formdata = new FormData();
-    // formdata.append("thumbnail", http.file(binFile, 'thumbnail.png'));
-    // formdata.append("albumInfo", "{ \"name\" : \"hi\" }");
-    //
-    // var res = http.post('https://httpbin.test.k6.io/post', formdata.body(), {
-    //     headers: { 'Content-Type': 'multipart/form-data; boundary=' + formdata.boundary },
-    // });
-    // check(res, {'status was 200': (r) => r.status == 200});
-    // sleep(1);
+    var formdata = new FormData();
+    formdata.append("thumbnail", http.file(binFile, 'thumbnail.png'));
+    formdata.append("albumInfo", "{ \"name\" : \"hi\" }");
+
+    var res = http.post('https://httpbin.test.k6.io/post', formdata.body(), {
+        headers: { 'Content-Type': 'multipart/form-data; boundary=' + formdata.boundary },
+    });
+    check(res, {'status was 200': (r) => r.status == 200});
+    sleep(1);
 }
