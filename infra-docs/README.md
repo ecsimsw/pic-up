@@ -6,6 +6,7 @@
     │   ├── kafka-3.4.1-helm-values.yaml
     │   ├── kong-helm-values-2.9.yaml
     │   ├── kong-v2.25.yaml
+    │   ├── kube-state-metrics-helm-values.yaml
     │   ├── kube-state-metrics-v2.8.yaml
     │   ├── nginx-ingress-v1.8.2.yaml
     │   ├── prometheus-values.yaml
@@ -28,4 +29,8 @@
     ├── 16_vagrant network.md
     ├── 17_github-actions-runner-controller.md
     ├── 18_metric-server.md
-    └── 19_digging-vagrant-public-network.md
+    ├── 19_digging-vagrant-public-network.md
+    ├── application-arch.png
+    ├── cicd-arch.png
+    ├── infra-arch.png
+    └── network-arch.png
