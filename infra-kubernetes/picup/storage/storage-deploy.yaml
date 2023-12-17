@@ -42,7 +42,7 @@ spec:
             - containerPort: 8083
           startupProbe:
             httpGet:
-              path: /
+              path: /actuator/health/liveness
               port: 8083
             failureThreshold: 20
             periodSeconds: 10
