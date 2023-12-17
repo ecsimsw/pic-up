@@ -8,7 +8,6 @@ services:
       - ./config/route-admin.conf:/etc/nginx/conf.d/route-admin.conf
     ports:
       - "8520:80"       # for api
-      - "8531:3000"     # for grafana
-      - "8532:3000"     # for prometheus
+      - "8530:3000"     # for monitoring (grafana)
     extra_hosts:
       - "host.docker.internal:host-gateway"
