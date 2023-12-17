@@ -37,11 +37,7 @@
 
 ### Network
 
-<img width="1320" alt="image" src="https://github.com/ecsimsw/pic-up/assets/46060746/ff030f1f-f774-47fe-b61e-ba532c1686a7">
-
-
-
-
+<img width="1328" alt="image" src="https://github.com/ecsimsw/pic-up/assets/46060746/d5fc6976-03f9-4844-a671-7579960af147">
 
 <br>
 
