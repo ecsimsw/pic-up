@@ -5,7 +5,8 @@ services:
     volumes:
       - ./config/nginx.conf:/etc/nginx/nginx.conf
       - ./config/route-api.conf:/etc/nginx/conf.d/route-api.conf
-      - ./config/route-admin.conf:/etc/nginx/conf.d/route-admin.conf
+      - ./config/route-admin.conf:/etc/nginx/conf.d/route-files.conf
+      - ./config/route-admin.conf:/etc/nginx/conf.d/route-monitoring.conf
     ports:
       - "8520:80"       # for api
       - "8530:3000"     # for monitoring (grafana)
