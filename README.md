@@ -35,10 +35,6 @@
   
 <img width="1372" alt="image" src="https://github.com/ecsimsw/pic-up/blob/main/infra-docs/infra-arch.png?raw=true">
 
-<br>
-
-### Network
-
 <img width="1328" alt="image" src="https://github.com/ecsimsw/pic-up/blob/main/infra-docs/network-arch.png?raw=true">
 
 <br>
