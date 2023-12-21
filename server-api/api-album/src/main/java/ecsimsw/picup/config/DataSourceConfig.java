@@ -58,6 +58,14 @@ public class DataSourceConfig {
             slaveDataSource()
         );
         return new LazyConnectionDataSourceProxy(determinedDataSource);
+
+        // This DataSource proxy allows to avoid fetching JDBC Connections from a pool unless actually necessary.
+        // JDBC transaction control can happen without fetching a Connection from the pool or communicating with the database;
+        // this will be done lazily on first creation of a JDBC Statement. As a bonus, this allows for taking the transaction-synchronized read-only flag and/or isolation level into account in a routing DataSource (e.g. IsolationLevelDataSourceRouter).
+
+        // Lazy using transaction
+        // Reduce transaction period
+        // Separate read source, write source
     }
 }
 
