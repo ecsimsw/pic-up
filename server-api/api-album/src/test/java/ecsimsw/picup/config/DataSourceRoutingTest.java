@@ -24,7 +24,7 @@ class DataSourceRoutingTest {
     @Test
     void masterDataSource() {
         Object currentLookupKey = routingDataSource.determineCurrentLookupKey();
-        assertEquals(DBType.MASTER, currentLookupKey);
+        assertEquals(DataSourceType.MASTER, currentLookupKey);
     }
 
     @Transactional(readOnly = true)
@@ -32,6 +32,6 @@ class DataSourceRoutingTest {
     @Test
     void slaveDataSource() {
         Object currentLookupKey = routingDataSource.determineCurrentLookupKey();
-        assertEquals(DBType.SLAVE, currentLookupKey);
+        assertEquals(DataSourceType.SLAVE, currentLookupKey);
     }
 }

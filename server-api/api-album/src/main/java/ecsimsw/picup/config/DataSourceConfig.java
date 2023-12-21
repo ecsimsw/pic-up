@@ -1,9 +1,5 @@
 package ecsimsw.picup.config;
 
-import static ecsimsw.picup.config.DBType.MASTER;
-import static ecsimsw.picup.config.DBType.SLAVE;
-
-import java.util.Map;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.jdbc.DataSourceBuilder;
@@ -11,16 +7,20 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.jdbc.datasource.LazyConnectionDataSourceProxy;
-
-import javax.sql.DataSource;
 import org.springframework.jdbc.datasource.lookup.AbstractRoutingDataSource;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
+
+import javax.sql.DataSource;
+import java.util.Map;
+
+import static ecsimsw.picup.config.DataSourceType.MASTER;
+import static ecsimsw.picup.config.DataSourceType.SLAVE;
 
 @Configuration
 public class DataSourceConfig {
 
-    private static final String DB_SOURCE_BEAN_ALIAS_MASTER = "MASTER_DB_SOURCE";
-    private static final String DB_SOURCE_BEAN_ALIAS_SLAVE = "SLAVE_DB_SOURCE";
+    public static final String DB_SOURCE_BEAN_ALIAS_MASTER = "MASTER_DB_SOURCE";
+    public static final String DB_SOURCE_BEAN_ALIAS_SLAVE = "SLAVE_DB_SOURCE";
 
     @Bean(value = DB_SOURCE_BEAN_ALIAS_MASTER)
     @ConfigurationProperties(prefix = "spring.datasource.master")
@@ -41,12 +41,10 @@ public class DataSourceConfig {
     ) {
         var routingDataSource = new RoutingDataSource();
         routingDataSource.setDefaultTargetDataSource(masterDataSource);
-        routingDataSource.setTargetDataSources(
-            Map.of(
-                MASTER, masterDataSource,
-                SLAVE, slaveDataSource
-            )
-        );
+        routingDataSource.setTargetDataSources(Map.of(
+            MASTER, masterDataSource,
+            SLAVE, slaveDataSource
+        ));
         return routingDataSource;
     }
 
@@ -73,15 +71,15 @@ class RoutingDataSource extends AbstractRoutingDataSource {
 
     @Override
     protected Object determineCurrentLookupKey() {
-        var isReadOnly = TransactionSynchronizationManager.isCurrentTransactionReadOnly();
-        if (isReadOnly) {
+        var isReadOnlyQuery = TransactionSynchronizationManager.isCurrentTransactionReadOnly();
+        System.out.println(isReadOnlyQuery);
+        System.out.println(DataSourceStatusCache.isHealthy(SLAVE));
+        System.out.println(DataSourceStatusCache.statusMap.get(SLAVE));
+        DataSourceStatusCache.statusMap.get(SLAVE);
+        if (isReadOnlyQuery && DataSourceStatusCache.isHealthy(SLAVE)) {
             return SLAVE;
         }
         return MASTER;
     }
 }
 
-enum DBType {
-    MASTER,
-    SLAVE
-}
