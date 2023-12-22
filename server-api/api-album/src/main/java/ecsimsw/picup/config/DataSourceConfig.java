@@ -71,11 +71,13 @@ class RoutingDataSource extends AbstractRoutingDataSource {
 
     @Override
     protected Object determineCurrentLookupKey() {
+        if (DataSourceTargetContextHolder.getTargetContext().isPresent()) {
+            return DataSourceTargetContextHolder.getTargetContext().get();
+        }
+
         var isReadOnlyQuery = TransactionSynchronizationManager.isCurrentTransactionReadOnly();
         System.out.println(isReadOnlyQuery);
         System.out.println(DataSourceStatusCache.isHealthy(SLAVE));
-        System.out.println(DataSourceStatusCache.statusMap.get(SLAVE));
-        DataSourceStatusCache.statusMap.get(SLAVE);
         if (isReadOnlyQuery && DataSourceStatusCache.isHealthy(SLAVE)) {
             return SLAVE;
         }
