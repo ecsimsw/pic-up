@@ -16,7 +16,7 @@ import static ecsimsw.picup.config.DataSourceType.MASTER;
 import static ecsimsw.picup.config.DataSourceType.SLAVE;
 
 @Component
-public class DataSourceHealthChecker {
+public class DataSourceHealth {
 
     public static final ConcurrentMap<DataSourceType, Status> STATUS_MAP = new ConcurrentHashMap<>();
 
@@ -28,7 +28,7 @@ public class DataSourceHealthChecker {
     private final DataSourceHealthIndicator indicatorMaster = new DataSourceHealthIndicator();
     private final DataSourceHealthIndicator indicatorSlave = new DataSourceHealthIndicator();
 
-    public DataSourceHealthChecker(
+    public DataSourceHealth(
         @Qualifier(value = DataSourceConfig.DB_SOURCE_BEAN_ALIAS_MASTER)
         DataSource dataSourceMaster,
         @Qualifier(value = DataSourceConfig.DB_SOURCE_BEAN_ALIAS_SLAVE)
@@ -53,5 +53,9 @@ public class DataSourceHealthChecker {
         STATUS_MAP.put(SLAVE, healthSlave.getStatus());
 
         DataSourceTargetContextHolder.clearContext();
+    }
+
+    public static boolean isUp(DataSourceType dataSourceType) {
+        return STATUS_MAP.get(dataSourceType) == Status.UP;
     }
 }

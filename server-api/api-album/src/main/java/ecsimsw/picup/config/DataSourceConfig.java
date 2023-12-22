@@ -7,8 +7,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.jdbc.datasource.LazyConnectionDataSourceProxy;
-import org.springframework.jdbc.datasource.lookup.AbstractRoutingDataSource;
-import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 import javax.sql.DataSource;
 import java.util.Map;
@@ -56,32 +54,5 @@ public class DataSourceConfig {
             slaveDataSource()
         );
         return new LazyConnectionDataSourceProxy(determinedDataSource);
-
-        // This DataSource proxy allows to avoid fetching JDBC Connections from a pool unless actually necessary.
-        // JDBC transaction control can happen without fetching a Connection from the pool or communicating with the database;
-        // this will be done lazily on first creation of a JDBC Statement. As a bonus, this allows for taking the transaction-synchronized read-only flag and/or isolation level into account in a routing DataSource (e.g. IsolationLevelDataSourceRouter).
-
-        // Lazy using transaction
-        // Reduce transaction period
-        // Separate read source, write source
     }
 }
-
-class RoutingDataSource extends AbstractRoutingDataSource {
-
-    @Override
-    protected Object determineCurrentLookupKey() {
-        if (DataSourceTargetContextHolder.getTargetContext().isPresent()) {
-            return DataSourceTargetContextHolder.getTargetContext().get();
-        }
-
-        var isReadOnlyQuery = TransactionSynchronizationManager.isCurrentTransactionReadOnly();
-        System.out.println(isReadOnlyQuery);
-        System.out.println(DataSourceStatusCache.isHealthy(SLAVE));
-        if (isReadOnlyQuery && DataSourceStatusCache.isHealthy(SLAVE)) {
-            return SLAVE;
-        }
-        return MASTER;
-    }
-}
-
