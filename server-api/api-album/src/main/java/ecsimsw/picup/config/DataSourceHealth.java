@@ -41,14 +41,14 @@ public class DataSourceHealth {
     @Scheduled(fixedDelay = 3000)
     public void healthCheck() {
         var healthMaster = indicatorMaster.getHealth(false);
-        if (healthMaster.getStatus() == Status.DOWN) {
-            throw new DataSourceConnectionDownException(MASTER + " is down, " + healthMaster.getDetails());
+        if (healthMaster.getStatus() != Status.UP) {
+            throw new DataSourceConnectionDownException(MASTER + " is down, " + healthMaster.getStatus());
         }
         STATUS_MAP.put(MASTER, healthMaster.getStatus());
 
         var healthSlave = indicatorSlave.getHealth(false);
-        if (healthSlave.getStatus() == Status.DOWN) {
-            throw new DataSourceConnectionDownException(SLAVE + " is down, " + healthSlave.getDetails());
+        if (healthSlave.getStatus() != Status.UP) {
+            throw new DataSourceConnectionDownException(SLAVE + " is down, " + healthSlave.getStatus());
         }
         STATUS_MAP.put(SLAVE, healthSlave.getStatus());
 
