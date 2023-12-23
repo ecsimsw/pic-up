@@ -37,7 +37,7 @@ public class DataSourceConfig {
         @Qualifier(DB_SOURCE_BEAN_ALIAS_MASTER) DataSource masterDataSource,
         @Qualifier(DB_SOURCE_BEAN_ALIAS_SLAVE) DataSource slaveDataSource
     ) {
-        var routingDataSource = new RoutingDataSource();
+        var routingDataSource = new DataSourceRoutingRule();
         routingDataSource.setDefaultTargetDataSource(masterDataSource);
         routingDataSource.setTargetDataSources(Map.of(
             MASTER, masterDataSource,

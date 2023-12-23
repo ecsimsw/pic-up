@@ -18,7 +18,7 @@ import static ecsimsw.picup.config.DataSourceType.SLAVE;
 @Component
 public class DataSourceHealth {
 
-    public static final ConcurrentMap<DataSourceType, Status> STATUS_MAP = new ConcurrentHashMap<>();
+    private static final ConcurrentMap<DataSourceType, Status> STATUS_MAP = new ConcurrentHashMap<>();
 
     static {
         Arrays.stream(DataSourceType.values())
@@ -40,12 +40,14 @@ public class DataSourceHealth {
 
     @Scheduled(fixedDelay = 3000)
     public void healthCheck() {
+        DataSourceTargetContextHolder.setContext(MASTER);
         var healthMaster = indicatorMaster.getHealth(false);
         if (healthMaster.getStatus() != Status.UP) {
             throw new DataSourceConnectionDownException(MASTER + " is down, " + healthMaster.getStatus());
         }
         STATUS_MAP.put(MASTER, healthMaster.getStatus());
 
+        DataSourceTargetContextHolder.setContext(SLAVE);
         var healthSlave = indicatorSlave.getHealth(false);
         if (healthSlave.getStatus() != Status.UP) {
             throw new DataSourceConnectionDownException(SLAVE + " is down, " + healthSlave.getStatus());

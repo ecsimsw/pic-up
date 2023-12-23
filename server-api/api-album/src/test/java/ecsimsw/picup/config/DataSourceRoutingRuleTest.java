@@ -11,19 +11,19 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @TestPropertySource(locations = "/application-dev.properties")
 @SpringBootTest
-class DataSourceRoutingTest {
+class DataSourceRoutingRuleTest {
 
-    private final RoutingDataSource routingDataSource;
+    private final DataSourceRoutingRule dataSourceRoutingRule;
 
-    public DataSourceRoutingTest(@Autowired RoutingDataSource routingDataSource) {
-        this.routingDataSource = routingDataSource;
+    public DataSourceRoutingRuleTest(@Autowired DataSourceRoutingRule dataSourceRoutingRule) {
+        this.dataSourceRoutingRule = dataSourceRoutingRule;
     }
 
     @Transactional
     @DisplayName("Transactional readonly = false 인 경우 master db에 쿼리된다.")
     @Test
     void masterDataSource() {
-        Object currentLookupKey = routingDataSource.determineCurrentLookupKey();
+        Object currentLookupKey = dataSourceRoutingRule.determineCurrentLookupKey();
         assertEquals(DataSourceType.MASTER, currentLookupKey);
     }
 
@@ -31,7 +31,7 @@ class DataSourceRoutingTest {
     @DisplayName("Transactional readonly = true 인 경우 slave db에 쿼리된다.")
     @Test
     void slaveDataSource() {
-        Object currentLookupKey = routingDataSource.determineCurrentLookupKey();
+        Object currentLookupKey = dataSourceRoutingRule.determineCurrentLookupKey();
         assertEquals(DataSourceType.SLAVE, currentLookupKey);
     }
 }
