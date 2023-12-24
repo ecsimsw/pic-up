@@ -24,8 +24,6 @@ services:
     command:
       - --character-set-server=utf8mb4
       - --collation-server=utf8mb4_unicode_ci
-#    volumes:
-#      - ./mysql-album-master/mysql-1.cnf:/etc/mysql/conf.d/my.cnf
 
   mysql-2:
     image: mysql:8.0
@@ -37,5 +35,14 @@ services:
     command:
       - --character-set-server=utf8mb4
       - --collation-server=utf8mb4_unicode_ci
-#    volumes:
-#      - ./mysql-album-slave/mysql-2.cnf:/etc/mysql/conf.d/my.cnf
+
+  proxysql:
+    image: proxysql/proxysql:2.1.0
+    container_name: proxysql
+    hostname: proxysql
+    ports:
+      - "6032:6032"
+#      - "6033:6033"
+    volumes:
+      - "~/proxysql-data/data:/var/lib/proxysql"
+#      - "~/proxysql-data/conf/proxysql.cnf:/etc/proxysql.cnf"
