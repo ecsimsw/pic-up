@@ -128,8 +128,6 @@ public class StorageService {
         resourceKeys.forEach(this::delete);
     }
 
-    // TODO :: refactor delete duplicated
-
     public void delete(String resourceKey) {
         LOGGER.info("delete resource : " + resourceKey);
 
@@ -148,7 +146,7 @@ public class StorageService {
         }
     }
 
-    public void delete(FileDeletionRequest request) {
+    public void deleteByStorage(FileDeletionRequest request) {
         LOGGER.info("delete resource : " + request + " on " + request.getStorageKey());
 
         final String resourceKey = request.getResourceKey();
