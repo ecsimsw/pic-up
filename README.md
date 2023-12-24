@@ -48,15 +48,3 @@
 - JIB
 
 <img width="1299" alt="image" src="https://github.com/ecsimsw/pic-up/assets/46060746/2fc85f4c-9f20-4142-bdc5-b2ecb72c7092">
-
-### 다음 스프린트
-- [x] 서버 애플리케이션 Rate limit
-- [ ] 동시성 문제 확인
-- [ ] Log 모니터링
-
-### 지난 스프린트
-- [x] Auth scenario library로 분리하기
-- [x] S3 mocking for dev, test
-- [x] Main storage, Backup storage 업로드 동시 처리
-- [x] Health check k8s probes
-- [x] Configure monitoring system
