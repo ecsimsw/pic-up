@@ -61,14 +61,4 @@ public class StorageHttpClient {
     public ImageFileInfo recoverUploadApi(Throwable exception, Long userId, MultipartFile file, String tag) {
         throw new FileUploadFailException(exception.getMessage(), exception);
     }
-
-    public HttpStatus requestUp() {
-        return restTemplate.exchange(
-            STORAGE_SERVER_URL + "/api/storage/up",
-            HttpMethod.GET,
-            HttpEntity.EMPTY,
-            new ParameterizedTypeReference<Void>() {
-            })
-            .getStatusCode();
-    }
 }
