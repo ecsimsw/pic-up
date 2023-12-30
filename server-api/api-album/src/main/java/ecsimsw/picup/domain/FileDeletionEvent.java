@@ -24,6 +24,9 @@ public class FileDeletionEvent {
     private String resourceKey;
     private LocalDateTime creationTime = LocalDateTime.now();
 
+    public FileDeletionEvent() {
+    }
+
     public FileDeletionEvent(Long id, Long userId, String resourceKey) {
         this.id = id;
         this.userId = userId;

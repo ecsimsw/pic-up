@@ -31,7 +31,7 @@ public class AlbumController {
     ) {
         final AlbumInfoResponse album = albumService.create(loginUserInfo.getId(),
             albumInfo,
-            thumbnail.orElseThrow(() -> new AlbumException("요청에 썸네일 누락"))
+            thumbnail.orElseThrow(() -> new AlbumException("Thumbnail image file must be included"))
         );
         return ResponseEntity.ok(album);
     }
