@@ -57,6 +57,10 @@ public class DataSourceHealth {
         DataSourceTargetContextHolder.clearContext();
     }
 
+    public static boolean isDown(DataSourceType dataSourceType) {
+        return STATUS_MAP.get(dataSourceType) == Status.DOWN;
+    }
+
     public static boolean isUp(DataSourceType dataSourceType) {
         return STATUS_MAP.get(dataSourceType) == Status.UP;
     }

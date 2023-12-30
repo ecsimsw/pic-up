@@ -4,13 +4,12 @@ import ecsimsw.picup.domain.*;
 import ecsimsw.picup.dto.PictureInfoRequest;
 import ecsimsw.picup.dto.PictureInfoResponse;
 import ecsimsw.picup.dto.PictureSearchCursor;
-import ecsimsw.picup.event.AlbumDeletionEvent;
+import ecsimsw.picup.domain.FileDeletionEvent;
 import ecsimsw.picup.exception.AlbumException;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Slice;
-import org.springframework.data.domain.Sort;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -63,10 +62,11 @@ public class PictureService {
         picture.updateDescription(pictureInfo.getDescription());
         optionalImageFile.ifPresent(file -> {
             final String oldImage = picture.getResourceKey();
+            fileService.createDeleteEvent(new FileDeletionEvent(userId, oldImage));
+
             final String fileTag = userId.toString();
             final String newImage = fileService.upload(userId, file, fileTag).getResourceKey();
             picture.updateImage(newImage);
-            fileService.delete(oldImage);
         });
         pictureRepository.save(picture);
         return PictureInfoResponse.of(picture);
@@ -79,21 +79,8 @@ public class PictureService {
 
         final Picture picture = pictureRepository.findById(pictureId).orElseThrow(() -> new AlbumException("Invalid picture"));
         picture.validateAlbum(albumId);
-        fileService.delete(picture.getResourceKey());
+        fileService.createDeleteEvent(new FileDeletionEvent(userId, picture.getResourceKey()));
         pictureRepository.delete(picture);
-    }
-
-    @CacheEvict(key = "{#event.userId, #event.albumId}", value = "userPictureFirstPageDefaultSize")
-    @Async
-    @Transactional
-    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
-    public void deleteAllInAlbum(AlbumDeletionEvent event) {
-        final List<Picture> pictures = pictureRepository.findAllByAlbumId(event.getAlbumId());
-        final List<String> imagesToDelete = pictures.stream()
-            .map(Picture::getResourceKey)
-            .collect(Collectors.toList());
-        fileService.deleteAll(imagesToDelete);
-        pictureRepository.deleteAll(pictures);
     }
 
     @Cacheable(key = "{#userId, #albumId}",  value = "userPictureFirstPageDefaultSize",condition = "{ #cursor.isEmpty() && #limit == 10 }")

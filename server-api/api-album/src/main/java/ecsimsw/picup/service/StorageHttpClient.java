@@ -1,14 +1,12 @@
 package ecsimsw.picup.service;
 
-import ecsimsw.picup.dto.ImageFileInfo;
+import ecsimsw.picup.dto.FileResourceInfo;
 import ecsimsw.picup.dto.StorageImageUploadRequest;
 import ecsimsw.picup.exception.FileUploadFailException;
 import ecsimsw.picup.exception.InvalidStorageServerResponseException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
 import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Recover;
 import org.springframework.retry.annotation.Retryable;
@@ -40,13 +38,13 @@ public class StorageHttpClient {
         backoff = @Backoff(delayExpression = "${rt.retry.delay.time.ms}"),
         recover = "recoverUploadApi"
     )
-    public ImageFileInfo requestUpload(Long userId, MultipartFile file, String tag) {
+    public FileResourceInfo requestUpload(Long userId, MultipartFile file, String tag) {
         try {
             var response = restTemplate.exchange(
                 STORAGE_SERVER_URL + "/api/storage",
                 HttpMethod.POST,
                 StorageImageUploadRequest.of(userId, file, tag).toHttpEntity(),
-                new ParameterizedTypeReference<ImageFileInfo>() {
+                new ParameterizedTypeReference<FileResourceInfo>() {
                 });
             if (Objects.isNull(response.getBody()) || Objects.isNull(response.getBody().getResourceKey())) {
                 throw new InvalidStorageServerResponseException("Failed to upload resources.\nStorage server is on, but invalid response body.");
@@ -58,17 +56,7 @@ public class StorageHttpClient {
     }
 
     @Recover
-    public ImageFileInfo recoverUploadApi(Throwable exception, Long userId, MultipartFile file, String tag) {
+    public FileResourceInfo recoverUploadApi(Throwable exception, Long userId, MultipartFile file, String tag) {
         throw new FileUploadFailException(exception.getMessage(), exception);
-    }
-
-    public HttpStatus requestUp() {
-        return restTemplate.exchange(
-            STORAGE_SERVER_URL + "/api/storage/up",
-            HttpMethod.GET,
-            HttpEntity.EMPTY,
-            new ParameterizedTypeReference<Void>() {
-            })
-            .getStatusCode();
     }
 }

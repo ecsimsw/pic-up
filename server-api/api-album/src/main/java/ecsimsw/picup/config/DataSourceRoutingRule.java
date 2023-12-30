@@ -15,10 +15,10 @@ public class DataSourceRoutingRule extends AbstractRoutingDataSource {
             return DataSourceTargetContextHolder.getTargetContext().get();
         }
         var isReadOnlyQuery = TransactionSynchronizationManager.isCurrentTransactionReadOnly();
-        if (isReadOnlyQuery && !DataSourceHealth.isUp(SLAVE)) {
+        if (isReadOnlyQuery && !DataSourceHealth.isDown(SLAVE)) {
             return SLAVE;
         }
-        if (!isReadOnlyQuery && !DataSourceHealth.isUp(MASTER)) {
+        if (!isReadOnlyQuery && DataSourceHealth.isDown(MASTER)) {
             throw new DataSourceConnectionDownException("Server can read only now");
         }
         return MASTER;

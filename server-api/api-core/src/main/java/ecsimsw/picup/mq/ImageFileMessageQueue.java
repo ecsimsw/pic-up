@@ -15,13 +15,13 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
-public class StorageMessageQueue {
+public class ImageFileMessageQueue {
 
     private final RabbitTemplate rabbitTemplate;
     private final Queue fileDeleteAllQueue;
     private final Queue fileDeleteQueue;
 
-    public StorageMessageQueue(
+    public ImageFileMessageQueue(
         RabbitTemplate rabbitTemplate,
         Queue fileDeleteAllQueue,
         Queue fileDeleteQueue

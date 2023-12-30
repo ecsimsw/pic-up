@@ -1,65 +1,58 @@
 package ecsimsw.picup.service;
 
-import com.google.common.collect.Iterables;
+import ecsimsw.picup.domain.FileDeletionEvent;
+import ecsimsw.picup.domain.FileDeletionEventOutbox;
 import ecsimsw.picup.domain.FileExtension;
-import ecsimsw.picup.domain.FileResource;
-import ecsimsw.picup.domain.FileResourceRepository;
-import ecsimsw.picup.dto.ImageFileInfo;
+import ecsimsw.picup.dto.FileResourceInfo;
 import ecsimsw.picup.exception.AlbumException;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
+
 import java.util.List;
 import java.util.Objects;
-
-import ecsimsw.picup.mq.exception.MessageBrokerDownException;
-import ecsimsw.picup.mq.StorageMessageQueue;
-import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
 @Service
 public class FileService {
 
-    public final static int FILE_DELETION_SEGMENT_UNIT = 5;
-
-    private final FileResourceRepository fileResourceRepository;
     private final StorageHttpClient storageHttpClient;
-    private final StorageMessageQueue storageMessageQueue;
+    private final FileDeletionEventOutbox fileDeletionEventOutbox;
 
     public FileService(
-        FileResourceRepository fileResourceRepository,
         StorageHttpClient storageHttpClient,
-        StorageMessageQueue storageMessageQueue
+        FileDeletionEventOutbox fileDeletionEventOutbox
     ) {
-        this.fileResourceRepository = fileResourceRepository;
         this.storageHttpClient = storageHttpClient;
-        this.storageMessageQueue = storageMessageQueue;
+        this.fileDeletionEventOutbox = fileDeletionEventOutbox;
     }
 
-    public FileResource upload(Long userId, MultipartFile file, String tag) {
+    @Transactional
+    public FileResourceInfo upload(Long userId, MultipartFile file) {
+        return upload(userId, file, userId.toString());
+    }
+
+    @Transactional
+    public FileResourceInfo upload(Long userId, MultipartFile file, String tag) {
         final String fileName = file.getOriginalFilename();
         if (Objects.isNull(fileName) || !fileName.contains(".")) {
             throw new AlbumException("Invalid file name");
         }
         FileExtension.fromFileName(fileName);
-        final ImageFileInfo imageFileInfo = storageHttpClient.requestUpload(userId, file, tag);
-        final FileResource createdResource = FileResource.created(imageFileInfo);
-        fileResourceRepository.save(createdResource);
-        return createdResource;
+        return storageHttpClient.requestUpload(userId, file, tag);
     }
 
-    public void delete(String resourceKey) {
-        deleteAll(List.of(resourceKey));
+    @Transactional
+    public void createDeleteEvent(Long userId, String resourceKey) {
+        createDeleteEvent(new FileDeletionEvent(userId, resourceKey));
     }
 
-    public void deleteAll(List<String> resourceKeys) {
-        for(var keySegment : Iterables.partition(resourceKeys, FILE_DELETION_SEGMENT_UNIT)) {
-            final List<FileResource> resources = fileResourceRepository.findAllByResourceKeyIn(keySegment);
-            try {
-                storageMessageQueue.offerDeleteAllRequest(keySegment);
-                resources.forEach(FileResource::deleted);
-                fileResourceRepository.saveAll(resources);
-            } catch (MessageBrokerDownException e) {
-                resources.forEach(FileResource::markAsGarbage);
-                fileResourceRepository.saveAll(resources);
-            }
-        }
+    @Transactional
+    public void createDeleteEvent(FileDeletionEvent event) {
+        fileDeletionEventOutbox.save(event);
+    }
+
+    @Transactional
+    public void createDeleteEvents(List<FileDeletionEvent> events) {
+        events.forEach(this::createDeleteEvent);
     }
 }

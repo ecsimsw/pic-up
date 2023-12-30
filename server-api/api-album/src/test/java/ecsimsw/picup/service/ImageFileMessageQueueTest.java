@@ -1,7 +1,7 @@
 package ecsimsw.picup.service;
 
 import ecsimsw.picup.mq.exception.MessageBrokerDownException;
-import ecsimsw.picup.mq.StorageMessageQueue;
+import ecsimsw.picup.mq.ImageFileMessageQueue;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -26,8 +26,8 @@ import static org.mockito.Mockito.*;
 @TestPropertySource(locations = "/mq.properties")
 @EnableRetry
 @ExtendWith(MockitoExtension.class)
-@SpringBootTest(classes = StorageMessageQueue.class)
-class StorageMessageQueueTest {
+@SpringBootTest(classes = ImageFileMessageQueue.class)
+class ImageFileMessageQueueTest {
 
     @MockBean
     private RabbitTemplate rabbitTemplate;
@@ -36,7 +36,7 @@ class StorageMessageQueueTest {
     private Queue queue;
 
     @Autowired
-    private StorageMessageQueue storageMessageQueue;
+    private ImageFileMessageQueue imageFileMessageQueue;
 
     @BeforeEach
     void init() {
@@ -51,7 +51,7 @@ class StorageMessageQueueTest {
             .when(rabbitTemplate).convertAndSend(anyString(), any(Object.class));
 
         assertDoesNotThrow(
-            () -> storageMessageQueue.offerDeleteAllRequest(RESOURCES)
+            () -> imageFileMessageQueue.offerDeleteAllRequest(RESOURCES)
         );
 
         verify(rabbitTemplate, times(2))
@@ -67,7 +67,7 @@ class StorageMessageQueueTest {
             .when(rabbitTemplate).convertAndSend(anyString(), any(Object.class));
 
         assertThatThrownBy(
-            () -> storageMessageQueue.offerDeleteAllRequest(RESOURCES)
+            () -> imageFileMessageQueue.offerDeleteAllRequest(RESOURCES)
         ).isInstanceOf(MessageBrokerDownException.class);
 
         verify(rabbitTemplate, times(retryCount))
@@ -78,7 +78,7 @@ class StorageMessageQueueTest {
     @Test
     void delete() {
         assertDoesNotThrow(
-            () -> storageMessageQueue.offerDeleteAllRequest(RESOURCES)
+            () -> imageFileMessageQueue.offerDeleteAllRequest(RESOURCES)
         );
     }
 }

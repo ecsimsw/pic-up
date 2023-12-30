@@ -5,7 +5,7 @@ import ecsimsw.picup.domain.Resource;
 import ecsimsw.picup.domain.ResourceRepository;
 import ecsimsw.picup.storage.StorageKey;
 import ecsimsw.picup.exception.StorageException;
-import ecsimsw.picup.mq.StorageMessageQueue;
+import ecsimsw.picup.mq.ImageFileMessageQueue;
 import ecsimsw.picup.storage.ImageStorage;
 import ecsimsw.picup.env.MockImageStorage;
 import org.junit.jupiter.api.BeforeEach;
@@ -39,7 +39,7 @@ public class StorageServiceTest {
     private ResourceRepository resourceRepository;
 
     @Mock
-    private StorageMessageQueue storageMessageQueue;
+    private ImageFileMessageQueue imageFileMessageQueue;
 
     @Spy
     private ImageStorage mainStorage = new MockImageStorage(LOCAL_FILE_STORAGE);
@@ -54,7 +54,7 @@ public class StorageServiceTest {
 
     @BeforeEach
     public void init() {
-        storageService = new StorageService(storageMessageQueue, resourceRepository, mainStorage, backUpStorage);
+        storageService = new StorageService(imageFileMessageQueue, resourceRepository, mainStorage, backUpStorage);
     }
 
     @Nested
@@ -326,7 +326,7 @@ public class StorageServiceTest {
                 () -> storageService.upload(USER_ID, FILE_TAG, MULTIPART_FILE)
             ).isInstanceOf(StorageException.class);
 
-            verify(storageMessageQueue, atLeastOnce()).offerDeleteByStorage(any(), any());
+            verify(imageFileMessageQueue, atLeastOnce()).offerDeleteByStorage(any(), any());
         }
     }
 
