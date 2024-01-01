@@ -27,15 +27,18 @@ public class AlbumService {
     private final AlbumRepository albumRepository;
     private final PictureRepository pictureRepository;
     private final FileService fileService;
+    private final StorageUsageService storageUsageService;
 
     public AlbumService(
         AlbumRepository albumRepository,
         PictureRepository pictureRepository,
-        FileService fileService
+        FileService fileService,
+        StorageUsageService storageUsageService
     ) {
         this.albumRepository = albumRepository;
         this.pictureRepository = pictureRepository;
         this.fileService = fileService;
+        this.storageUsageService = storageUsageService;
     }
 
     @CacheEvict(value = "userAlbumFirstPageDefaultSize", key = "#userId")
@@ -43,8 +46,10 @@ public class AlbumService {
     public AlbumInfoResponse create(Long userId, AlbumInfoRequest albumInfo, MultipartFile thumbnail) {
         final String fileTag = userId.toString();
         final FileResourceInfo resource = fileService.upload(userId, thumbnail, fileTag);
-        final Album album = new Album(userId, albumInfo.getName(), resource.getResourceKey());
+        storageUsageService.addUsage(userId, resource.getSize());
+        final Album album = new Album(userId, albumInfo.getName(), resource.getResourceKey(), resource.getSize());
         albumRepository.save(album);
+        // TODO :: outbox 처리
         return AlbumInfoResponse.of(album);
     }
 
@@ -64,13 +69,16 @@ public class AlbumService {
         final Album album = getUserAlbum(userId, albumId);
         album.updateName(albumInfo.getName());
         optionalThumbnail.ifPresent(file -> {
-            final String oldImage = album.getResourceKey();
+            final String oldImage = album.getThumbnailResourceKey();
             fileService.createDeleteEvent(userId, oldImage);
+            storageUsageService.subtractUsage(userId, album.getThumbnailFileSize());
 
-            final String newImage = fileService.upload(userId, file).getResourceKey();
-            album.updateThumbnail(newImage);
+            final FileResourceInfo newImage = fileService.upload(userId, file);
+            album.updateThumbnail(newImage.getResourceKey());
+            storageUsageService.addUsage(userId, newImage.getSize());
         });
         albumRepository.save(album);
+        // TODO :: outbox 처리
         return AlbumInfoResponse.of(album);
     }
 
@@ -82,19 +90,14 @@ public class AlbumService {
     @Transactional
     public void delete(Long userId, Long albumId) {
         final Album album = getUserAlbum(userId, albumId);
-        fileService.createDeleteEvent(userId, album.getResourceKey());
+        fileService.createDeleteEvent(userId, album.getThumbnailResourceKey());
+        storageUsageService.subtractUsage(userId, album.getThumbnailFileSize());
         albumRepository.delete(album);
 
         final List<Picture> pictures = pictureRepository.findAllByAlbumId(albumId);
-        final List<FileDeletionEvent> deletionEvents = FileDeletionEvent.listOf(userId, resourceKeysFromPictures(pictures));
-        fileService.createDeleteEvents(deletionEvents);
+        fileService.createDeleteEvents(FileDeletionEvent.listOf(userId, pictures));
+        storageUsageService.subtractUsage(userId, pictures.stream().mapToLong(Picture::getFileSize).sum());
         pictureRepository.deleteAll(pictures);
-    }
-
-    private List<String> resourceKeysFromPictures(List<Picture> pictures) {
-        return pictures.stream()
-            .map(Picture::getResourceKey)
-            .collect(Collectors.toList());
     }
 
     @Cacheable(key = "#userId", value = "userAlbumFirstPageDefaultSize", condition = "{ #cursor.isEmpty() && #limit == 10 }")

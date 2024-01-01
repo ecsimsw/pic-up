@@ -27,6 +27,8 @@ public class Picture {
     @Convert(converter = AES256Converter.class)
     private String resourceKey;
 
+    private Long fileSize;
+
     @Convert(converter = AES256Converter.class)
     private String description;
 
@@ -35,16 +37,17 @@ public class Picture {
     public Picture() {
     }
 
-    public Picture(Long id, Long albumId, String resourceKey, String description, LocalDateTime createdAt) {
+    public Picture(Long id, Long albumId, String resourceKey, Long fileSize, String description, LocalDateTime createdAt) {
         this.id = id;
         this.albumId = albumId;
         this.resourceKey = resourceKey;
+        this.fileSize = fileSize;
         this.description = description;
         this.createdAt = createdAt;
     }
 
-    public Picture(Long albumId, String resourceKey, String description) {
-        this(null, albumId, resourceKey, description, LocalDateTime.now());
+    public Picture(Long albumId, String resourceKey, Long fileSize, String description) {
+        this(null, albumId, resourceKey, fileSize, description, LocalDateTime.now());
     }
 
     public void updateDescription(String description) {
@@ -59,16 +62,5 @@ public class Picture {
         if(!this.albumId.equals(albumId)) {
             throw new AlbumException("Invalid album");
         }
-    }
-
-    @Override
-    public String toString() {
-        return "Picture{" +
-            "id=" + id +
-            ", albumId=" + albumId +
-            ", resourceKey='" + resourceKey + '\'' +
-            ", description='" + description + '\'' +
-            ", createdAt=" + createdAt +
-            '}';
     }
 }

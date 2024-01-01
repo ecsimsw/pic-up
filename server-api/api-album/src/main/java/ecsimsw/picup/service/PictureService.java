@@ -1,6 +1,7 @@
 package ecsimsw.picup.service;
 
 import ecsimsw.picup.domain.*;
+import ecsimsw.picup.dto.FileResourceInfo;
 import ecsimsw.picup.dto.PictureInfoRequest;
 import ecsimsw.picup.dto.PictureInfoResponse;
 import ecsimsw.picup.dto.PictureSearchCursor;
@@ -29,15 +30,18 @@ public class PictureService {
     private final AlbumRepository albumRepository;
     private final PictureRepository pictureRepository;
     private final FileService fileService;
+    private final StorageUsageService storageUsageService;
 
     public PictureService(
         AlbumRepository albumRepository,
         PictureRepository pictureRepository,
-        FileService fileService
+        FileService fileService,
+        StorageUsageService storageUsageService
     ) {
         this.albumRepository = albumRepository;
         this.pictureRepository = pictureRepository;
         this.fileService = fileService;
+        this.storageUsageService = storageUsageService;
     }
 
     @CacheEvict(key = "{#userId, #albumId}", value = "userPictureFirstPageDefaultSize")
@@ -46,9 +50,10 @@ public class PictureService {
         checkUserAuthInAlbum(userId, albumId);
 
         final String fileTag = userId.toString();
-        final String resourceKey = fileService.upload(userId, imageFile, fileTag).getResourceKey();
-        final Picture picture = new Picture(albumId, resourceKey, pictureInfo.getDescription());
+        final FileResourceInfo uploadFile = fileService.upload(userId, imageFile, fileTag);
+        final Picture picture = new Picture(albumId, uploadFile.getResourceKey(), uploadFile.getSize(), pictureInfo.getDescription());
         pictureRepository.save(picture);
+        storageUsageService.addUsage(userId, uploadFile.getSize());
         return PictureInfoResponse.of(picture);
     }
 
@@ -61,14 +66,16 @@ public class PictureService {
         picture.validateAlbum(albumId);
         picture.updateDescription(pictureInfo.getDescription());
         optionalImageFile.ifPresent(file -> {
-            final String oldImage = picture.getResourceKey();
-            fileService.createDeleteEvent(new FileDeletionEvent(userId, oldImage));
+            fileService.createDeleteEvent(new FileDeletionEvent(userId, picture.getResourceKey()));
+            storageUsageService.subtractUsage(userId, picture.getFileSize());
 
             final String fileTag = userId.toString();
-            final String newImage = fileService.upload(userId, file, fileTag).getResourceKey();
-            picture.updateImage(newImage);
+            final FileResourceInfo newImage = fileService.upload(userId, file, fileTag);
+            picture.updateImage(newImage.getResourceKey());
+            storageUsageService.addUsage(userId, newImage.getSize());
         });
         pictureRepository.save(picture);
+        // TODO :: outbox
         return PictureInfoResponse.of(picture);
     }
 
@@ -80,6 +87,7 @@ public class PictureService {
         final Picture picture = pictureRepository.findById(pictureId).orElseThrow(() -> new AlbumException("Invalid picture"));
         picture.validateAlbum(albumId);
         fileService.createDeleteEvent(new FileDeletionEvent(userId, picture.getResourceKey()));
+        storageUsageService.subtractUsage(userId, picture.getFileSize());
         pictureRepository.delete(picture);
     }
 

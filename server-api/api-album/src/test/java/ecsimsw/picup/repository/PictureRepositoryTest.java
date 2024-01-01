@@ -39,12 +39,13 @@ public class PictureRepositoryTest {
     @DisplayName("정보의 성격에 따라 특정 컬럼은 AES256 으로 암호화되어 저장된다.")
     @Test
     public void encryptConverter(@Autowired JdbcTemplate jdbcTemplate) {
-        var saved = pictureRepository.save(new Picture(ALBUM_ID, RESOURCE_KEY, DESCRIPTION));
+        var saved = pictureRepository.save(new Picture(ALBUM_ID, RESOURCE_KEY, 1L, DESCRIPTION));
 
         var selectQuery = "select * from picture where id = ?";
         var nativeData = jdbcTemplate.queryForObject(selectQuery, (resultSet, i) -> new Picture(
             resultSet.getLong("album_id"),
             resultSet.getString("resource_key"),
+            resultSet.getLong("file_size"),
             resultSet.getString("description")
         ), saved.getId());
 
@@ -58,13 +59,13 @@ public class PictureRepositoryTest {
     @DisplayName("같은 유저의 createdAt, id 를 키로 커서 기반 페이지 조회를 확인한다.")
     @Test
     public void testCursorBased() {
-        var picture1 = pictureRepository.save(new Picture(1L, "resource1", "description1"));
-        var picture2 = pictureRepository.save(new Picture(1L, "resource2", "description2"));
-        var picture3 = pictureRepository.save(new Picture(1L, "resource3", "description3"));
-        var picture4 = pictureRepository.save(new Picture(2L, "resource4", "description4"));
-        var picture5 = pictureRepository.save(new Picture(1L, "resource5", "description5"));
-        var picture6 = pictureRepository.save(new Picture(2L, "resource6", "description6"));
-        var picture7 = pictureRepository.save(new Picture(1L, "resource7", "description7"));
+        var picture1 = pictureRepository.save(new Picture(1L, "resource1", 1L,  "description1"));
+        var picture2 = pictureRepository.save(new Picture(1L, "resource2", 1L,  "description2"));
+        var picture3 = pictureRepository.save(new Picture(1L, "resource3", 1L, "description3"));
+        var picture4 = pictureRepository.save(new Picture(2L, "resource4", 1L, "description4"));
+        var picture5 = pictureRepository.save(new Picture(1L, "resource5", 1L, "description5"));
+        var picture6 = pictureRepository.save(new Picture(2L, "resource6", 1L, "description6"));
+        var picture7 = pictureRepository.save(new Picture(1L, "resource7", 1L, "description7"));
 
         pictureRepository.save(picture1);
         pictureRepository.save(picture2);
@@ -91,15 +92,15 @@ public class PictureRepositoryTest {
     @Test
     public void testCursorBasedSameCreateTime() {
         LocalDateTime sameTime = LocalDateTime.now();
-        var picture1 = new Picture(1L, 1L, "resource1", "description1", sameTime);
-        var picture2 = new Picture(2L, 1L, "resource2", "description2", sameTime);
-        var picture3 = new Picture(3L, 1L, "resource3", "description3", sameTime);
-        var picture4 = new Picture(4L, 2L, "resource4", "description4", sameTime);
-        var picture5 = new Picture(5L, 1L, "resource5", "description5", sameTime);
-        var picture6 = new Picture(6L, 2L, "resource6", "description6", sameTime);
-        var picture7 = new Picture(7L, 1L, "resource7", "description7", sameTime);
-        var picture8 = new Picture(8L, 1L, "resource8", "description8", LocalDateTime.now());
-        var picture9 = new Picture(9L, 1L, "resource9", "description9", sameTime);
+        var picture1 = new Picture(1L, 1L, "resource1", 1L, "description1", sameTime);
+        var picture2 = new Picture(2L, 1L, "resource2", 1L, "description2", sameTime);
+        var picture3 = new Picture(3L, 1L, "resource3", 1L,  "description3", sameTime);
+        var picture4 = new Picture(4L, 2L, "resource4", 1L,  "description4", sameTime);
+        var picture5 = new Picture(5L, 1L, "resource5", 1L,  "description5", sameTime);
+        var picture6 = new Picture(6L, 2L, "resource6", 1L,  "description6", sameTime);
+        var picture7 = new Picture(7L, 1L, "resource7", 1L,  "description7", sameTime);
+        var picture8 = new Picture(8L, 1L, "resource8", 1L,  "description8", LocalDateTime.now());
+        var picture9 = new Picture(9L, 1L, "resource9", 1L,  "description9", sameTime);
 
         pictureRepository.save(picture1);
         pictureRepository.save(picture2);
@@ -126,7 +127,7 @@ public class PictureRepositoryTest {
     @DisplayName("Picture 을 저장한다. id와 생성 시각이 함께 저장된다.")
     @Test
     public void createAlbum() {
-        var saved = pictureRepository.save(new Picture(ALBUM_ID, RESOURCE_KEY, DESCRIPTION));
+        var saved = pictureRepository.save(new Picture(ALBUM_ID, RESOURCE_KEY, 1L, DESCRIPTION));
         assertAll(
             () -> assertThat(saved.getId()).isNotNull(),
             () -> assertThat(saved.getAlbumId()).isEqualTo(ALBUM_ID),

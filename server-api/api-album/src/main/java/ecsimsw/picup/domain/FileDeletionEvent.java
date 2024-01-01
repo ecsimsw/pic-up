@@ -37,9 +37,9 @@ public class FileDeletionEvent {
         this(null, userId, resourceKey);
     }
 
-    public static List<FileDeletionEvent> listOf(Long userId, List<String> resourceKeys) {
-        return resourceKeys.stream()
-            .map(resourceKey -> new FileDeletionEvent(userId, resourceKey))
+    public static List<FileDeletionEvent> listOf(Long userId, List<Picture> pictures) {
+        return pictures.stream()
+            .map(picture -> new FileDeletionEvent(userId, picture.getResourceKey()))
             .collect(Collectors.toList());
     }
 }

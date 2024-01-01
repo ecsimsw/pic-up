@@ -27,27 +27,30 @@ public class Album {
     private String name;
 
     @Convert(converter = AES256Converter.class)
-    private String resourceKey;
+    private String thumbnailResourceKey;
+
+    private Long thumbnailFileSize;
 
     private LocalDateTime createdAt;
 
     public Album() {
     }
 
-    public Album(Long id, Long userId, String name, String resourceKey, LocalDateTime createdAt) {
+    public Album(Long id, Long userId, String name, String thumbnailResourceKey, Long thumbnailFileSize, LocalDateTime createdAt) {
         this.id = id;
         this.userId = userId;
         this.name = name;
-        this.resourceKey = resourceKey;
+        this.thumbnailResourceKey = thumbnailResourceKey;
+        this.thumbnailFileSize = thumbnailFileSize;
         this.createdAt = createdAt;
     }
 
-    public Album(Long userId, String name, String resourceKey, LocalDateTime createdAt) {
-        this(null, userId, name, resourceKey, createdAt);
+    public Album(Long userId, String name, String thumbnailResourceKey, Long thumbnailFileSize, LocalDateTime createdAt) {
+        this(null, userId, name, thumbnailResourceKey, thumbnailFileSize, createdAt);
     }
 
-    public Album(Long userId, String name, String resourceKey) {
-        this(null, userId, name, resourceKey, LocalDateTime.now());
+    public Album(Long userId, String name, String thumbnailResourceKey, Long thumbnailFileSize) {
+        this(null, userId, name, thumbnailResourceKey, thumbnailFileSize, LocalDateTime.now());
     }
 
     public void updateName(String name) {
@@ -55,7 +58,7 @@ public class Album {
     }
 
     public void updateThumbnail(String thumbnailImage) {
-        this.resourceKey = thumbnailImage;
+        this.thumbnailResourceKey = thumbnailImage;
     }
 
     public void authorize(Long userId) {
