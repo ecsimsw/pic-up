@@ -1,7 +1,7 @@
 package ecsimsw.picup.service;
 
-import ecsimsw.picup.mq.exception.MessageBrokerDownException;
 import ecsimsw.picup.mq.ImageFileMessageQueue;
+import ecsimsw.picup.mq.exception.MessageBrokerDownException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

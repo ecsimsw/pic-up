@@ -35,6 +35,7 @@ public class StorageUsageService {
         }
         final StorageUsage storageUsage = byUserId.orElseThrow();
         storageUsage.add(fileSize);
+        storageUsageRepository.save(storageUsage);
     }
 
     @Transactional
@@ -42,6 +43,7 @@ public class StorageUsageService {
         final StorageUsage usage = storageUsageRepository.findByUserId(userId)
             .orElseThrow(() -> new AlbumException("Invalid member id"));
         usage.subtract(fileSize);
+        storageUsageRepository.save(usage);
     }
 
     private StorageUsage createNewStorageUsage(Long userId) {

@@ -40,7 +40,7 @@ public class AlbumRepositoryTest {
     @DisplayName("정보의 성격에 따라 특정 컬럼은 AES256 으로 암호화되어 저장된다.")
     @Test
     public void encryptConverter(@Autowired JdbcTemplate jdbcTemplate) {
-        var saved = albumRepository.save(new Album(MEMBER_ID, ALBUM_NAME, RESOURCE_KEY, 1L));
+        var saved = albumRepository.save(new Album(MEMBER_ID, ALBUM_NAME, RESOURCE_KEY, SIZE));
 
         var selectQuery = "select * from album where id = ?";
         var nativeData = jdbcTemplate.queryForObject(selectQuery, (resultSet, i) -> new Album(
@@ -60,13 +60,13 @@ public class AlbumRepositoryTest {
     @DisplayName("같은 유저의 createdAt, id 를 키로 커서 기반 페이지 조회를 확인한다.")
     @Test
     public void testCursorBased() {
-        var album1 = albumRepository.save(new Album(1L, "albumName1", "resource1", 1L));
-        var album2 = albumRepository.save(new Album(1L, "albumName2", "resource2", 1L));
-        var album3 = albumRepository.save(new Album(1L, "albumName3", "resource3", 1L));
-        var album4 = albumRepository.save(new Album(2L, "albumName4", "resource4", 1L));
-        var album5 = albumRepository.save(new Album(1L, "albumName5", "resource5", 1L));
-        var album6 = albumRepository.save(new Album(2L, "albumName6", "resource6", 1L));
-        var album7 = albumRepository.save(new Album(1L, "albumName7", "resource7", 1L));
+        var album1 = albumRepository.save(new Album(1L, "albumName1", "resource1", SIZE));
+        var album2 = albumRepository.save(new Album(1L, "albumName2", "resource2", SIZE));
+        var album3 = albumRepository.save(new Album(1L, "albumName3", "resource3", SIZE));
+        var album4 = albumRepository.save(new Album(2L, "albumName4", "resource4", SIZE));
+        var album5 = albumRepository.save(new Album(1L, "albumName5", "resource5", SIZE));
+        var album6 = albumRepository.save(new Album(2L, "albumName6", "resource6", SIZE));
+        var album7 = albumRepository.save(new Album(1L, "albumName7", "resource7", SIZE));
 
         var prev = new AlbumSearchCursor(album2);
         var limit = 2;
@@ -82,15 +82,15 @@ public class AlbumRepositoryTest {
     @Test
     public void testCursorBasedSameCreateTime() {
         LocalDateTime sameTime = LocalDateTime.now();
-        var album1 = albumRepository.save(new Album(1L, "albumName1", "resource1", 1L, sameTime));
-        var album2 = albumRepository.save(new Album(1L, "albumName2", "resource2", 1L, sameTime));
-        var album3 = albumRepository.save(new Album(1L, "albumName3", "resource3", 1L, sameTime));
-        var album4 = albumRepository.save(new Album(2L, "albumName4", "resource4", 1L, sameTime));
-        var album5 = albumRepository.save(new Album(1L, "albumName5", "resource5", 1L, sameTime));
-        var album6 = albumRepository.save(new Album(2L, "albumName6", "resource6", 1L, sameTime));
-        var album7 = albumRepository.save(new Album(1L, "albumName7", "resource7", 1L, sameTime));
-        var album8 = albumRepository.save(new Album(1L, "albumName8", "resource8", 1L, LocalDateTime.now()));
-        var album9 = albumRepository.save(new Album(1L, "albumName9", "resource9", 1L, sameTime));
+        var album1 = albumRepository.save(new Album(1L, "albumName1", "resource1", SIZE, sameTime));
+        var album2 = albumRepository.save(new Album(1L, "albumName2", "resource2", SIZE, sameTime));
+        var album3 = albumRepository.save(new Album(1L, "albumName3", "resource3", SIZE, sameTime));
+        var album4 = albumRepository.save(new Album(2L, "albumName4", "resource4", SIZE, sameTime));
+        var album5 = albumRepository.save(new Album(1L, "albumName5", "resource5", SIZE, sameTime));
+        var album6 = albumRepository.save(new Album(2L, "albumName6", "resource6", SIZE, sameTime));
+        var album7 = albumRepository.save(new Album(1L, "albumName7", "resource7", SIZE, sameTime));
+        var album8 = albumRepository.save(new Album(1L, "albumName8", "resource8", SIZE, LocalDateTime.now()));
+        var album9 = albumRepository.save(new Album(1L, "albumName9", "resource9", SIZE, sameTime));
 
         var prev = new AlbumSearchCursor(album2);
         var limit = 5;
@@ -105,7 +105,7 @@ public class AlbumRepositoryTest {
     @DisplayName("Album 을 저장한다. id와 생성 시각이 함께 저장된다.")
     @Test
     public void createAlbum() {
-        var saved = albumRepository.save(new Album(MEMBER_ID, ALBUM_NAME, THUMBNAIL_RESOURCE_KEY, 1L));
+        var saved = albumRepository.save(new Album(MEMBER_ID, ALBUM_NAME, THUMBNAIL_RESOURCE_KEY, SIZE));
         assertAll(
             () -> assertThat(saved.getId()).isNotNull(),
             () -> assertThat(saved.getUserId()).isEqualTo(MEMBER_ID),
