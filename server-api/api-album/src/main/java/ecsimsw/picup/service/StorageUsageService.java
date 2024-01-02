@@ -6,8 +6,6 @@ import ecsimsw.picup.exception.AlbumException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Optional;
-
 @Service
 public class StorageUsageService {
 
@@ -17,23 +15,22 @@ public class StorageUsageService {
         this.storageUsageRepository = storageUsageRepository;
     }
 
+    @Transactional
+    public void initNewUsage(Long userId, Long limitAsByte) {
+        final StorageUsage storageUsage = new StorageUsage(userId, limitAsByte, 0L);
+        storageUsageRepository.save(storageUsage);
+    }
+
+    @Transactional(readOnly = true)
     public StorageUsage getUsage(Long userId) {
-        final Optional<StorageUsage> byUserId = storageUsageRepository.findByUserId(userId);
-        if (byUserId.isPresent()) {
-            return byUserId.orElseThrow();
-        }
-        return createNewStorageUsage(userId);
+        return storageUsageRepository.findByUserId(userId)
+            .orElseThrow(() -> new AlbumException("Usage for userId " + userId + " is not present"));
     }
 
     @Transactional
     public void addUsage(Long userId, long fileSize) {
-        final Optional<StorageUsage> byUserId = storageUsageRepository.findByUserId(userId);
-        if (byUserId.isEmpty()) {
-            final StorageUsage storageUsage = createNewStorageUsage(userId);
-            storageUsage.add(fileSize);
-            return;
-        }
-        final StorageUsage storageUsage = byUserId.orElseThrow();
+        final StorageUsage storageUsage = storageUsageRepository.findByUserId(userId)
+            .orElseThrow(() -> new AlbumException("Usage for userId " + userId + " is not present"));
         storageUsage.add(fileSize);
         storageUsageRepository.save(storageUsage);
     }
@@ -44,10 +41,5 @@ public class StorageUsageService {
             .orElseThrow(() -> new AlbumException("Invalid member id"));
         usage.subtract(fileSize);
         storageUsageRepository.save(usage);
-    }
-
-    private StorageUsage createNewStorageUsage(Long userId) {
-        final StorageUsage storageUsage = new StorageUsage(userId, 10000000000L, 0L);
-        return storageUsageRepository.save(storageUsage);
     }
 }

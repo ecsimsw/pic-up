@@ -62,7 +62,7 @@ public class StorageService {
         } catch (CompletionException e) {
             futures.forEach(it-> it.thenAccept(
                 result -> {
-                    LOGGER.info("poll message queue to delete dummy file : "+ result.getResourceKey() + " in " + result.getStorageKey());
+                    LOGGER.info("offer message queue to delete dummy file : "+ result.getResourceKey() + " in " + result.getStorageKey());
                     imageFileMessageQueue.offerDeleteByStorage(result.getResourceKey(), result.getStorageKey());
                 }
             ));
