@@ -28,6 +28,10 @@ public class StorageUsage {
     public StorageUsage() {
     }
 
+    public static StorageUsage initDefaultPlan(Long userId) {
+        return new StorageUsage(null, userId, 10737418240L, 0L);
+    }
+
     public StorageUsage(Long id, Long userId, Long limitAsByte, Long usageAsByte) {
         this.id = id;
         this.userId = userId;

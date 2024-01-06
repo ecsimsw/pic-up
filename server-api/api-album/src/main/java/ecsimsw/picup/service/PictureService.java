@@ -5,22 +5,17 @@ import ecsimsw.picup.dto.FileResourceInfo;
 import ecsimsw.picup.dto.PictureInfoRequest;
 import ecsimsw.picup.dto.PictureInfoResponse;
 import ecsimsw.picup.dto.PictureSearchCursor;
-import ecsimsw.picup.domain.FileDeletionEvent;
 import ecsimsw.picup.exception.AlbumException;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Slice;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.event.TransactionPhase;
-import org.springframework.transaction.event.TransactionalEventListener;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import static ecsimsw.picup.domain.PictureRepository.PictureSearchSpecs.*;
 
@@ -51,10 +46,15 @@ public class PictureService {
 
         final String fileTag = userId.toString();
         final FileResourceInfo uploadFile = fileService.upload(userId, imageFile, fileTag);
-        final Picture picture = new Picture(albumId, uploadFile.getResourceKey(), uploadFile.getSize(), pictureInfo.getDescription());
-        pictureRepository.save(picture);
-        storageUsageService.addUsage(userId, uploadFile.getSize());
-        return PictureInfoResponse.of(picture);
+        try {
+            final Picture picture = new Picture(albumId, uploadFile.getResourceKey(), uploadFile.getSize(), pictureInfo.getDescription());
+            pictureRepository.save(picture);
+            storageUsageService.addUsage(userId, uploadFile.getSize());
+            return PictureInfoResponse.of(picture);
+        } catch (Exception e) {
+            fileService.delete(uploadFile.getResourceKey());
+            throw e;
+        }
     }
 
     @CacheEvict(key = "{#userId, #albumId}", value = "userPictureFirstPageDefaultSize")
@@ -65,18 +65,24 @@ public class PictureService {
         final Picture picture = pictureRepository.findById(pictureId).orElseThrow(() -> new AlbumException("Invalid picture"));
         picture.validateAlbum(albumId);
         picture.updateDescription(pictureInfo.getDescription());
-        optionalImageFile.ifPresent(file -> {
-            fileService.createDeleteEvent(new FileDeletionEvent(userId, picture.getResourceKey()));
-            storageUsageService.subtractUsage(userId, picture.getFileSize());
+        if (optionalImageFile.isEmpty()) {
+            pictureRepository.save(picture);
+            return PictureInfoResponse.of(picture);
+        }
 
-            final String fileTag = userId.toString();
-            final FileResourceInfo newImage = fileService.upload(userId, file, fileTag);
+        fileService.createDeleteEvent(new FileDeletionEvent(userId, picture.getResourceKey()));
+        storageUsageService.subtractUsage(userId, picture.getFileSize());
+
+        final FileResourceInfo newImage = fileService.upload(userId, optionalImageFile.orElseThrow());
+        try {
             picture.updateImage(newImage.getResourceKey());
             storageUsageService.addUsage(userId, newImage.getSize());
-        });
-        pictureRepository.save(picture);
-        // TODO :: outbox
-        return PictureInfoResponse.of(picture);
+            pictureRepository.save(picture);
+            return PictureInfoResponse.of(picture);
+        } catch (Exception e) {
+            fileService.delete(newImage.getResourceKey());
+            throw e;
+        }
     }
 
     @CacheEvict(key = "{#userId, #albumId}", value = "userPictureFirstPageDefaultSize")
@@ -91,11 +97,11 @@ public class PictureService {
         pictureRepository.delete(picture);
     }
 
-    @Cacheable(key = "{#userId, #albumId}",  value = "userPictureFirstPageDefaultSize",condition = "{ #cursor.isEmpty() && #limit == 10 }")
+    @Cacheable(key = "{#userId, #albumId}", value = "userPictureFirstPageDefaultSize", condition = "{ #cursor.isEmpty() && #limit == 10 }")
     @Transactional(readOnly = true)
     public List<PictureInfoResponse> cursorBasedFetch(Long userId, Long albumId, int limit, Optional<PictureSearchCursor> cursor) {
         checkUserAuthInAlbum(userId, albumId);
-        if(cursor.isEmpty()) {
+        if (cursor.isEmpty()) {
             final Slice<Picture> pictures = pictureRepository.findAllByAlbumId(albumId, PageRequest.of(0, limit, sortByCreatedAtAsc));
             return PictureInfoResponse.listOf(pictures.getContent());
         }

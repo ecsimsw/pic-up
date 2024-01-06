@@ -5,6 +5,7 @@ import ecsimsw.picup.domain.FileDeletionEventOutbox;
 import ecsimsw.picup.domain.FileExtension;
 import ecsimsw.picup.dto.FileResourceInfo;
 import ecsimsw.picup.exception.AlbumException;
+import ecsimsw.picup.mq.ImageFileMessageQueue;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -17,12 +18,15 @@ public class FileService {
 
     private final StorageHttpClient storageHttpClient;
     private final FileDeletionEventOutbox fileDeletionEventOutbox;
+    private final ImageFileMessageQueue imageFileMessageQueue;
 
     public FileService(
         StorageHttpClient storageHttpClient,
+        ImageFileMessageQueue imageFileMessageQueue,
         FileDeletionEventOutbox fileDeletionEventOutbox
     ) {
         this.storageHttpClient = storageHttpClient;
+        this.imageFileMessageQueue = imageFileMessageQueue;
         this.fileDeletionEventOutbox = fileDeletionEventOutbox;
     }
 
@@ -42,11 +46,6 @@ public class FileService {
     }
 
     @Transactional
-    public void createDeleteEvent(Long userId, String resourceKey) {
-        createDeleteEvent(new FileDeletionEvent(userId, resourceKey));
-    }
-
-    @Transactional
     public void createDeleteEvent(FileDeletionEvent event) {
         fileDeletionEventOutbox.save(event);
     }
@@ -54,5 +53,9 @@ public class FileService {
     @Transactional
     public void createDeleteEvents(List<FileDeletionEvent> events) {
         events.forEach(this::createDeleteEvent);
+    }
+
+    public void delete(String resourceKey) {
+        imageFileMessageQueue.offerDeleteAllRequest(List.of(resourceKey));
     }
 }

@@ -4,6 +4,7 @@ import ecsimsw.picup.domain.FileDeletionEventOutbox;
 import ecsimsw.picup.dto.FileResourceInfo;
 import ecsimsw.picup.exception.AlbumException;
 import ecsimsw.picup.exception.UnsupportedFileTypeException;
+import ecsimsw.picup.mq.ImageFileMessageQueue;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -27,11 +28,14 @@ class FileServiceTest {
     @Mock
     private FileDeletionEventOutbox fileDeletionEventOutbox;
 
+    @Mock
+    private ImageFileMessageQueue imageFileMessageQueue;
+
     private FileService fileService;
 
     @BeforeEach
     private void init() {
-        fileService = new FileService(storageHttpClient, fileDeletionEventOutbox);
+        fileService = new FileService(storageHttpClient, imageFileMessageQueue, fileDeletionEventOutbox);
     }
 
     @DisplayName("파일을 업로드하고 업로드한 파일 정보를 반환한다.")

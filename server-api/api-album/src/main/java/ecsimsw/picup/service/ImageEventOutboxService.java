@@ -52,6 +52,7 @@ public class ImageEventOutboxService {
                 .collect(Collectors.toList());
             imageFileMessageQueue.offerDeleteAllRequest(resourceKeys);
             fileDeletionEventOutbox.deleteAll(events);
+            LOGGER.info("publish deletion event : " + String.join(", ", resourceKeys));
         } catch (MessageBrokerDownException e) {
             var alertMessage = "[MESSAGE_BROKER_CONNECT_] : " + e.getMessage();
             LOGGER.error(alertMessage + "\n" + e.getCause());

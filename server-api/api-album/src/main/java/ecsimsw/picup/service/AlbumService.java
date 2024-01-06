@@ -17,7 +17,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import static ecsimsw.picup.domain.AlbumRepository.AlbumSearchSpecs.*;
 
@@ -46,11 +45,15 @@ public class AlbumService {
     public AlbumInfoResponse create(Long userId, AlbumInfoRequest albumInfo, MultipartFile thumbnail) {
         final String fileTag = userId.toString();
         final FileResourceInfo resource = fileService.upload(userId, thumbnail, fileTag);
-        storageUsageService.addUsage(userId, resource.getSize());
-        final Album album = new Album(userId, albumInfo.getName(), resource.getResourceKey(), resource.getSize());
-        albumRepository.save(album);
-        // TODO :: outbox 처리
-        return AlbumInfoResponse.of(album);
+        try {
+            final Album album = new Album(userId, albumInfo.getName(), resource.getResourceKey(), resource.getSize());
+            storageUsageService.addUsage(userId, resource.getSize());
+            albumRepository.save(album);
+            return AlbumInfoResponse.of(album);
+        } catch (Exception e) {
+            fileService.delete(resource.getResourceKey());
+            throw e;
+        }
     }
 
     @Cacheable(value = "album", key = "#albumId")
@@ -68,18 +71,25 @@ public class AlbumService {
     public AlbumInfoResponse update(Long userId, Long albumId, AlbumInfoRequest albumInfo, Optional<MultipartFile> optionalThumbnail) {
         final Album album = getUserAlbum(userId, albumId);
         album.updateName(albumInfo.getName());
-        optionalThumbnail.ifPresent(file -> {
-            final String oldImage = album.getThumbnailResourceKey();
-            fileService.createDeleteEvent(userId, oldImage);
-            storageUsageService.subtractUsage(userId, album.getThumbnailFileSize());
+        if (optionalThumbnail.isEmpty()) {
+            albumRepository.save(album);
+            return AlbumInfoResponse.of(album);
+        }
 
-            final FileResourceInfo newImage = fileService.upload(userId, file);
+        final String oldImage = album.getThumbnailResourceKey();
+        fileService.createDeleteEvent(new FileDeletionEvent(userId, oldImage));
+        storageUsageService.subtractUsage(userId, album.getThumbnailFileSize());
+
+        final FileResourceInfo newImage = fileService.upload(userId, optionalThumbnail.orElseThrow());
+        try {
             album.updateThumbnail(newImage.getResourceKey());
             storageUsageService.addUsage(userId, newImage.getSize());
-        });
-        albumRepository.save(album);
-        // TODO :: outbox 처리
-        return AlbumInfoResponse.of(album);
+            albumRepository.save(album);
+            return AlbumInfoResponse.of(album);
+        } catch (Exception e) {
+            fileService.delete(newImage.getResourceKey());
+            throw e;
+        }
     }
 
     @Caching(evict = {
@@ -90,7 +100,7 @@ public class AlbumService {
     @Transactional
     public void delete(Long userId, Long albumId) {
         final Album album = getUserAlbum(userId, albumId);
-        fileService.createDeleteEvent(userId, album.getThumbnailResourceKey());
+        fileService.createDeleteEvent(new FileDeletionEvent(userId, album.getThumbnailResourceKey()));
         storageUsageService.subtractUsage(userId, album.getThumbnailFileSize());
         albumRepository.delete(album);
 

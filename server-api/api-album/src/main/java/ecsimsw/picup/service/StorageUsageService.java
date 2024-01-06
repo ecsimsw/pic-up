@@ -30,7 +30,7 @@ public class StorageUsageService {
     @Transactional
     public void addUsage(Long userId, long fileSize) {
         final StorageUsage storageUsage = storageUsageRepository.findByUserId(userId)
-            .orElseThrow(() -> new AlbumException("Usage for userId " + userId + " is not present"));
+            .orElse(StorageUsage.initDefaultPlan(userId));
         storageUsage.add(fileSize);
         storageUsageRepository.save(storageUsage);
     }
