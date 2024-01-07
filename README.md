@@ -18,7 +18,8 @@
 ### Application
 
 - 비동기 처리, 논블록킹 조합으로 이미지 다중 소스 업로드 : [docs](https://ecsimsw.tistory.com/entry/%EC%9D%B4%EB%AF%B8%EC%A7%80-%EC%97%85%EB%A1%9C%EB%93%9C-%EB%B9%84%EB%8F%99%EA%B8%B0-%EC%B2%98%EB%A6%AC-%ED%9B%84-%EA%B2%B0%EA%B3%BC-%EC%A1%B0%ED%95%A9), [code](https://github.com/ecsimsw/pic-up/blob/main/server-api/api-storage/src/main/java/ecsimsw/picup/service/StorageService.java#L49)
-- Dynamic DataSource 라우팅으로 DB 서버 다운시 처리, 헬스 체크 [docs](https://ecsimsw.tistory.com/entry/Dynamic-DataSource-%EB%9D%BC%EC%9A%B0%ED%8C%85%EC%9C%BC%EB%A1%9C-DB-%EC%84%9C%EB%B2%84-%EB%8B%A4%EC%9A%B4%EC%8B%9C-%EC%B2%98%EB%A6%AC)
+- Transactional outbox, 메시징과 데이터베이스 처리의 원자성 보장 : [docs](https://ecsimsw.tistory.com/entry/Transactional-outbox-pattern-%EC%9C%BC%EB%A1%9C)
+- Dynamic DataSource 라우팅으로 DB 서버 다운시 처리, 헬스 체크 : [docs](https://ecsimsw.tistory.com/entry/Dynamic-DataSource-%EB%9D%BC%EC%9A%B0%ED%8C%85%EC%9C%BC%EB%A1%9C-DB-%EC%84%9C%EB%B2%84-%EB%8B%A4%EC%9A%B4%EC%8B%9C-%EC%B2%98%EB%A6%AC)
 - 메시지 큐를 이용한 서버간 비동기 통신, 재시도 정책과 복구 처리 : [docs](https://ecsimsw.tistory.com/entry/%EB%A9%94%EC%8B%9C%EC%A7%80-%ED%81%90-%EC%82%AC%EC%9A%A9-%EC%9D%B4%EC%9C%A0%EC%99%80-RabbitMQ-%EC%A3%BC%EC%9A%94%E2%80%93%EC%98%B5%EC%85%98-%EC%9E%AC%EC%95%99-%EC%8B%9C%EB%82%98%EB%A6%AC%EC%98%A4-%EC%86%8C%EA%B0%9C), [code](https://github.com/ecsimsw/pic-up/tree/main/server-api/api-core/src/main/java/ecsimsw/picup/mq)
 - Transactional outbox pattern 으로 메시지와 DB 원자성 보장 : [docs](https://ecsimsw.tistory.com/entry/Transactional-outbox-pattern-%EC%9C%BC%EB%A1%9C)
 - 인덱스 기반에서 커서 기반의 페이지 네이션 전환으로 조회 성능 개선 : [docs](https://ecsimsw.tistory.com/entry/%EC%BB%A4%EC%84%9C-%EA%B8%B0%EB%B0%98-%ED%8E%98%EC%9D%B4%EC%A7%80%EB%84%A4%EC%9D%B4%EC%85%98-%EB%8D%94%EB%AF%B8-%EB%8D%B0%EC%9D%B4%ED%84%B0-%EC%A4%80%EB%B9%84%EC%99%80-%EC%BF%BC%EB%A6%AC-%ED%85%8C%EC%8A%A4%ED%8A%B8), [code](https://github.com/ecsimsw/pic-up/blob/main/server-api/api-album/src/main/java/ecsimsw/picup/service/PictureService.java#L101)
