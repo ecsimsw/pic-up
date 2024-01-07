@@ -12,7 +12,7 @@
 
 ### Scenario
 
-<img width="903" alt="image" src="https://github.com/ecsimsw/pic-up/assets/46060746/45d5bb78-ec81-400a-b83e-6fe9496cd40a">
+<img width="903" alt="image" src="https://github.com/ecsimsw/pic-up/blob/main/infra-docs/user-scenario.png">
 
 
 ### Application
