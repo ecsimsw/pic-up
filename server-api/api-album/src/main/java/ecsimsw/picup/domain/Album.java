@@ -1,6 +1,7 @@
 package ecsimsw.picup.domain;
 
 import ecsimsw.picup.auth.UnauthorizedException;
+import ecsimsw.picup.dto.FileResourceInfo;
 import ecsimsw.picup.ecrypt.AES256Converter;
 import java.time.LocalDateTime;
 import javax.persistence.Convert;
@@ -57,8 +58,9 @@ public class Album {
         this.name = name;
     }
 
-    public void updateThumbnail(String thumbnailImage) {
-        this.thumbnailResourceKey = thumbnailImage;
+    public void updateThumbnail(FileResourceInfo fileResourceInfo) {
+        this.thumbnailResourceKey = fileResourceInfo.getResourceKey();
+        this.thumbnailFileSize = fileResourceInfo.getSize();
     }
 
     public void authorize(Long userId) {

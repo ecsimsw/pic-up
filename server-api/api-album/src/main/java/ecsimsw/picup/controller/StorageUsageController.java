@@ -20,9 +20,9 @@ public class StorageUsageController {
 
     @PostMapping("/api/usage")
     public ResponseEntity<Void> initUsage(
-        @JwtPayload AuthTokenPayload loginUserInfo
+//        @JwtPayload AuthTokenPayload loginUserInfo
     ) {
-        storageUsageService.initNewUsage(loginUserInfo.getId(), 10000000000L);
+        storageUsageService.initNewUsage(1L, 100L);
         return ResponseEntity.ok().build();
     }
 

@@ -31,12 +31,12 @@ public class PictureController {
 
     @PostMapping("/api/album/{albumId}/picture")
     public ResponseEntity<PictureInfoResponse> createPicture(
-        @JwtPayload AuthTokenPayload userInfo,
+//        @JwtPayload AuthTokenPayload userInfo,
         @PathVariable Long albumId,
         @RequestPart MultipartFile imageFile,
         @RequestPart PictureInfoRequest pictureInfo
     ) {
-        final PictureInfoResponse response = pictureService.create(userInfo.getId(), albumId, pictureInfo, imageFile);
+        final PictureInfoResponse response = pictureService.create(1L, albumId, pictureInfo, imageFile);
         return ResponseEntity.ok(response);
     }
 

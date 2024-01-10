@@ -8,6 +8,7 @@ public class PicUpMemberApplication {
 
     public static void main(String[] args) {
         SpringApplication app = new SpringApplication(PicUpMemberApplication.class);
+        app.setAdditionalProfiles("dev");
         app.run(args);
     }
 }

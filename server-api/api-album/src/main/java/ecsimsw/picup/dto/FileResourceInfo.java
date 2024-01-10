@@ -1,12 +1,14 @@
 package ecsimsw.picup.dto;
 
 import lombok.Getter;
+import lombok.Setter;
 
+@Setter
 @Getter
 public class FileResourceInfo {
 
-    private final String resourceKey;
-    private final long size;
+    private String resourceKey;
+    private long size;
 
     public FileResourceInfo(String resourceKey, long size) {
         this.resourceKey = resourceKey;

@@ -45,6 +45,7 @@ public class AlbumService {
     public AlbumInfoResponse create(Long userId, AlbumInfoRequest albumInfo, MultipartFile thumbnail) {
         final String fileTag = userId.toString();
         final FileResourceInfo resource = fileService.upload(userId, thumbnail, fileTag);
+        resource.setSize(20L);
         try {
             final Album album = new Album(userId, albumInfo.getName(), resource.getResourceKey(), resource.getSize());
             storageUsageService.addUsage(userId, resource.getSize());
@@ -82,7 +83,7 @@ public class AlbumService {
 
         final FileResourceInfo newImage = fileService.upload(userId, optionalThumbnail.orElseThrow());
         try {
-            album.updateThumbnail(newImage.getResourceKey());
+            album.updateThumbnail(newImage);
             storageUsageService.addUsage(userId, newImage.getSize());
             albumRepository.save(album);
             return AlbumInfoResponse.of(album);

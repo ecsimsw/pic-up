@@ -29,7 +29,8 @@ public class StorageUsage {
     }
 
     public static StorageUsage initDefaultPlan(Long userId) {
-        return new StorageUsage(null, userId, 10737418240L, 0L);
+//        return new StorageUsage(null, userId, 10000000000L, 0L);
+        return new StorageUsage(null, userId, 100L, 0L);
     }
 
     public StorageUsage(Long id, Long userId, Long limitAsByte, Long usageAsByte) {
@@ -44,7 +45,7 @@ public class StorageUsage {
     }
 
     public boolean isAbleToStore(Long addedSize) {
-        return limitAsByte > usageAsByte + addedSize;
+        return limitAsByte >= usageAsByte + addedSize;
     }
 
     public void add(Long addedSize) {

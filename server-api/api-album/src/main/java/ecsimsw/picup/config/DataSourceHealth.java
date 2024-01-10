@@ -38,7 +38,7 @@ public class DataSourceHealth {
         indicatorSlave.setDataSource(dataSourceSlave);
     }
 
-    @Scheduled(fixedDelay = 3000)
+    @Scheduled(fixedDelay = 10000)
     public void healthCheck() {
         DataSourceTargetContextHolder.setContext(MASTER);
         var healthMaster = indicatorMaster.getHealth(false);

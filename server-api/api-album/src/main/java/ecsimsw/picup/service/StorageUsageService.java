@@ -29,8 +29,7 @@ public class StorageUsageService {
 
     @Transactional
     public void addUsage(Long userId, long fileSize) {
-        final StorageUsage storageUsage = storageUsageRepository.findByUserId(userId)
-            .orElse(StorageUsage.initDefaultPlan(userId));
+        final StorageUsage storageUsage = storageUsageRepository.findByUserId(userId).orElseThrow();
         storageUsage.add(fileSize);
         storageUsageRepository.save(storageUsage);
     }

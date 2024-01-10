@@ -25,11 +25,11 @@ public class AlbumController {
 
     @PostMapping("/api/album")
     public ResponseEntity<AlbumInfoResponse> createAlbum(
-        @JwtPayload AuthTokenPayload loginUserInfo,
+//        @JwtPayload AuthTokenPayload loginUserInfo,
         @RequestPart Optional<MultipartFile> thumbnail,
         @RequestPart AlbumInfoRequest albumInfo
     ) {
-        final AlbumInfoResponse album = albumService.create(loginUserInfo.getId(),
+        final AlbumInfoResponse album = albumService.create(1L,
             albumInfo,
             thumbnail.orElseThrow(() -> new AlbumException("Thumbnail image file must be included"))
         );
