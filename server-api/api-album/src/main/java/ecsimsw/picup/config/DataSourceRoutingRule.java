@@ -9,17 +9,26 @@ import static ecsimsw.picup.config.DataSourceType.SLAVE;
 
 public class DataSourceRoutingRule extends AbstractRoutingDataSource {
 
+//    @Override
+//    protected Object determineCurrentLookupKey() {
+//        if (DataSourceTargetContextHolder.getTargetContext().isPresent()) {
+//            return DataSourceTargetContextHolder.getTargetContext().get();
+//        }
+//        var isReadOnlyQuery = TransactionSynchronizationManager.isCurrentTransactionReadOnly();
+//        if (isReadOnlyQuery && !DataSourceHealth.isDown(SLAVE)) {
+//            return SLAVE;
+//        }
+//        if (!isReadOnlyQuery && DataSourceHealth.isDown(MASTER)) {
+//            throw new DataSourceConnectionDownException("Server can read only now");
+//        }
+//        return MASTER;
+//    }
+
     @Override
     protected Object determineCurrentLookupKey() {
-        if (DataSourceTargetContextHolder.getTargetContext().isPresent()) {
-            return DataSourceTargetContextHolder.getTargetContext().get();
-        }
         var isReadOnlyQuery = TransactionSynchronizationManager.isCurrentTransactionReadOnly();
-        if (isReadOnlyQuery && !DataSourceHealth.isDown(SLAVE)) {
+        if (isReadOnlyQuery) {
             return SLAVE;
-        }
-        if (!isReadOnlyQuery && DataSourceHealth.isDown(MASTER)) {
-            throw new DataSourceConnectionDownException("Server can read only now");
         }
         return MASTER;
     }

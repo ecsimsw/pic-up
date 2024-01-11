@@ -3,7 +3,13 @@ package ecsimsw.picup.service;
 import ecsimsw.picup.domain.StorageUsage;
 import ecsimsw.picup.domain.StorageUsageRepository;
 import ecsimsw.picup.exception.AlbumException;
+import org.hibernate.StaleStateException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.orm.ObjectOptimisticLockingFailureException;
+import org.springframework.retry.annotation.Recover;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
@@ -14,6 +20,12 @@ public class StorageUsageService {
     public StorageUsageService(StorageUsageRepository storageUsageRepository) {
         this.storageUsageRepository = storageUsageRepository;
     }
+
+    @Autowired
+    StorageUsageWriteService storageUsageWriteService;
+
+    @Autowired
+    StorageUsageReadService storageUsageReadService;
 
     @Transactional
     public void initNewUsage(Long userId, Long limitAsByte) {
@@ -29,9 +41,13 @@ public class StorageUsageService {
 
     @Transactional
     public void addUsage(Long userId, long fileSize) {
-        final StorageUsage storageUsage = storageUsageRepository.findByUserId(userId).orElseThrow();
-        storageUsage.add(fileSize);
-        storageUsageRepository.save(storageUsage);
+        final long start = System.currentTimeMillis();
+//        System.out.println("hi");
+        var storageUsage = storageUsageReadService.getUsage(userId);
+        storageUsageWriteService.addUsage(storageUsage, fileSize);
+//        storageUsage.add(fileSize);
+//        storageUsageRepository.save(storageUsage);
+        System.out.println("FFFFFFFFF : "+ (System.currentTimeMillis() - start));
     }
 
     @Transactional

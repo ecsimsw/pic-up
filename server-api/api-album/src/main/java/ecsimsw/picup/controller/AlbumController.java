@@ -36,6 +36,14 @@ public class AlbumController {
         return ResponseEntity.ok(album);
     }
 
+    @PostMapping("/api/race/{userId}")
+    public ResponseEntity<AlbumInfoResponse> raceCondition(
+        @PathVariable Long userId
+    ) {
+        final AlbumInfoResponse album = albumService.create(userId, null, null);
+        return ResponseEntity.ok(album);
+    }
+
     @PutMapping("/api/album/{albumId}")
     public ResponseEntity<AlbumInfoResponse> updateAlbum(
         @JwtPayload AuthTokenPayload loginUserInfo,

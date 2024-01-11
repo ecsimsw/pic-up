@@ -12,6 +12,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 
 @Service
 public class FileService {
@@ -42,7 +43,8 @@ public class FileService {
             throw new AlbumException("Invalid file name");
         }
         FileExtension.fromFileName(fileName);
-        return storageHttpClient.requestUpload(userId, file, tag);
+        return new FileResourceInfo(UUID.randomUUID().toString(), file.getSize());
+//        return storageHttpClient.requestUpload(userId, file, tag);
     }
 
     @Transactional

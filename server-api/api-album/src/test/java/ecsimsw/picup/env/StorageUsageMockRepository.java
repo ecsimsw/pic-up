@@ -33,16 +33,16 @@ public class StorageUsageMockRepository {
     }
 
     public static StorageUsage save(StorageUsage storageUsage) {
-        if (storageUsage.getId() != null) {
-            MOCK_DB.put(storageUsage.getId(), storageUsage);
-            return MOCK_DB.get(storageUsage.getId());
-        }
-        Long newId = MOCK_DB.values().stream()
-            .mapToLong(StorageUsage::getId)
-            .max()
-            .orElse(0L) + 1;
-        storageUsage.setId(newId);
-        MOCK_DB.put(newId, storageUsage);
+//        if (storageUsage.getId() != null) {
+//            MOCK_DB.put(storageUsage.getId(), storageUsage);
+//            return MOCK_DB.get(storageUsage.getId());
+//        }
+//        Long newId = MOCK_DB.values().stream()
+//            .mapToLong(StorageUsage::getId)
+//            .max()
+//            .orElse(0L) + 1;
+//        storageUsage.setId(newId);
+//        MOCK_DB.put(newId, storageUsage);
         return storageUsage;
     }
 }

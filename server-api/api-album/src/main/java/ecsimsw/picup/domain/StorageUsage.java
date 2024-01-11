@@ -4,22 +4,16 @@ import ecsimsw.picup.exception.AlbumException;
 import lombok.Getter;
 import lombok.Setter;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import java.sql.Timestamp;
 
 @Setter
 @Getter
 @Entity
 public class StorageUsage {
 
-    @GeneratedValue(strategy = GenerationType.AUTO)
     @Id
-    private Long id;
-
-    @NotNull
     private Long userId;
 
     private Long limitAsByte;
@@ -30,18 +24,13 @@ public class StorageUsage {
 
     public static StorageUsage initDefaultPlan(Long userId) {
 //        return new StorageUsage(null, userId, 10000000000L, 0L);
-        return new StorageUsage(null, userId, 100L, 0L);
-    }
-
-    public StorageUsage(Long id, Long userId, Long limitAsByte, Long usageAsByte) {
-        this.id = id;
-        this.userId = userId;
-        this.limitAsByte = limitAsByte;
-        this.usageAsByte = usageAsByte;
+        return new StorageUsage(userId, 100L, 0L);
     }
 
     public StorageUsage(Long userId, Long limitAsByte, Long usageAsByte) {
-        this(null, userId, limitAsByte, usageAsByte);
+        this.userId = userId;
+        this.limitAsByte = limitAsByte;
+        this.usageAsByte = usageAsByte;
     }
 
     public boolean isAbleToStore(Long addedSize) {
