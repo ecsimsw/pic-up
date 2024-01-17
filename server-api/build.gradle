@@ -62,10 +62,6 @@ subprojects {
         // simple-auth
         implementation 'com.github.ecsimsw:simple-auth:2.0.1'
         testImplementation 'com.github.ecsimsw:simple-auth:2.0.1'
-
-        // encrypt
-        implementation 'com.github.ecsimsw:utils-encrypt:1.0.7'
-        testImplementation 'com.github.ecsimsw:utils-encrypt:1.0.7'
     }
 
     jib {

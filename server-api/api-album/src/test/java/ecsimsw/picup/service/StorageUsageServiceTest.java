@@ -21,18 +21,22 @@ public class StorageUsageServiceTest {
 
     private StorageUsageService storageUsageService;
 
+    private Long userId = 1L;
+
     @BeforeEach
     public void init() {
         storageUsageService = new StorageUsageService(storageUsageRepository);
         StorageUsageMockRepository.init(storageUsageRepository);
+
+        storageUsageService.initNewUsage(userId, 10000L);
     }
 
     @DisplayName("유저별 스토리지 사용량을 저장한다.")
     @Test
     public void storeStorageUsage() {
-        var userId = 1L;
         var fileSize = 256L;
 
+        storageUsageService.initNewUsage(userId, 10000L);
         storageUsageService.addUsage(userId, fileSize);
 
         var usage = storageUsageService.getUsage(userId);
@@ -42,8 +46,7 @@ public class StorageUsageServiceTest {
     @DisplayName("최대 업로드 가능 사이즈를 넘어서 사진을 업로드 하는 경우 예외를 발생시킨다.")
     @Test
     public void overLimitUploadSize() {
-        var userId = 1L;
-
+        storageUsageService.initNewUsage(userId, 10000L);
         var usage = storageUsageService.getUsage(userId);
         var limit = usage.getLimitAsByte();
         var uploadFileSize = limit + 1;
@@ -56,8 +59,6 @@ public class StorageUsageServiceTest {
     @DisplayName("사진을 추가하는 경우 업로드한 사진의 사이즈 만큼 사용량이 증가한다")
     @Test
     public void addFileSize() {
-        var userId = 1L;
-
         var uploadFileSize1 = 1;
         storageUsageService.addUsage(userId, uploadFileSize1);
         assertThat(storageUsageService.getUsage(userId).getUsageAsByte())
@@ -72,7 +73,6 @@ public class StorageUsageServiceTest {
     @DisplayName("사진을 제거하는 경우 제거한 사진의 사이즈 만큼 사용량이 감소한다")
     @Test
     public void subtractFileSize() {
-        var userId = 1L;
         var initialFileSize = 100;
         storageUsageService.addUsage(userId, initialFileSize);
 
@@ -90,7 +90,6 @@ public class StorageUsageServiceTest {
     @DisplayName("감소한 사용량이 0보다 작은 경우 사용량을 0으로 초기화한다.")
     @Test
     public void subtractFileSizeUnderZero() {
-        var userId = 1L;
         var initialFileSize = 100;
         storageUsageService.addUsage(userId, initialFileSize);
 
