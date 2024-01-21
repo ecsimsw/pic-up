@@ -3,6 +3,7 @@ package ecsimsw.picup.service;
 import ecsimsw.picup.domain.StorageUsageRepository;
 import ecsimsw.picup.env.StorageUsageMockRepository;
 import ecsimsw.picup.exception.AlbumException;
+import ecsimsw.picup.storage.StorageUsageDto;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -23,12 +24,14 @@ public class StorageUsageServiceTest {
 
     private Long userId = 1L;
 
+    private StorageUsageDto storageUsage = new StorageUsageDto(userId, 10000L);
+
     @BeforeEach
     public void init() {
         storageUsageService = new StorageUsageService(storageUsageRepository);
         StorageUsageMockRepository.init(storageUsageRepository);
 
-        storageUsageService.initNewUsage(userId, 10000L);
+        storageUsageService.initNewUsage(storageUsage);
     }
 
     @DisplayName("유저별 스토리지 사용량을 저장한다.")
@@ -36,7 +39,7 @@ public class StorageUsageServiceTest {
     public void storeStorageUsage() {
         var fileSize = 256L;
 
-        storageUsageService.initNewUsage(userId, 10000L);
+        storageUsageService.initNewUsage(storageUsage);
         storageUsageService.addUsage(userId, fileSize);
 
         var usage = storageUsageService.getUsage(userId);
@@ -46,7 +49,7 @@ public class StorageUsageServiceTest {
     @DisplayName("최대 업로드 가능 사이즈를 넘어서 사진을 업로드 하는 경우 예외를 발생시킨다.")
     @Test
     public void overLimitUploadSize() {
-        storageUsageService.initNewUsage(userId, 10000L);
+        storageUsageService.initNewUsage(storageUsage);
         var usage = storageUsageService.getUsage(userId);
         var limit = usage.getLimitAsByte();
         var uploadFileSize = limit + 1;

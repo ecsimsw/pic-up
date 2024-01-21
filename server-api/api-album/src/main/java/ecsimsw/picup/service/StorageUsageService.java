@@ -3,6 +3,7 @@ package ecsimsw.picup.service;
 import ecsimsw.picup.domain.StorageUsage;
 import ecsimsw.picup.domain.StorageUsageRepository;
 import ecsimsw.picup.exception.AlbumException;
+import ecsimsw.picup.storage.StorageUsageDto;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,8 +17,8 @@ public class StorageUsageService {
     }
 
     @Transactional
-    public void initNewUsage(Long userId, Long limitAsByte) {
-        final StorageUsage storageUsage = new StorageUsage(userId, limitAsByte, 0L);
+    public void initNewUsage(StorageUsageDto storageUsageDto) {
+        final StorageUsage storageUsage = new StorageUsage(storageUsageDto.getUserId(), storageUsageDto.getLimitAsByte(), 0L);
         storageUsageRepository.save(storageUsage);
     }
 
@@ -29,8 +30,7 @@ public class StorageUsageService {
 
     @Transactional
     public void addUsage(Long userId, long fileSize) {
-        final StorageUsage storageUsage = storageUsageRepository.findByUserId(userId)
-            .orElse(StorageUsage.initDefaultPlan(userId));
+        final StorageUsage storageUsage = storageUsageRepository.findByUserId(userId).orElseThrow();
         storageUsage.add(fileSize);
         storageUsageRepository.save(storageUsage);
     }

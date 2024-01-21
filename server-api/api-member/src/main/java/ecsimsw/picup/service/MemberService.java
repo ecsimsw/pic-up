@@ -9,6 +9,7 @@ import ecsimsw.picup.dto.SignUpRequest;
 import ecsimsw.picup.ecrypt.EncryptService;
 import ecsimsw.picup.exception.LoginFailedException;
 import ecsimsw.picup.exception.MemberException;
+import ecsimsw.picup.storage.StorageUsageDto;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,10 +18,16 @@ public class MemberService {
 
     private final MemberRepository memberRepository;
     private final EncryptService encryptService;
+    private final StorageUsageHttpClient storageUsageHttpClient;
 
-    public MemberService(MemberRepository memberRepository, EncryptService encryptService) {
+    public MemberService(
+        MemberRepository memberRepository,
+        EncryptService encryptService,
+        StorageUsageHttpClient storageUsageHttpClient
+    ) {
         this.memberRepository = memberRepository;
         this.encryptService = encryptService;
+        this.storageUsageHttpClient = storageUsageHttpClient;
     }
 
     @Transactional
@@ -28,8 +35,7 @@ public class MemberService {
         try {
             final Member member = memberRepository.findByUsername(request.getUsername())
                 .orElseThrow(() -> new LoginFailedException("Invalid login info"));
-            final String salt = member.getPassword().getSalt();
-            final Password requestPassword = encryptPassword(request.getPassword(), salt);
+            final Password requestPassword = encryptPassword(request.getPassword(), member.getPassword().getSalt());
             member.authenticate(requestPassword);
             return MemberInfoResponse.of(member);
         } catch (Exception e) {
@@ -45,6 +51,7 @@ public class MemberService {
         final Password password = encryptPassword(request.getPassword());
         final Member member = new Member(request.getUsername(), password);
         memberRepository.save(member);
+        storageUsageHttpClient.beginRecordStorageUsage(new StorageUsageDto(member.getId(), 10000000000L));
         return MemberInfoResponse.of(member);
     }
 

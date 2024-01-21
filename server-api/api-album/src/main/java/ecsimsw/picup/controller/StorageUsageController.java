@@ -4,9 +4,11 @@ import ecsimsw.auth.anotations.JwtPayload;
 import ecsimsw.picup.auth.AuthTokenPayload;
 import ecsimsw.picup.domain.StorageUsage;
 import ecsimsw.picup.service.StorageUsageService;
+import ecsimsw.picup.storage.StorageUsageDto;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -18,11 +20,10 @@ public class StorageUsageController {
         this.storageUsageService = storageUsageService;
     }
 
+    // TODO :: IP blocking, internal ip only
     @PostMapping("/api/usage")
-    public ResponseEntity<Void> initUsage(
-        @JwtPayload AuthTokenPayload loginUserInfo
-    ) {
-        storageUsageService.initNewUsage(loginUserInfo.getId(), 10000000000L);
+    public ResponseEntity<Void> initUsage(@RequestBody StorageUsageDto request) {
+        storageUsageService.initNewUsage(request);
         return ResponseEntity.ok().build();
     }
 

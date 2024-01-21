@@ -36,7 +36,7 @@ public class StorageHttpClient {
         maxAttemptsExpression = "${rt.retry.count}",
         value = Throwable.class,
         backoff = @Backoff(delayExpression = "${rt.retry.delay.time.ms}"),
-        recover = "recoverUploadApi"
+        recover = "recoverRequestUpload"
     )
     public FileResourceInfo requestUpload(Long userId, MultipartFile file, String tag) {
         try {
@@ -56,7 +56,7 @@ public class StorageHttpClient {
     }
 
     @Recover
-    public FileResourceInfo recoverUploadApi(Throwable exception, Long userId, MultipartFile file, String tag) {
+    public FileResourceInfo recoverRequestUpload(Throwable exception, Long userId, MultipartFile file, String tag) {
         throw new FileUploadFailException(exception.getMessage(), exception);
     }
 }

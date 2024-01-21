@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 
 @Setter
@@ -18,10 +19,6 @@ public class StorageUsage {
     private long usageAsByte;
 
     public StorageUsage() {
-    }
-
-    public static StorageUsage initDefaultPlan(Long userId) {
-        return new StorageUsage(userId, 10737418240L, 0L);
     }
 
     public StorageUsage(Long userId, Long limitAsByte, Long usageAsByte) {
