@@ -1,6 +1,6 @@
-package ecsimsw.picup.config;
-
-public enum DataSourceType {
-    MASTER,
-    SLAVE
-}
+//package ecsimsw.picup.config;
+//
+//public enum DataSourceType {
+//    MASTER,
+//    SLAVE
+//}

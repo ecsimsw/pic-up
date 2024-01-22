@@ -1,15 +1,13 @@
 package ecsimsw.picup.service;
 
+import com.zaxxer.hikari.HikariPoolMXBean;
 import ecsimsw.picup.domain.StorageUsage;
 import ecsimsw.picup.domain.StorageUsageRepository;
 import ecsimsw.picup.exception.AlbumException;
-import org.hibernate.StaleStateException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.orm.ObjectOptimisticLockingFailureException;
-import org.springframework.retry.annotation.Recover;
-import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
@@ -20,12 +18,6 @@ public class StorageUsageService {
     public StorageUsageService(StorageUsageRepository storageUsageRepository) {
         this.storageUsageRepository = storageUsageRepository;
     }
-
-    @Autowired
-    StorageUsageWriteService storageUsageWriteService;
-
-    @Autowired
-    StorageUsageReadService storageUsageReadService;
 
     @Transactional
     public void initNewUsage(Long userId, Long limitAsByte) {
@@ -39,15 +31,33 @@ public class StorageUsageService {
             .orElseThrow(() -> new AlbumException("Usage for userId " + userId + " is not present"));
     }
 
+    Logger logger = LoggerFactory.getLogger(StorageUsageService.class);
+
+    @Autowired
+    HikariPoolMXBean hikariPoolMXBean;
+
     @Transactional
     public void addUsage(Long userId, long fileSize) {
-        final long start = System.currentTimeMillis();
-//        System.out.println("hi");
-        var storageUsage = storageUsageReadService.getUsage(userId);
-        storageUsageWriteService.addUsage(storageUsage, fileSize);
-//        storageUsage.add(fileSize);
-//        storageUsageRepository.save(storageUsage);
-        System.out.println("FFFFFFFFF : "+ (System.currentTimeMillis() - start));
+        var bfActiveConn =  hikariPoolMXBean.getActiveConnections();
+        var bfIdeConn =  hikariPoolMXBean.getIdleConnections();
+        var bfWaitConn =  hikariPoolMXBean.getThreadsAwaitingConnection();
+
+        var storageUsage = getUsage(userId);
+        storageUsage.add(fileSize);
+        storageUsageRepository.save(storageUsage);
+
+        var afActiveConn =  hikariPoolMXBean.getActiveConnections();
+        var afIdeConn =  hikariPoolMXBean.getIdleConnections();
+        var afWaitConn =  hikariPoolMXBean.getThreadsAwaitingConnection();
+
+        logger.info("\n"
+            + "bf activeConnections : " + bfActiveConn + "\n"
+            + "bf idleConnections : " + bfIdeConn+ "\n"
+            + "bf waitingConnections : " + bfWaitConn + "\n"
+            + "af activeConnections : " + afActiveConn + "\n"
+            + "af idleConnections : " + afIdeConn+ "\n"
+            + "af waitingConnections : " + afWaitConn
+        );
     }
 
     @Transactional

@@ -18,13 +18,9 @@ public class StorageUsageController {
         this.storageUsageService = storageUsageService;
     }
 
-    long userId = 1L;
-
     @PostMapping("/api/usage")
-    public ResponseEntity<Void> initUsage(
-//        @JwtPayload AuthTokenPayload loginUserInfo
-    ) {
-        storageUsageService.initNewUsage(userId++, 100000000L);
+    public ResponseEntity<Void> initUsage(Long userId) {
+        storageUsageService.initNewUsage(userId, 100L);
         return ResponseEntity.ok().build();
     }
 

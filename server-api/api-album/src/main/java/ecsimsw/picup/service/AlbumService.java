@@ -44,14 +44,14 @@ public class AlbumService {
         this.storageUsageService = storageUsageService;
     }
 
-    @CacheEvict(value = "userAlbumFirstPageDefaultSize", key = "#userId")
+//    @CacheEvict(value = "userAlbumFirstPageDefaultSize", key = "#userId")
     public AlbumInfoResponse create(Long userId, AlbumInfoRequest albumInfo, MultipartFile thumbnail) {
         final String fileTag = userId.toString();
-        final FileResourceInfo resource = new FileResourceInfo(UUID.randomUUID().toString(),1L);
+        final FileResourceInfo resource = new FileResourceInfo(UUID.randomUUID().toString(),10L);
         try {
             final Album album = new Album(userId, "hi", resource.getResourceKey(), resource.getSize());
-            storageUsageService.addUsage(userId, resource.getSize());
             albumRepository.save(album);
+            storageUsageService.addUsage(userId, resource.getSize());
             return AlbumInfoResponse.of(album);
         } catch (Exception e) {
             fileService.delete(resource.getResourceKey());
