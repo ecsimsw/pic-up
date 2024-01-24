@@ -1,6 +1,9 @@
 package ecsimsw.picup.service;
 
-import ecsimsw.picup.domain.*;
+import ecsimsw.picup.domain.AlbumRepository;
+import ecsimsw.picup.domain.FileDeletionEvent;
+import ecsimsw.picup.domain.Picture;
+import ecsimsw.picup.domain.PictureRepository;
 import ecsimsw.picup.dto.FileResourceInfo;
 import ecsimsw.picup.dto.PictureInfoRequest;
 import ecsimsw.picup.dto.PictureInfoResponse;
@@ -9,10 +12,11 @@ import ecsimsw.picup.exception.AlbumException;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Slice;
+import org.springframework.orm.ObjectOptimisticLockingFailureException;
+import org.springframework.retry.annotation.Backoff;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Optional;
@@ -40,14 +44,17 @@ public class PictureService {
     }
 
     @CacheEvict(key = "{#userId, #albumId}", value = "userPictureFirstPageDefaultSize")
+    @Retryable(
+        value = ObjectOptimisticLockingFailureException.class,
+        maxAttempts = 3,
+        backoff = @Backoff(delay = 300),
+        recover = "recoverCreate"
+    )
     @Transactional
-    public PictureInfoResponse create(Long userId, Long albumId, PictureInfoRequest pictureInfo, MultipartFile imageFile) {
-        checkUserAuthInAlbum(userId, albumId);
-
-        final String fileTag = userId.toString();
-        final FileResourceInfo uploadFile = fileService.upload(userId, imageFile, fileTag);
+    public PictureInfoResponse create(Long userId, Long albumId, PictureInfoRequest pictureInfo, FileResourceInfo uploadFile) {
         try {
-            final Picture picture = new Picture(albumId, uploadFile.getResourceKey(), uploadFile.getSize(), pictureInfo.getDescription());
+            checkUserAuthInAlbum(userId, albumId);
+            var picture = new Picture(albumId, uploadFile.getResourceKey(), uploadFile.getSize(), pictureInfo.getDescription());
             pictureRepository.save(picture);
             storageUsageService.addUsage(userId, uploadFile.getSize());
             return PictureInfoResponse.of(picture);
@@ -57,40 +64,56 @@ public class PictureService {
         }
     }
 
+    public PictureInfoResponse recoverCreate(ObjectOptimisticLockingFailureException e, Long userId, Long albumId, PictureInfoRequest pictureInfo, FileResourceInfo uploadFile) {
+        fileService.delete(uploadFile.getResourceKey());
+        throw new AlbumException("Too many requests at the same time");
+    }
+
     @CacheEvict(key = "{#userId, #albumId}", value = "userPictureFirstPageDefaultSize")
+    @Retryable(
+        value = ObjectOptimisticLockingFailureException.class,
+        maxAttempts = 3,
+        backoff = @Backoff(delay = 300),
+        recover = "recoverUpdate"
+    )
     @Transactional
-    public PictureInfoResponse update(Long userId, Long albumId, Long pictureId, PictureInfoRequest pictureInfo, Optional<MultipartFile> optionalImageFile) {
-        checkUserAuthInAlbum(userId, albumId);
-
-        final Picture picture = pictureRepository.findById(pictureId).orElseThrow(() -> new AlbumException("Invalid picture"));
-        picture.validateAlbum(albumId);
-        picture.updateDescription(pictureInfo.getDescription());
-        if (optionalImageFile.isEmpty()) {
-            pictureRepository.save(picture);
-            return PictureInfoResponse.of(picture);
-        }
-
-        fileService.createDeleteEvent(new FileDeletionEvent(userId, picture.getResourceKey()));
-        storageUsageService.subtractUsage(userId, picture.getFileSize());
-
-        final FileResourceInfo newImage = fileService.upload(userId, optionalImageFile.orElseThrow());
+    public PictureInfoResponse update(Long userId, Long albumId, Long pictureId, PictureInfoRequest pictureInfo, FileResourceInfo newFileResource) {
         try {
-            picture.updateImage(newImage.getResourceKey());
-            storageUsageService.addUsage(userId, newImage.getSize());
+            checkUserAuthInAlbum(userId, albumId);
+
+            var picture = pictureRepository.findById(pictureId).orElseThrow(() -> new AlbumException("Invalid picture"));
+            picture.validateAlbum(albumId);
+            picture.updateDescription(pictureInfo.getDescription());
+
+            fileService.createDeleteEvent(new FileDeletionEvent(userId, picture.getResourceKey()));
+            storageUsageService.subtractUsage(userId, picture.getFileSize());
+
+            picture.updateImage(newFileResource.getResourceKey());
+            storageUsageService.addUsage(userId, newFileResource.getSize());
             pictureRepository.save(picture);
             return PictureInfoResponse.of(picture);
         } catch (Exception e) {
-            fileService.delete(newImage.getResourceKey());
+            fileService.delete(newFileResource.getResourceKey());
             throw e;
         }
     }
 
+    public PictureInfoResponse recoverUpdate(ObjectOptimisticLockingFailureException e, Long userId, Long albumId, Long pictureId, PictureInfoRequest pictureInfo, FileResourceInfo newFileResource) {
+        fileService.delete(newFileResource.getResourceKey());
+        throw new AlbumException("Too many requests at the same time");
+    }
+
     @CacheEvict(key = "{#userId, #albumId}", value = "userPictureFirstPageDefaultSize")
+    @Retryable(
+        value = ObjectOptimisticLockingFailureException.class,
+        maxAttempts = 3,
+        backoff = @Backoff(delay = 300)
+    )
     @Transactional
     public void delete(Long userId, Long albumId, Long pictureId) {
         checkUserAuthInAlbum(userId, albumId);
 
-        final Picture picture = pictureRepository.findById(pictureId).orElseThrow(() -> new AlbumException("Invalid picture"));
+        var picture = pictureRepository.findById(pictureId).orElseThrow(() -> new AlbumException("Invalid picture"));
         picture.validateAlbum(albumId);
         fileService.createDeleteEvent(new FileDeletionEvent(userId, picture.getResourceKey()));
         storageUsageService.subtractUsage(userId, picture.getFileSize());
@@ -102,11 +125,11 @@ public class PictureService {
     public List<PictureInfoResponse> cursorBasedFetch(Long userId, Long albumId, int limit, Optional<PictureSearchCursor> cursor) {
         checkUserAuthInAlbum(userId, albumId);
         if (cursor.isEmpty()) {
-            final Slice<Picture> pictures = pictureRepository.findAllByAlbumId(albumId, PageRequest.of(0, limit, sortByCreatedAtAsc));
+            var pictures = pictureRepository.findAllByAlbumId(albumId, PageRequest.of(0, limit, sortByCreatedAtAsc));
             return PictureInfoResponse.listOf(pictures.getContent());
         }
-        final PictureSearchCursor prev = cursor.orElseThrow();
-        final List<Picture> pictures = pictureRepository.fetch(
+        var prev = cursor.orElseThrow();
+        var pictures = pictureRepository.fetch(
             where(isAlbum(albumId))
                 .and(createdLater(prev.getCreatedAt()).or(equalsCreatedTime(prev.getCreatedAt()).and(greaterId(prev.getId())))),
             limit,
@@ -116,7 +139,7 @@ public class PictureService {
     }
 
     private void checkUserAuthInAlbum(Long userId, Long albumId) {
-        final Album album = albumRepository.findById(albumId).orElseThrow(() -> new AlbumException("Invalid album"));
+        var album = albumRepository.findById(albumId).orElseThrow(() -> new AlbumException("Invalid album"));
         album.authorize(userId);
     }
 }

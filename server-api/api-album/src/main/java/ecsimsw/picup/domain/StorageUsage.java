@@ -5,8 +5,9 @@ import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.Version;
+import java.sql.Timestamp;
 
 @Setter
 @Getter
@@ -17,6 +18,9 @@ public class StorageUsage {
     private Long userId;
     private long limitAsByte;
     private long usageAsByte;
+
+    @Version
+    private Timestamp versionStamp;
 
     public StorageUsage() {
     }

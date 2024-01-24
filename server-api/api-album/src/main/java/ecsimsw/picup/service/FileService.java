@@ -30,12 +30,10 @@ public class FileService {
         this.fileDeletionEventOutbox = fileDeletionEventOutbox;
     }
 
-    @Transactional
     public FileResourceInfo upload(Long userId, MultipartFile file) {
         return upload(userId, file, userId.toString());
     }
 
-    @Transactional
     public FileResourceInfo upload(Long userId, MultipartFile file, String tag) {
         final String fileName = file.getOriginalFilename();
         if (Objects.isNull(fileName) || !fileName.contains(".")) {
@@ -45,7 +43,6 @@ public class FileService {
         return storageHttpClient.requestUpload(userId, file, tag);
     }
 
-    @Transactional
     public void createDeleteEvent(FileDeletionEvent event) {
         fileDeletionEventOutbox.save(event);
     }

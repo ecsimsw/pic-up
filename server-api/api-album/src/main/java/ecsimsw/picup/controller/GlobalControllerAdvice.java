@@ -12,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -27,6 +28,11 @@ public class GlobalControllerAdvice {
     @ExceptionHandler({AlbumException.class, UnsupportedFileTypeException.class})
     public ResponseEntity<String> albumException(IllegalArgumentException e) {
         return ResponseEntity.badRequest().body(e.getMessage());
+    }
+
+    @ExceptionHandler(ObjectOptimisticLockingFailureException.class)
+    public ResponseEntity<String> raceConditionException(ObjectOptimisticLockingFailureException e) {
+        return ResponseEntity.badRequest().body("Too many requests at the same time");
     }
 
     @ExceptionHandler(MaxUploadSizeExceededException.class)

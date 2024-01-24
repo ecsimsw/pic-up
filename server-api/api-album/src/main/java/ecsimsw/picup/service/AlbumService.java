@@ -11,9 +11,11 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.Caching;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Slice;
+import org.springframework.orm.ObjectOptimisticLockingFailureException;
+import org.springframework.retry.annotation.Backoff;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Optional;
@@ -41,12 +43,16 @@ public class AlbumService {
     }
 
     @CacheEvict(value = "userAlbumFirstPageDefaultSize", key = "#userId")
+    @Retryable(
+        value = ObjectOptimisticLockingFailureException.class,
+        maxAttempts = 3,
+        backoff = @Backoff(delay = 300),
+        recover = "recoverCreate"
+    )
     @Transactional
-    public AlbumInfoResponse create(Long userId, AlbumInfoRequest albumInfo, MultipartFile thumbnail) {
-        final String fileTag = userId.toString();
-        final FileResourceInfo resource = fileService.upload(userId, thumbnail, fileTag);
+    public AlbumInfoResponse create(Long userId, AlbumInfoRequest albumInfo, FileResourceInfo resource) {
         try {
-            final Album album = new Album(userId, albumInfo.getName(), resource.getResourceKey(), resource.getSize());
+            var album = new Album(userId, albumInfo.getName(), resource.getResourceKey(), resource.getSize());
             storageUsageService.addUsage(userId, resource.getSize());
             albumRepository.save(album);
             return AlbumInfoResponse.of(album);
@@ -54,6 +60,11 @@ public class AlbumService {
             fileService.delete(resource.getResourceKey());
             throw e;
         }
+    }
+
+    public AlbumInfoResponse recoverCreate(ObjectOptimisticLockingFailureException e, Long userId, AlbumInfoRequest albumInfo, FileResourceInfo resource) {
+        fileService.delete(resource.getResourceKey());
+        throw new AlbumException("Too many requests at the same time");
     }
 
     @Cacheable(value = "album", key = "#albumId")
@@ -67,24 +78,23 @@ public class AlbumService {
         @CacheEvict(value = "album", key = "#albumId"),
         @CacheEvict(value = "userAlbumFirstPageDefaultSize", key = "#userId")
     })
+    @Retryable(
+        value = ObjectOptimisticLockingFailureException.class,
+        maxAttempts = 3,
+        backoff = @Backoff(delay = 300),
+        recover = "recoverUpdate"
+    )
     @Transactional
-    public AlbumInfoResponse update(Long userId, Long albumId, AlbumInfoRequest albumInfo, Optional<MultipartFile> optionalThumbnail) {
-        final Album album = getUserAlbum(userId, albumId);
-        album.updateName(albumInfo.getName());
-        if (optionalThumbnail.isEmpty()) {
-            albumRepository.save(album);
-            return AlbumInfoResponse.of(album);
-        }
-
-        final String oldImage = album.getThumbnailResourceKey();
-        fileService.createDeleteEvent(new FileDeletionEvent(userId, oldImage));
-        storageUsageService.subtractUsage(userId, album.getThumbnailFileSize());
-
-        final FileResourceInfo newImage = fileService.upload(userId, optionalThumbnail.orElseThrow());
+    public AlbumInfoResponse update(Long userId, Long albumId, AlbumInfoRequest albumInfo, FileResourceInfo newImage) {
         try {
+            var album = getUserAlbum(userId, albumId);
+            album.updateName(albumInfo.getName());
+
+            fileService.createDeleteEvent(new FileDeletionEvent(userId, album.getThumbnailResourceKey()));
+            storageUsageService.subtractUsage(userId, album.getThumbnailFileSize());
+
             album.updateThumbnail(newImage.getResourceKey());
             storageUsageService.addUsage(userId, newImage.getSize());
-            albumRepository.save(album);
             return AlbumInfoResponse.of(album);
         } catch (Exception e) {
             fileService.delete(newImage.getResourceKey());
@@ -92,19 +102,29 @@ public class AlbumService {
         }
     }
 
+    public AlbumInfoResponse recoverUpdate(ObjectOptimisticLockingFailureException e, Long userId, Long albumId, AlbumInfoRequest albumInfo, FileResourceInfo newImage) {
+        fileService.delete(newImage.getResourceKey());
+        throw new AlbumException("Too many requests at the same time");
+    }
+
     @Caching(evict = {
         @CacheEvict(value = "album", key = "#albumId"),
         @CacheEvict(value = "userAlbumFirstPageDefaultSize", key = "#userId"),
         @CacheEvict(value = "userPictureFirstPageDefaultSize", key = "{#userId, #albumId}")
     })
+    @Retryable(
+        value = ObjectOptimisticLockingFailureException.class,
+        maxAttempts = 3,
+        backoff = @Backoff(delay = 300)
+    )
     @Transactional
     public void delete(Long userId, Long albumId) {
-        final Album album = getUserAlbum(userId, albumId);
+        var album = getUserAlbum(userId, albumId);
         fileService.createDeleteEvent(new FileDeletionEvent(userId, album.getThumbnailResourceKey()));
         storageUsageService.subtractUsage(userId, album.getThumbnailFileSize());
         albumRepository.delete(album);
 
-        final List<Picture> pictures = pictureRepository.findAllByAlbumId(albumId);
+        var pictures = pictureRepository.findAllByAlbumId(albumId);
         fileService.createDeleteEvents(FileDeletionEvent.listOf(userId, pictures));
         storageUsageService.subtractUsage(userId, pictures.stream().mapToLong(Picture::getFileSize).sum());
         pictureRepository.deleteAll(pictures);
@@ -114,11 +134,11 @@ public class AlbumService {
     @Transactional(readOnly = true)
     public List<AlbumInfoResponse> cursorBasedFetch(Long userId, int limit, Optional<AlbumSearchCursor> cursor) {
         if (cursor.isEmpty()) {
-            final Slice<Album> albums = albumRepository.findAllByUserId(userId, PageRequest.of(0, limit, ascByCreatedAt));
+            var albums = albumRepository.findAllByUserId(userId, PageRequest.of(0, limit, ascByCreatedAt));
             return AlbumInfoResponse.listOf(albums.getContent());
         }
-        final AlbumSearchCursor prev = cursor.orElseThrow();
-        final List<Album> albums = albumRepository.fetch(
+        var prev = cursor.orElseThrow();
+        var albums = albumRepository.fetch(
             where(isUser(userId))
                 .and(createdLater(prev.getCreatedAt()).or(equalsCreatedTime(prev.getCreatedAt()).and(greaterId(prev.getId())))),
             limit,
@@ -128,7 +148,7 @@ public class AlbumService {
     }
 
     private Album getUserAlbum(Long userId, Long albumId) {
-        final Album album = albumRepository.findById(albumId).orElseThrow(() -> new AlbumException("Invalid album"));
+        var album = albumRepository.findById(albumId).orElseThrow(() -> new AlbumException("Invalid album"));
         album.authorize(userId);
         return album;
     }
