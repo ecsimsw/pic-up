@@ -7,7 +7,9 @@ import ecsimsw.picup.dto.AlbumInfoResponse;
 import ecsimsw.picup.dto.AlbumSearchCursor;
 import ecsimsw.picup.exception.AlbumException;
 import ecsimsw.picup.service.AlbumService;
+import org.hibernate.StaleStateException;
 import org.springframework.http.ResponseEntity;
+import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -29,11 +31,15 @@ public class AlbumController {
         @RequestPart Optional<MultipartFile> thumbnail,
         @RequestPart AlbumInfoRequest albumInfo
     ) {
-        final AlbumInfoResponse album = albumService.create(1L,
-            albumInfo,
-            thumbnail.orElseThrow(() -> new AlbumException("Thumbnail image file must be included"))
-        );
-        return ResponseEntity.ok(album);
+//        try {
+            final AlbumInfoResponse album = albumService.create(1L,
+                albumInfo,
+                thumbnail.orElseThrow(() -> new AlbumException("Thumbnail image file must be included"))
+            );
+            return ResponseEntity.ok(album);
+//        } catch (StaleStateException | ObjectOptimisticLockingFailureException e) {
+//            throw new AlbumException("Too many requests at the same time");
+//        }
     }
 
     @PostMapping("/api/race/{userId}")

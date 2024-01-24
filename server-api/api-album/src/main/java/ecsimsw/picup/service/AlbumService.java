@@ -12,6 +12,9 @@ import org.springframework.cache.annotation.Caching;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.jpa.repository.Lock;
+import org.springframework.orm.ObjectOptimisticLockingFailureException;
+import org.springframework.retry.annotation.Backoff;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,6 +24,7 @@ import javax.persistence.LockModeType;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static ecsimsw.picup.domain.AlbumRepository.AlbumSearchSpecs.*;
 
@@ -44,27 +48,16 @@ public class AlbumService {
         this.storageUsageService = storageUsageService;
     }
 
-//    @CacheEvict(value = "userAlbumFirstPageDefaultSize", key = "#userId")
+    AtomicInteger i = new AtomicInteger(1);
+
+    @Transactional
     public AlbumInfoResponse create(Long userId, AlbumInfoRequest albumInfo, MultipartFile thumbnail) {
         final String fileTag = userId.toString();
-        final FileResourceInfo resource = new FileResourceInfo(UUID.randomUUID().toString(),10L);
+        final FileResourceInfo resource = new FileResourceInfo(UUID.randomUUID().toString(),1L);
         try {
             final Album album = new Album(userId, "hi", resource.getResourceKey(), resource.getSize());
             albumRepository.save(album);
             storageUsageService.addUsage(userId, resource.getSize());
-            return AlbumInfoResponse.of(album);
-        } catch (Exception e) {
-            fileService.delete(resource.getResourceKey());
-            throw e;
-        }
-    }
-
-    public AlbumInfoResponse test(Long userId, AlbumInfoRequest albumInfo, MultipartFile thumbnail) {
-        final FileResourceInfo resource =  new FileResourceInfo(UUID.randomUUID().toString(),1L);
-        try {
-            final Album album = new Album(userId, "hi", resource.getResourceKey(), resource.getSize());
-            storageUsageService.addUsage(userId, resource.getSize());
-            albumRepository.save(album);
             return AlbumInfoResponse.of(album);
         } catch (Exception e) {
             fileService.delete(resource.getResourceKey());

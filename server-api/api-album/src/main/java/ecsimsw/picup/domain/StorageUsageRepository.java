@@ -9,6 +9,8 @@ import java.util.Optional;
 
 public interface StorageUsageRepository extends JpaRepository<StorageUsage, Long> {
 
-    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    @Lock(LockModeType.OPTIMISTIC)
     Optional<StorageUsage> findByUserId(Long userId);
+
+    StorageUsage getReferenceByUserId(Long userId);
 }

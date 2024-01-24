@@ -7,6 +7,10 @@ import ecsimsw.picup.exception.AlbumException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.orm.ObjectOptimisticLockingFailureException;
+import org.springframework.retry.annotation.Backoff;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,8 +31,7 @@ public class StorageUsageService {
 
     @Transactional(readOnly = true)
     public StorageUsage getUsage(Long userId) {
-        return storageUsageRepository.findByUserId(userId)
-            .orElseThrow(() -> new AlbumException("Usage for userId " + userId + " is not present"));
+        return storageUsageRepository.getReferenceByUserId(userId);
     }
 
     Logger logger = LoggerFactory.getLogger(StorageUsageService.class);
@@ -36,28 +39,32 @@ public class StorageUsageService {
     @Autowired
     HikariPoolMXBean hikariPoolMXBean;
 
+//    @Retryable(
+//        maxAttempts = 3,
+//        backoff = @Backoff(delay = 500),
+//        value = StaleStateException.class,
+//        recover = "recoverAddUsageStaleStateException"
+//    )
+
+    @CacheEvict(value = "userAlbumFirstPageDefaultSize", key = "#userId")
+//    @Retryable(
+//        value = ObjectOptimisticLockingFailureException.class,
+//        maxAttempts = 1,
+//        backoff = @Backoff(delay = 500)
+//    )
     @Transactional
     public void addUsage(Long userId, long fileSize) {
-        var bfActiveConn =  hikariPoolMXBean.getActiveConnections();
-        var bfIdeConn =  hikariPoolMXBean.getIdleConnections();
-        var bfWaitConn =  hikariPoolMXBean.getThreadsAwaitingConnection();
-
         var storageUsage = getUsage(userId);
         storageUsage.add(fileSize);
         storageUsageRepository.save(storageUsage);
 
-        var afActiveConn =  hikariPoolMXBean.getActiveConnections();
-        var afIdeConn =  hikariPoolMXBean.getIdleConnections();
-        var afWaitConn =  hikariPoolMXBean.getThreadsAwaitingConnection();
-
         logger.info("\n"
-            + "bf activeConnections : " + bfActiveConn + "\n"
-            + "bf idleConnections : " + bfIdeConn+ "\n"
-            + "bf waitingConnections : " + bfWaitConn + "\n"
-            + "af activeConnections : " + afActiveConn + "\n"
-            + "af idleConnections : " + afIdeConn+ "\n"
-            + "af waitingConnections : " + afWaitConn
+            + "activeConnections : " + hikariPoolMXBean.getActiveConnections() + "\n"
+            + "idleConnections : " + hikariPoolMXBean.getIdleConnections() + "\n"
+            + "waitingConnections : " + hikariPoolMXBean.getThreadsAwaitingConnection()
         );
+
+        System.out.println("여기까진 터지는데");
     }
 
     @Transactional
