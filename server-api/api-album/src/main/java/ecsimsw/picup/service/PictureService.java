@@ -14,6 +14,7 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.retry.annotation.Backoff;
+import org.springframework.retry.annotation.Recover;
 import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -64,6 +65,7 @@ public class PictureService {
         }
     }
 
+    @Recover
     public PictureInfoResponse recoverCreate(ObjectOptimisticLockingFailureException e, Long userId, Long albumId, PictureInfoRequest pictureInfo, FileResourceInfo uploadFile) {
         fileService.delete(uploadFile.getResourceKey());
         throw new AlbumException("Too many requests at the same time");
@@ -98,6 +100,7 @@ public class PictureService {
         }
     }
 
+    @Recover
     public PictureInfoResponse recoverUpdate(ObjectOptimisticLockingFailureException e, Long userId, Long albumId, Long pictureId, PictureInfoRequest pictureInfo, FileResourceInfo newFileResource) {
         fileService.delete(newFileResource.getResourceKey());
         throw new AlbumException("Too many requests at the same time");

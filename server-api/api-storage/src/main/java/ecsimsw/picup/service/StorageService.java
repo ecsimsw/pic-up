@@ -131,6 +131,11 @@ public class StorageService {
     public void delete(String resourceKey) {
         LOGGER.info("delete resource : " + resourceKey);
 
+        if(!resourceRepository.existsById(resourceKey)) {
+            LOGGER.error("non-existence resource : " + resourceKey);
+            return;
+        }
+
         final Resource resource = resourceRepository.findById(resourceKey)
             .orElseThrow(() -> new InvalidResourceException("Not exists resources for : " + resourceKey));
 

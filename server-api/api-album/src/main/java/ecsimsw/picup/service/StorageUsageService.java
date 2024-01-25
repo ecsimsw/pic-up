@@ -18,27 +18,26 @@ public class StorageUsageService {
 
     @Transactional
     public void initNewUsage(StorageUsageDto storageUsageDto) {
-        final StorageUsage storageUsage = new StorageUsage(storageUsageDto.getUserId(), storageUsageDto.getLimitAsByte(), 0L);
+        var storageUsage = new StorageUsage(storageUsageDto.getUserId(), storageUsageDto.getLimitAsByte(), 0L);
         storageUsageRepository.save(storageUsage);
     }
 
     @Transactional(readOnly = true)
     public StorageUsage getUsage(Long userId) {
         return storageUsageRepository.findByUserId(userId)
-            .orElseThrow(() -> new AlbumException("Usage for userId " + userId + " is not present"));
+            .orElseThrow(() -> new AlbumException("Invalid member id"));
     }
 
     @Transactional
     public void addUsage(Long userId, long fileSize) {
-        final StorageUsage storageUsage = storageUsageRepository.findByUserId(userId).orElseThrow();
+        var storageUsage = getUsage(userId);
         storageUsage.add(fileSize);
         storageUsageRepository.save(storageUsage);
     }
 
     @Transactional
     public void subtractUsage(Long userId, long fileSize) {
-        final StorageUsage usage = storageUsageRepository.findByUserId(userId)
-            .orElseThrow(() -> new AlbumException("Invalid member id"));
+        var usage = getUsage(userId);
         usage.subtract(fileSize);
         storageUsageRepository.save(usage);
     }

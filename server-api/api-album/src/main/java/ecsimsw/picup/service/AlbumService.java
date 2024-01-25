@@ -10,9 +10,9 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.Caching;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Slice;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.retry.annotation.Backoff;
+import org.springframework.retry.annotation.Recover;
 import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -45,8 +45,8 @@ public class AlbumService {
     @CacheEvict(value = "userAlbumFirstPageDefaultSize", key = "#userId")
     @Retryable(
         value = ObjectOptimisticLockingFailureException.class,
-        maxAttempts = 3,
-        backoff = @Backoff(delay = 300),
+        maxAttempts = 5,
+        backoff = @Backoff(delay = 500),
         recover = "recoverCreate"
     )
     @Transactional
@@ -62,6 +62,7 @@ public class AlbumService {
         }
     }
 
+    @Recover
     public AlbumInfoResponse recoverCreate(ObjectOptimisticLockingFailureException e, Long userId, AlbumInfoRequest albumInfo, FileResourceInfo resource) {
         fileService.delete(resource.getResourceKey());
         throw new AlbumException("Too many requests at the same time");
@@ -102,6 +103,7 @@ public class AlbumService {
         }
     }
 
+    @Recover
     public AlbumInfoResponse recoverUpdate(ObjectOptimisticLockingFailureException e, Long userId, Long albumId, AlbumInfoRequest albumInfo, FileResourceInfo newImage) {
         fileService.delete(newImage.getResourceKey());
         throw new AlbumException("Too many requests at the same time");

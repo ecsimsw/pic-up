@@ -14,8 +14,4 @@ public class InvalidStorageServerResponseException extends IllegalArgumentExcept
             + "body : " + httpStatusCodeException.getResponseBodyAsString()
         );
     }
-
-    public InvalidStorageServerResponseException(String message, Throwable cause) {
-        super(message, cause);
-    }
 }
