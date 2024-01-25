@@ -1,9 +1,9 @@
-# Pic up
+# Pic-up
 저희 부모님은 클라우드 스토리지 사용을 어려워 하십니다.    
 아직도 어렸을 때 인화해 둔 아날로그 식 앨범을 더 좋아하세요.        
 부모님께서 쉽게 사용하실 수 있는 사진 스토리지를 만들고 있습니다.     
 
-### DOCS
+### Docs
 
 #### 분산 환경에서의 안전한 데이터 처리
 - Transactional outbox pattern 으로 메시지와 DB 원자성 보장 : [docs](https://ecsimsw.tistory.com/entry/Transactional-outbox-pattern-%EC%9C%BC%EB%A1%9C), [code](https://github.com/ecsimsw/pic-up/blob/main/server-api/api-album/src/main/java/ecsimsw/picup/service/ImageEventOutboxService.java)
