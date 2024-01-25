@@ -16,7 +16,7 @@
 
 
 ### Application
-- DB 락의 커넥션 점유 문제 확인과 해결 : [docs](https://ecsimsw.tistory.com/entry/%EB%8F%99%EC%8B%9C%EC%84%B1-%EB%AC%B8%EC%A0%9C-%ED%95%B4%EA%B2%B0-DB-%EC%BB%A4%EB%84%A5%EC%85%98-%EC%A0%90%EC%9C%A0-%ED%99%95%EC%9D%B8%EA%B3%BC-%EC%84%B1%EB%8A%A5-%EA%B0%9C%EC%84%A0)
+- DB 락의 커넥션 점유 문제 확인과 해결 : [docs](https://ecsimsw.tistory.com/entry/%EB%8F%99%EC%8B%9C%EC%84%B1-%EB%AC%B8%EC%A0%9C-%ED%95%B4%EA%B2%B0-DB-%EC%BB%A4%EB%84%A5%EC%85%98-%EC%A0%90%EC%9C%A0-%ED%99%95%EC%9D%B8%EA%B3%BC-%EC%84%B1%EB%8A%A5-%EA%B0%9C%EC%84%A0), [code](https://github.com/ecsimsw/pic-up/blob/main/server-api/api-album/src/main/java/ecsimsw/picup/service/AlbumService.java#L46)
 - 동시성 문제 해결을 위한 락 : [docs](https://ecsimsw.tistory.com/entry/%EB%8F%99%EC%8B%9C%EC%84%B1-%ED%85%8C%EC%8A%A4%ED%8A%B8%EC%99%80-%ED%95%B4%EA%B2%B0-%EB%B0%A9%EC%95%88)
 - 비동기 처리, 논블록킹 조합으로 이미지 다중 소스 업로드 : [docs](https://ecsimsw.tistory.com/entry/%EC%9D%B4%EB%AF%B8%EC%A7%80-%EC%97%85%EB%A1%9C%EB%93%9C-%EB%B9%84%EB%8F%99%EA%B8%B0-%EC%B2%98%EB%A6%AC-%ED%9B%84-%EA%B2%B0%EA%B3%BC-%EC%A1%B0%ED%95%A9), [code](https://github.com/ecsimsw/pic-up/blob/main/server-api/api-storage/src/main/java/ecsimsw/picup/service/StorageService.java#L49)
 - Transactional outbox, 메시징과 데이터베이스 처리의 원자성 보장 : [docs](https://ecsimsw.tistory.com/entry/Transactional-outbox-pattern-%EC%9C%BC%EB%A1%9C)
