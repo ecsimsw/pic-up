@@ -25,7 +25,7 @@
 #### 배포와 모니터링
 - 리버스 프록시, 요청 호출 수 제한과 접근 가능 IP 제한 : [docs](https://ecsimsw.tistory.com/entry/Nginx-%EC%9A%94%EC%B2%AD-%ED%98%B8%EC%B6%9C-%EC%88%98-%EC%A0%9C%ED%95%9C%EA%B3%BC-%EC%A0%91%EA%B7%BC-%EA%B0%80%EB%8A%A5-IP-%EC%A0%9C%ED%95%9C), [config](https://github.com/ecsimsw/pic-up/tree/main/infra-gateway/config)
 - k8s, JVM, 도커 컨테이너 모니터링과 부하 테스트 : [docs](https://www.blog.ecsimsw.com/entry/JVM-%EB%AA%A8%EB%8B%88%ED%84%B0%EB%A7%81-%ED%94%84%EB%A1%9C%EB%A9%94%ED%85%8C%EC%9A%B0%EC%8A%A4%EC%99%80-JVM-%EB%A9%94%EB%AA%A8%EB%A6%AC-%ED%8A%9C%EB%8B%9D), [code](https://github.com/ecsimsw/pic-up/tree/main/utils-monitoring)
-- Kubernetes 배포와 HPA, MSA 구조로 유연한 스케일 아웃
+- Kubernetes 배포와 HPA, 유연한 스케일 아웃
  : [docs](https://ecsimsw.tistory.com/entry/Picup-%EC%9D%98-%EC%A0%84%EC%B2%B4-%EC%9D%B8%ED%94%84%EB%9D%BC-%EA%B5%AC%EC%A1%B0-%EC%86%8C%EA%B0%9C%ED%95%98%EA%B8%B0-%EB%84%A4%ED%8A%B8%EC%9B%8C%ED%81%AC-%EA%B5%AC%EC%A1%B0%EB%B6%80%ED%84%B0-CICD-%EA%B9%8C%EC%A7%80), [config](https://github.com/ecsimsw/pic-up/tree/main/infra-kubernetes)
 - 테라폼, AWS resource IaC : [code](https://github.com/ecsimsw/pic-up/tree/main/infra-terraform)
 
