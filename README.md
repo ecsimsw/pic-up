@@ -3,7 +3,7 @@
 아직도 어렸을 때 인화해 둔 아날로그 식 앨범을 더 좋아하세요.        
 부모님께서 쉽게 사용하실 수 있는 사진 스토리지를 만들고 있습니다.     
 
-### Docs
+## Docs
 
 #### 분산 환경에서의 안전한 데이터 처리
 - Transactional outbox pattern 으로 메시지와 DB 원자성 보장 : [docs](https://ecsimsw.tistory.com/entry/Transactional-outbox-pattern-%EC%9C%BC%EB%A1%9C), [code](https://github.com/ecsimsw/pic-up/blob/main/server-api/api-album/src/main/java/ecsimsw/picup/service/ImageEventOutboxService.java)
@@ -29,7 +29,7 @@
  : [docs](https://ecsimsw.tistory.com/entry/Picup-%EC%9D%98-%EC%A0%84%EC%B2%B4-%EC%9D%B8%ED%94%84%EB%9D%BC-%EA%B5%AC%EC%A1%B0-%EC%86%8C%EA%B0%9C%ED%95%98%EA%B8%B0-%EB%84%A4%ED%8A%B8%EC%9B%8C%ED%81%AC-%EA%B5%AC%EC%A1%B0%EB%B6%80%ED%84%B0-CICD-%EA%B9%8C%EC%A7%80), [config](https://github.com/ecsimsw/pic-up/tree/main/infra-kubernetes)
 - 테라폼, AWS resource IaC : [code](https://github.com/ecsimsw/pic-up/tree/main/infra-terraform)
 
-### Architecture
+## Architecture
 
 #### Application
 <img width="800" alt="image" src="https://github.com/ecsimsw/pic-up/blob/main/infra-docs/application-arch.png?raw=true">
@@ -39,14 +39,15 @@
 
 </br>
 
-### Scenario
+## Scenario
 
 <img width="800" alt="image" src="https://github.com/ecsimsw/pic-up/blob/main/infra-docs/user-scenario.png">
 
 <br>
 
-### Development stacks
-- Java, Spring boot, JPA, RabbitMQ, CriteriaAPI, FutureAPI
+## Stacks
+- Java, Spring boot, JPA, CriteriaAPI
+- RabbitMQ, RestTemplate, FutureAPI
 - Mysql, Redis, MongoDB, S3
 - JUnit5, Mockito, H2, Embedded mongo, S3mock
 - Kubernetes, Terraform, Nginx, NFS, Docker, Vagrant
