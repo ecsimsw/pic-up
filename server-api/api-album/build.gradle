@@ -1,5 +1,5 @@
 dependencies {
-    implementation project(':api-core')
+    implementation project(':api-common')
 
     // Spring retry
     implementation 'org.springframework.retry:spring-retry'

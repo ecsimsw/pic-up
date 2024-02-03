@@ -1,6 +1,5 @@
 rootProject.name = 'picup'
 
 include 'api-album'
-include 'api-member'
 include 'api-common'
 include 'api-storage'

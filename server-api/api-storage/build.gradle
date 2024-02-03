@@ -1,5 +1,5 @@
 dependencies {
-    implementation project(':api-core')
+    implementation project(':api-common')
 
     // mongo
     implementation 'org.springframework.boot:spring-boot-starter-data-mongodb'
