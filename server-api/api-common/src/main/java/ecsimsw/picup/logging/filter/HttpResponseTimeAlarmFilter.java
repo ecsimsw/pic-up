@@ -1,29 +1,21 @@
 package ecsimsw.picup.logging.filter;
 
-import ecsimsw.picup.logging.CustomLogger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 
-import java.io.IOException;
-import javax.servlet.Filter;
-import javax.servlet.FilterChain;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
+import javax.servlet.*;
 import javax.servlet.annotation.WebFilter;
 import javax.servlet.http.HttpServletRequest;
-
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.logging.LogLevel;
+import java.io.IOException;
 
 @WebFilter(urlPatterns = {"/api/*"})
 public class HttpResponseTimeAlarmFilter implements Filter {
 
-    private static final CustomLogger LOGGER = CustomLogger.init("RES_TIME_ALARM", HttpResponseTimeAlarmFilter.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(HttpResponseTimeAlarmFilter.class);
 
     @Value("${picup.log.http.response-time.alarm.enable:true}")
     private boolean enable;
-
-    @Value("${picup.log.http.response-time.alarm.level:WARN}")
-    private LogLevel logLevel;
 
     @Value("${picup.log.http.response-time.alarm.threshold:5}")
     private double threshold;
@@ -42,7 +34,7 @@ public class HttpResponseTimeAlarmFilter implements Filter {
         long spentTime = end - start;
         if (spentTime > threshold) {
             var req = (HttpServletRequest) request;
-            LOGGER.log(logLevel, "[RES_TIME] {} - {}, {} ms", req.getMethod(), req.getRequestURI(), spentTime);
+            LOGGER.info("[RES_TIME] {} - {}, {} ms", req.getMethod(), req.getRequestURI(), spentTime);
         }
     }
 }

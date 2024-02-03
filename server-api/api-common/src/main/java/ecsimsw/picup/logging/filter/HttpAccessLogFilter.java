@@ -1,30 +1,24 @@
 package ecsimsw.picup.logging.filter;
 
-import ecsimsw.picup.logging.CustomLogger;
 import ecsimsw.picup.logging.log.RequestLog;
 import ecsimsw.picup.logging.log.ResponseLog;
-import java.io.IOException;
-import javax.servlet.Filter;
-import javax.servlet.FilterChain;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
-import javax.servlet.annotation.WebFilter;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.logging.LogLevel;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.util.ContentCachingRequestWrapper;
 import org.springframework.web.util.ContentCachingResponseWrapper;
 
+import javax.servlet.*;
+import javax.servlet.annotation.WebFilter;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+
 @WebFilter(urlPatterns = {"/api/*", "/actuator/*"})
 public class HttpAccessLogFilter implements Filter {
 
-    private static final CustomLogger LOGGER = CustomLogger.init("HTTP_ACCESS", HttpAccessLogFilter.class);
-
-    @Value("${picup.log.http.access.level:INFO}")
-    private LogLevel logLevel;
+    private static final Logger LOGGER = LoggerFactory.getLogger(HttpAccessLogFilter.class);
 
     @Value("${picup.log.http.access.request.enable:true}")
     private boolean requestEnable;
@@ -61,19 +55,19 @@ public class HttpAccessLogFilter implements Filter {
         final ResponseLog response = new ResponseLog(responseWrapper);
 
         if (requestEnable && responseEnable && !requestHeaderEnable && !requestBodyEnable && !responseBodyEnable) {
-            LOGGER.log(
-                    logLevel, "[HTTP_ACC] {} - {}, {}",
+            LOGGER.info(
+                    "[HTTP_ACC] {} - {}, {}",
                     request.getMethod(), request.getUri(), HttpStatus.resolve(response.getStatus())
             );
             return;
         }
 
         if (requestEnable) {
-            LOGGER.log(logLevel, requestLog(request));
+            LOGGER.info(requestLog(request));
         }
 
         if (responseEnable) {
-            LOGGER.log(logLevel, responseLog(response));
+            LOGGER.info(responseLog(response));
         }
     }
 

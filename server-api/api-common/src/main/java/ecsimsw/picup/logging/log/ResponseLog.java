@@ -1,10 +1,13 @@
 package ecsimsw.picup.logging.log;
 
-import java.io.IOException;
-import javax.servlet.http.HttpServletResponse;
+import lombok.Getter;
 import org.springframework.web.util.ContentCachingResponseWrapper;
 import org.springframework.web.util.WebUtils;
 
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+
+@Getter
 public class ResponseLog {
 
     private final int status;
@@ -30,13 +33,5 @@ public class ResponseLog {
         } catch (IOException e) {
             throw new IllegalArgumentException("fail to load response body");
         }
-    }
-
-    public int getStatus() {
-        return status;
-    }
-
-    public String getBody() {
-        return body;
     }
 }

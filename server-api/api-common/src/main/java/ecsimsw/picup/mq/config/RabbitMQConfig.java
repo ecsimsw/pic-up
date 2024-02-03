@@ -1,12 +1,7 @@
 package ecsimsw.picup.mq.config;
 
-import ecsimsw.picup.logging.CustomLogger;
-import java.util.Map;
-import org.springframework.amqp.core.Binding;
-import org.springframework.amqp.core.BindingBuilder;
-import org.springframework.amqp.core.DirectExchange;
-import org.springframework.amqp.core.Queue;
-import org.springframework.amqp.core.QueueBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
 import org.springframework.amqp.rabbit.connection.Connection;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
@@ -21,7 +16,7 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class RabbitMQConfig {
 
-    private static final CustomLogger LOGGER = CustomLogger.init(RabbitMQConfig.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(RabbitMQConfig.class);
 
     @Bean
     public RabbitTemplate rabbitTemplate(

@@ -1,12 +1,15 @@
 package ecsimsw.picup.logging.log;
 
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.Map;
-import javax.servlet.http.HttpServletRequest;
+import lombok.Getter;
 import org.springframework.web.util.ContentCachingRequestWrapper;
 import org.springframework.web.util.WebUtils;
 
+import javax.servlet.http.HttpServletRequest;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Map;
+
+@Getter
 public class RequestLog {
 
     private final String uri;
@@ -52,21 +55,5 @@ public class RequestLog {
         } catch (Exception e) {
             throw new IllegalArgumentException("fail to load request body");
         }
-    }
-
-    public String getUri() {
-        return uri;
-    }
-
-    public String getMethod() {
-        return method;
-    }
-
-    public Map<String, String> getHeaders() {
-        return headers;
-    }
-
-    public String getBody() {
-        return body;
     }
 }
