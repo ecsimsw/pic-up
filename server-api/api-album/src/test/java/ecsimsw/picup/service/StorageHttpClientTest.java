@@ -1,7 +1,8 @@
 package ecsimsw.picup.service;
 
-import ecsimsw.picup.dto.FileResourceInfo;
-import ecsimsw.picup.exception.FileUploadFailException;
+import ecsimsw.picup.album.dto.FileResourceInfo;
+import ecsimsw.picup.album.exception.FileUploadFailException;
+import ecsimsw.picup.album.service.StorageHttpClient;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

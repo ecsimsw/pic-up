@@ -1,9 +1,11 @@
 package ecsimsw.picup.service;
 
-import ecsimsw.picup.domain.FileDeletionEventOutbox;
-import ecsimsw.picup.dto.FileResourceInfo;
-import ecsimsw.picup.exception.AlbumException;
-import ecsimsw.picup.exception.UnsupportedFileTypeException;
+import ecsimsw.picup.album.domain.FileDeletionEventOutbox;
+import ecsimsw.picup.album.dto.FileResourceInfo;
+import ecsimsw.picup.album.exception.AlbumException;
+import ecsimsw.picup.album.exception.UnsupportedFileTypeException;
+import ecsimsw.picup.album.service.FileService;
+import ecsimsw.picup.album.service.StorageHttpClient;
 import ecsimsw.picup.mq.ImageFileMessageQueue;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;

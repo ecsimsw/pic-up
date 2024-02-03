@@ -43,7 +43,7 @@ public class StorageUsageHttpClient {
     )
     public void beginRecordStorageUsage(StorageUsageDto usage) {
         try {
-            var headers = new HttpHeaders();
+            HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
 
             restTemplate.exchange(

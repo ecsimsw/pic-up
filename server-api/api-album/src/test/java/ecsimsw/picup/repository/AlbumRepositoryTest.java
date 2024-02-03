@@ -1,8 +1,8 @@
 package ecsimsw.picup.repository;
 
-import ecsimsw.picup.domain.Album;
-import ecsimsw.picup.domain.AlbumRepository;
-import ecsimsw.picup.dto.AlbumSearchCursor;
+import ecsimsw.picup.album.domain.Album;
+import ecsimsw.picup.album.domain.AlbumRepository;
+import ecsimsw.picup.album.dto.AlbumSearchCursor;
 import ecsimsw.picup.ecrypt.EncryptService;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
@@ -16,7 +16,7 @@ import org.springframework.test.context.TestPropertySource;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import static ecsimsw.picup.domain.AlbumRepository.AlbumSearchSpecs.*;
+import static ecsimsw.picup.album.domain.AlbumRepository.AlbumSearchSpecs.*;
 import static ecsimsw.picup.env.AlbumFixture.*;
 import static ecsimsw.picup.env.MemberFixture.MEMBER_ID;
 import static org.assertj.core.api.Assertions.assertThat;
