@@ -1,4 +1,4 @@
-package ecsimsw.picup.album.domain;
+package ecsimsw.picup.usage.domain;
 
 import ecsimsw.picup.album.exception.AlbumException;
 import lombok.AllArgsConstructor;

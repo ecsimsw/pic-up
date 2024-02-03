@@ -9,6 +9,7 @@ import ecsimsw.picup.album.domain.Picture;
 import ecsimsw.picup.album.dto.FileResourceInfo;
 import ecsimsw.picup.album.dto.PictureInfoRequest;
 import ecsimsw.picup.album.dto.PictureInfoResponse;
+import ecsimsw.picup.usage.service.StorageUsageService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;

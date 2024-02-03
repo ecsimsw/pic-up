@@ -36,7 +36,7 @@ public class StorageUsageHttpClient {
 
     @Retryable(
         label = "Retry when storage server is down or bad response",
-        maxAttempts = 3,
+        maxAttempts = 2,
         value = Throwable.class,
         backoff = @Backoff(value = 1500L),
         recover = "recoverBeginRecordStorageUsage"

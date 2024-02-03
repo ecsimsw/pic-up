@@ -1,7 +1,5 @@
-package ecsimsw.picup.logging.filter;
+package ecsimsw.picup.logging;
 
-import ecsimsw.picup.logging.log.RequestLog;
-import ecsimsw.picup.logging.log.ResponseLog;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;

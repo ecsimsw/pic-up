@@ -1,10 +1,10 @@
 package ecsimsw.picup.service;
 
-import ecsimsw.picup.album.domain.StorageUsageRepository;
-import ecsimsw.picup.album.service.StorageUsageService;
-import ecsimsw.picup.env.StorageUsageMockRepository;
 import ecsimsw.picup.album.exception.AlbumException;
+import ecsimsw.picup.env.StorageUsageMockRepository;
 import ecsimsw.picup.storage.StorageUsageDto;
+import ecsimsw.picup.usage.domain.StorageUsageRepository;
+import ecsimsw.picup.usage.service.StorageUsageService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

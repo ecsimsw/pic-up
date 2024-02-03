@@ -2,7 +2,7 @@ package ecsimsw.picup.album.controller;
 
 import ecsimsw.auth.exception.SimpleAuthException;
 import ecsimsw.picup.album.exception.AlbumException;
-import ecsimsw.picup.album.exception.InvalidStorageServerResponseException;
+import ecsimsw.picup.usage.exception.InvalidStorageServerResponseException;
 import ecsimsw.picup.album.exception.UnsupportedFileTypeException;
 import ecsimsw.picup.alert.SlackMessageSender;
 import ecsimsw.picup.auth.UnauthorizedException;
@@ -21,9 +21,9 @@ import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import org.springframework.web.multipart.support.MissingServletRequestPartException;
 
 @ControllerAdvice
-public class GlobalControllerAdvice {
+public class AlbumControllerAdvice {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(GlobalControllerAdvice.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(AlbumControllerAdvice.class);
 
     @ExceptionHandler({AlbumException.class, UnsupportedFileTypeException.class})
     public ResponseEntity<String> albumException(IllegalArgumentException e) {

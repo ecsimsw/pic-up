@@ -46,7 +46,7 @@ class FileServiceTest {
         when(storageHttpClient.requestUpload(MEMBER_ID, MULTIPART_FILE, TAG))
             .thenReturn(new FileResourceInfo(RESOURCE_KEY, MULTIPART_FILE.getSize()));
 
-        var fileInfo = fileService.upload(MEMBER_ID, MULTIPART_FILE, TAG);
+        var fileInfo = fileService.upload(MEMBER_ID, MULTIPART_FILE);
         assertAll(
             () -> assertThat(fileInfo.getResourceKey()).isEqualTo(RESOURCE_KEY),
             () -> assertThat(fileInfo.getSize()).isEqualTo(MULTIPART_FILE.getSize())
@@ -58,7 +58,7 @@ class FileServiceTest {
     void uploadWithInvalidResourceName() {
         var invalidFileName = "invalidFileName";
         assertThatThrownBy(
-            () -> fileService.upload(MEMBER_ID, mockMultipartFile(invalidFileName), TAG)
+            () -> fileService.upload(MEMBER_ID, mockMultipartFile(invalidFileName))
         ).isInstanceOf(AlbumException.class);
     }
 
@@ -67,7 +67,7 @@ class FileServiceTest {
     void uploadWithInvalidResource() {
         var invalidFileExtension = "unsupportedFileExtension.mp4";
         assertThatThrownBy(
-            () -> fileService.upload(MEMBER_ID, mockMultipartFile(invalidFileExtension), TAG)
+            () -> fileService.upload(MEMBER_ID, mockMultipartFile(invalidFileExtension))
         ).isInstanceOf(UnsupportedFileTypeException.class);
     }
 }

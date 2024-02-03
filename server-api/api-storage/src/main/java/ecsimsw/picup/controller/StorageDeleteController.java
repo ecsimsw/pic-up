@@ -10,10 +10,9 @@ import org.springframework.messaging.Message;
 import org.springframework.stereotype.Controller;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
-import static ecsimsw.picup.mq.config.DeletionQueueContainerFactories.FILE_DELETION_QUEUE_CF;
-import static ecsimsw.picup.mq.config.MessageRouteConfig.*;
+import static ecsimsw.picup.mq.DeletionQueueContainerFactories.FILE_DELETION_QUEUE_CF;
+import static ecsimsw.picup.mq.MessageRouteConfig.*;
 
 @Controller
 public class StorageDeleteController {

@@ -6,6 +6,7 @@ import ecsimsw.picup.album.dto.AlbumSearchCursor;
 import ecsimsw.picup.album.dto.FileResourceInfo;
 import ecsimsw.picup.album.exception.AlbumException;
 import ecsimsw.picup.album.dto.AlbumInfoResponse;
+import ecsimsw.picup.usage.service.StorageUsageService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
@@ -71,7 +72,7 @@ public class AlbumService {
     })
     @Retryable(
         value = ObjectOptimisticLockingFailureException.class,
-        maxAttempts = 3,
+        maxAttempts = 5,
         backoff = @Backoff(delay = 300),
         recover = "recoverUpdate"
     )
@@ -106,7 +107,7 @@ public class AlbumService {
     })
     @Retryable(
         value = ObjectOptimisticLockingFailureException.class,
-        maxAttempts = 3,
+        maxAttempts = 5,
         backoff = @Backoff(delay = 300)
     )
     @Transactional

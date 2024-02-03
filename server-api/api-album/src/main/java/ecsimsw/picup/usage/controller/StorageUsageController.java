@@ -1,10 +1,10 @@
-package ecsimsw.picup.album.controller;
+package ecsimsw.picup.usage.controller;
 
 import ecsimsw.auth.anotations.JwtPayload;
 import ecsimsw.picup.auth.AuthTokenPayload;
-import ecsimsw.picup.album.domain.StorageUsage;
-import ecsimsw.picup.album.service.StorageUsageService;
 import ecsimsw.picup.storage.StorageUsageDto;
+import ecsimsw.picup.usage.domain.StorageUsage;
+import ecsimsw.picup.usage.service.StorageUsageService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;

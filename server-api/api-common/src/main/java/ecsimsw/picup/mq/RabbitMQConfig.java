@@ -1,4 +1,4 @@
-package ecsimsw.picup.mq.config;
+package ecsimsw.picup.mq;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

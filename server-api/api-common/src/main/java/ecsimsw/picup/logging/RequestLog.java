@@ -1,4 +1,4 @@
-package ecsimsw.picup.logging.log;
+package ecsimsw.picup.logging;
 
 import lombok.Getter;
 import org.springframework.web.util.ContentCachingRequestWrapper;

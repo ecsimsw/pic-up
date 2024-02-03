@@ -1,4 +1,4 @@
-package ecsimsw.picup.mq.config;
+package ecsimsw.picup.mq;
 
 import org.springframework.amqp.core.*;
 import org.springframework.beans.factory.annotation.Value;

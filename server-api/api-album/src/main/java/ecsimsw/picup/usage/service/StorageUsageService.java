@@ -1,9 +1,9 @@
-package ecsimsw.picup.album.service;
+package ecsimsw.picup.usage.service;
 
-import ecsimsw.picup.album.domain.StorageUsage;
-import ecsimsw.picup.album.domain.StorageUsageRepository;
 import ecsimsw.picup.album.exception.AlbumException;
 import ecsimsw.picup.storage.StorageUsageDto;
+import ecsimsw.picup.usage.domain.StorageUsage;
+import ecsimsw.picup.usage.domain.StorageUsageRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
