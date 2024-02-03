@@ -32,7 +32,7 @@ public class DataCacheSampleTest {
     private DataCacheSampleService dataCacheSampleService;
 
     @BeforeEach
-    private void makeCacheClear() {
+    public void makeCacheClear() {
         dataCacheSampleService.clearCache();
     }
 

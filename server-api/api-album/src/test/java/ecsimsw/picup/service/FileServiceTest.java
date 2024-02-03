@@ -36,8 +36,8 @@ class FileServiceTest {
     private FileService fileService;
 
     @BeforeEach
-    private void init() {
-        fileService = new FileService(storageHttpClient, imageFileMessageQueue, fileDeletionEventOutbox);
+    public void init() {
+        fileService = new FileService(storageHttpClient, fileDeletionEventOutbox, imageFileMessageQueue);
     }
 
     @DisplayName("파일을 업로드하고 업로드한 파일 정보를 반환한다.")

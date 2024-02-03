@@ -22,6 +22,8 @@ public class FileService {
     private final FileDeletionEventOutbox fileDeletionEventOutbox;
     private final ImageFileMessageQueue imageFileMessageQueue;
 
+
+
     public FileResourceInfo upload(Long userId, MultipartFile file) {
         return upload(userId, file, userId.toString());
     }
