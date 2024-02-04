@@ -16,7 +16,7 @@ public class StorageUsageService {
 
     @Transactional
     public void initNewUsage(StorageUsageDto storageUsageDto) {
-        var storageUsage = new StorageUsage(storageUsageDto.getUserId(), storageUsageDto.getLimitAsByte(), 0L);
+        var storageUsage = new StorageUsage(storageUsageDto.getUserId(), storageUsageDto.getLimitAsByte());
         storageUsageRepository.save(storageUsage);
     }
 

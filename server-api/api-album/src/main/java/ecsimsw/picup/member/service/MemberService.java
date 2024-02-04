@@ -10,6 +10,8 @@ import ecsimsw.picup.member.dto.SignUpRequest;
 import ecsimsw.picup.member.exception.LoginFailedException;
 import ecsimsw.picup.member.exception.MemberException;
 import ecsimsw.picup.storage.StorageUsageDto;
+import ecsimsw.picup.usage.domain.StorageUsage;
+import ecsimsw.picup.usage.domain.StorageUsageRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,7 +22,7 @@ public class MemberService {
 
     private final MemberRepository memberRepository;
     private final EncryptService encryptService;
-    private final StorageUsageHttpClient storageUsageHttpClient;
+    private final StorageUsageRepository storageUsageRepository;
 
     @Transactional
     public MemberInfoResponse signIn(SignInRequest request) {
@@ -43,7 +45,7 @@ public class MemberService {
         var password = encryptPassword(request.getPassword());
         var member = new Member(request.getUsername(), password);
         memberRepository.save(member);
-        storageUsageHttpClient.beginRecordStorageUsage(new StorageUsageDto(member.getId(), 10000000000L));
+        storageUsageRepository.save(new StorageUsage(member.getId(), 10000000000L));
         return MemberInfoResponse.of(member);
     }
 

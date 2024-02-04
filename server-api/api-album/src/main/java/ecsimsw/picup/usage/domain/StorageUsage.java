@@ -26,10 +26,10 @@ public class StorageUsage {
     @Version
     private Timestamp versionStamp;
 
-    public StorageUsage(Long userId, long limitAsByte, long usageAsByte) {
+    public StorageUsage(Long userId, long limitAsByte) {
         this.userId = userId;
         this.limitAsByte = limitAsByte;
-        this.usageAsByte = usageAsByte;
+        this.usageAsByte = 0L;
     }
 
     public boolean isAbleToStore(Long addedSize) {
