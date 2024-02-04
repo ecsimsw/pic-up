@@ -37,28 +37,28 @@ public class DataSourceHealth {
 
     @Scheduled(fixedDelay = 3000)
     public void healthCheck() {
-        DataSourceTargetContextHolder.setContext(DataSourceType.MASTER);
-        var healthMaster = indicatorMaster.getHealth(false);
-        if (healthMaster.getStatus() != Status.UP) {
-            throw new DataSourceConnectionDownException(DataSourceType.MASTER + " is down, " + healthMaster.getStatus());
-        }
-        STATUS_MAP.put(DataSourceType.MASTER, healthMaster.getStatus());
-
-        DataSourceTargetContextHolder.setContext(DataSourceType.SLAVE);
-        var healthSlave = indicatorSlave.getHealth(false);
-        if (healthSlave.getStatus() != Status.UP) {
-            throw new DataSourceConnectionDownException(DataSourceType.SLAVE + " is down, " + healthSlave.getStatus());
-        }
-        STATUS_MAP.put(DataSourceType.SLAVE, healthSlave.getStatus());
-
+        healthCheck(DataSourceType.MASTER, indicatorMaster);
+        healthCheck(DataSourceType.SLAVE, indicatorSlave);
+        alertDisaster();
         DataSourceTargetContextHolder.clearContext();
+    }
+
+    private void healthCheck(DataSourceType directTargetSource, DataSourceHealthIndicator indicator) {
+        DataSourceTargetContextHolder.setContext(directTargetSource);
+        var health = indicator.getHealth(false);
+        STATUS_MAP.put(directTargetSource, health.getStatus());
+    }
+
+    private static void alertDisaster() {
+        for (var sourceType : DataSourceType.values()) {
+            var status = STATUS_MAP.get(sourceType);
+            if (status != Status.UP) {
+                throw new DataSourceConnectionDownException(sourceType + " is down, " + status);
+            }
+        }
     }
 
     public static boolean isDown(DataSourceType dataSourceType) {
         return STATUS_MAP.get(dataSourceType) == Status.DOWN;
-    }
-
-    public static boolean isUp(DataSourceType dataSourceType) {
-        return STATUS_MAP.get(dataSourceType) == Status.UP;
     }
 }
