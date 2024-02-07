@@ -18,7 +18,7 @@ public class AlbumFixture {
 
     public static final MultipartFile MULTIPART_FILE = new MockMultipartFile("name", "name.png", "png", "Image binary file for test".getBytes());
 
-    public static final String TAG = "tag";
+    public static final String TAG = ALBUM_ID.toString();
 
     public static MultipartFile mockMultipartFile(String fileName) {
         return new MockMultipartFile(fileName, fileName, "png", "Image binary file for test".getBytes());
