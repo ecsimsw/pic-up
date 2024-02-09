@@ -19,47 +19,38 @@ public class AES256Cipher {
     private static final String ALGORITHM = "AES/CBC/PKCS5Padding";
     private static final String SECRET_KEY_SPEC_ALGORITHM = "AES";
 
-    private final Cipher encryptCipher;
-    private final Cipher decryptCipher;
+    public static String encrypt(String key, String iv, String plain) {
+        var encrypted = encrypt(key, iv, plain.getBytes(StandardCharsets.UTF_8));
+        return Base64.getEncoder().encodeToString(encrypted);
+    }
 
-    public AES256Cipher(String key, String iv) {
+    public static byte[] encrypt(String key, String iv, byte[] plain) {
         try {
             var keySpec = new SecretKeySpec(key.getBytes(), SECRET_KEY_SPEC_ALGORITHM);
             var ivParamSpec = new IvParameterSpec(iv.getBytes());
-
-            this.encryptCipher = Cipher.getInstance(ALGORITHM);
-            this.encryptCipher.init(Cipher.ENCRYPT_MODE, keySpec, ivParamSpec);
-
-            this.decryptCipher = Cipher.getInstance(ALGORITHM);
-            this.decryptCipher.init(Cipher.DECRYPT_MODE, keySpec, ivParamSpec);
-        } catch (NoSuchAlgorithmException | NoSuchPaddingException | InvalidAlgorithmParameterException | InvalidKeyException e) {
+            var encryptCipher = Cipher.getInstance(ALGORITHM);
+            encryptCipher.init(Cipher.ENCRYPT_MODE, keySpec, ivParamSpec);
+            return encryptCipher.doFinal(plain);
+        } catch (NoSuchAlgorithmException | NoSuchPaddingException | InvalidAlgorithmParameterException | InvalidKeyException | BadPaddingException | IllegalBlockSizeException e) {
             throw new EncryptionException("Failed to initiate AES256 cipher", e);
         }
     }
 
-    public String encrypt(String plain) {
-        var encrypted = encrypt(plain.getBytes(StandardCharsets.UTF_8));
-        return Base64.getEncoder().encodeToString(encrypted);
-    }
-
-    public byte[] encrypt(byte[] plain) {
-        try {
-            return encryptCipher.doFinal(plain);
-        } catch (BadPaddingException | IllegalBlockSizeException e) {
-            throw new EncryptionException("Error while decrypt AES256", e);
-        }
-    }
-
-    public String decrypt(String encrypted) {
-        var plain = decrypt((Base64.getDecoder().decode(encrypted)));
+    public static String decrypt(String key, String iv, String encrypted) {
+        var plain = decrypt(key, iv, (Base64.getDecoder().decode(encrypted)));
         return new String(plain);
     }
 
-    public byte[] decrypt(byte[] encrypted) {
+    public static byte[] decrypt(String key, String iv, byte[] encrypted) {
+
         try {
+            var keySpec = new SecretKeySpec(key.getBytes(), SECRET_KEY_SPEC_ALGORITHM);
+            var ivParamSpec = new IvParameterSpec(iv.getBytes());
+            var decryptCipher = Cipher.getInstance(ALGORITHM);
+            decryptCipher.init(Cipher.DECRYPT_MODE, keySpec, ivParamSpec);
             return decryptCipher.doFinal(encrypted);
-        } catch (BadPaddingException | IllegalBlockSizeException e) {
-            throw new EncryptionException("Error while decrypt AES256", e);
+        } catch (NoSuchAlgorithmException | NoSuchPaddingException | InvalidAlgorithmParameterException | InvalidKeyException | BadPaddingException | IllegalBlockSizeException e) {
+            throw new EncryptionException("Failed to initiate AES256 cipher", e);
         }
     }
 }
