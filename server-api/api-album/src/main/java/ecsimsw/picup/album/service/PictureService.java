@@ -1,14 +1,14 @@
 package ecsimsw.picup.album.service;
 
-import ecsimsw.picup.album.domain.PictureRepository;
-import ecsimsw.picup.album.dto.PictureSearchCursor;
-import ecsimsw.picup.album.exception.AlbumException;
 import ecsimsw.picup.album.domain.AlbumRepository;
 import ecsimsw.picup.album.domain.FileDeletionEvent;
 import ecsimsw.picup.album.domain.Picture;
+import ecsimsw.picup.album.domain.PictureRepository;
 import ecsimsw.picup.album.dto.FileResourceInfo;
 import ecsimsw.picup.album.dto.PictureInfoRequest;
 import ecsimsw.picup.album.dto.PictureInfoResponse;
+import ecsimsw.picup.album.dto.PictureSearchCursor;
+import ecsimsw.picup.album.exception.AlbumException;
 import ecsimsw.picup.usage.service.StorageUsageService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
@@ -23,6 +23,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
+
+import static ecsimsw.picup.album.domain.PictureRepository.PictureSearchSpecs.*;
 
 @RequiredArgsConstructor
 @Service
@@ -117,13 +119,18 @@ public class PictureService {
     public List<PictureInfoResponse> cursorBasedFetch(Long userId, Long albumId, int limit, Optional<PictureSearchCursor> cursor) {
         checkUserAuthInAlbum(userId, albumId);
         if (cursor.isEmpty()) {
-            var pictures = pictureRepository.findAllByAlbumId(albumId, PageRequest.of(0, limit, PictureRepository.PictureSearchSpecs.sortByCreatedAtAsc));
+            var pictures = pictureRepository.findAllByAlbumId(
+                albumId,
+                PageRequest.of(0, limit, sortByCreatedAtAsc)
+            );
             return PictureInfoResponse.listOf(pictures.getContent());
         }
         var prev = cursor.orElseThrow();
         var pictures = pictureRepository.fetch(
-            PictureRepository.PictureSearchSpecs.where(PictureRepository.PictureSearchSpecs.isAlbum(albumId))
-                .and(PictureRepository.PictureSearchSpecs.createdLater(prev.getCreatedAt()).or(PictureRepository.PictureSearchSpecs.equalsCreatedTime(prev.getCreatedAt()).and(PictureRepository.PictureSearchSpecs.greaterId(prev.getId())))),
+            where(isAlbum(albumId)).and(
+                createdLater(prev.getCreatedAt())
+                    .or(equalsCreatedTime(prev.getCreatedAt()).and(greaterId(prev.getId())))
+            ),
             limit,
             PictureRepository.PictureSearchSpecs.sortByCreatedAtAsc
         );
