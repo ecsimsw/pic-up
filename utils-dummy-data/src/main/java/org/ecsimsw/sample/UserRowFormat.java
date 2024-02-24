@@ -20,7 +20,7 @@ public class UserRowFormat extends CommaBasedRowFormat {
     }
 
     public String username(long id) {
-        return "user-" + id;
+        return RandomUtils.alphabetAndNumber(1, 10) + id;
     }
 
     public String password() {
