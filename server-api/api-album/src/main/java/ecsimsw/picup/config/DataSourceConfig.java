@@ -11,9 +11,6 @@ import org.springframework.jdbc.datasource.LazyConnectionDataSourceProxy;
 import javax.sql.DataSource;
 import java.util.Map;
 
-import static ecsimsw.picup.config.DataSourceType.MASTER;
-import static ecsimsw.picup.config.DataSourceType.SLAVE;
-
 @Configuration
 public class DataSourceConfig {
 
@@ -40,8 +37,8 @@ public class DataSourceConfig {
         var routingDataSource = new DataSourceRoutingRule();
         routingDataSource.setDefaultTargetDataSource(masterDataSource);
         routingDataSource.setTargetDataSources(Map.of(
-            MASTER, masterDataSource,
-            SLAVE, slaveDataSource
+            DataSourceType.MASTER, masterDataSource,
+            DataSourceType.SLAVE, slaveDataSource
         ));
         return routingDataSource;
     }

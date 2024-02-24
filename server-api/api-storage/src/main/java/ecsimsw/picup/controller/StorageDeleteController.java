@@ -11,8 +11,8 @@ import org.springframework.stereotype.Controller;
 
 import java.util.List;
 
-import static ecsimsw.picup.mq.config.DeletionQueueContainerFactories.FILE_DELETION_QUEUE_CF;
-import static ecsimsw.picup.mq.config.MessageRouteConfig.*;
+import static ecsimsw.picup.mq.DeletionQueueContainerFactories.FILE_DELETION_QUEUE_CF;
+import static ecsimsw.picup.mq.MessageRouteConfig.*;
 
 @Controller
 public class StorageDeleteController {
@@ -27,11 +27,13 @@ public class StorageDeleteController {
 
     @RabbitListener(queues = FILE_DELETE_ALL_QUEUE_NAME, containerFactory = FILE_DELETION_QUEUE_CF)
     public void deleteAll(List<String> resources) {
+        LOGGER.info("Delete file : " + String.join("\n ", resources));
         storageService.deleteAll(resources);
     }
 
     @RabbitListener(queues = FILE_DELETE_QUEUE_NAME, containerFactory = FILE_DELETION_QUEUE_CF)
     public void delete(FileDeletionRequest request) {
+        LOGGER.info("Delete file : " + request.getResourceKey());
         storageService.deleteByStorage(request);
     }
 

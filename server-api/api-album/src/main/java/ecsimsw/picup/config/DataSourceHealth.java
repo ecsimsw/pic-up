@@ -1,6 +1,6 @@
 package ecsimsw.picup.config;
 
-import ecsimsw.picup.exception.DataSourceConnectionDownException;
+import ecsimsw.picup.album.exception.DataSourceConnectionDownException;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.actuate.health.Status;
 import org.springframework.boot.actuate.jdbc.DataSourceHealthIndicator;
@@ -11,9 +11,6 @@ import javax.sql.DataSource;
 import java.util.Arrays;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
-
-import static ecsimsw.picup.config.DataSourceType.MASTER;
-import static ecsimsw.picup.config.DataSourceType.SLAVE;
 
 @Component
 public class DataSourceHealth {
@@ -40,24 +37,28 @@ public class DataSourceHealth {
 
     @Scheduled(fixedDelay = 3000)
     public void healthCheck() {
-        DataSourceTargetContextHolder.setContext(MASTER);
-        var healthMaster = indicatorMaster.getHealth(false);
-        if (healthMaster.getStatus() != Status.UP) {
-            throw new DataSourceConnectionDownException(MASTER + " is down, " + healthMaster.getStatus());
-        }
-        STATUS_MAP.put(MASTER, healthMaster.getStatus());
-
-        DataSourceTargetContextHolder.setContext(SLAVE);
-        var healthSlave = indicatorSlave.getHealth(false);
-        if (healthSlave.getStatus() != Status.UP) {
-            throw new DataSourceConnectionDownException(SLAVE + " is down, " + healthSlave.getStatus());
-        }
-        STATUS_MAP.put(SLAVE, healthSlave.getStatus());
-
+        healthCheck(DataSourceType.MASTER, indicatorMaster);
+        healthCheck(DataSourceType.SLAVE, indicatorSlave);
+        alertDisaster();
         DataSourceTargetContextHolder.clearContext();
     }
 
-    public static boolean isUp(DataSourceType dataSourceType) {
-        return STATUS_MAP.get(dataSourceType) == Status.UP;
+    private void healthCheck(DataSourceType directTargetSource, DataSourceHealthIndicator indicator) {
+        DataSourceTargetContextHolder.setContext(directTargetSource);
+        var health = indicator.getHealth(false);
+        STATUS_MAP.put(directTargetSource, health.getStatus());
+    }
+
+    private static void alertDisaster() {
+        for (var sourceType : DataSourceType.values()) {
+            var status = STATUS_MAP.get(sourceType);
+            if (status != Status.UP) {
+                throw new DataSourceConnectionDownException(sourceType + " is down, " + status);
+            }
+        }
+    }
+
+    public static boolean isDown(DataSourceType dataSourceType) {
+        return STATUS_MAP.get(dataSourceType) == Status.DOWN;
     }
 }

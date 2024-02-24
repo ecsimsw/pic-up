@@ -8,7 +8,7 @@ import ecsimsw.picup.dto.ImageUploadResponse;
 import ecsimsw.picup.dto.StorageUploadResponse;
 import ecsimsw.picup.exception.InvalidResourceException;
 import ecsimsw.picup.exception.StorageException;
-import ecsimsw.picup.mq.StorageMessageQueue;
+import ecsimsw.picup.mq.ImageFileMessageQueue;
 import ecsimsw.picup.mq.message.FileDeletionRequest;
 import ecsimsw.picup.storage.ImageStorage;
 import ecsimsw.picup.storage.StorageKey;
@@ -29,18 +29,18 @@ public class StorageService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(StorageService.class);
 
-    private final StorageMessageQueue storageMessageQueue;
+    private final ImageFileMessageQueue imageFileMessageQueue;
     private final ResourceRepository resourceRepository;
     private final ImageStorage mainStorage;
     private final ImageStorage backUpStorage;
 
     public StorageService(
-        StorageMessageQueue storageMessageQueue,
+        ImageFileMessageQueue imageFileMessageQueue,
         ResourceRepository resourceRepository,
         @Qualifier(value = "localFileStorage") ImageStorage localFileStorage,
         @Qualifier(value = "objectStorage") ImageStorage ObjectStorage
     ) {
-        this.storageMessageQueue = storageMessageQueue;
+        this.imageFileMessageQueue = imageFileMessageQueue;
         this.resourceRepository = resourceRepository;
         this.mainStorage = localFileStorage;
         this.backUpStorage = ObjectStorage;
@@ -62,8 +62,8 @@ public class StorageService {
         } catch (CompletionException e) {
             futures.forEach(it-> it.thenAccept(
                 result -> {
-                    LOGGER.info("poll message queue to delete dummy file : "+ result.getResourceKey() + " in " + result.getStorageKey());
-                    storageMessageQueue.offerDeleteByStorage(result.getResourceKey(), result.getStorageKey());
+                    LOGGER.info("offer message queue to delete dummy file : "+ result.getResourceKey() + " in " + result.getStorageKey());
+                    imageFileMessageQueue.offerDeleteByStorage(result.getResourceKey(), result.getStorageKey());
                 }
             ));
             throw new StorageException("exception while uploading");
@@ -130,6 +130,11 @@ public class StorageService {
 
     public void delete(String resourceKey) {
         LOGGER.info("delete resource : " + resourceKey);
+
+        if(!resourceRepository.existsById(resourceKey)) {
+            LOGGER.error("non-existence resource : " + resourceKey);
+            return;
+        }
 
         final Resource resource = resourceRepository.findById(resourceKey)
             .orElseThrow(() -> new InvalidResourceException("Not exists resources for : " + resourceKey));

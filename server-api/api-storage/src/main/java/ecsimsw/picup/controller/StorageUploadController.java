@@ -36,9 +36,4 @@ public class StorageUploadController {
         LOGGER.info("Upload response by user " + userId + ", this took " + (System.currentTimeMillis() - start) / 1000.0 + "sec");
         return ResponseEntity.ok(uploadedInfo);
     }
-
-    @GetMapping("/api/storage/up")
-    public ResponseEntity<Void> up() {
-        return ResponseEntity.ok().build();
-    }
 }

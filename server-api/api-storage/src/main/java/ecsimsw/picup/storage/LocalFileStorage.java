@@ -19,8 +19,6 @@ import java.nio.file.Paths;
 @Component(value = "localFileStorage")
 public class LocalFileStorage implements ImageStorage {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(LocalFileStorage.class);
-
     public static final StorageKey KEY = StorageKey.LOCAL_FILE_STORAGE;
 
     private final String rootPath;

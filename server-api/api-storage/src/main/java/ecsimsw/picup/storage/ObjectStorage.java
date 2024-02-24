@@ -22,8 +22,6 @@ import java.util.concurrent.CompletableFuture;
 @Component(value = "objectStorage")
 public class ObjectStorage implements ImageStorage {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ObjectStorage.class);
-
     public static final StorageKey KEY = StorageKey.S3_OBJECT_STORAGE;
 
     private final AmazonS3 storageClient;

@@ -1,6 +1,7 @@
 package ecsimsw.picup.config;
 
-import ecsimsw.picup.logging.CustomLogger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.aop.interceptor.AsyncUncaughtExceptionHandler;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.AsyncConfigurer;
@@ -13,7 +14,7 @@ import java.util.concurrent.Executor;
 @Configuration
 public class AsyncConfig implements AsyncConfigurer {
 
-    private static final CustomLogger LOGGER = CustomLogger.init(AsyncConfig.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(AsyncConfig.class);
 
     private static final int CORE_POOL_SIZE = 5;
     private static final int MAX_POOL_SIZE = 30;
@@ -22,7 +23,7 @@ public class AsyncConfig implements AsyncConfigurer {
 
     @Override
     public Executor getAsyncExecutor() {
-        ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
+        var executor = new ThreadPoolTaskExecutor();
         executor.setCorePoolSize(CORE_POOL_SIZE);
         executor.setMaxPoolSize(MAX_POOL_SIZE);
         executor.setQueueCapacity(QUEUE_CAPACITY_SIZE);

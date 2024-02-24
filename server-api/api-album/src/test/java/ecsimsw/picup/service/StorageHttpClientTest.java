@@ -1,7 +1,8 @@
 package ecsimsw.picup.service;
 
-import ecsimsw.picup.dto.ImageFileInfo;
-import ecsimsw.picup.exception.FileUploadFailException;
+import ecsimsw.picup.album.dto.FileResourceInfo;
+import ecsimsw.picup.album.exception.FileUploadFailException;
+import ecsimsw.picup.album.service.StorageHttpClient;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -45,7 +46,7 @@ class StorageHttpClientTest {
         when(restTemplate.exchange(any(String.class), any(HttpMethod.class), any(HttpEntity.class), any(ParameterizedTypeReference.class)))
             .thenReturn(
                 ResponseEntity.badRequest().build(),
-                ResponseEntity.ok(new ImageFileInfo(RESOURCE_KEY, SIZE))
+                ResponseEntity.ok(new FileResourceInfo(RESOURCE_KEY, SIZE))
             );
 
         storageHttpClient.requestUpload(MEMBER_ID, MULTIPART_FILE, TAG);
@@ -74,7 +75,7 @@ class StorageHttpClientTest {
     @Test
     void upload() {
         when(restTemplate.exchange(any(String.class), any(HttpMethod.class), any(HttpEntity.class), any(ParameterizedTypeReference.class)))
-            .thenReturn(ResponseEntity.ok(new ImageFileInfo(RESOURCE_KEY, SIZE)));
+            .thenReturn(ResponseEntity.ok(new FileResourceInfo(RESOURCE_KEY, SIZE)));
 
         var fileInfo = storageHttpClient.requestUpload(MEMBER_ID, MULTIPART_FILE, TAG);
         assertAll(
