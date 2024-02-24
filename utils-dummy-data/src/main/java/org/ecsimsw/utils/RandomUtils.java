@@ -1,4 +1,4 @@
-package org.giggles.utils;
+package org.ecsimsw.utils;
 
 import java.util.Random;
 

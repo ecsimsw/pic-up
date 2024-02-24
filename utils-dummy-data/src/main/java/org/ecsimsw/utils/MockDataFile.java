@@ -1,7 +1,4 @@
-package org.giggles.utils;
-
-import org.giggles.utils.DataFileInfo;
-import org.giggles.utils.RowFormatStrategy;
+package org.ecsimsw.utils;
 
 import java.io.BufferedWriter;
 import java.io.FileWriter;

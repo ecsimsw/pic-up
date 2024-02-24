@@ -13,7 +13,7 @@ CALL BASIC_INSERT();
 
 ### Bulk insertion
 1. Bulk insert - 10
-```
+```1
 CALL BULK_INSERT_10();
 ```
 - Insert 100_000 : 24.84 sec

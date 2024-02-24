@@ -1,9 +1,8 @@
-package org.giggles.sample;
-
-import org.giggles.utils.DataFileInfo;
-import org.giggles.utils.MockDataFile;
+package org.ecsimsw.sample;
 
 import java.io.IOException;
+import org.ecsimsw.utils.DataFileInfo;
+import org.ecsimsw.utils.MockDataFile;
 
 public class MainApplication {
 

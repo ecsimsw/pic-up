@@ -1,9 +1,8 @@
-package org.giggles.sample;
-
-import org.giggles.utils.CommaBasedRowFormat;
-import org.giggles.utils.RandomUtils;
+package org.ecsimsw.sample;
 
 import java.util.List;
+import org.ecsimsw.utils.CommaBasedRowFormat;
+import org.ecsimsw.utils.RandomUtils;
 
 public class AlbumRowFormat extends CommaBasedRowFormat {
 

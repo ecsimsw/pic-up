@@ -1,9 +1,8 @@
-package org.giggles.sample;
-
-import org.giggles.utils.CommaBasedRowFormat;
-import org.giggles.utils.RandomUtils;
+package org.ecsimsw.sample;
 
 import java.util.List;
+import org.ecsimsw.utils.CommaBasedRowFormat;
+import org.ecsimsw.utils.RandomUtils;
 
 public class UserRowFormat extends CommaBasedRowFormat {
 
@@ -21,7 +20,7 @@ public class UserRowFormat extends CommaBasedRowFormat {
     }
 
     public String username(long id) {
-        return RandomUtils.alphabetAndNumber(1, 10) + id;
+        return "user-" + id;
     }
 
     public String password() {
