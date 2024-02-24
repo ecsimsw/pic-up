@@ -37,6 +37,15 @@ public class LocalFileStorage implements ImageStorage {
     @Async
     @Override
     public CompletableFuture<StorageUploadResponse> create(String resourceKey, ImageFile imageFile) {
+        int i =0;
+        while(i<10) {
+            try{
+                System.out.println(i++);
+                Thread.sleep(1000);
+            }catch (Exception e) {
+
+            }
+        }
         try {
             final String storagePath = storagePath(resourceKey);
             final byte[] encrypted = encryptService.encryptWithAES256(imageFile.getFile());
