@@ -1,24 +1,36 @@
 package ecsimsw.picup.album.service;
 
 import com.google.common.collect.Iterables;
-import lombok.RequiredArgsConstructor;
-import org.springframework.scheduling.annotation.Scheduled;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-@RequiredArgsConstructor
 @Service
 public class ImageEventOutboxService {
 
+    private final static Logger LOGGER = LoggerFactory.getLogger(ImageEventOutboxService.class);
+
     private final static int FILE_DELETION_SEGMENT_UNIT = 5;
-    private final static int FILE_DELETION_RATE_SEC = 3;
+    private final static int FILE_DELETION_SCHED_DELAY = 3000;
 
     private final FileService fileService;
+    private final SchedulerLock schedulerLock;
 
-    @Scheduled(fixedRate = 1000 * FILE_DELETION_RATE_SEC)
+    public ImageEventOutboxService(FileService fileService, SchedulerLock schedulerLock) {
+        this.fileService = fileService;
+        this.schedulerLock = schedulerLock;
+        publishOut();
+    }
+
     public void publishOut() {
-        var toBeDeleted = fileService.findAllDeletionOutBox();
-        for (var eventSegment : Iterables.partition(toBeDeleted, FILE_DELETION_SEGMENT_UNIT)) {
-            fileService.publishDeletionEvents(eventSegment);
+        while (true) {
+            schedulerLock.afterDelay(30000, FILE_DELETION_SCHED_DELAY, () -> {
+                LOGGER.info("outbox scheduled");
+                var toBeDeleted = fileService.findAllDeletionOutBox();
+                for (var eventSegment : Iterables.partition(toBeDeleted, FILE_DELETION_SEGMENT_UNIT)) {
+                    fileService.publishDeletionEvents(eventSegment);
+                }
+            });
         }
     }
 }
