@@ -34,12 +34,6 @@ public class AlbumService {
     private final StorageUsageService storageUsageService;
 
     @CacheEvict(value = "userAlbumFirstPageDefaultSize", key = "#userId")
-    @Retryable(
-        value = ObjectOptimisticLockingFailureException.class,
-        maxAttempts = 5,
-        backoff = @Backoff(delay = 500),
-        recover = "recoverCreate"
-    )
     @Transactional
     public AlbumInfoResponse create(Long userId, AlbumInfoRequest albumInfo, FileResourceInfo resource) {
         try {
@@ -70,12 +64,6 @@ public class AlbumService {
         @CacheEvict(value = "album", key = "#albumId"),
         @CacheEvict(value = "userAlbumFirstPageDefaultSize", key = "#userId")
     })
-    @Retryable(
-        value = ObjectOptimisticLockingFailureException.class,
-        maxAttempts = 5,
-        backoff = @Backoff(delay = 300),
-        recover = "recoverUpdate"
-    )
     @Transactional
     public AlbumInfoResponse update(Long userId, Long albumId, AlbumInfoRequest albumInfo, FileResourceInfo newImage) {
         try {
@@ -105,11 +93,6 @@ public class AlbumService {
         @CacheEvict(value = "userAlbumFirstPageDefaultSize", key = "#userId"),
         @CacheEvict(value = "userPictureFirstPageDefaultSize", key = "{#userId, #albumId}")
     })
-    @Retryable(
-        value = ObjectOptimisticLockingFailureException.class,
-        maxAttempts = 5,
-        backoff = @Backoff(delay = 300)
-    )
     @Transactional
     public void delete(Long userId, Long albumId) {
         var album = getUserAlbum(userId, albumId);

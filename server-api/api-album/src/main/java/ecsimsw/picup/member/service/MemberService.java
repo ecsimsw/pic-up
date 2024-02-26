@@ -1,6 +1,6 @@
 package ecsimsw.picup.member.service;
 
-import ecsimsw.picup.ecrypt.EncryptService;
+import ecsimsw.picup.ecrypt.SHA256Utils;
 import ecsimsw.picup.member.domain.Member;
 import ecsimsw.picup.member.domain.MemberRepository;
 import ecsimsw.picup.member.domain.Password;
@@ -9,7 +9,6 @@ import ecsimsw.picup.member.dto.SignInRequest;
 import ecsimsw.picup.member.dto.SignUpRequest;
 import ecsimsw.picup.member.exception.LoginFailedException;
 import ecsimsw.picup.member.exception.MemberException;
-import ecsimsw.picup.storage.StorageUsageDto;
 import ecsimsw.picup.usage.domain.StorageUsage;
 import ecsimsw.picup.usage.domain.StorageUsageRepository;
 import lombok.RequiredArgsConstructor;
@@ -21,7 +20,6 @@ import org.springframework.transaction.annotation.Transactional;
 public class MemberService {
 
     private final MemberRepository memberRepository;
-    private final EncryptService encryptService;
     private final StorageUsageRepository storageUsageRepository;
 
     @Transactional
@@ -58,11 +56,17 @@ public class MemberService {
     }
 
     private Password encryptPassword(String plainPassword) {
-        var salt = encryptService.issueSalt();
-        return new Password(encryptService.encryptWithSHA256(plainPassword, salt), salt);
+        var salt = SHA256Utils.getSalt();
+        return new Password(
+            SHA256Utils.encrypt(plainPassword, salt),
+            SHA256Utils.getSalt()
+        );
     }
 
     private Password encryptPassword(String plainPassword, String salt) {
-        return new Password(encryptService.encryptWithSHA256(plainPassword, salt), salt);
+        return new Password(
+            SHA256Utils.encrypt(plainPassword, salt),
+            salt
+        );
     }
 }

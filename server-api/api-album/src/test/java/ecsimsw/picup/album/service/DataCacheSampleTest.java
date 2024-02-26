@@ -1,4 +1,4 @@
-package ecsimsw.picup.service;
+package ecsimsw.picup.album.service;
 
 import lombok.Getter;
 import lombok.Setter;

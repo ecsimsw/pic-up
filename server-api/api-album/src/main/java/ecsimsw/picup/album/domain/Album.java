@@ -1,12 +1,14 @@
 package ecsimsw.picup.album.domain;
 
 import ecsimsw.picup.auth.UnauthorizedException;
-import ecsimsw.picup.ecrypt.AES256Converter;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 
@@ -23,10 +25,8 @@ public class Album {
     @NotNull
     private Long userId;
 
-    @Convert(converter = AES256Converter.class)
     private String name;
 
-    @Convert(converter = AES256Converter.class)
     private String thumbnailResourceKey;
 
     private Long thumbnailFileSize;
@@ -50,7 +50,7 @@ public class Album {
     }
 
     public void authorize(Long userId) {
-        if(!this.userId.equals(userId)) {
+        if (!this.userId.equals(userId)) {
             throw new UnauthorizedException("User doesn't have permission on this album");
         }
     }

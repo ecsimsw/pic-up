@@ -15,9 +15,7 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
-import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Recover;
-import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -36,12 +34,6 @@ public class PictureService {
     private final StorageUsageService storageUsageService;
 
     @CacheEvict(key = "{#userId, #albumId}", value = "userPictureFirstPageDefaultSize")
-    @Retryable(
-        value = ObjectOptimisticLockingFailureException.class,
-        maxAttempts = 3,
-        backoff = @Backoff(delay = 300),
-        recover = "recoverCreate"
-    )
     @Transactional
     public PictureInfoResponse create(Long userId, Long albumId, PictureInfoRequest pictureInfo, FileResourceInfo uploadFile) {
         try {
@@ -63,12 +55,6 @@ public class PictureService {
     }
 
     @CacheEvict(key = "{#userId, #albumId}", value = "userPictureFirstPageDefaultSize")
-    @Retryable(
-        value = ObjectOptimisticLockingFailureException.class,
-        maxAttempts = 3,
-        backoff = @Backoff(delay = 300),
-        recover = "recoverUpdate"
-    )
     @Transactional
     public PictureInfoResponse update(Long userId, Long albumId, Long pictureId, PictureInfoRequest pictureInfo, FileResourceInfo newFileResource) {
         try {
@@ -98,11 +84,6 @@ public class PictureService {
     }
 
     @CacheEvict(key = "{#userId, #albumId}", value = "userPictureFirstPageDefaultSize")
-    @Retryable(
-        value = ObjectOptimisticLockingFailureException.class,
-        maxAttempts = 3,
-        backoff = @Backoff(delay = 300)
-    )
     @Transactional
     public void delete(Long userId, Long albumId, Long pictureId) {
         checkUserAuthInAlbum(userId, albumId);

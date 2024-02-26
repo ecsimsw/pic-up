@@ -3,7 +3,6 @@ package ecsimsw.picup.repository;
 import ecsimsw.picup.album.domain.Picture;
 import ecsimsw.picup.album.domain.PictureRepository;
 import ecsimsw.picup.album.dto.PictureSearchCursor;
-import ecsimsw.picup.ecrypt.EncryptService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,31 +23,8 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 @DataJpaTest
 public class PictureRepositoryTest {
 
-    @MockBean
-    private EncryptService encryptService;
-
     @Autowired
     private PictureRepository pictureRepository;
-
-    @DisplayName("정보의 성격에 따라 특정 컬럼은 AES256 으로 암호화되어 저장된다.")
-    @Test
-    public void encryptConverter(@Autowired JdbcTemplate jdbcTemplate) {
-        var saved = pictureRepository.save(new Picture(ALBUM_ID, RESOURCE_KEY, SIZE, DESCRIPTION));
-
-        var selectQuery = "select * from picture where id = ?";
-        var nativeData = jdbcTemplate.queryForObject(selectQuery, (resultSet, i) -> new Picture(
-            resultSet.getLong("album_id"),
-            resultSet.getString("resource_key"),
-            resultSet.getLong("file_size"),
-            resultSet.getString("description")
-        ), saved.getId());
-
-        assertAll(
-            () -> assertThat(nativeData.getAlbumId()).isEqualTo(saved.getAlbumId()),
-            () -> assertThat(nativeData.getDescription()).isNotEqualTo(saved.getDescription()),
-            () -> assertThat(nativeData.getResourceKey()).isNotEqualTo(saved.getResourceKey())
-        );
-    }
 
     @DisplayName("같은 유저의 createdAt, id 를 키로 커서 기반 페이지 조회를 확인한다.")
     @Test

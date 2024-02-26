@@ -63,7 +63,7 @@ public class StorageServiceTest {
         private String resourceKey;
 
         @BeforeEach
-        private void init() {
+        public void init() {
             resourceKey = storageService.upload(USER_ID, FILE_TAG, MULTIPART_FILE).getResourceKey();
             when(resourceRepository.findById(resourceKey))
                 .thenReturn(Optional.of(createdResource(resourceKey)));

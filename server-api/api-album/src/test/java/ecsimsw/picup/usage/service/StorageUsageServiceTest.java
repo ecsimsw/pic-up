@@ -1,46 +1,74 @@
-package ecsimsw.picup.service;
+package ecsimsw.picup.usage.service;
 
 import ecsimsw.picup.album.exception.AlbumException;
 import ecsimsw.picup.env.StorageUsageMockRepository;
-import ecsimsw.picup.storage.StorageUsageDto;
 import ecsimsw.picup.usage.domain.StorageUsageRepository;
-import ecsimsw.picup.usage.service.StorageUsageService;
+import ecsimsw.picup.usage.dto.StorageUsageDto;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
+
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.Executors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+@ActiveProfiles("dev")
 @ExtendWith(MockitoExtension.class)
+@SpringBootTest
 public class StorageUsageServiceTest {
+
+    private final Long userId = 1L;
 
     @Mock
     private StorageUsageRepository storageUsageRepository;
 
+    @Autowired
+    private StorageUsageLock storageUsageLock;
+
     private StorageUsageService storageUsageService;
-
-    private Long userId = 1L;
-
-    private StorageUsageDto storageUsage = new StorageUsageDto(userId, 10000L);
 
     @BeforeEach
     public void init() {
-        storageUsageService = new StorageUsageService(storageUsageRepository);
         StorageUsageMockRepository.init(storageUsageRepository);
+        storageUsageService = new StorageUsageService(storageUsageRepository, storageUsageLock);
 
-        storageUsageService.initNewUsage(storageUsage);
+        storageUsageService.initNewUsage(new StorageUsageDto(userId, 10000L));
+    }
+
+    @DisplayName("동시 업로드 동시성 문제를 테스트한다.")
+    @Test
+    public void uploadConcurrentRequest() throws InterruptedException {
+        var concurrentCount = 1000;
+        var fileSize = 1;
+        var executorService = Executors.newFixedThreadPool(concurrentCount);
+        var countDownLatch = new CountDownLatch(concurrentCount);
+
+        for (int i = 0; i < concurrentCount; i++) {
+            executorService.execute(() -> {
+                try {
+                    storageUsageService.addUsage(userId, fileSize);
+                } finally {
+                    countDownLatch.countDown();
+                }
+            });
+        }
+        countDownLatch.await();
+        assertThat(fileSize * concurrentCount)
+            .isEqualTo(storageUsageService.getUsage(userId).getUsageAsByte());
     }
 
     @DisplayName("유저별 스토리지 사용량을 저장한다.")
     @Test
     public void storeStorageUsage() {
         var fileSize = 256L;
-
-        storageUsageService.initNewUsage(storageUsage);
         storageUsageService.addUsage(userId, fileSize);
 
         var usage = storageUsageService.getUsage(userId);
@@ -50,7 +78,6 @@ public class StorageUsageServiceTest {
     @DisplayName("최대 업로드 가능 사이즈를 넘어서 사진을 업로드 하는 경우 예외를 발생시킨다.")
     @Test
     public void overLimitUploadSize() {
-        storageUsageService.initNewUsage(storageUsage);
         var usage = storageUsageService.getUsage(userId);
         var limit = usage.getLimitAsByte();
         var uploadFileSize = limit + 1;

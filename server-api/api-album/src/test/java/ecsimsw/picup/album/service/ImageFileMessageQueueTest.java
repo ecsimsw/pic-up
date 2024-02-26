@@ -1,4 +1,4 @@
-package ecsimsw.picup.service;
+package ecsimsw.picup.album.service;
 
 import ecsimsw.picup.mq.ImageFileMessageQueue;
 import ecsimsw.picup.mq.exception.MessageBrokerDownException;

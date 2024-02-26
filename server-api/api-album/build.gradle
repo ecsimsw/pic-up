@@ -17,6 +17,9 @@ dependencies {
     // Model metadata
     implementation 'org.hibernate:hibernate-jpamodelgen'
     annotationProcessor 'org.hibernate:hibernate-jpamodelgen'
+
+    // redisson
+    implementation 'org.redisson:redisson-spring-boot-starter:3.17.0'
 }
 
 test {

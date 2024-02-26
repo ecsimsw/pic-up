@@ -1,12 +1,14 @@
 package ecsimsw.picup.album.domain;
 
 import ecsimsw.picup.album.exception.AlbumException;
-import ecsimsw.picup.ecrypt.AES256Converter;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 
@@ -23,12 +25,10 @@ public class Picture {
     @NotNull
     private Long albumId;
 
-    @Convert(converter = AES256Converter.class)
     private String resourceKey;
 
     private Long fileSize;
 
-    @Convert(converter = AES256Converter.class)
     private String description;
 
     private LocalDateTime createdAt;
@@ -46,7 +46,7 @@ public class Picture {
     }
 
     public void validateAlbum(Long albumId) {
-        if(!this.albumId.equals(albumId)) {
+        if (!this.albumId.equals(albumId)) {
             throw new AlbumException("Invalid album");
         }
     }

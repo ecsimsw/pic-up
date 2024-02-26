@@ -3,13 +3,11 @@ package ecsimsw.picup.repository;
 import ecsimsw.picup.album.domain.Album;
 import ecsimsw.picup.album.domain.AlbumRepository;
 import ecsimsw.picup.album.dto.AlbumSearchCursor;
-import ecsimsw.picup.ecrypt.EncryptService;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.TestPropertySource;
 
@@ -26,9 +24,6 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 @DataJpaTest
 public class AlbumRepositoryTest {
 
-    @MockBean
-    private EncryptService encryptService;
-
     @Autowired
     private AlbumRepository albumRepository;
 
@@ -37,25 +32,6 @@ public class AlbumRepositoryTest {
         albumRepository.deleteAll();
     }
 
-    @DisplayName("정보의 성격에 따라 특정 컬럼은 AES256 으로 암호화되어 저장된다.")
-    @Test
-    public void encryptConverter(@Autowired JdbcTemplate jdbcTemplate) {
-        var saved = albumRepository.save(new Album(MEMBER_ID, ALBUM_NAME, RESOURCE_KEY, SIZE));
-
-        var selectQuery = "select * from album where id = ?";
-        var nativeData = jdbcTemplate.queryForObject(selectQuery, (resultSet, i) -> new Album(
-            resultSet.getLong("user_id"),
-            resultSet.getString("name"),
-            resultSet.getString("thumbnail_resource_key"),
-            resultSet.getLong("thumbnail_file_size")
-        ), saved.getId());
-
-        assertAll(
-            () -> assertThat(nativeData.getUserId()).isEqualTo(saved.getUserId()),
-            () -> assertThat(nativeData.getName()).isNotEqualTo(saved.getName()),
-            () -> assertThat(nativeData.getThumbnailResourceKey()).isNotEqualTo(saved.getThumbnailResourceKey())
-        );
-    }
 
     @DisplayName("같은 유저의 createdAt, id 를 키로 커서 기반 페이지 조회를 확인한다.")
     @Test

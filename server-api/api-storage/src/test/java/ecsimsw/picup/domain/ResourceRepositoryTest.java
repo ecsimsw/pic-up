@@ -23,7 +23,7 @@ public class ResourceRepositoryTest {
     private Resource saved;
 
     @BeforeEach
-    private void initAll() {
+    public void initAll() {
         var resource = resourceRepository.save(Resource.createRequested(USER_ID, FILE_TAG, MULTIPART_FILE));
         this.saved = resourceRepository.findById(resource.getResourceKey()).orElseThrow();
     }

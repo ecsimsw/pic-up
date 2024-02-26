@@ -1,4 +1,4 @@
-package ecsimsw.picup.storage;
+package ecsimsw.picup.usage.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

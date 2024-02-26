@@ -10,11 +10,15 @@ import java.util.List;
 
 import ecsimsw.picup.storage.ImageStorage;
 import ecsimsw.picup.storage.StorageKey;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.web.multipart.MultipartFile;
 
+@AllArgsConstructor
+@NoArgsConstructor
 @Getter
 @Document(collection = "resource")
 public class Resource {
@@ -29,17 +33,6 @@ public class Resource {
     private LocalDateTime createRequested;
 
     private LocalDateTime deleteRequested;
-
-    public Resource() {
-    }
-
-    public Resource(String resourceKey, Long userId, List<StorageKey> storedStorages, LocalDateTime createRequested, LocalDateTime deletedAt) {
-        this.resourceKey = resourceKey;
-        this.userId = userId;
-        this.storedStorages = storedStorages;
-        this.createRequested = createRequested;
-        this.deleteRequested = deletedAt;
-    }
 
     public static Resource createRequested(Long userId, String tag, MultipartFile file) {
         final String resourceKey = ResourceKeyStrategy.generate(tag, file);
