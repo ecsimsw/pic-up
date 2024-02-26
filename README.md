@@ -12,7 +12,7 @@
 - RabbitMQ, 서버간 비동기 통신, 재시도 정책과 복구 처리 : [docs](https://ecsimsw.tistory.com/entry/%EB%A9%94%EC%8B%9C%EC%A7%80-%ED%81%90-%EC%82%AC%EC%9A%A9-%EC%9D%B4%EC%9C%A0%EC%99%80-RabbitMQ-%EC%A3%BC%EC%9A%94%E2%80%93%EC%98%B5%EC%85%98-%EC%9E%AC%EC%95%99-%EC%8B%9C%EB%82%98%EB%A6%AC%EC%98%A4-%EC%86%8C%EA%B0%9C)
 
 #### 동시성 문제 해결과 락
-- DB 락의 커넥션 점유 문제 확인과 해결 : [docs](https://ecsimsw.tistory.com/entry/%EB%8F%99%EC%8B%9C%EC%84%B1-%EB%AC%B8%EC%A0%9C-%ED%95%B4%EA%B2%B0-DB-%EC%BB%A4%EB%84%A5%EC%85%98-%EC%A0%90%EC%9C%A0-%ED%99%95%EC%9D%B8%EA%B3%BC-%EC%84%B1%EB%8A%A5-%EA%B0%9C%EC%84%A0), [code](https://github.com/ecsimsw/pic-up/blob/main/server-api/api-album/src/main/java/ecsimsw/picup/album/service/AlbumService.java#L108)
+- 비관적 락의 DB 커넥션 점유 문제를 해결했던 과정들 : [docs](https://ecsimsw.tistory.com/entry/%EB%8F%99%EC%8B%9C%EC%84%B1-%EB%AC%B8%EC%A0%9C-%ED%95%B4%EA%B2%B0-DB-%EC%BB%A4%EB%84%A5%EC%85%98-%EC%A0%90%EC%9C%A0-%ED%99%95%EC%9D%B8%EA%B3%BC-%EC%84%B1%EB%8A%A5-%EA%B0%9C%EC%84%A0), [code](https://github.com/ecsimsw/pic-up/blob/main/server-api/api-album/src/main/java/ecsimsw/picup/album/service/AlbumService.java#L108)
 - 동시성 문제 해결을 위한 락 : [docs](https://ecsimsw.tistory.com/entry/%EB%8F%99%EC%8B%9C%EC%84%B1-%ED%85%8C%EC%8A%A4%ED%8A%B8%EC%99%80-%ED%95%B4%EA%B2%B0-%EB%B0%A9%EC%95%88)
   
 #### 데이터 백업
