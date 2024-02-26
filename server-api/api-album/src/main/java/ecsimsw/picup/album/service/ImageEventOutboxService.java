@@ -12,6 +12,7 @@ public class ImageEventOutboxService {
 
     private final static int FILE_DELETION_SEGMENT_UNIT = 5;
     private final static int FILE_DELETION_SCHED_DELAY = 3000;
+    private final static int FILE_DELETION_LOCK_TIME = 30000;
 
     private final FileService fileService;
     private final SchedulerLock schedulerLock;
@@ -24,7 +25,7 @@ public class ImageEventOutboxService {
 
     public void publishOut() {
         while (true) {
-            schedulerLock.afterDelay(30000, FILE_DELETION_SCHED_DELAY, () -> {
+            schedulerLock.afterDelay(FILE_DELETION_LOCK_TIME, FILE_DELETION_SCHED_DELAY, () -> {
                 LOGGER.info("outbox scheduled");
                 var toBeDeleted = fileService.findAllDeletionOutBox();
                 for (var eventSegment : Iterables.partition(toBeDeleted, FILE_DELETION_SEGMENT_UNIT)) {
