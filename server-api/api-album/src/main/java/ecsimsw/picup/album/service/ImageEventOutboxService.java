@@ -3,6 +3,7 @@ package ecsimsw.picup.album.service;
 import com.google.common.collect.Iterables;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -20,10 +21,10 @@ public class ImageEventOutboxService {
     public ImageEventOutboxService(FileService fileService, SchedulerLock schedulerLock) {
         this.fileService = fileService;
         this.schedulerLock = schedulerLock;
-        publishOut();
     }
 
-    public void publishOut() {
+    @Async
+    public void schedulePublishOut() {
         while (true) {
             schedulerLock.afterDelay(FILE_DELETION_LOCK_TIME, FILE_DELETION_SCHED_DELAY, () -> {
                 LOGGER.info("outbox scheduled");
