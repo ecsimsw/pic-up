@@ -18,18 +18,18 @@
 #### 데이터 백업
 - DataSource 헬스 체크와 동적 라우팅으로 DB 서버 다운 대비 : [docs](https://ecsimsw.tistory.com/entry/Dynamic-DataSource-%EB%9D%BC%EC%9A%B0%ED%8C%85%EC%9C%BC%EB%A1%9C-DB-%EC%84%9C%EB%B2%84-%EB%8B%A4%EC%9A%B4%EC%8B%9C-%EC%B2%98%EB%A6%AC), [code](https://github.com/ecsimsw/pic-up/blob/main/server-api/api-album/src/main/java/ecsimsw/picup/config/DataSourceHealth.java#L39)
 - DB 레플리케이션으로 백업과 부하분산 : [docs](https://ecsimsw.tistory.com/entry/Mysql-DB-Replication-%EC%9C%BC%EB%A1%9C-%EB%8D%B0%EC%9D%B4%ED%84%B0-%EB%B0%B1%EC%97%85-%EC%BF%BC%EB%A6%AC-%EB%B6%84%EC%82%B0)
-- MSR 으로 백업 DB 중앙화 : [docs](https://www.blog.ecsimsw.com/entry/Mysql-DB-Multi-source-replication-%EC%9C%BC%EB%A1%9C-%EB%B0%B1%EC%97%85-%EB%A1%9C%EA%B7%B8-%EB%8D%B0%EC%9D%B4%ED%84%B0-%EC%A4%91%EC%95%99%ED%99%94)
+- MSR 으로 백업 DB 중앙화 : [docs](https://ecsimsw.tistory.com/entry/Mysql-DB-Multi-source-replication-%EC%9C%BC%EB%A1%9C-%EB%B0%B1%EC%97%85-%EB%A1%9C%EA%B7%B8-%EB%8D%B0%EC%9D%B4%ED%84%B0-%EC%A4%91%EC%95%99%ED%99%94)
 - ThreadLocal 을 사용한 TargetDataSource 처리 : [code](https://github.com/ecsimsw/pic-up/blob/main/server-api/api-album/src/main/java/ecsimsw/picup/config/DataSourceTargetContextHolder.java#L5)
 - NFS, 다중 서버에서 디스크 파일 중앙화 : [docs](https://github.com/ecsimsw/pic-up/blob/main/infra-docs/11_nfs.md)
 
 #### DB 성능 개선
 - 커서 기반 페이지 네이션 전환으로 조회 성능 개선 : [docs](https://ecsimsw.tistory.com/entry/%EC%BB%A4%EC%84%9C-%EA%B8%B0%EB%B0%98-%ED%8E%98%EC%9D%B4%EC%A7%80%EB%84%A4%EC%9D%B4%EC%85%98-%EB%8D%94%EB%AF%B8-%EB%8D%B0%EC%9D%B4%ED%84%B0-%EC%A4%80%EB%B9%84%EC%99%80-%EC%BF%BC%EB%A6%AC-%ED%85%8C%EC%8A%A4%ED%8A%B8), [code](https://github.com/ecsimsw/pic-up/blob/main/server-api/api-album/src/main/java/ecsimsw/picup/album/service/PictureService.java#L124)
-- 캐시를 이용한 조회 성능 개선 : [docs](https://www.blog.ecsimsw.com/entry/%EC%BA%90%EC%8B%9C%EB%A1%9C-%EC%A1%B0%ED%9A%8C-%EC%84%B1%EB%8A%A5-%EA%B0%9C%EC%84%A0-%EB%A0%88%EB%94%94%EC%8A%A4-%EC%BA%90%EC%8B%9C-%EC%82%AC%EC%9A%A9-%EC%9D%B4%EC%9C%A0%EC%99%80-%EC%A0%84%EB%9E%B5), [code](https://github.com/ecsimsw/pic-up/blob/main/server-api/api-album/src/main/java/ecsimsw/picup/album/service/PictureService.java#L115)
+- 캐시를 이용한 조회 성능 개선 : [docs](https://ecsimsw.tistory.com/entry/%EC%BA%90%EC%8B%9C%EB%A1%9C-%EC%A1%B0%ED%9A%8C-%EC%84%B1%EB%8A%A5-%EA%B0%9C%EC%84%A0-%EB%A0%88%EB%94%94%EC%8A%A4-%EC%BA%90%EC%8B%9C-%EC%82%AC%EC%9A%A9-%EC%9D%B4%EC%9C%A0%EC%99%80-%EC%A0%84%EB%9E%B5), [code](https://github.com/ecsimsw/pic-up/blob/main/server-api/api-album/src/main/java/ecsimsw/picup/album/service/PictureService.java#L115)
 - 커스텀 Repository 구현으로 JPA 메서드 재정의 : [code](https://github.com/ecsimsw/pic-up/blob/main/server-api/api-album/src/main/java/ecsimsw/picup/album/domain/AlbumSpecRepositoryImpl.java)
 
 #### 배포와 모니터링
 - 리버스 프록시, 요청 호출 수 제한과 접근 가능 IP 제한 : [docs](https://ecsimsw.tistory.com/entry/Nginx-%EC%9A%94%EC%B2%AD-%ED%98%B8%EC%B6%9C-%EC%88%98-%EC%A0%9C%ED%95%9C%EA%B3%BC-%EC%A0%91%EA%B7%BC-%EA%B0%80%EB%8A%A5-IP-%EC%A0%9C%ED%95%9C), [code](https://github.com/ecsimsw/pic-up/tree/main/infra-gateway/config)
-- k8s, JVM, 도커 컨테이너 모니터링과 부하 테스트 : [docs](https://www.blog.ecsimsw.com/entry/JVM-%EB%AA%A8%EB%8B%88%ED%84%B0%EB%A7%81-%ED%94%84%EB%A1%9C%EB%A9%94%ED%85%8C%EC%9A%B0%EC%8A%A4%EC%99%80-JVM-%EB%A9%94%EB%AA%A8%EB%A6%AC-%ED%8A%9C%EB%8B%9D), [code](https://github.com/ecsimsw/pic-up/tree/main/utils-monitoring)
+- k8s, JVM, 도커 컨테이너 모니터링과 부하 테스트 : [docs](https://ecsimsw.tistory.com/entry/JVM-%EB%AA%A8%EB%8B%88%ED%84%B0%EB%A7%81-%ED%94%84%EB%A1%9C%EB%A9%94%ED%85%8C%EC%9A%B0%EC%8A%A4%EC%99%80-JVM-%EB%A9%94%EB%AA%A8%EB%A6%AC-%ED%8A%9C%EB%8B%9D), [code](https://github.com/ecsimsw/pic-up/tree/main/utils-monitoring)
 - Kubernetes 배포와 HPA, 유연한 스케일 아웃
  : [code](https://github.com/ecsimsw/pic-up/tree/main/infra-kubernetes)
 - 테라폼, AWS resource IaC : [code](https://github.com/ecsimsw/pic-up/tree/main/infra-terraform)
