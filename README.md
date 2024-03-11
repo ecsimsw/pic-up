@@ -6,7 +6,7 @@
 ## Docs
 
 #### 분산 환경에서 안전한 데이터 처리
-- Transactional outbox pattern, 메시지와 DB 원자성 보장 : [docs](https://ecsimsw.tistory.com/entry/Transactional-outbox-pattern-%EC%9C%BC%EB%A1%9C), [code](https://github.com/ecsimsw/pic-up/blob/main/server-api/api-album/src/main/java/ecsimsw/picup/album/service/ImageEventOutboxService.java)
+- Transactional outbox pattern, 메시지와 DB 원자성 보장 : [docs](https://ecsimsw.tistory.com/entry/%ED%8C%8C%EC%9D%BC-%EC%82%AD%EC%A0%9C-%EC%A4%91-%EC%98%88%EC%99%B8%EC%8B%9C-%EB%A1%A4%EB%B0%B1-%EB%B6%88%EA%B0%80-%EB%AC%B8%EC%A0%9C%EB%A5%BC-%ED%92%80%EC%9D%B4%ED%95%98%EB%8A%94-%EA%B3%BC%EC%A0%95%EB%93%A4), [code](https://github.com/ecsimsw/pic-up/blob/main/server-api/api-album/src/main/java/ecsimsw/picup/album/service/ImageEventOutboxService.java)
 - ShedLock 없이 분산 환경에서 스케줄러 단일 실행 보장 : [docs](https://ecsimsw.tistory.com/entry/Redis-%EB%A5%BC-%EC%82%AC%EC%9A%A9%ED%95%B4%EC%84%9C-%EB%B6%84%EC%82%B0%ED%99%98%EA%B2%BD%EC%97%90%EC%84%9C-%EC%8A%A4%EC%BC%80%EC%A4%84%EB%9F%AC%EC%9D%98)
 - 이미지 다중 소스 동시 업로드와 결과 조합 : [docs](https://ecsimsw.tistory.com/entry/%EC%9D%B4%EB%AF%B8%EC%A7%80-%EC%97%85%EB%A1%9C%EB%93%9C-%EB%B9%84%EB%8F%99%EA%B8%B0-%EC%B2%98%EB%A6%AC-%ED%9B%84-%EA%B2%B0%EA%B3%BC-%EC%A1%B0%ED%95%A9), [code](https://github.com/ecsimsw/pic-up/blob/main/server-api/api-storage/src/main/java/ecsimsw/picup/service/StorageService.java#L49)
 - RabbitMQ, 서버간 비동기 통신, 재시도 정책과 복구 처리 : [docs](https://ecsimsw.tistory.com/entry/%EB%A9%94%EC%8B%9C%EC%A7%80-%ED%81%90-%EC%82%AC%EC%9A%A9-%EC%9D%B4%EC%9C%A0%EC%99%80-RabbitMQ-%EC%A3%BC%EC%9A%94%E2%80%93%EC%98%B5%EC%85%98-%EC%9E%AC%EC%95%99-%EC%8B%9C%EB%82%98%EB%A6%AC%EC%98%A4-%EC%86%8C%EA%B0%9C)
@@ -40,7 +40,8 @@
 
 ![1](https://github.com/ecsimsw/pic-up/assets/46060746/c5216572-cd4b-468f-93fd-fca64422cf94)
 
-![2](https://github.com/ecsimsw/pic-up/assets/46060746/0ce25cdd-e240-4738-ba17-4edbe365a224)
+![image](https://github.com/ecsimsw/pic-up/assets/46060746/d53416f8-a4da-4173-b5ff-f87b3456b2a1)
+
 
 ![3](https://github.com/ecsimsw/pic-up/assets/46060746/405afd2d-e811-4913-8cb1-770d5ae6ad03)
 
