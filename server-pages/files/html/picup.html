@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>사진 앨범</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        #album {
+            width: 100%;
+            height: 100vh;
+            overflow-y: auto;
+            display: flex;
+            flex-wrap: wrap;
+            align-content: flex-start;
+            padding: 10px;
+            box-sizing: border-box;
+            justify-content: space-around;
+        }
+
+        .photo {
+            width: calc(50% - 20px);
+            margin: 10px;
+            overflow: hidden;
+            position: relative;
+            cursor: pointer;
+        }
+
+        .photo img {
+            width: 100%;
+            height: auto;
+            transition: transform 0.2s ease;
+        }
+
+        .photo:hover img {
+            transform: scale(1.1);
+        }
+
+        #overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            z-index: 1;
+        }
+
+        #overlay img {
+            display: block;
+            margin: auto;
+            max-width: 80%;
+            max-height: 80%;
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            right: 0;
+        }
+
+        .prev, .next {
+            position: fixed;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 50px;
+            height: 50px;
+            background-color: rgba(0, 0, 0, 0.5);
+            color: #fff;
+            font-size: 20px;
+            text-align: center;
+            line-height: 50px;
+            cursor: pointer;
+            z-index: 2;
+        }
+
+        .prev {
+            left: 0;
+        }
+
+        .next {
+            right: 0;
+        }
+    </style>
+</head>
+<body>
+
+<div id="album">
+    <div class="photo">
+        <img src="photo1.jpg" alt="Photo 1">
+    </div>
+    <div class="photo">
+        <img src="photo2.jpg" alt="Photo 2">
+    </div>
+    <!-- Add more photos here -->
+</div>
+
+<div id="overlay">
+    <img id="overlayImage">
+</div>
+
+<div class="prev" onclick="prevPhoto()">&#10094;</div>
+<div class="next" onclick="nextPhoto()">&#10095;</div>
+
+<script>
+    const photos = document.querySelectorAll('.photo');
+    const overlay = document.getElementById('overlay');
+    const overlayImage = document.getElementById('overlayImage');
+    let currentPhotoIndex = 0;
+
+    photos.forEach((photo, index) => {
+        photo.addEventListener('click', () => {
+            currentPhotoIndex = index;
+            const imgSrc = photo.querySelector('img').getAttribute('src');
+            overlayImage.setAttribute('src', imgSrc);
+            overlay.style.display = 'block';
+        });
+    });
+
+    overlay.addEventListener('click', () => {
+        overlay.style.display = 'none';
+    });
+
+    function prevPhoto() {
+        if (currentPhotoIndex > 0) {
+            currentPhotoIndex--;
+            const imgSrc = photos[currentPhotoIndex].querySelector('img').getAttribute('src');
+            overlayImage.setAttribute('src', imgSrc);
+        }
+    }
+
+    function nextPhoto() {
+        if (currentPhotoIndex < photos.length - 1) {
+            currentPhotoIndex++;
+            const imgSrc = photos[currentPhotoIndex].querySelector('img').getAttribute('src');
+            overlayImage.setAttribute('src', imgSrc);
+        }
+    }
+</script>
+
+</body>
+</html>
