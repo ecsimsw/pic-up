@@ -25,8 +25,6 @@ document.getElementById("imageBoxButton").addEventListener('change', function ()
     imageBoxName.readOnly = true;
 }, false);
 
-
-let albumId = 1
 document.addEventListener("DOMContentLoaded", function () {
     initCreationPanel()
 
@@ -36,7 +34,6 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     })
 });
-
 
 function createAlbumArticle(albumId, titleText, thumbImageResource) {
     const article = document.createElement('article');
@@ -57,7 +54,7 @@ function createAlbumArticle(albumId, titleText, thumbImageResource) {
     article.appendChild(title);
 
     article.addEventListener('click', function () {
-        location.href = "../html/album-detail.html"
+        location.href = "../html/album-detail.html?albumId="+albumId
     })
 
     const albumMain = document.getElementById("album-main");

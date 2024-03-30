@@ -1,5 +1,6 @@
 package ecsimsw.picup.album.dto;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import ecsimsw.picup.album.domain.Album;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

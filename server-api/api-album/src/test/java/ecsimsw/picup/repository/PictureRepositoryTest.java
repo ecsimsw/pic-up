@@ -49,8 +49,8 @@ public class PictureRepositoryTest {
         var limit = 2;
         final List<Picture> pictures = pictureRepository.fetch(
             where(isAlbum(1L))
-                .and(createdLater(prev.getCreatedAt()).or(
-                    equalsCreatedTime(prev.getCreatedAt()).and(greaterId(prev.getId())))),
+                .and(createdLater(prev.createdAt()).or(
+                    equalsCreatedTime(prev.createdAt()).and(greaterId(prev.id())))),
             limit, sortByCreatedAtAsc
         );
         assertThat(pictures)
@@ -86,7 +86,7 @@ public class PictureRepositoryTest {
         var limit = 5;
         final List<Picture> pictures = pictureRepository.fetch(
             where(isAlbum(1L)
-                .and(createdLater(prev.getCreatedAt()).or(equalsCreatedTime(prev.getCreatedAt()).and(greaterId(prev.getId()))))
+                .and(createdLater(prev.createdAt()).or(equalsCreatedTime(prev.createdAt()).and(greaterId(prev.id()))))
             ), limit, sortByCreatedAtAsc
         );
         assertThat(pictures)

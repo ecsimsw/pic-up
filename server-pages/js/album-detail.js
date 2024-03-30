@@ -23,6 +23,21 @@ $(document).ready(function()
     });
 });
 
+document.addEventListener("DOMContentLoaded", function () {
+    initCreationPanel()
+    initCreationPanel()
+    initFileUploadButton();
+    initPictureDescriptionArea();
+    initEditButton();
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const albumId = urlParams.get('albumId');
+    fetchData(serverUrl+"/api/album/"+albumId, function (album) {
+        const albumTitle = document.getElementById("album-title");
+        albumTitle.innerText = "hi"
+    })
+});
+
 function initEditButton() {
     editBtn.addEventListener('click', function () {
         editMode = !editMode
@@ -227,7 +242,18 @@ function initCreationPanel() {
     });
 }
 
-initCreationPanel()
-initFileUploadButton();
-initPictureDescriptionArea();
-initEditButton();
+
+function fetchData(url, callback) {
+    fetch(url)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(data => callback(data))
+        .catch(error => {
+            console.log(error)
+        });
+}
+
