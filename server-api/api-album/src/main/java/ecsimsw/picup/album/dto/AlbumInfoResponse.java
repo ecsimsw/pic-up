@@ -10,16 +10,12 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@AllArgsConstructor
-@NoArgsConstructor
-@Setter
-@Getter
-public class AlbumInfoResponse {
-
-    private Long id;
-    private String name;
-    private String thumbnailImage;
-    private LocalDateTime createdAt;
+public record AlbumInfoResponse(
+    Long id,
+    String name,
+    String thumbnailImage,
+    LocalDateTime createdAt
+){
 
     public static AlbumInfoResponse of(Album album) {
         return new AlbumInfoResponse(

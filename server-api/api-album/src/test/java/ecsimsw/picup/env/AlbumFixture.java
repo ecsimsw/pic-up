@@ -14,7 +14,6 @@ public class AlbumFixture {
     public static final long SIZE = 256L;
 
     public static final List<String> RESOURCES = List.of(RESOURCE_KEY, RESOURCE_KEY, RESOURCE_KEY);
-    public static final String DESCRIPTION = "this is description of picture";
 
     public static final MultipartFile MULTIPART_FILE = new MockMultipartFile("name", "name.png", "png", "Image binary file for test".getBytes());
 

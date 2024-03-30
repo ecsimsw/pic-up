@@ -29,13 +29,13 @@ public class PictureRepositoryTest {
     @DisplayName("같은 유저의 createdAt, id 를 키로 커서 기반 페이지 조회를 확인한다.")
     @Test
     public void testCursorBased() {
-        var picture1 = pictureRepository.save(new Picture(1L, "resource1", SIZE, "description1"));
-        var picture2 = pictureRepository.save(new Picture(1L, "resource2", SIZE, "description2"));
-        var picture3 = pictureRepository.save(new Picture(1L, "resource3", SIZE, "description3"));
-        var picture4 = pictureRepository.save(new Picture(2L, "resource4", SIZE, "description4"));
-        var picture5 = pictureRepository.save(new Picture(1L, "resource5", SIZE, "description5"));
-        var picture6 = pictureRepository.save(new Picture(2L, "resource6", SIZE, "description6"));
-        var picture7 = pictureRepository.save(new Picture(1L, "resource7", SIZE, "description7"));
+        var picture1 = pictureRepository.save(new Picture(1L, "resource1", SIZE));
+        var picture2 = pictureRepository.save(new Picture(1L, "resource2", SIZE));
+        var picture3 = pictureRepository.save(new Picture(1L, "resource3", SIZE));
+        var picture4 = pictureRepository.save(new Picture(2L, "resource4", SIZE));
+        var picture5 = pictureRepository.save(new Picture(1L, "resource5", SIZE));
+        var picture6 = pictureRepository.save(new Picture(2L, "resource6", SIZE));
+        var picture7 = pictureRepository.save(new Picture(1L, "resource7", SIZE));
 
         pictureRepository.save(picture1);
         pictureRepository.save(picture2);
@@ -62,15 +62,15 @@ public class PictureRepositoryTest {
     @Test
     public void testCursorBasedSameCreateTime() {
         LocalDateTime sameTime = LocalDateTime.now();
-        var picture1 = new Picture(1L, 1L, "resource1", SIZE, "description1", sameTime);
-        var picture2 = new Picture(2L, 1L, "resource2", SIZE, "description2", sameTime);
-        var picture3 = new Picture(3L, 1L, "resource3", SIZE, "description3", sameTime);
-        var picture4 = new Picture(4L, 2L, "resource4", SIZE, "description4", sameTime);
-        var picture5 = new Picture(5L, 1L, "resource5", SIZE, "description5", sameTime);
-        var picture6 = new Picture(6L, 2L, "resource6", SIZE, "description6", sameTime);
-        var picture7 = new Picture(7L, 1L, "resource7", SIZE, "description7", sameTime);
-        var picture8 = new Picture(8L, 1L, "resource8", SIZE, "description8", LocalDateTime.now());
-        var picture9 = new Picture(9L, 1L, "resource9", SIZE, "description9", sameTime);
+        var picture1 = new Picture(1L, 1L, "resource1", SIZE, sameTime);
+        var picture2 = new Picture(2L, 1L, "resource2", SIZE, sameTime);
+        var picture3 = new Picture(3L, 1L, "resource3", SIZE, sameTime);
+        var picture4 = new Picture(4L, 2L, "resource4", SIZE, sameTime);
+        var picture5 = new Picture(5L, 1L, "resource5", SIZE, sameTime);
+        var picture6 = new Picture(6L, 2L, "resource6", SIZE, sameTime);
+        var picture7 = new Picture(7L, 1L, "resource7", SIZE, sameTime);
+        var picture8 = new Picture(8L, 1L, "resource8", SIZE, LocalDateTime.now());
+        var picture9 = new Picture(9L, 1L, "resource9", SIZE, sameTime);
 
         pictureRepository.save(picture1);
         pictureRepository.save(picture2);
@@ -97,12 +97,11 @@ public class PictureRepositoryTest {
     @DisplayName("Picture 을 저장한다. id와 생성 시각이 함께 저장된다.")
     @Test
     public void createAlbum() {
-        var saved = pictureRepository.save(new Picture(ALBUM_ID, RESOURCE_KEY, SIZE, DESCRIPTION));
+        var saved = pictureRepository.save(new Picture(ALBUM_ID, RESOURCE_KEY, SIZE));
         assertAll(
             () -> assertThat(saved.getId()).isNotNull(),
             () -> assertThat(saved.getAlbumId()).isEqualTo(ALBUM_ID),
             () -> assertThat(saved.getResourceKey()).isEqualTo(RESOURCE_KEY),
-            () -> assertThat(saved.getDescription()).isEqualTo(DESCRIPTION),
             () -> assertThat(saved.getCreatedAt()).isNotNull()
         );
     }

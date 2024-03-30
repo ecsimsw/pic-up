@@ -55,18 +55,4 @@ public class PictureController {
         pictureService.delete(loginUser.getId(), albumId, pictureId);
         return ResponseEntity.ok().build();
     }
-
-    @PutMapping("/api/album/{albumId}/picture/{pictureId}")
-    public ResponseEntity<PictureInfoResponse> updatePicture(
-        @JwtPayload AuthTokenPayload loginUser,
-        @PathVariable Long albumId,
-        @PathVariable Long pictureId,
-        @RequestPart PictureInfoRequest pictureInfo,
-        @RequestPart MultipartFile imageFile
-    ) {
-        var userId = loginUser.getId();
-        var imageResource = fileService.upload(userId, imageFile);
-        var response = pictureService.update(loginUser.getId(), albumId, pictureId, pictureInfo, imageResource);
-        return ResponseEntity.ok(response);
-    }
 }

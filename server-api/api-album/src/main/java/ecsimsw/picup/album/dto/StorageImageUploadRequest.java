@@ -9,8 +9,11 @@ import org.springframework.http.MediaType;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.web.multipart.MultipartFile;
 
-@Getter
-public class StorageImageUploadRequest {
+public record StorageImageUploadRequest(
+    @NotBlank Long userId,
+    @NotNull MultipartFile file,
+    @NotBlank String tag
+) {
 
     private static final HttpHeaders REQUEST_HEADERS = new HttpHeaders();
     private static final String ID_REQUEST_KEY_NAME = "userId";
@@ -20,15 +23,6 @@ public class StorageImageUploadRequest {
     static {
         REQUEST_HEADERS.setContentType(MediaType.MULTIPART_FORM_DATA);
     }
-
-    @NotBlank
-    private final Long userId;
-
-    @NotNull
-    private final MultipartFile file;
-
-    @NotBlank
-    private final String tag;
 
     public StorageImageUploadRequest(Long userId, MultipartFile file, String tag) {
         if (file.isEmpty()) {

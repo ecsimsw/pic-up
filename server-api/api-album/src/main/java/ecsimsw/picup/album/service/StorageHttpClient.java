@@ -46,7 +46,7 @@ public class StorageHttpClient {
                 StorageImageUploadRequest.of(userId, file, tag).toHttpEntity(),
                 new ParameterizedTypeReference<FileResourceInfo>() {
                 });
-            if (Objects.isNull(response.getBody()) || Objects.isNull(response.getBody().getResourceKey())) {
+            if (Objects.isNull(response.getBody()) || Objects.isNull(response.getBody().resourceKey())) {
                 throw new InvalidStorageServerResponseException("Failed to upload resources.\nStorage server is on, but invalid response body.");
             }
             return response.getBody();

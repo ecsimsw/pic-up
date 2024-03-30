@@ -8,7 +8,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.TestPropertySource;
 
 import java.time.LocalDateTime;
@@ -48,7 +47,8 @@ public class AlbumRepositoryTest {
         var limit = 2;
         final List<Album> albums = albumRepository.fetch(
             where(isUser(1L))
-                .and(createdLater(prev.getCreatedAt()).or(equalsCreatedTime(prev.getCreatedAt()).and(greaterId(prev.getId())))),
+                .and(createdLater(prev.getCreatedAt()).or(
+                    equalsCreatedTime(prev.getCreatedAt()).and(greaterId(prev.getId())))),
             limit, ascByCreatedAt
         );
         assertThat(albums).isEqualTo(List.of(album3, album5));
@@ -72,7 +72,8 @@ public class AlbumRepositoryTest {
         var limit = 5;
         final List<Album> albums = albumRepository.fetch(
             where(isUser(1L))
-                .and(createdLater(prev.getCreatedAt()).or(equalsCreatedTime(prev.getCreatedAt()).and(greaterId(prev.getId())))
+                .and(createdLater(prev.getCreatedAt()).or(
+                    equalsCreatedTime(prev.getCreatedAt()).and(greaterId(prev.getId())))
                 ), limit, ascByCreatedAt
         );
         assertThat(albums).isEqualTo(List.of(album3, album5, album7, album9, album8));

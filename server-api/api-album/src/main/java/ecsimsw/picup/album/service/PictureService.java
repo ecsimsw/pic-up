@@ -38,48 +38,19 @@ public class PictureService {
     public PictureInfoResponse create(Long userId, Long albumId, PictureInfoRequest pictureInfo, FileResourceInfo uploadFile) {
         try {
             checkUserAuthInAlbum(userId, albumId);
-            var picture = new Picture(albumId, uploadFile.getResourceKey(), uploadFile.getSize(), pictureInfo.getDescription());
+            var picture = new Picture(albumId, uploadFile.resourceKey(), uploadFile.size());
             pictureRepository.save(picture);
-            storageUsageService.addUsage(userId, uploadFile.getSize());
+            storageUsageService.addUsage(userId, uploadFile.size());
             return PictureInfoResponse.of(picture);
         } catch (Exception e) {
-            fileService.delete(uploadFile.getResourceKey());
+            fileService.delete(uploadFile.resourceKey());
             throw e;
         }
     }
 
     @Recover
     public PictureInfoResponse recoverCreate(ObjectOptimisticLockingFailureException e, Long userId, Long albumId, PictureInfoRequest pictureInfo, FileResourceInfo uploadFile) {
-        fileService.delete(uploadFile.getResourceKey());
-        throw new AlbumException("Too many requests at the same time");
-    }
-
-    @CacheEvict(key = "{#userId, #albumId}", value = "userPictureFirstPageDefaultSize")
-    @Transactional
-    public PictureInfoResponse update(Long userId, Long albumId, Long pictureId, PictureInfoRequest pictureInfo, FileResourceInfo newFileResource) {
-        try {
-            checkUserAuthInAlbum(userId, albumId);
-
-            var picture = pictureRepository.findById(pictureId).orElseThrow(() -> new AlbumException("Invalid picture"));
-            picture.validateAlbum(albumId);
-            picture.updateDescription(pictureInfo.getDescription());
-
-            fileService.createDeleteEvent(new FileDeletionEvent(userId, picture.getResourceKey()));
-            storageUsageService.subtractUsage(userId, picture.getFileSize());
-
-            picture.updateImage(newFileResource.getResourceKey());
-            storageUsageService.addUsage(userId, newFileResource.getSize());
-            pictureRepository.save(picture);
-            return PictureInfoResponse.of(picture);
-        } catch (Exception e) {
-            fileService.delete(newFileResource.getResourceKey());
-            throw e;
-        }
-    }
-
-    @Recover
-    public PictureInfoResponse recoverUpdate(ObjectOptimisticLockingFailureException e, Long userId, Long albumId, Long pictureId, PictureInfoRequest pictureInfo, FileResourceInfo newFileResource) {
-        fileService.delete(newFileResource.getResourceKey());
+        fileService.delete(uploadFile.resourceKey());
         throw new AlbumException("Too many requests at the same time");
     }
 
@@ -109,8 +80,8 @@ public class PictureService {
         var prev = cursor.orElseThrow();
         var pictures = pictureRepository.fetch(
             where(isAlbum(albumId)).and(
-                createdLater(prev.getCreatedAt())
-                    .or(equalsCreatedTime(prev.getCreatedAt()).and(greaterId(prev.getId())))
+                createdLater(prev.createdAt())
+                    .or(equalsCreatedTime(prev.createdAt()).and(greaterId(prev.id())))
             ),
             limit,
             PictureRepository.PictureSearchSpecs.sortByCreatedAtAsc

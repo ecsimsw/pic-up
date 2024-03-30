@@ -7,13 +7,10 @@ import lombok.Setter;
 
 import java.time.LocalDateTime;
 
-@AllArgsConstructor
-@Setter
-@Getter
-public class AlbumSearchCursor {
-
-    private final Long id;
-    private final LocalDateTime createdAt;
+public record AlbumSearchCursor(
+    Long id,
+    LocalDateTime createdAt
+) {
 
     public AlbumSearchCursor(Album album) {
         this(album.getId(), album.getCreatedAt());

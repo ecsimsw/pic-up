@@ -46,8 +46,8 @@ class FileServiceTest {
 
         var fileInfo = fileService.upload(MEMBER_ID, MULTIPART_FILE);
         assertAll(
-            () -> assertThat(fileInfo.getResourceKey()).isEqualTo(RESOURCE_KEY),
-            () -> assertThat(fileInfo.getSize()).isEqualTo(MULTIPART_FILE.getSize())
+            () -> assertThat(fileInfo.resourceKey()).isEqualTo(RESOURCE_KEY),
+            () -> assertThat(fileInfo.size()).isEqualTo(MULTIPART_FILE.getSize())
         );
     }
 

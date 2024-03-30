@@ -1,16 +1,15 @@
 package ecsimsw.picup.album.domain;
 
 import ecsimsw.picup.album.exception.AlbumException;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-
+import java.time.LocalDateTime;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.validation.constraints.NotNull;
-import java.time.LocalDateTime;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -29,20 +28,10 @@ public class Picture {
 
     private Long fileSize;
 
-    private String description;
-
     private LocalDateTime createdAt;
 
-    public Picture(Long albumId, String resourceKey, Long fileSize, String description) {
-        this(null, albumId, resourceKey, fileSize, description, LocalDateTime.now());
-    }
-
-    public void updateDescription(String description) {
-        this.description = description;
-    }
-
-    public void updateImage(String resourceKey) {
-        this.resourceKey = resourceKey;
+    public Picture(Long albumId, String resourceKey, Long fileSize) {
+        this(null, albumId, resourceKey, fileSize, LocalDateTime.now());
     }
 
     public void validateAlbum(Long albumId) {

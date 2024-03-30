@@ -13,9 +13,7 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.Caching;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
-import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Recover;
-import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -37,19 +35,19 @@ public class AlbumService {
     @Transactional
     public AlbumInfoResponse create(Long userId, AlbumInfoRequest albumInfo, FileResourceInfo resource) {
         try {
-            var album = new Album(userId, albumInfo.getName(), resource.getResourceKey(), resource.getSize());
-            storageUsageService.addUsage(userId, resource.getSize());
+            var album = new Album(userId, albumInfo.name(), resource.resourceKey(), resource.size());
+            storageUsageService.addUsage(userId, resource.size());
             albumRepository.save(album);
             return AlbumInfoResponse.of(album);
         } catch (Exception e) {
-            fileService.delete(resource.getResourceKey());
+            fileService.delete(resource.resourceKey());
             throw e;
         }
     }
 
     @Recover
     public AlbumInfoResponse recoverCreate(ObjectOptimisticLockingFailureException e, Long userId, AlbumInfoRequest albumInfo, FileResourceInfo resource) {
-        fileService.delete(resource.getResourceKey());
+        fileService.delete(resource.resourceKey());
         throw new AlbumException("Too many requests at the same time");
     }
 
@@ -68,23 +66,23 @@ public class AlbumService {
     public AlbumInfoResponse update(Long userId, Long albumId, AlbumInfoRequest albumInfo, FileResourceInfo newImage) {
         try {
             var album = getUserAlbum(userId, albumId);
-            album.updateName(albumInfo.getName());
+            album.updateName(albumInfo.name());
 
             fileService.createDeleteEvent(new FileDeletionEvent(userId, album.getThumbnailResourceKey()));
             storageUsageService.subtractUsage(userId, album.getThumbnailFileSize());
 
-            album.updateThumbnail(newImage.getResourceKey());
-            storageUsageService.addUsage(userId, newImage.getSize());
+            album.updateThumbnail(newImage.resourceKey());
+            storageUsageService.addUsage(userId, newImage.size());
             return AlbumInfoResponse.of(album);
         } catch (Exception e) {
-            fileService.delete(newImage.getResourceKey());
+            fileService.delete(newImage.resourceKey());
             throw e;
         }
     }
 
     @Recover
     public AlbumInfoResponse recoverUpdate(ObjectOptimisticLockingFailureException e, Long userId, Long albumId, AlbumInfoRequest albumInfo, FileResourceInfo newImage) {
-        fileService.delete(newImage.getResourceKey());
+        fileService.delete(newImage.resourceKey());
         throw new AlbumException("Too many requests at the same time");
     }
 
@@ -116,7 +114,7 @@ public class AlbumService {
         var prev = cursor.orElseThrow();
         var albums = albumRepository.fetch(
             where(isUser(userId))
-                .and(createdLater(prev.getCreatedAt()).or(equalsCreatedTime(prev.getCreatedAt()).and(greaterId(prev.getId())))),
+                .and(createdLater(prev.createdAt()).or(equalsCreatedTime(prev.createdAt()).and(greaterId(prev.id())))),
             limit,
             ascByCreatedAt
         );

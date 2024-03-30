@@ -78,8 +78,8 @@ class StorageHttpClientTest {
 
         var fileInfo = storageHttpClient.requestUpload(MEMBER_ID, MULTIPART_FILE, TAG);
         assertAll(
-            () -> assertThat(fileInfo.getResourceKey()).isEqualTo(RESOURCE_KEY),
-            () -> assertThat(fileInfo.getSize()).isEqualTo(SIZE)
+            () -> assertThat(fileInfo.resourceKey()).isEqualTo(RESOURCE_KEY),
+            () -> assertThat(fileInfo.size()).isEqualTo(SIZE)
         );
     }
 }

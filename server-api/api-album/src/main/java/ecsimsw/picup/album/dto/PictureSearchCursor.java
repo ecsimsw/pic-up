@@ -7,14 +7,10 @@ import lombok.Setter;
 
 import java.time.LocalDateTime;
 
-@RequiredArgsConstructor
-@Setter
-@Getter
-public class PictureSearchCursor {
-
-    private final Long id;
-    private final LocalDateTime createdAt;
-
+public record PictureSearchCursor(
+    Long id,
+    LocalDateTime createdAt
+) {
     public PictureSearchCursor(Picture picture) {
         this(picture.getId(), picture.getCreatedAt());
     }
