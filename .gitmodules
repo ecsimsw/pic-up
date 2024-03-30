@@ -1,6 +1,0 @@
-[submodule "infra/server-kubernetes/picup/config/vault"]
-	path = infra/server-kubernetes/picup/config/vault
-	url = https://github.com/ecsimsw/pic-up-vault.git
-[submodule "infra-kubernetes/picup/config/pic-up-vault"]
-	path = infra-kubernetes/picup/config/pic-up-vault
-	url = https://github.com/ecsimsw/pic-up-vault.git
