@@ -1,3 +1,5 @@
+let serverUrl = 'http://localhost:8084'
+
 let logoBtn = document.getElementById("logo");
 let editBtn = document.getElementById("edit-btn");
 let uploadBtn = document.getElementById("create-btn");
@@ -16,7 +18,7 @@ logoBtn.addEventListener("click", function () {
 $(document).ready(function()
 {
     $("#fileuploader").uploadFile({
-        url:"http://localhost:8084/upload",
+        url:serverUrl + "/upload",
         fileName:"myfile"
     });
 });

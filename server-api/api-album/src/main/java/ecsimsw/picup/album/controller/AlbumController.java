@@ -24,11 +24,11 @@ public class AlbumController {
 
     @PostMapping("/api/album")
     public ResponseEntity<AlbumInfoResponse> createAlbum(
-        @JwtPayload AuthTokenPayload loginUser,
+//        @JwtPayload AuthTokenPayload loginUser,
         @RequestPart MultipartFile thumbnail,
         @RequestPart AlbumInfoRequest albumInfo
     ) {
-        var userId = loginUser.getId();
+        var userId = 1L;
         var thumbnailResource = fileService.upload(userId, thumbnail);
         var album = albumService.create(userId, albumInfo, thumbnailResource);
         return ResponseEntity.ok(album);
@@ -36,42 +36,47 @@ public class AlbumController {
 
     @PutMapping("/api/album/{albumId}")
     public ResponseEntity<AlbumInfoResponse> updateAlbum(
-        @JwtPayload AuthTokenPayload loginUser,
+//        @JwtPayload AuthTokenPayload loginUser,
         @PathVariable Long albumId,
         @RequestPart AlbumInfoRequest albumInfo,
         @RequestPart MultipartFile thumbnail
     ) {
-        var userId = loginUser.getId();
+        var userId = 1L;
+//        var userId = loginUser.getId();
         var newImage = fileService.upload(userId, thumbnail);
-        var album = albumService.update(loginUser.getId(), albumId, albumInfo, newImage);
+        var album = albumService.update(userId, albumId, albumInfo, newImage);
         return ResponseEntity.ok(album);
     }
 
     @DeleteMapping("/api/album/{albumId}")
     public ResponseEntity<Void> deleteAlbum(
-        @JwtPayload AuthTokenPayload loginUser,
+//        @JwtPayload AuthTokenPayload loginUser,
         @PathVariable Long albumId
     ) {
-        albumService.delete(loginUser.getId(), albumId);
+        var userId = 1L;
+        albumService.delete(userId, albumId);
         return ResponseEntity.ok().build();
     }
 
     @GetMapping("/api/album/{albumId}")
     public ResponseEntity<AlbumInfoResponse> getAlbum(
-        @JwtPayload AuthTokenPayload loginUser,
+//        @JwtPayload AuthTokenPayload loginUser,
         @PathVariable Long albumId
     ) {
-        var album = albumService.read(loginUser.getId(), albumId);
+        var userId = 1L;
+        var album = albumService.read(userId, albumId);
         return ResponseEntity.ok(album);
     }
 
     @GetMapping("/api/album")
     public ResponseEntity<List<AlbumInfoResponse>> getAlbums(
-        @JwtPayload AuthTokenPayload loginUser,
+//        @JwtPayload AuthTokenPayload loginUser,
         @RequestParam(defaultValue = "10") int limit,
         @RequestBody Optional<AlbumSearchCursor> cursor
     ) {
-        var albums = albumService.cursorBasedFetch(loginUser.getId(), limit, cursor);
+        var userId = 1L;
+//        var albums = albumService.cursorBasedFetch(loginUser.getId(), limit, cursor);
+        var albums = albumService.cursorBasedFetch(userId, limit, cursor);
         return ResponseEntity.ok(albums);
     }
 }

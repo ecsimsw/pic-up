@@ -20,10 +20,10 @@ public class StorageReadController {
 
     @GetMapping("/api/storage/{resourceKey}")
     public ResponseEntity<byte[]> read(
-        @JwtPayload AuthTokenPayload loginUser,
+//        @JwtPayload AuthTokenPayload loginUser,
         @PathVariable String resourceKey
     ) {
-        final ImageResponse imageResponse = storageService.read(loginUser.getId(), resourceKey);
+        var imageResponse = storageService.read(1L, resourceKey);
         return ResponseEntity.ok()
             .contentType(imageResponse.getMediaType())
             .body(imageResponse.getImageFile());

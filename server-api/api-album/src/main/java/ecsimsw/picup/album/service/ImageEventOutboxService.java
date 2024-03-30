@@ -27,7 +27,6 @@ public class ImageEventOutboxService {
     public void schedulePublishOut() {
         while (true) {
             schedulerLock.afterDelay(FILE_DELETION_LOCK_TIME, FILE_DELETION_SCHED_DELAY, () -> {
-                LOGGER.info("outbox scheduled");
                 var toBeDeleted = fileService.findAllDeletionOutBox();
                 for (var eventSegment : Iterables.partition(toBeDeleted, FILE_DELETION_SEGMENT_UNIT)) {
                     fileService.publishDeletionEvents(eventSegment);

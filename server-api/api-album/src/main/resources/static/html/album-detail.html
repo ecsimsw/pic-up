@@ -1,0 +1,108 @@
+<!DOCTYPE HTML>
+<!--
+	Multiverse by HTML5 UP
+	html5up.net | @ajlkn
+	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+-->
+<html>
+<head>
+    <title>Multiverse by HTML5 UP</title>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no"/>
+    <link rel="stylesheet" href="../assets/main.css"/>
+    <link rel="stylesheet" href="../css/album-detail.css"/>
+    <noscript>
+        <link rel="stylesheet" href="../assets/noscript.css"/>
+    </noscript>
+    <script src="http://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src = "https://code.jquery.com/ui/1.10.4/jquery-ui.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/lightgallery.js@1.4.0/dist/js/lightgallery.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/lightgallery.js@1.4.0/dist/css/lightgallery.min.css" rel="stylesheet">
+    <script src="http://hayageek.github.io/jQuery-Upload-File/4.0.11/jquery.uploadfile.min.js"></script>
+    <link href="http://hayageek.github.io/jQuery-Upload-File/4.0.11/uploadfile.css" rel="stylesheet">
+</head>
+<body class="is-preload">
+
+<!-- Wrapper -->
+<div id="wrapper">
+
+    <!-- Header -->
+    <header id="header">
+        <h1>
+            <div id="logo"><strong>ecsimsw</strong></div>
+        </h1>
+        <nav>
+            <ul>
+                <li><button href="#footer" id="create-btn" class="icon solid fa-info-circle">Upload</button></li>
+                <li><button id="edit-btn" class="icon solid fa-info-circle">Edit</button></li>
+            </ul>
+        </nav>
+    </header>
+
+    <div id="album-title">
+        <div style="
+                height: 50px;
+                font-size: 24px;
+                color: white;
+                background: #1f2224;
+                font-weight: bold;
+        ">
+            Magna feugiat lorem
+        </div>
+    </div>
+
+    <div id="fileuploader">Upload</div>
+
+    <!-- album-main -->
+    <div id="album-main">
+        <article id="album-1" class="thumb">
+            <a class="album-main-image" id="album-1-thumb" style="background-image: url('images/thumbs/01.jpg'); cursor: pointer; outline: 0px;"></a>
+        </article>
+    </div>
+
+    <!-- Footer -->
+    <footer id="footer" class="panel">
+        <div class="inner split" style="text-align: center; justify-content: center;">
+            <div>
+                <section>
+                    <h2>Upload</h2>
+                    <form method="post" action="#">
+                        <div class="fields">
+                            <div class="field">
+                                <input type="text" name="name" id="name" placeholder="Name" style="color: white"/>
+                            </div>
+                            <div class="field">
+                                <input type="text" name="representative" placeholder="Representative image"
+                                       id="imageBoxText" readonly style="color: white">
+                                <label for="imageBoxButton" id="imageBox">File</label>
+                                <input type="file" id="imageBoxButton">
+                            </div>
+                            <div class="field">
+                                <textarea name="text" id="description" cols="20" rows="2" wrap="hard" maxlength="100"
+                                          placeholder="Description" style="resize: none; color: white"></textarea>
+                            </div>
+                        </div>
+                        <ul class="actions">
+                            <li style="width: 100%;">
+                                <input type="submit" value="Send" class="primary" style="width: 100%;"/>
+                            </li>
+                        </ul>
+                    </form>
+                </section>
+            </div>
+        </div>
+    </footer>
+
+</div>
+
+
+<!-- Scripts -->
+<script src="../assets/browser.min.js"></script>
+<script src="../assets/breakpoints.min.js"></script>
+<script src="../assets/main.js"></script>
+<script src="../js/album-detail.js"></script>
+</body>
+</html>
+
+
+

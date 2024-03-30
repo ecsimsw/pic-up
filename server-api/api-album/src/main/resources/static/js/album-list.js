@@ -1,15 +1,12 @@
-let logoBtn = document.getElementById("logo");
-let descriptionArea = document.getElementById("description");
-let imageBoxButton = document.getElementById("imageBoxButton");
+const serverUrl = "http://localhost:8084"
+const storageUrl = "http://localhost:8083"
 
-let albumId = 1
-
-logoBtn.addEventListener("click", function () {
+document.getElementById("logo").addEventListener("click", function () {
     albumId++;
     createAlbumArticle(albumId);
 }, false);
 
-descriptionArea.addEventListener('input', function () {
+document.getElementById("description").addEventListener('input', function () {
     let content = this.value;
     let maxRows = 2;
     const rows = content.split('\n').length;
@@ -18,7 +15,7 @@ descriptionArea.addEventListener('input', function () {
     }
 }, false);
 
-imageBoxButton.addEventListener('change', function () {
+document.getElementById("imageBoxButton").addEventListener('change', function () {
     let content = this.value
     let filePath = content.split('\\');
     let fileName = filePath[filePath.length - 1];
@@ -28,7 +25,20 @@ imageBoxButton.addEventListener('change', function () {
     imageBoxName.readOnly = true;
 }, false);
 
-function createAlbumArticle(albumId) {
+
+let albumId = 1
+document.addEventListener("DOMContentLoaded", function () {
+    initCreationPanel()
+
+    fetchData(serverUrl+"/api/album", function (albums) {
+        albums.forEach(async (album) => {
+            createAlbumArticle(album.id, album.name, album.thumbnailImage)
+        });
+    })
+});
+
+
+function createAlbumArticle(albumId, titleText, thumbImageResource) {
     const article = document.createElement('article');
     article.id = `album-${albumId}`
     article.className = 'thumb'
@@ -36,19 +46,18 @@ function createAlbumArticle(albumId) {
     const thumbImage = document.createElement('a');
     thumbImage.className = "album-main-image"
     thumbImage.id = `album-${albumId}-thumb`
-    const thumbImageResource = "images/thumbs/"+"0"+albumId+".jpg";
-    thumbImage.style.backgroundImage = "url('"+thumbImageResource+"')"
+
+    thumbImage.style.backgroundImage = "url('"+storageUrl+"/api/storage/"+ thumbImageResource +"')"
     thumbImage.style.cursor = "pointer"
     thumbImage.style.outline = "0px"
+    article.appendChild(thumbImage);
 
     const title = document.createElement('h2');
-    title.innerText = "Magna feugiat lorem"
-
-    article.appendChild(thumbImage);
+    title.innerText = titleText
     article.appendChild(title);
 
     article.addEventListener('click', function () {
-        location.href = "http://localhost:63342/pic-up/picup.api-storage.main/static/html5up-multiverse/album-detail.html?_ijt=uuv8dlk235uicbb13idt1slo73&_ij_reload=RELOAD_ON_SAVE"
+        location.href = "../html/album-detail.html"
     })
 
     const albumMain = document.getElementById("album-main");
@@ -75,13 +84,11 @@ function initCreationPanel() {
         })
 
         $this.on('---toggle', function () {
-
             if ($this.hasClass('active')) {
                 $this.triggerHandler('---hide');
             } else {
                 $this.triggerHandler('---show');
             }
-
         })
 
         $this.on('---show', function () {
@@ -122,6 +129,16 @@ function initCreationPanel() {
     });
 }
 
-initCreationPanel()
-
-
+function fetchData(url, callback) {
+    fetch(url)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(data => callback(data))
+        .catch(error => {
+            console.log(error)
+        });
+}
