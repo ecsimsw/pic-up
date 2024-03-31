@@ -1,9 +1,9 @@
 #create-btn {
-  display: none;
+  display: block;
 }
 
-#create-btn .edit-mode {
-  display: block;
+#cancel-btn {
+  display: none;
 }
 
 #edit-btn {

@@ -49,21 +49,31 @@ function addGalleryImage(src, thumb) {
 function initEditButton() {
     const uploadBtn = document.getElementById("create-btn");
     const editBtn = document.getElementById("edit-btn");
+    const cancelBtn = document.getElementById("cancel-btn");
+    cancelBtn.addEventListener('click', function() {
+        editMode = false
+        deletedImageIds = []
+        window.location.reload();
+    })
     editBtn.addEventListener('click', function () {
-        if (!editMode) {
+        editMode = !editMode
+        if (editMode) {
             editBtn.style.backgroundColor = "#47c5ab"
             editBtn.style.color = "#ffffff"
-            uploadBtn.style.display = 'block'
+            editBtn.innerText  = '완료'
+            uploadBtn.style.display = 'none'
+            cancelBtn.style.display = 'block'
             enableAlbumSortable();
             for (let thumb of document.getElementsByClassName('thumb')) {
                 thumb.className = 'thumb edit_blur_1'
                 removeImageViewer(thumb.id)
                 addEditViewer(thumb.id)
             }
-            editMode = true
         } else {
             editBtn.style.backgroundColor = ""
-            uploadBtn.style.display = 'none'
+            uploadBtn.style.display = 'block'
+            cancelBtn.style.display = 'none'
+            editBtn.innerText = '편집'
             disableAlbumSortable();
             if(deletedImageIds.length != 0) {
                 callDeleteApi(function () {
