@@ -1089,7 +1089,7 @@ table.alt tfoot {
     transition: transform 0.5s ease;
     -webkit-overflow-scrolling: touch;
     background: rgba(36, 38, 41, 0.975);
-    bottom: 4em;
+    bottom: 0em;
     left: 0;
     max-height: calc(80vh - 4em);
     overflow-y: auto;
