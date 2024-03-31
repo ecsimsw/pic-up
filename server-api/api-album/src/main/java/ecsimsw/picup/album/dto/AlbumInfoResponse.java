@@ -1,22 +1,23 @@
 package ecsimsw.picup.album.dto;
 
-import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import ecsimsw.picup.album.domain.Album;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.stream.Collectors;
-
-public record AlbumInfoResponse(
-    Long id,
-    String name,
-    String thumbnailImage,
-    LocalDateTime createdAt
-){
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
+public class AlbumInfoResponse {
+    private Long id;
+    private String name;
+    private String thumbnailImage;
+    private LocalDateTime createdAt;
 
     public static AlbumInfoResponse of(Album album) {
         return new AlbumInfoResponse(

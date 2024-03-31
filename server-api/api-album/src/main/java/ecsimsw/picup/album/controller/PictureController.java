@@ -24,35 +24,35 @@ public class PictureController {
 
     @PostMapping("/api/album/{albumId}/picture")
     public ResponseEntity<PictureInfoResponse> createPicture(
-        @JwtPayload AuthTokenPayload loginUser,
+//        @JwtPayload AuthTokenPayload loginUser,
         @PathVariable Long albumId,
         @RequestPart MultipartFile imageFile,
         @RequestPart PictureInfoRequest pictureInfo
     ) {
-        var userId = loginUser.getId();
+        var userId = 1L;
         var imageResource = fileService.upload(userId, imageFile);
-        var response = pictureService.create(loginUser.getId(), albumId, pictureInfo, imageResource);
+        var response = pictureService.create(1L, albumId, pictureInfo, imageResource);
         return ResponseEntity.ok(response);
     }
 
     @GetMapping("/api/album/{albumId}/picture")
     public ResponseEntity<List<PictureInfoResponse>> getPictures(
-        @JwtPayload AuthTokenPayload loginUser,
+//        @JwtPayload AuthTokenPayload loginUser,
         @PathVariable Long albumId,
         @RequestParam(defaultValue = "10") int limit,
         @RequestBody Optional<PictureSearchCursor> cursor
     ) {
-        var response = pictureService.cursorBasedFetch(loginUser.getId(), albumId, limit, cursor);
+        var response = pictureService.cursorBasedFetch(1L, albumId, limit, cursor);
         return ResponseEntity.ok(response);
     }
 
     @DeleteMapping("/api/album/{albumId}/picture/{pictureId}")
     public ResponseEntity<Void> deletePicture(
-        @JwtPayload AuthTokenPayload loginUser,
+//        @JwtPayload AuthTokenPayload loginUser,
         @PathVariable Long albumId,
         @PathVariable Long pictureId
     ) {
-        pictureService.delete(loginUser.getId(), albumId, pictureId);
+        pictureService.delete(1L, albumId, pictureId);
         return ResponseEntity.ok().build();
     }
 }

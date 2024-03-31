@@ -1,4 +1,5 @@
 let serverUrl = 'http://localhost:8084'
+let storageUrl = 'http://localhost:8083'
 
 let logoBtn = document.getElementById("logo");
 let editBtn = document.getElementById("edit-btn");
@@ -25,7 +26,6 @@ $(document).ready(function()
 
 document.addEventListener("DOMContentLoaded", function () {
     initCreationPanel()
-    initCreationPanel()
     initFileUploadButton();
     initPictureDescriptionArea();
     initEditButton();
@@ -35,6 +35,13 @@ document.addEventListener("DOMContentLoaded", function () {
     fetchData(serverUrl+"/api/album/"+albumId, function (album) {
         const albumTitle = document.getElementById("album-title");
         albumTitle.innerText = "hi"
+    })
+
+    fetchData(serverUrl+"/api/album/" + albumId + "/picture", function (pictures) {
+        pictures.forEach(async (picture) => {
+            createNewPicture(albumId, picture.id, picture.resourceKey)
+        });
+        initLightGallery(pictures)
     })
 });
 
@@ -105,19 +112,17 @@ function disableAlbumSortable() {
     $('#album-main').sortable("destroy")
 }
 
-function createNewPicture(albumId) {
+function createNewPicture(albumId, pictureId, thumbImageResource) {
     const article = document.createElement('article');
-    article.id = `album-${albumId}`
+    article.id = `album-${albumId}-picture-${pictureId}`
     article.className = 'thumb'
 
     const thumbImage = document.createElement('a');
     thumbImage.className = "album-main-image"
-    thumbImage.id = `album-${albumId}-thumb`
-    const thumbImageResource = "images/thumbs/"+"0"+albumId+".jpg";
-    thumbImage.style.backgroundImage = "url('"+thumbImageResource+"')"
+    thumbImage.id = `album-${albumId}-picture-thumb`
+    thumbImage.style.backgroundImage = "url('"+storageUrl+"/api/storage/"+ thumbImageResource +"')"
     thumbImage.style.cursor = "pointer"
     thumbImage.style.outline = "0px"
-
     article.appendChild(thumbImage);
 
     const albumMain = document.getElementById("album-main");
