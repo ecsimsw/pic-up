@@ -1,6 +1,8 @@
 const serverUrl = "http://localhost:8084"
 const storageUrl = "http://localhost:8083"
 
+var createMode = false
+
 document.addEventListener("DOMContentLoaded", function () {
     initCreationPanel()
 
@@ -56,7 +58,9 @@ function createAlbumArticle(albumId, titleText, thumbImageResource) {
     article.appendChild(title);
 
     article.addEventListener('click', function () {
-        location.href = "../html/album-detail.html?albumId="+albumId
+        if(!createMode) {
+            location.href = "../html/album-detail.html?albumId="+albumId
+        }
     })
 
     const albumMain = document.getElementById("album-main");
@@ -91,6 +95,8 @@ function initCreationPanel() {
         })
 
         $this.on('---show', function () {
+            createMode = true
+            document.getElementById("create-btn").textContent = "취소"
 
             // Hide other content.
             if ($body.hasClass('content-active')) {
@@ -107,6 +113,8 @@ function initCreationPanel() {
         })
 
         $this.on('---hide', function () {
+            createMode = false
+            document.getElementById("create-btn").textContent = "생성"
 
             // Deactivate content, toggles.
             $this.removeClass('active');

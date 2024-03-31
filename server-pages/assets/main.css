@@ -214,13 +214,13 @@ a {
     -ms-transition: color 0.2s ease-in-out, border-bottom-color 0.2s ease-in-out;
     transition: color 0.2s ease-in-out, border-bottom-color 0.2s ease-in-out;
     border-bottom: dotted 1px;
-    color: #34a58e;
+    color: white;
     text-decoration: none;
 }
 
 a:hover {
     border-bottom-color: transparent;
-    color: #34a58e !important;
+    color: white !important;
 }
 
 strong, b {
@@ -400,8 +400,8 @@ input[type="reset"]:hover,
 input[type="button"]:hover,
 button:hover,
 .button:hover {
-    box-shadow: inset 0 0 0 2px #34a58e;
-    color: #34a58e !important;
+    box-shadow: inset 0 0 0 2px white;
+    color: white !important;
 }
 
 input[type="submit"]:hover:active,
@@ -409,8 +409,8 @@ input[type="reset"]:hover:active,
 input[type="button"]:hover:active,
 button:hover:active,
 .button:hover:active {
-    background-color: rgba(52, 165, 142, 0.15);
-    color: #34a58e !important;
+    box-shadow: inset 0 0 0 2px white;
+    color: white !important;
 }
 
 input[type="reset"].icon,
@@ -456,7 +456,7 @@ input[type="reset"].primary,
 input[type="button"].primary,
 button.primary,
 .button.primary {
-    background-color: #34a58e;
+    background-color: white;
     box-shadow: none;
 }
 
@@ -465,7 +465,7 @@ input[type="reset"].primary:hover,
 input[type="button"].primary:hover,
 button.primary:hover,
 .button.primary:hover {
-    background-color: #47c5ab;
+    background-color: white;
     color: #ffffff !important;
 }
 
@@ -474,7 +474,7 @@ input[type="reset"].primary:hover:active,
 input[type="button"].primary:hover:active,
 button.primary:hover:active,
 .button.primary:hover:active {
-    background-color: #287e6d;
+    background-color: white;
 }
 
 input[type="submit"].disabled, input[type="submit"]:disabled,
@@ -568,31 +568,10 @@ form > .fields > .field.quarter {
 
 }
 
-#imageBox {
-    height: 100%;
-    float: right;
-    width: 20%;
-    background-color: #999999;
-    cursor: pointer;
-}
-
-#imageBoxButton {
-    position: absolute;
-    width: 0;
-    height: 0;
-    padding: 0;
-    overflow: hidden;
-    border: 0;
-}
-
-#imageBoxText {
-    float: left; width: 80%
-}
-
 label {
     color: #ffffff;
     display: block;
-    font-size: 0.9em;
+    font-size: 0.8em;
     font-weight: 300;
     margin: 0 0 1em 0;
 }
@@ -639,7 +618,7 @@ input[type="search"]:focus,
 input[type="url"]:focus,
 select:focus,
 textarea:focus {
-    box-shadow: inset 0 0 0 2px #34a58e;
+    box-shadow: inset 0 0 0 2px white;
 }
 
 select {
@@ -737,15 +716,15 @@ input[type="radio"] + label:before {
 
 input[type="checkbox"]:checked + label:before,
 input[type="radio"]:checked + label:before {
-    background: #34a58e;
-    border-color: #34a58e;
+    background: white;
+    border-color: white;
     color: #ffffff;
     content: '\f00c';
 }
 
 input[type="checkbox"]:focus + label:before,
 input[type="radio"]:focus + label:before {
-    box-shadow: 0 0 0 2px #34a58e;
+    box-shadow: 0 0 0 2px white;
 }
 
 input[type="radio"] + label:before {
@@ -1137,7 +1116,7 @@ table.alt tfoot {
     background-repeat: no-repeat;
     background-size: 3em;
     cursor: pointer;
-    height: 5em;
+    /*height: 5em;*/
     opacity: 0.25;
     position: absolute;
     right: 0;
@@ -1581,7 +1560,7 @@ body.is-preload #header {
         -ms-transform: translateY(0);
         transform: translateY(0);
         bottom: auto;
-        height: 4em;
+        /*height: 4em;*/
         padding: 0 1em;
         top: 0;
     }
