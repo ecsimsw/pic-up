@@ -11,6 +11,32 @@ document.addEventListener("DOMContentLoaded", function () {
     })
 });
 
+document.getElementById("imageBoxButton").addEventListener('change', function () {
+    let content = this.value
+    let filePath = content.split('\\');
+    let fileName = filePath[filePath.length - 1];
+    let imageBoxName = document.getElementById("imageBoxText");
+    imageBoxName.readOnly = false;
+    imageBoxName.value = fileName;
+    imageBoxName.readOnly = true;
+}, false);
+
+document.getElementById('createAlbumForm').onsubmit = function (event) {
+    const form = document.getElementById('createAlbumForm')
+    const url = serverUrl + "/api/album";
+    const formData = new FormData(form);
+    const fetchOptions = {
+        method: form.method,
+        body: formData,
+    };
+    event.preventDefault();
+    fetch(url, fetchOptions).then(response => {
+        window.location.reload();
+    }).catch(error => {
+        console.log(error)
+    });
+}
+
 function createAlbumArticle(albumId, titleText, thumbImageResource) {
     const article = document.createElement('article');
     article.id = `album-${albumId}`

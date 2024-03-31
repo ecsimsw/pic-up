@@ -1,6 +1,5 @@
 package ecsimsw.picup.album.controller;
 
-import ecsimsw.picup.album.dto.PictureInfoRequest;
 import ecsimsw.picup.album.dto.PictureInfoResponse;
 import ecsimsw.picup.album.dto.PictureSearchCursor;
 import ecsimsw.picup.album.dto.PicturesDeleteRequest;

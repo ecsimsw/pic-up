@@ -1,8 +1,5 @@
 package ecsimsw.picup.album.controller;
 
-import ecsimsw.auth.anotations.JwtPayload;
-import ecsimsw.picup.album.dto.AlbumInfoRequest;
-import ecsimsw.picup.auth.AuthTokenPayload;
 import ecsimsw.picup.album.dto.AlbumInfoResponse;
 import ecsimsw.picup.album.dto.AlbumSearchCursor;
 import ecsimsw.picup.album.service.AlbumService;
@@ -25,26 +22,11 @@ public class AlbumController {
     @PostMapping("/api/album")
     public ResponseEntity<AlbumInfoResponse> createAlbum(
 //        @JwtPayload AuthTokenPayload loginUser,
-        @RequestPart MultipartFile thumbnail,
-        @RequestPart AlbumInfoRequest albumInfo
+        @RequestParam MultipartFile thumbnail, @RequestParam String name
     ) {
         var userId = 1L;
         var thumbnailResource = fileService.upload(userId, thumbnail);
-        var album = albumService.create(userId, albumInfo, thumbnailResource);
-        return ResponseEntity.ok(album);
-    }
-
-    @PutMapping("/api/album/{albumId}")
-    public ResponseEntity<AlbumInfoResponse> updateAlbum(
-//        @JwtPayload AuthTokenPayload loginUser,
-        @PathVariable Long albumId,
-        @RequestPart AlbumInfoRequest albumInfo,
-        @RequestPart MultipartFile thumbnail
-    ) {
-        var userId = 1L;
-//        var userId = loginUser.getId();
-        var newImage = fileService.upload(userId, thumbnail);
-        var album = albumService.update(userId, albumId, albumInfo, newImage);
+        var album = albumService.create(userId, name, thumbnailResource);
         return ResponseEntity.ok(album);
     }
 

@@ -1,19 +1,13 @@
 package ecsimsw.picup.album.service;
 
 import ecsimsw.picup.album.domain.*;
-import ecsimsw.picup.album.dto.AlbumInfoRequest;
 import ecsimsw.picup.album.dto.AlbumSearchCursor;
 import ecsimsw.picup.album.dto.FileResourceInfo;
 import ecsimsw.picup.album.exception.AlbumException;
 import ecsimsw.picup.album.dto.AlbumInfoResponse;
 import ecsimsw.picup.usage.service.StorageUsageService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.Cacheable;
-import org.springframework.cache.annotation.Caching;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.orm.ObjectOptimisticLockingFailureException;
-import org.springframework.retry.annotation.Recover;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -32,9 +26,9 @@ public class AlbumService {
     private final StorageUsageService storageUsageService;
 
     @Transactional
-    public AlbumInfoResponse create(Long userId, AlbumInfoRequest albumInfo, FileResourceInfo resource) {
+    public AlbumInfoResponse create(Long userId, String name, FileResourceInfo resource) {
         try {
-            var album = new Album(userId, albumInfo.name(), resource.resourceKey(), resource.size());
+            var album = new Album(userId, name, resource.resourceKey(), resource.size());
             storageUsageService.addUsage(userId, resource.size());
             albumRepository.save(album);
             return AlbumInfoResponse.of(album);
@@ -46,26 +40,8 @@ public class AlbumService {
 
     @Transactional(readOnly = true)
     public AlbumInfoResponse read(Long userId, Long albumId) {
-        final Album album = getUserAlbum(userId, albumId);
+        var album = getUserAlbum(userId, albumId);
         return AlbumInfoResponse.of(album);
-    }
-
-    @Transactional
-    public AlbumInfoResponse update(Long userId, Long albumId, AlbumInfoRequest albumInfo, FileResourceInfo newImage) {
-        try {
-            var album = getUserAlbum(userId, albumId);
-            album.updateName(albumInfo.name());
-
-            fileService.createDeleteEvent(new FileDeletionEvent(userId, album.getThumbnailResourceKey()));
-            storageUsageService.subtractUsage(userId, album.getThumbnailFileSize());
-
-            album.updateThumbnail(newImage.resourceKey());
-            storageUsageService.addUsage(userId, newImage.size());
-            return AlbumInfoResponse.of(album);
-        } catch (Exception e) {
-            fileService.delete(newImage.resourceKey());
-            throw e;
-        }
     }
 
     @Transactional

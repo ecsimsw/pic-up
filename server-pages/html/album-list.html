@@ -42,20 +42,18 @@
             <div>
                 <section>
                     <h2>Create new album</h2>
-                    <form method="post" action="#">
+                    <form id="createAlbumForm"
+                          method="post"
+                          enctype="multipart/form-data"
+                    >
                         <div class="fields">
                             <div class="field">
                                 <input type="text" name="name" id="name" placeholder="Name" style="color: white"/>
                             </div>
                             <div class="field">
-                                <input type="text" name="representative" placeholder="Representative image"
-                                       id="imageBoxText" readonly style="color: white">
+                                <input type="text" placeholder="Representative image" id="imageBoxText" readonly style="color: white">
                                 <label for="imageBoxButton" id="imageBox">File</label>
-                                <input type="file" id="imageBoxButton">
-                            </div>
-                            <div class="field">
-                                <textarea name="text" id="description" cols="20" rows="2" wrap="hard" maxlength="100"
-                                          placeholder="Description" style="resize: none; color: white"></textarea>
+                                <input type="file" name="thumbnail" id="imageBoxButton">
                             </div>
                         </div>
                         <ul class="actions">
