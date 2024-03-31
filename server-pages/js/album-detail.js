@@ -1,20 +1,14 @@
-let serverUrl = 'http://localhost:8084'
-let storageUrl = 'http://localhost:8083'
+const serverUrl = 'http://localhost:8084'
+const storageUrl = 'http://localhost:8083'
 
-let logoBtn = document.getElementById("logo");
-let editBtn = document.getElementById("edit-btn");
-let uploadBtn = document.getElementById("create-btn");
-let descriptionArea = document.getElementById("description");
-let fileUploadButton = document.getElementById("imageBoxButton");
+const logoBtn = document.getElementById("logo");
+const editBtn = document.getElementById("edit-btn");
+const uploadBtn = document.getElementById("create-btn");
+const descriptionArea = document.getElementById("description");
+const fileUploadButton = document.getElementById("imageBoxButton");
 
 let editMode = false
-let albumId = 1
-
-logoBtn.addEventListener("click", function () {
-    albumId++;
-    createNewPicture(albumId);
-    addImageViewer(`album-${albumId}`);
-}, false);
+const galleryImages = []
 
 $(document).ready(function()
 {
@@ -25,7 +19,7 @@ $(document).ready(function()
 });
 
 document.addEventListener("DOMContentLoaded", function () {
-    initCreationPanel()
+    initUploadPanel()
     initFileUploadButton();
     initPictureDescriptionArea();
     initEditButton();
@@ -34,16 +28,32 @@ document.addEventListener("DOMContentLoaded", function () {
     const albumId = urlParams.get('albumId');
     fetchData(serverUrl+"/api/album/"+albumId, function (album) {
         const albumTitle = document.getElementById("album-title");
-        albumTitle.innerText = "hi"
+        albumTitle.innerText = album.name
     })
 
     fetchData(serverUrl+"/api/album/" + albumId + "/picture", function (pictures) {
+        var orderNumber = 1
         pictures.forEach(async (picture) => {
             createNewPicture(albumId, picture.id, picture.resourceKey)
+            addGalleryImage(
+                storageUrl+"/api/storage/"+ picture.resourceKey,
+                storageUrl+"/api/storage/"+ picture.resourceKey,
+                ""
+            )
+            addImageViewer(`album-${albumId}-picture-${picture.id}`, orderNumber);
+            orderNumber++
         });
-        initLightGallery(pictures)
+        // initLightGallery(pictures)
     })
 });
+
+function addGalleryImage(src, thumb, subHtml) {
+    galleryImages.unshift({
+        "src": src,
+        'thumb': thumb,
+        'subHtml': ''
+    })
+}
 
 function initEditButton() {
     editBtn.addEventListener('click', function () {
@@ -129,9 +139,9 @@ function createNewPicture(albumId, pictureId, thumbImageResource) {
     albumMain.insertBefore(article, albumMain.firstChild);
 }
 
-function addImageViewer(albumArticleId) {
+function addImageViewer(albumArticleId, orderNumber) {
     const articleElement = document.getElementById(albumArticleId);
-    articleElement.addEventListener('click', initLightGallery(articleElement));
+    articleElement.addEventListener('click', initLightGallery(articleElement, orderNumber));
 
     articleElement.addEventListener('onBeforeOpen', function(event){
         document.getElementById('header').style.display = 'none'
@@ -159,28 +169,18 @@ function removeEditViewer(albumArticleId) {
     articleElement.replaceWith(articleElement.cloneNode(true));
 }
 
-function initLightGallery(articleElement) {
+function initLightGallery(articleElement, orderNumber) {
     return function () {
         lightGallery(articleElement, {
             dynamic: true,
-            dynamicEl: [{
-                "src": 'images/fulls/07.jpg',
-                'thumb': 'images/thumbs/01.jpg',
-                'subHtml': '<p>Classic view from Rigwood Jetty on Coniston Water an old archive shot similar to an old post but a little later on.</p>'
-            }, {
-                'src': 'images/fulls/08.jpg',
-                'thumb': 'images/thumbs/01.jpg',
-                'subHtml': "<p>A beautiful Sunrise this morning taken En-route to Keswick not one as planned but I'm extremely happy I was passing the right place at the right time....</p>"
-            }, {
-                'src': 'images/fulls/09.jpg',
-                'thumb': 'images/thumbs/01.jpg',
-                'subHtml': "<p>Beautiful morning</p>"
-            }]
+            index: galleryImages.length - orderNumber,
+            dynamicEl: galleryImages
         })
+        window.lgData[articleElement.getAttribute('lg-uid')].slide(1);
     };
 }
 
-function initCreationPanel() {
+function initUploadPanel() {
     const $body = $('body');
     let $panels = $('.panel');
 
