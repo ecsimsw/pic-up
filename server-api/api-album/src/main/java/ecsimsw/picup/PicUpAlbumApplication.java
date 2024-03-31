@@ -1,13 +1,8 @@
 package ecsimsw.picup;
 
-import ecsimsw.picup.album.domain.Album;
 import ecsimsw.picup.album.domain.AlbumRepository;
 import ecsimsw.picup.album.service.ImageEventOutboxService;
-import ecsimsw.picup.member.domain.Member;
 import ecsimsw.picup.member.domain.MemberRepository;
-import ecsimsw.picup.member.domain.Password;
-import ecsimsw.picup.member.domain.Password_;
-import ecsimsw.picup.member.dto.SignInRequest;
 import ecsimsw.picup.member.dto.SignUpRequest;
 import ecsimsw.picup.member.service.MemberService;
 import lombok.RequiredArgsConstructor;
@@ -58,7 +53,9 @@ class CorsConfig implements WebMvcConfigurer {
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
+            .allowedOrigins("http://localhost:63342")
             .allowedMethods("*")
-            .allowedOrigins("http://localhost:63342");
+            .allowedHeaders("*")
+            .maxAge(3600);
     }
 }

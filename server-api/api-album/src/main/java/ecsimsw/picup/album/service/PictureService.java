@@ -1,28 +1,27 @@
 package ecsimsw.picup.album.service;
 
+import static ecsimsw.picup.album.domain.PictureRepository.PictureSearchSpecs.createdLater;
+import static ecsimsw.picup.album.domain.PictureRepository.PictureSearchSpecs.equalsCreatedTime;
+import static ecsimsw.picup.album.domain.PictureRepository.PictureSearchSpecs.greaterId;
+import static ecsimsw.picup.album.domain.PictureRepository.PictureSearchSpecs.isAlbum;
+import static ecsimsw.picup.album.domain.PictureRepository.PictureSearchSpecs.sortByCreatedAtAsc;
+import static ecsimsw.picup.album.domain.PictureRepository.PictureSearchSpecs.where;
+
 import ecsimsw.picup.album.domain.AlbumRepository;
 import ecsimsw.picup.album.domain.FileDeletionEvent;
 import ecsimsw.picup.album.domain.Picture;
 import ecsimsw.picup.album.domain.PictureRepository;
 import ecsimsw.picup.album.dto.FileResourceInfo;
-import ecsimsw.picup.album.dto.PictureInfoRequest;
 import ecsimsw.picup.album.dto.PictureInfoResponse;
 import ecsimsw.picup.album.dto.PictureSearchCursor;
 import ecsimsw.picup.album.exception.AlbumException;
 import ecsimsw.picup.usage.service.StorageUsageService;
-import lombok.RequiredArgsConstructor;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.Cacheable;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.orm.ObjectOptimisticLockingFailureException;
-import org.springframework.retry.annotation.Recover;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import java.util.List;
 import java.util.Optional;
-
-import static ecsimsw.picup.album.domain.PictureRepository.PictureSearchSpecs.*;
+import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @RequiredArgsConstructor
 @Service
@@ -33,9 +32,8 @@ public class PictureService {
     private final FileService fileService;
     private final StorageUsageService storageUsageService;
 
-    @CacheEvict(key = "{#userId, #albumId}", value = "userPictureFirstPageDefaultSize")
     @Transactional
-    public PictureInfoResponse create(Long userId, Long albumId, PictureInfoRequest pictureInfo, FileResourceInfo uploadFile) {
+    public PictureInfoResponse create(Long userId, Long albumId, FileResourceInfo uploadFile) {
         try {
             checkUserAuthInAlbum(userId, albumId);
             var picture = new Picture(albumId, uploadFile.resourceKey(), uploadFile.size());
@@ -48,17 +46,9 @@ public class PictureService {
         }
     }
 
-    @Recover
-    public PictureInfoResponse recoverCreate(ObjectOptimisticLockingFailureException e, Long userId, Long albumId, PictureInfoRequest pictureInfo, FileResourceInfo uploadFile) {
-        fileService.delete(uploadFile.resourceKey());
-        throw new AlbumException("Too many requests at the same time");
-    }
-
-    @CacheEvict(key = "{#userId, #albumId}", value = "userPictureFirstPageDefaultSize")
     @Transactional
     public void delete(Long userId, Long albumId, Long pictureId) {
         checkUserAuthInAlbum(userId, albumId);
-
         var picture = pictureRepository.findById(pictureId).orElseThrow(() -> new AlbumException("Invalid picture"));
         picture.validateAlbum(albumId);
         fileService.createDeleteEvent(new FileDeletionEvent(userId, picture.getResourceKey()));
@@ -66,7 +56,13 @@ public class PictureService {
         pictureRepository.delete(picture);
     }
 
-    @Cacheable(key = "{#userId, #albumId}", value = "userPictureFirstPageDefaultSize", condition = "{ #cursor.isEmpty() && #limit == 10 }")
+    @Transactional
+    public void deleteAll(Long userId, Long albumId, List<Long> pictureIds) {
+        pictureIds.forEach(
+            pictureId -> delete(userId, albumId, pictureId)
+        );
+    }
+
     @Transactional(readOnly = true)
     public List<PictureInfoResponse> cursorBasedFetch(Long userId, Long albumId, int limit, Optional<PictureSearchCursor> cursor) {
         checkUserAuthInAlbum(userId, albumId);
@@ -90,7 +86,7 @@ public class PictureService {
     }
 
     private void checkUserAuthInAlbum(Long userId, Long albumId) {
-        var album = albumRepository.findById(albumId).orElseThrow(() -> new AlbumException("Invalid album"));
+        var album = albumRepository.findById(albumId).orElseThrow(() -> new AlbumException("Invalid album : " + albumId));
         album.authorize(userId);
     }
 }

@@ -1,15 +1,12 @@
 package ecsimsw.picup.usage.domain;
 
 import ecsimsw.picup.album.exception.AlbumException;
+import javax.persistence.Entity;
+import javax.persistence.Id;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Version;
-import java.sql.Timestamp;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -22,9 +19,6 @@ public class StorageUsage {
     private Long userId;
     private long limitAsByte;
     private long usageAsByte;
-
-    @Version
-    private Timestamp versionStamp;
 
     public StorageUsage(Long userId, long limitAsByte) {
         this.userId = userId;

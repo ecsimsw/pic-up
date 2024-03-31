@@ -9,8 +9,6 @@ import org.springframework.stereotype.Service;
 @Service
 public class ImageEventOutboxService {
 
-    private final static Logger LOGGER = LoggerFactory.getLogger(ImageEventOutboxService.class);
-
     private final static int FILE_DELETION_SEGMENT_UNIT = 5;
     private final static int FILE_DELETION_SCHED_DELAY = 3000;
     private final static int FILE_DELETION_LOCK_TIME = 30000;

@@ -7,14 +7,15 @@ const uploadBtn = document.getElementById("create-btn");
 const descriptionArea = document.getElementById("description");
 const fileUploadButton = document.getElementById("imageBoxButton");
 
+let albumId = 0;
 let editMode = false
+let deletedImageIds = []
 const galleryImages = []
 
-$(document).ready(function()
-{
+$(document).ready(function () {
     $("#fileuploader").uploadFile({
-        url:serverUrl + "/upload",
-        fileName:"myfile"
+        url: serverUrl + "/upload",
+        fileName: "myfile"
     });
 });
 
@@ -25,19 +26,19 @@ document.addEventListener("DOMContentLoaded", function () {
     initEditButton();
 
     const urlParams = new URLSearchParams(window.location.search);
-    const albumId = urlParams.get('albumId');
-    fetchData(serverUrl+"/api/album/"+albumId, function (album) {
+    albumId = urlParams.get('albumId');
+    fetchData(serverUrl + "/api/album/" + albumId, function (album) {
         const albumTitle = document.getElementById("album-title");
         albumTitle.innerText = album.name
     })
 
-    fetchData(serverUrl+"/api/album/" + albumId + "/picture", function (pictures) {
+    fetchData(serverUrl + "/api/album/" + albumId + "/picture", function (pictures) {
         var orderNumber = 1
         pictures.forEach(async (picture) => {
             createNewPicture(albumId, picture.id, picture.resourceKey)
             addGalleryImage(
-                storageUrl+"/api/storage/"+ picture.resourceKey,
-                storageUrl+"/api/storage/"+ picture.resourceKey,
+                storageUrl + "/api/storage/" + picture.resourceKey,
+                storageUrl + "/api/storage/" + picture.resourceKey,
                 ""
             )
             addImageViewer(`album-${albumId}-picture-${picture.id}`, orderNumber);
@@ -57,8 +58,7 @@ function addGalleryImage(src, thumb, subHtml) {
 
 function initEditButton() {
     editBtn.addEventListener('click', function () {
-        editMode = !editMode
-        if (editMode) {
+        if (!editMode) {
             editBtn.style.backgroundColor = "#47c5ab"
             editBtn.style.color = "#ffffff"
             uploadBtn.style.display = 'block'
@@ -68,16 +68,16 @@ function initEditButton() {
                 removeImageViewer(thumb.id)
                 addEditViewer(thumb.id)
             }
-        }
-        if(!editMode){
+            editMode = true
+        } else {
             editBtn.style.backgroundColor = ""
             uploadBtn.style.display = 'none'
             disableAlbumSortable();
-            for (let thumb of document.getElementsByClassName('thumb')) {
-                thumb.className = 'thumb'
-                removeEditViewer(thumb.id)
-                addImageViewer(thumb.id);
-            }
+            callDeleteApi(function () {
+                editMode = false
+                deletedImageIds = []
+                window.location.reload();
+            })
         }
     })
 }
@@ -129,8 +129,8 @@ function createNewPicture(albumId, pictureId, thumbImageResource) {
 
     const thumbImage = document.createElement('a');
     thumbImage.className = "album-main-image"
-    thumbImage.id = `album-${albumId}-picture-thumb`
-    thumbImage.style.backgroundImage = "url('"+storageUrl+"/api/storage/"+ thumbImageResource +"')"
+    thumbImage.id = `album-${albumId}-picture-${pictureId}`
+    thumbImage.style.backgroundImage = "url('" + storageUrl + "/api/storage/" + thumbImageResource + "')"
     thumbImage.style.cursor = "pointer"
     thumbImage.style.outline = "0px"
     article.appendChild(thumbImage);
@@ -143,11 +143,11 @@ function addImageViewer(albumArticleId, orderNumber) {
     const articleElement = document.getElementById(albumArticleId);
     articleElement.addEventListener('click', initLightGallery(articleElement, orderNumber));
 
-    articleElement.addEventListener('onBeforeOpen', function(event){
+    articleElement.addEventListener('onBeforeOpen', function (event) {
         document.getElementById('header').style.display = 'none'
     }, false);
 
-    articleElement.addEventListener('onBeforeClose', function(event){
+    articleElement.addEventListener('onBeforeClose', function (event) {
         document.getElementById('header').style.display = 'block'
     }, false);
 }
@@ -160,7 +160,10 @@ function removeImageViewer(albumArticleId) {
 function addEditViewer(albumArticleId) {
     const articleElement = document.getElementById(albumArticleId);
     articleElement.addEventListener('click', function () {
-
+        var charSets = (articleElement.id).split('-')
+        var pictureId = charSets[charSets.length - 1]
+        deletedImageIds.push(pictureId)
+        articleElement.style.display = 'none'
     })
 }
 
@@ -238,15 +241,29 @@ function initUploadPanel() {
 
         // Toggles.
         $toggles.removeAttr('href')
-        .css('cursor', 'pointer')
-        .on('click', function (event) {
-            event.preventDefault();
-            event.stopPropagation();
-            $this.trigger('---toggle');
-        });
+            .css('cursor', 'pointer')
+            .on('click', function (event) {
+                event.preventDefault();
+                event.stopPropagation();
+                $this.trigger('---toggle');
+            });
     });
 }
 
+function callDeleteApi(callback) {
+    fetch(serverUrl + "/api/album/" + albumId + "/picture", {
+        method: "DELETE",
+        headers: {
+            "Content-Type": "application/json",
+            "Access-control-allow-methods": "*"
+        },
+        body: JSON.stringify({pictureIds: deletedImageIds})
+    }).then(
+        response => callback()
+    ).catch(err => {
+        console.log(err)
+    })
+}
 
 function fetchData(url, callback) {
     fetch(url)

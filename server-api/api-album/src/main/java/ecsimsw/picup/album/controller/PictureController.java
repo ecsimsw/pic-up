@@ -1,19 +1,24 @@
 package ecsimsw.picup.album.controller;
 
-import ecsimsw.auth.anotations.JwtPayload;
 import ecsimsw.picup.album.dto.PictureInfoRequest;
 import ecsimsw.picup.album.dto.PictureInfoResponse;
 import ecsimsw.picup.album.dto.PictureSearchCursor;
+import ecsimsw.picup.album.dto.PicturesDeleteRequest;
 import ecsimsw.picup.album.service.FileService;
 import ecsimsw.picup.album.service.PictureService;
-import ecsimsw.picup.auth.AuthTokenPayload;
-import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
-
 import java.util.List;
 import java.util.Optional;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 @RequiredArgsConstructor
 @RestController
@@ -26,12 +31,11 @@ public class PictureController {
     public ResponseEntity<PictureInfoResponse> createPicture(
 //        @JwtPayload AuthTokenPayload loginUser,
         @PathVariable Long albumId,
-        @RequestPart MultipartFile imageFile,
-        @RequestPart PictureInfoRequest pictureInfo
+        @RequestPart MultipartFile imageFile
     ) {
         var userId = 1L;
         var imageResource = fileService.upload(userId, imageFile);
-        var response = pictureService.create(1L, albumId, pictureInfo, imageResource);
+        var response = pictureService.create(1L, albumId, imageResource);
         return ResponseEntity.ok(response);
     }
 
@@ -54,5 +58,15 @@ public class PictureController {
     ) {
         pictureService.delete(1L, albumId, pictureId);
         return ResponseEntity.ok().build();
+    }
+
+    @DeleteMapping("/api/album/{albumId}/picture")
+    public ResponseEntity<String> deletePictures(
+//        @JwtPayload AuthTokenPayload loginUser,
+        @PathVariable Long albumId,
+        @RequestBody(required = false) PicturesDeleteRequest pictures
+    ) {
+        pictureService.deleteAll(1L, albumId, pictures.getPictureIds());
+        return ResponseEntity.ok("hi");
     }
 }

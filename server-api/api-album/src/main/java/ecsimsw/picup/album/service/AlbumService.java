@@ -31,7 +31,6 @@ public class AlbumService {
     private final FileService fileService;
     private final StorageUsageService storageUsageService;
 
-    @CacheEvict(value = "userAlbumFirstPageDefaultSize", key = "#userId")
     @Transactional
     public AlbumInfoResponse create(Long userId, AlbumInfoRequest albumInfo, FileResourceInfo resource) {
         try {
@@ -45,23 +44,12 @@ public class AlbumService {
         }
     }
 
-    @Recover
-    public AlbumInfoResponse recoverCreate(ObjectOptimisticLockingFailureException e, Long userId, AlbumInfoRequest albumInfo, FileResourceInfo resource) {
-        fileService.delete(resource.resourceKey());
-        throw new AlbumException("Too many requests at the same time");
-    }
-
-    @Cacheable(value = "album", key = "#albumId")
     @Transactional(readOnly = true)
     public AlbumInfoResponse read(Long userId, Long albumId) {
         final Album album = getUserAlbum(userId, albumId);
         return AlbumInfoResponse.of(album);
     }
 
-    @Caching(evict = {
-        @CacheEvict(value = "album", key = "#albumId"),
-        @CacheEvict(value = "userAlbumFirstPageDefaultSize", key = "#userId")
-    })
     @Transactional
     public AlbumInfoResponse update(Long userId, Long albumId, AlbumInfoRequest albumInfo, FileResourceInfo newImage) {
         try {
@@ -80,17 +68,6 @@ public class AlbumService {
         }
     }
 
-    @Recover
-    public AlbumInfoResponse recoverUpdate(ObjectOptimisticLockingFailureException e, Long userId, Long albumId, AlbumInfoRequest albumInfo, FileResourceInfo newImage) {
-        fileService.delete(newImage.resourceKey());
-        throw new AlbumException("Too many requests at the same time");
-    }
-
-    @Caching(evict = {
-        @CacheEvict(value = "album", key = "#albumId"),
-        @CacheEvict(value = "userAlbumFirstPageDefaultSize", key = "#userId"),
-        @CacheEvict(value = "userPictureFirstPageDefaultSize", key = "{#userId, #albumId}")
-    })
     @Transactional
     public void delete(Long userId, Long albumId) {
         var album = getUserAlbum(userId, albumId);
@@ -104,7 +81,6 @@ public class AlbumService {
         pictureRepository.deleteAll(pictures);
     }
 
-    @Cacheable(key = "#userId", value = "userAlbumFirstPageDefaultSize", condition = "{ #cursor.isEmpty() && #limit == 10 }")
     @Transactional(readOnly = true)
     public List<AlbumInfoResponse> cursorBasedFetch(Long userId, int limit, Optional<AlbumSearchCursor> cursor) {
         if (cursor.isEmpty()) {
