@@ -6,8 +6,10 @@ let editMode = false
 let isUploaded = false
 
 let cursorId = 0
-let cursorCreatedAt = 0
+let cursorCreatedAt = '2000-10-31T01:30:00'
+let cursorEnd = false
 
+let galleryOrderNumber = 1
 let deletedImageIds = []
 const galleryImages = []
 
@@ -25,18 +27,17 @@ document.addEventListener("DOMContentLoaded", function () {
     })
 
     fetchData(serverUrl + "/api/album/" + albumId + "/picture", function (pictures) {
-        var orderNumber = 1
         pictures.forEach(picture => {
             createNewPicture(albumId, picture.id, picture.resourceKey)
             addGalleryImage(
                 storageUrl + "/api/storage/" + picture.resourceKey,
                 storageUrl + "/api/storage/" + picture.resourceKey
             )
-            addImageViewer(`album-${albumId}-picture-${picture.id}`, orderNumber);
-            orderNumber++
+            addImageViewer(`album-${albumId}-picture-${picture.id}`, galleryOrderNumber);
+            galleryOrderNumber++
         });
-        cursorId = pictures[pictures.lenght-1].id
-        cursorCreatedAt = pictures[pictures.lenght-1].createdAt
+        cursorId = pictures[pictures.length-1].id
+        cursorCreatedAt = pictures[pictures.length-1].createdAt
     })
 
     var uploadDropzone = new Dropzone(document.querySelector('#myDropzone'), {
@@ -71,32 +72,32 @@ document.getElementById("popupBackground").addEventListener("click", function(e)
 });
 
 function handleScroll() {
-    // 현재 스크롤 위치
+    if(cursorEnd) {
+        return;
+    }
+
     var scrollPosition = window.scrollY;
-    // 뷰포트의 높이
     var viewportHeight = window.innerHeight;
-    // 문서의 전체 높이
     var documentHeight = document.body.clientHeight;
-
-    // 페이지 중간 정도 내렸을 때
-    if (scrollPosition > viewportHeight / 2 && scrollPosition < documentHeight - viewportHeight / 2) {
-        console.log("hi")
-
-        fetchData(serverUrl + "/api/album/" + albumId + "/picture", function (pictures) {
-            var orderNumber = 1
+    var isAlmostEndOfPage = scrollPosition > (documentHeight - viewportHeight) * 0.9;
+    if (isAlmostEndOfPage) {
+        fetchData(serverUrl + "/api/album/" + albumId + "/picture" + "?cursorId=" + cursorId + "&cursorCreatedAt=" + cursorCreatedAt, function (pictures) {
             pictures.forEach(picture => {
                 createNewPicture(albumId, picture.id, picture.resourceKey)
                 addGalleryImage(
                     storageUrl + "/api/storage/" + picture.resourceKey,
                     storageUrl + "/api/storage/" + picture.resourceKey
                 )
-                addImageViewer(`album-${albumId}-picture-${picture.id}`, orderNumber);
-                orderNumber++
+                addImageViewer(`album-${albumId}-picture-${picture.id}`, galleryOrderNumber);
+                galleryOrderNumber++
             });
+            if (pictures.length == 0) {
+                cursorEnd = true;
+            } else {
+                cursorId = pictures[pictures.length - 1].id
+                cursorCreatedAt = pictures[pictures.length - 1].createdAt
+            }
         })
-
-
-    } else {
     }
 }
 

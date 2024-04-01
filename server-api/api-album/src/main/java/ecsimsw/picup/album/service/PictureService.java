@@ -1,12 +1,8 @@
 package ecsimsw.picup.album.service;
 
-import static ecsimsw.picup.album.domain.PictureRepository.PictureSearchSpecs.createdLater;
-import static ecsimsw.picup.album.domain.PictureRepository.PictureSearchSpecs.equalsCreatedTime;
-import static ecsimsw.picup.album.domain.PictureRepository.PictureSearchSpecs.greaterId;
 import static ecsimsw.picup.album.domain.PictureRepository.PictureSearchSpecs.isAlbum;
-import static ecsimsw.picup.album.domain.PictureRepository.PictureSearchSpecs.sortByCreatedAtAsc;
+import static ecsimsw.picup.album.domain.PictureRepository.PictureSearchSpecs.orderThan;
 import static ecsimsw.picup.album.domain.PictureRepository.PictureSearchSpecs.sortByCreatedAtDesc;
-import static ecsimsw.picup.album.domain.PictureRepository.PictureSearchSpecs.where;
 
 import ecsimsw.picup.album.domain.AlbumRepository;
 import ecsimsw.picup.album.domain.FileDeletionEvent;
@@ -76,9 +72,9 @@ public class PictureService {
         }
         var prev = cursor.orElseThrow();
         var pictures = pictureRepository.fetch(
-            where(isAlbum(albumId))
-                .and(createdLater(prev.createdAt()).or(equalsCreatedTime(prev.createdAt()).and(greaterId(prev.id())))
-            ), limit, sortByCreatedAtDesc
+            isAlbum(albumId).and(orderThan(prev.createdAt(), prev.id())),
+            limit,
+            sortByCreatedAtDesc
         );
         return PictureInfoResponse.listOf(pictures);
     }

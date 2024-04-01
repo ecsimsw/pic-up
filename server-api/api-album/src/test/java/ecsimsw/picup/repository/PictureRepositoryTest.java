@@ -7,8 +7,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.TestPropertySource;
 
 import java.time.LocalDateTime;
@@ -48,10 +46,10 @@ public class PictureRepositoryTest {
         var prev = new PictureSearchCursor(picture2);
         var limit = 2;
         final List<Picture> pictures = pictureRepository.fetch(
-            where(isAlbum(1L))
-                .and(createdLater(prev.createdAt()).or(
+            isAlbum(1L)
+                .and(createdBefore(prev.createdAt()).or(
                     equalsCreatedTime(prev.createdAt()).and(greaterId(prev.id())))),
-            limit, sortByCreatedAtAsc
+            limit, sortByCreatedAtDesc
         );
         assertThat(pictures)
             .usingRecursiveComparison()
@@ -85,9 +83,9 @@ public class PictureRepositoryTest {
         var prev = new PictureSearchCursor(picture2);
         var limit = 5;
         final List<Picture> pictures = pictureRepository.fetch(
-            where(isAlbum(1L)
-                .and(createdLater(prev.createdAt()).or(equalsCreatedTime(prev.createdAt()).and(greaterId(prev.id()))))
-            ), limit, sortByCreatedAtAsc
+            isAlbum(1L)
+                .and(createdBefore(prev.createdAt()).or(equalsCreatedTime(prev.createdAt()).and(greaterId(prev.id()))))
+            , limit, sortByCreatedAtDesc
         );
         assertThat(pictures)
             .usingRecursiveComparison()

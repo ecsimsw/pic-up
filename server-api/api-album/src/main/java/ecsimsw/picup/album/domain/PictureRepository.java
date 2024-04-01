@@ -21,27 +21,22 @@ public interface PictureRepository extends JpaRepository<Picture, Long>, JpaSpec
 
     interface PictureSearchSpecs {
 
-        Sort sortByCreatedAtAsc = Sort.by(Sort.Direction.ASC, Picture_.CREATED_AT, Picture_.ID);
         Sort sortByCreatedAtDesc = Sort.by(Direction.DESC, Picture_.CREATED_AT, Picture_.ID);
 
-        static Specification<Picture> where() {
-            return Specification.where(null);
+        static Specification<Picture> greaterId(long id) {
+            return (root, query, criteriaBuilder) -> criteriaBuilder.greaterThan(root.get(Picture_.ID), id);
         }
 
-        static Specification<Picture> where(Specification<Picture> spec) {
-            return Specification.<Picture>where(null).and(spec);
+        static Specification<Picture> orderThan(LocalDateTime cursor, Long cursorId) {
+            return createdBefore(cursor).or(equalsCreatedTime(cursor).and(greaterId(cursorId)));
         }
 
-        static Specification<Picture> createdLater(LocalDateTime createdAt) {
-            return (root, query, criteriaBuilder) -> criteriaBuilder.greaterThan(root.get(Picture_.CREATED_AT), createdAt);
+        static Specification<Picture> createdBefore(LocalDateTime createdAt) {
+            return (root, query, criteriaBuilder) -> criteriaBuilder.lessThan(root.get(Picture_.CREATED_AT), createdAt);
         }
 
         static Specification<Picture> equalsCreatedTime(LocalDateTime createdAt) {
             return (root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get(Picture_.CREATED_AT), createdAt);
-        }
-
-        static Specification<Picture> greaterId(long id) {
-            return (root, query, criteriaBuilder) -> criteriaBuilder.greaterThan(root.get(Picture_.ID), id);
         }
 
         static Specification<Picture> isAlbum(long albumId) {

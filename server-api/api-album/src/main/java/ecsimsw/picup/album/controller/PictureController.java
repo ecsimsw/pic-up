@@ -5,12 +5,16 @@ import ecsimsw.picup.album.dto.PictureSearchCursor;
 import ecsimsw.picup.album.dto.PicturesDeleteRequest;
 import ecsimsw.picup.album.service.FileService;
 import ecsimsw.picup.album.service.PictureService;
+import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -43,9 +47,18 @@ public class PictureController {
 //        @JwtPayload AuthTokenPayload loginUser,
         @PathVariable Long albumId,
         @RequestParam(defaultValue = "10") int limit,
-        @RequestParam Optional<PictureSearchCursor> cursor
+        @RequestParam Optional<Long> cursorId,
+        @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+        Optional<LocalDateTime> cursorCreatedAt  //2000-10-31T01:30:00
     ) {
-        var response = pictureService.cursorBasedFetch(1L, albumId, limit, cursor);
+        System.out.println(cursorId);
+        System.out.println(cursorCreatedAt);
+
+        if(cursorId.isEmpty() || cursorCreatedAt.isEmpty()) {
+            var response = pictureService.cursorBasedFetch(1L, albumId, limit, Optional.empty());
+            return ResponseEntity.ok(response);
+        }
+        var response = pictureService.cursorBasedFetch(1L, albumId, limit, Optional.of(new PictureSearchCursor(cursorId.get(), cursorCreatedAt.get())));
         return ResponseEntity.ok(response);
     }
 
