@@ -5,6 +5,7 @@ import static ecsimsw.picup.album.domain.PictureRepository.PictureSearchSpecs.eq
 import static ecsimsw.picup.album.domain.PictureRepository.PictureSearchSpecs.greaterId;
 import static ecsimsw.picup.album.domain.PictureRepository.PictureSearchSpecs.isAlbum;
 import static ecsimsw.picup.album.domain.PictureRepository.PictureSearchSpecs.sortByCreatedAtAsc;
+import static ecsimsw.picup.album.domain.PictureRepository.PictureSearchSpecs.sortByCreatedAtDesc;
 import static ecsimsw.picup.album.domain.PictureRepository.PictureSearchSpecs.where;
 
 import ecsimsw.picup.album.domain.AlbumRepository;
@@ -69,18 +70,15 @@ public class PictureService {
         if (cursor.isEmpty()) {
             var pictures = pictureRepository.findAllByAlbumId(
                 albumId,
-                PageRequest.of(0, limit, sortByCreatedAtAsc)
+                PageRequest.of(0, limit, sortByCreatedAtDesc)
             );
             return PictureInfoResponse.listOf(pictures.getContent());
         }
         var prev = cursor.orElseThrow();
         var pictures = pictureRepository.fetch(
-            where(isAlbum(albumId)).and(
-                createdLater(prev.createdAt())
-                    .or(equalsCreatedTime(prev.createdAt()).and(greaterId(prev.id())))
-            ),
-            limit,
-            PictureRepository.PictureSearchSpecs.sortByCreatedAtAsc
+            where(isAlbum(albumId))
+                .and(createdLater(prev.createdAt()).or(equalsCreatedTime(prev.createdAt()).and(greaterId(prev.id())))
+            ), limit, sortByCreatedAtDesc
         );
         return PictureInfoResponse.listOf(pictures);
     }

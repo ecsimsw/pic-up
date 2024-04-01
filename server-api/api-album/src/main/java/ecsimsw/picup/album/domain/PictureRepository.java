@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
@@ -21,6 +22,7 @@ public interface PictureRepository extends JpaRepository<Picture, Long>, JpaSpec
     interface PictureSearchSpecs {
 
         Sort sortByCreatedAtAsc = Sort.by(Sort.Direction.ASC, Picture_.CREATED_AT, Picture_.ID);
+        Sort sortByCreatedAtDesc = Sort.by(Direction.DESC, Picture_.CREATED_AT, Picture_.ID);
 
         static Specification<Picture> where() {
             return Specification.where(null);

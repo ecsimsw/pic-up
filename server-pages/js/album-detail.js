@@ -3,9 +3,13 @@ const storageUrl = 'http://localhost:8083'
 
 let albumId = 0;
 let editMode = false
+let isUploaded = false
+
+let cursorId = 0
+let cursorCreatedAt = 0
+
 let deletedImageIds = []
 const galleryImages = []
-let isUploaded = false
 
 Dropzone.autoDiscover = false;
 
@@ -22,7 +26,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     fetchData(serverUrl + "/api/album/" + albumId + "/picture", function (pictures) {
         var orderNumber = 1
-        pictures.forEach(async (picture) => {
+        pictures.forEach(picture => {
             createNewPicture(albumId, picture.id, picture.resourceKey)
             addGalleryImage(
                 storageUrl + "/api/storage/" + picture.resourceKey,
@@ -31,9 +35,11 @@ document.addEventListener("DOMContentLoaded", function () {
             addImageViewer(`album-${albumId}-picture-${picture.id}`, orderNumber);
             orderNumber++
         });
+        cursorId = pictures[pictures.lenght-1].id
+        cursorCreatedAt = pictures[pictures.lenght-1].createdAt
     })
 
-    var newDropzone = new Dropzone(document.querySelector('#myDropzone'), {
+    var uploadDropzone = new Dropzone(document.querySelector('#myDropzone'), {
         dictDefaultMessage: 'Drop Here!',
         url: serverUrl + "/api/album/" + albumId + "/picture",
         acceptedFiles: ".jpeg,.jpg,.png,.gif",
@@ -46,6 +52,8 @@ document.addEventListener("DOMContentLoaded", function () {
             });
         }
     });
+
+    window.addEventListener('scroll', handleScroll);
 });
 
 document.getElementById("create-btn").addEventListener("click", function() {
@@ -62,8 +70,38 @@ document.getElementById("popupBackground").addEventListener("click", function(e)
     }
 });
 
+function handleScroll() {
+    // 현재 스크롤 위치
+    var scrollPosition = window.scrollY;
+    // 뷰포트의 높이
+    var viewportHeight = window.innerHeight;
+    // 문서의 전체 높이
+    var documentHeight = document.body.clientHeight;
+
+    // 페이지 중간 정도 내렸을 때
+    if (scrollPosition > viewportHeight / 2 && scrollPosition < documentHeight - viewportHeight / 2) {
+        console.log("hi")
+
+        fetchData(serverUrl + "/api/album/" + albumId + "/picture", function (pictures) {
+            var orderNumber = 1
+            pictures.forEach(picture => {
+                createNewPicture(albumId, picture.id, picture.resourceKey)
+                addGalleryImage(
+                    storageUrl + "/api/storage/" + picture.resourceKey,
+                    storageUrl + "/api/storage/" + picture.resourceKey
+                )
+                addImageViewer(`album-${albumId}-picture-${picture.id}`, orderNumber);
+                orderNumber++
+            });
+        })
+
+
+    } else {
+    }
+}
+
 function addGalleryImage(src, thumb) {
-    galleryImages.unshift({
+    galleryImages.push({
         "src": src,
         'thumb': thumb,
         'subHtml': ''
@@ -144,7 +182,7 @@ function createNewPicture(albumId, pictureId, thumbImageResource) {
     article.appendChild(thumbImage);
 
     const albumMain = document.getElementById("album-main");
-    albumMain.insertBefore(article, albumMain.firstChild);
+    albumMain.append(article);
 }
 
 function addImageViewer(albumArticleId, orderNumber) {
@@ -184,7 +222,7 @@ function initLightGallery(articleElement, orderNumber) {
     return function () {
         lightGallery(articleElement, {
             dynamic: true,
-            index: galleryImages.length - orderNumber,
+            index: orderNumber-1,
             dynamicEl: galleryImages
         })
         window.lgData[articleElement.getAttribute('lg-uid')].slide(1);

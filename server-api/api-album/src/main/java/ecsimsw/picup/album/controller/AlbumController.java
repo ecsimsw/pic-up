@@ -55,7 +55,7 @@ public class AlbumController {
     public ResponseEntity<List<AlbumInfoResponse>> getAlbums(
 //        @JwtPayload AuthTokenPayload loginUser,
         @RequestParam(defaultValue = "10") int limit,
-        @RequestBody Optional<AlbumSearchCursor> cursor
+        @RequestParam Optional<AlbumSearchCursor> cursor
     ) {
         var userId = 1L;
 //        var albums = albumService.cursorBasedFetch(loginUser.getId(), limit, cursor);

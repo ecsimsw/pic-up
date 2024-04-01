@@ -43,7 +43,7 @@ public class PictureController {
 //        @JwtPayload AuthTokenPayload loginUser,
         @PathVariable Long albumId,
         @RequestParam(defaultValue = "10") int limit,
-        @RequestBody Optional<PictureSearchCursor> cursor
+        @RequestParam Optional<PictureSearchCursor> cursor
     ) {
         var response = pictureService.cursorBasedFetch(1L, albumId, limit, cursor);
         return ResponseEntity.ok(response);
