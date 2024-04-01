@@ -40,8 +40,8 @@ public interface AlbumRepository extends JpaRepository<Album, Long>, JpaSpecific
             return (root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get(Album_.CREATED_AT), localDateTime);
         }
 
-        static Specification<Album> greaterId(Long id) {
-            return (root, query, criteriaBuilder) -> criteriaBuilder.greaterThan(root.get(Album_.ID), id);
+        static Specification<Album> lessId(Long id) {
+            return (root, query, criteriaBuilder) -> criteriaBuilder.lessThan(root.get(Album_.ID), id);
         }
     }
 }

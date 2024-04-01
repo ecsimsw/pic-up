@@ -8,6 +8,7 @@ let isUploaded = false
 let cursorId = 0
 let cursorCreatedAt = '2000-10-31T01:30:00'
 let cursorEnd = false
+const inPagePictures = new Set()
 
 let galleryOrderNumber = 1
 let deletedImageIds = []
@@ -28,6 +29,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
     fetchData(serverUrl + "/api/album/" + albumId + "/picture", function (pictures) {
         pictures.forEach(picture => {
+            if(inPagePictures.has(picture.id)) {
+                return
+            }
             createNewPicture(albumId, picture.id, picture.resourceKey)
             addGalleryImage(
                 storageUrl + "/api/storage/" + picture.resourceKey,
@@ -35,6 +39,7 @@ document.addEventListener("DOMContentLoaded", function () {
             )
             addImageViewer(`album-${albumId}-picture-${picture.id}`, galleryOrderNumber);
             galleryOrderNumber++
+            inPagePictures.add(picture.id)
         });
         cursorId = pictures[pictures.length-1].id
         cursorCreatedAt = pictures[pictures.length-1].createdAt
@@ -83,6 +88,9 @@ function handleScroll() {
     if (isAlmostEndOfPage) {
         fetchData(serverUrl + "/api/album/" + albumId + "/picture" + "?cursorId=" + cursorId + "&cursorCreatedAt=" + cursorCreatedAt, function (pictures) {
             pictures.forEach(picture => {
+                if(inPagePictures.has(picture.id)) {
+                    return
+                }
                 createNewPicture(albumId, picture.id, picture.resourceKey)
                 addGalleryImage(
                     storageUrl + "/api/storage/" + picture.resourceKey,
@@ -90,6 +98,7 @@ function handleScroll() {
                 )
                 addImageViewer(`album-${albumId}-picture-${picture.id}`, galleryOrderNumber);
                 galleryOrderNumber++
+                inPagePictures.add(picture.id)
             });
             if (pictures.length == 0) {
                 cursorEnd = true;

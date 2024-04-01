@@ -66,7 +66,7 @@ public class AlbumService {
         var prev = cursor.orElseThrow();
         var albums = albumRepository.fetch(
             where(isUser(userId))
-                .and(createdLater(prev.createdAt()).or(equalsCreatedTime(prev.createdAt()).and(greaterId(prev.id())))),
+                .and(createdLater(prev.createdAt()).or(equalsCreatedTime(prev.createdAt()).and(lessId(prev.id())))),
             limit,
             ascByCreatedAt
         );
