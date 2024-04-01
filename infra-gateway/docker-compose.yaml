@@ -1,0 +1,12 @@
+version: '3'
+services:
+  gateway-picup:
+    image: nginx
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf
+      - ./route-picup.conf:/etc/nginx/conf.d/route-picup.conf
+      - ./static/:/static
+    ports:
+      - "8082:8082"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
