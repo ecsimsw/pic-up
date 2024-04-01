@@ -1,5 +1,5 @@
-const serverUrl = '/'
-const storageUrl = '/'
+const serverUrl = ''
+const storageUrl = ''
 
 let albumId = 0;
 let editMode = false

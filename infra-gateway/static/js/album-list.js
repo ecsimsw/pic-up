@@ -1,5 +1,5 @@
-const serverUrl = "/"
-const storageUrl = "/"
+const serverUrl = ""
+const storageUrl = ""
 
 var createMode = false
 
