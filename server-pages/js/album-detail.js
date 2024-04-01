@@ -36,6 +36,7 @@ document.addEventListener("DOMContentLoaded", function () {
     var newDropzone = new Dropzone(document.querySelector('#myDropzone'), {
         dictDefaultMessage: 'Drop Here!',
         url: serverUrl + "/api/album/" + albumId + "/picture",
+        acceptedFiles: ".jpeg,.jpg,.png,.gif",
         paramName: "file",
         maxFilesize: 300, // MB
         init: function () {
