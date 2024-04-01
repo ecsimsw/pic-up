@@ -1,5 +1,5 @@
-const serverUrl = "http://localhost:8084"
-const storageUrl = "http://localhost:8083"
+const serverUrl = "/"
+const storageUrl = "/"
 
 var createMode = false
 
