@@ -43,15 +43,15 @@ public class LocalFileStorage implements ImageStorage {
 
     @Override
     public ImageFile read(String resourceKey) throws FileNotFoundException {
-        final String storagePath = storagePath(resourceKey);
+        var storagePath = storagePath(resourceKey);
         try (
-            final InputStream inputStream = new FileInputStream(storagePath)
+            var inputStream = new FileInputStream(storagePath)
         ) {
-            final File file = new File(storagePath);
+            var file = new File(storagePath);
             if (!file.exists()) {
                 throw new FileNotFoundException("file not exists : " + resourceKey);
             }
-            final byte[] fileByte = new byte[(int) file.length()];
+            var fileByte = new byte[(int) file.length()];
             inputStream.read(fileByte);
             return ImageFile.of(resourceKey, fileByte);
         } catch (FileNotFoundException e) {
@@ -63,7 +63,7 @@ public class LocalFileStorage implements ImageStorage {
 
     @Override
     public void delete(String resourceKey) throws FileNotFoundException {
-        final File file = new File(storagePath(resourceKey));
+        var file = new File(storagePath(resourceKey));
         if (!file.exists()) {
             throw new FileNotFoundException("file not exists : " + resourceKey);
         }

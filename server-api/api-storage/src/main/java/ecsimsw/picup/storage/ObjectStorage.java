@@ -42,18 +42,17 @@ public class ObjectStorage implements ImageStorage {
             if (storageClient.doesObjectExist(bucketName, resourceKey)) {
                 throw new StorageException("resource already exists");
             }
-            final ObjectMetadata metadata = new ObjectMetadata();
+            var metadata = new ObjectMetadata();
             metadata.setContentType(imageFile.getFileType().name());
             metadata.setContentLength(imageFile.getSize());
 
-            final AccessControlList accessControlList = new AccessControlList();
+            var accessControlList = new AccessControlList();
             accessControlList.grantPermission(GroupGrantee.AuthenticatedUsers, Permission.Read);
 
-            final InputStream inputStream = new ByteArrayInputStream(imageFile.getFile());
-            final PutObjectRequest request = new PutObjectRequest(bucketName, resourceKey, inputStream, metadata);
+            var inputStream = new ByteArrayInputStream(imageFile.getFile());
+            var request = new PutObjectRequest(bucketName, resourceKey, inputStream, metadata);
             request.setAccessControlList(accessControlList);
             storageClient.putObject(request);
-
             return new AsyncResult<>(new StorageUploadResponse(resourceKey, KEY, imageFile.getSize())).completable();
         } catch (Exception e) {
             throw new StorageException("Object storage server exception while uploading", e);
@@ -66,8 +65,8 @@ public class ObjectStorage implements ImageStorage {
             if (!storageClient.doesObjectExist(bucketName, resourceKey)) {
                 throw new FileNotFoundException("file not exists : " + resourceKey);
             }
-            final S3Object object = storageClient.getObject(new GetObjectRequest(bucketName, resourceKey));
-            final byte[] file = IOUtils.toByteArray(object.getObjectContent());
+            var object = storageClient.getObject(new GetObjectRequest(bucketName, resourceKey));
+            var file = IOUtils.toByteArray(object.getObjectContent());
             return ImageFile.of(resourceKey, file);
         } catch (AmazonS3Exception e) {
             throw new InvalidResourceException("Fail to read : " + resourceKey + ", please check access key or resource key");
