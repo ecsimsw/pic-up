@@ -30,10 +30,10 @@ public class PictureController {
     public ResponseEntity<PictureInfoResponse> createPicture(
 //        @JwtPayload AuthTokenPayload loginUser,
         @PathVariable Long albumId,
-        @RequestPart MultipartFile imageFile
+        @RequestPart MultipartFile file
     ) {
         var userId = 1L;
-        var imageResource = fileService.upload(userId, imageFile);
+        var imageResource = fileService.upload(userId, file);
         var response = pictureService.create(1L, albumId, imageResource);
         return ResponseEntity.ok(response);
     }

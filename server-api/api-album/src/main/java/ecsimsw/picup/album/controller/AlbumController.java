@@ -22,7 +22,8 @@ public class AlbumController {
     @PostMapping("/api/album")
     public ResponseEntity<AlbumInfoResponse> createAlbum(
 //        @JwtPayload AuthTokenPayload loginUser,
-        @RequestParam MultipartFile thumbnail, @RequestParam String name
+        @RequestParam MultipartFile thumbnail,
+        @RequestParam String name
     ) {
         var userId = 1L;
         var thumbnailResource = fileService.upload(userId, thumbnail);

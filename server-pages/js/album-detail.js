@@ -5,6 +5,9 @@ let albumId = 0;
 let editMode = false
 let deletedImageIds = []
 const galleryImages = []
+let isUploaded = false
+
+Dropzone.autoDiscover = false;
 
 document.addEventListener("DOMContentLoaded", function () {
     initUploadPanel()
@@ -29,6 +32,19 @@ document.addEventListener("DOMContentLoaded", function () {
             orderNumber++
         });
     })
+
+    var newDropzone = new Dropzone(document.querySelector('#myDropzone'), {
+        dictDefaultMessage: 'Drop Here!',
+        url: serverUrl + "/api/album/" + albumId + "/picture",
+        paramName: "file",
+        maxFilesize: 300, // MB
+        init: function () {
+            this.on("success", function (file) {
+                console.log("upload success : " + file.name);
+                isUploaded = true
+            });
+        }
+    });
 });
 
 document.getElementById("create-btn").addEventListener("click", function() {
@@ -38,6 +54,10 @@ document.getElementById("create-btn").addEventListener("click", function() {
 document.getElementById("popupBackground").addEventListener("click", function(e) {
     if (e.target === this) {
         this.style.display = "none";
+        if(isUploaded) {
+            isUploaded = false
+            window.location.reload();
+        }
     }
 });
 
