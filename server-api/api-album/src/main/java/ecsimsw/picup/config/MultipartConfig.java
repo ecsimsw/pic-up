@@ -10,8 +10,8 @@ import javax.servlet.MultipartConfigElement;
 @Configuration
 public class MultipartConfig {
 
-    private static final int MAX_FILE_SIZE_MB = 200;
-    private static final int MAX_REQUEST_SIZE_MB = 200;
+    private static final int MAX_FILE_SIZE_MB = 20000;
+    private static final int MAX_REQUEST_SIZE_MB = 20000;
 
     @Bean
     public MultipartConfigElement multipartConfigElement() {

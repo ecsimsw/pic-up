@@ -45,7 +45,7 @@ document.addEventListener("DOMContentLoaded", function () {
         url: serverUrl + "/api/album/" + albumId + "/picture",
         acceptedFiles: ".jpeg,.jpg,.png,.gif",
         paramName: "file",
-        maxFilesize: 300, // MB
+        maxFilesize: 30000, // MB
         init: function () {
             this.on("success", function (file) {
                 console.log("upload success : " + file.name);
