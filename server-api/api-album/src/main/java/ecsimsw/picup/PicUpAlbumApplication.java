@@ -46,16 +46,16 @@ class Dummy {
     }
 
 }
-
-@Configuration
-class CorsConfig implements WebMvcConfigurer {
-
-    @Override
-    public void addCorsMappings(CorsRegistry registry) {
-        registry.addMapping("/**")
-            .allowedOrigins("http://www.ecsimsw.com:8082", "www.ecsimsw.com:8082")
-            .allowedMethods("*")
-            .allowedHeaders("*")
-            .maxAge(3600);
-    }
-}
+//
+//@Configuration
+//class CorsConfig implements WebMvcConfigurer {
+//
+//    @Override
+//    public void addCorsMappings(CorsRegistry registry) {
+//        registry.addMapping("/**")
+//            .allowedOrigins("http://www.ecsimsw.com:8082")
+//            .allowedMethods("*")
+//            .allowedHeaders("*")
+//            .maxAge(3600);
+//    }
+//}
