@@ -28,6 +28,65 @@
   filter: blur(0px);
 }
 
+/* drop zone*/
+body {
+  /*background: #EEE;*/
+  font-family: 'Roboto', sans-serif;
+}
+
+.dropzone {
+  width: 98%;
+  margin: 1%;
+  border: 2px dashed #3498db !important;
+  border-radius: 5px;
+  -webkit-transition: .2s;
+  transition: .2s;
+}
+
+.dropzone.dz-drag-hover {
+  border: 2px solid #3498db !important;
+}
+
+.dz-message.needsclick img {
+  width: 50px;
+  display: block;
+  margin: auto;
+  opacity: .6;
+  margin-bottom: 15px;
+}
+
+span.plus {
+  display: none;
+}
+
+.dropzone.dz-started .dz-message {
+  display: inline-block !important;
+  width: 120px;
+  float: right;
+  border: 1px solid rgba(238, 238, 238, 0.36);
+  border-radius: 30px;
+  height: 120px;
+  margin: 16px;
+  -webkit-transition: .2s;
+  transition: .2s;
+}
+
+.dropzone.dz-started .dz-message span.text {
+  display: none;
+}
+
+.dropzone.dz-started .dz-message span.plus {
+  display: block;
+  font-size: 70px;
+  color: #AAA;
+  line-height: 110px;
+}
+
+.popup-content {
+  height: 80%;
+  width: 80%;
+}
+
 /* TIP :: Vibration */
 /*.vibration {*/
 /*  animation: vibration 1s infinite;*/

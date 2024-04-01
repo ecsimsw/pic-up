@@ -6,13 +6,6 @@ let editMode = false
 let deletedImageIds = []
 const galleryImages = []
 
-$(document).ready(function () {
-    $("#fileuploader").uploadFile({
-        url: serverUrl + "/upload",
-        fileName: "myfile"
-    });
-});
-
 document.addEventListener("DOMContentLoaded", function () {
     initUploadPanel()
     initEditButton();
@@ -36,6 +29,17 @@ document.addEventListener("DOMContentLoaded", function () {
             orderNumber++
         });
     })
+});
+
+var myDropzone = new Dropzone(".container", { // Make the whole body a dropzone
+    url: "https://httpbin.org/post", // Set the url
+    thumbnailWidth: 80,
+    thumbnailHeight: 80,
+    parallelUploads: 20,
+    previewTemplate: previewTemplate,
+    autoQueue: false, // Make sure the files aren't queued until manually added
+    previewsContainer: "#previews", // Define the container to display the previews
+    clickable: ".fileinput-button" // Define the element that should be used as click trigger to select files.
 });
 
 function addGalleryImage(src, thumb) {

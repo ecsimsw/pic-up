@@ -51,30 +51,30 @@
     // Scroll back to top.
     $window.scrollTop(0);
 
-    // Global events.
-    $body
-        .on('click', function (event) {
-            if ($body.hasClass('content-active')) {
-                event.preventDefault();
-                event.stopPropagation();
-                $panels.trigger('---hide');
-            }
-        });
+    // // Global events.
+    // $body
+    //     .on('click', function (event) {
+    //         if ($body.hasClass('content-active')) {
+    //             event.preventDefault();
+    //             event.stopPropagation();
+    //             $panels.trigger('---hide');
+    //         }
+    //     });
 
-    $window
-        .on('keyup', function (event) {
-
-            if (event.keyCode === 27
-                && $body.hasClass('content-active')) {
-
-                event.preventDefault();
-                event.stopPropagation();
-
-                $panels.trigger('---hide');
-
-            }
-
-        });
+    // $window
+    //     .on('keyup', function (event) {
+    //
+    //         if (event.keyCode === 27
+    //             && $body.hasClass('content-active')) {
+    //
+    //             event.preventDefault();
+    //             event.stopPropagation();
+    //
+    //             $panels.trigger('---hide');
+    //
+    //         }
+    //
+    //     });
 
     // Header.
     let $header = $('#header');
