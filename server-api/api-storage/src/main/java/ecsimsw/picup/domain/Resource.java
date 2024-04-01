@@ -10,6 +10,8 @@ import java.util.List;
 
 import ecsimsw.picup.storage.ImageStorage;
 import ecsimsw.picup.storage.StorageKey;
+import javax.persistence.Convert;
+import javax.persistence.Converter;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import lombok.AllArgsConstructor;
@@ -30,6 +32,7 @@ public class Resource {
 
     private Long userId;
 
+    @Convert(converter = StringListConverter.class)
     private List<StorageKey> storedStorages = new ArrayList<>();
 
     private LocalDateTime createRequested;
@@ -37,7 +40,7 @@ public class Resource {
     private LocalDateTime deleteRequested;
 
     public static Resource createRequested(Long userId, String tag, MultipartFile file) {
-        final String resourceKey = ResourceKeyStrategy.generate(tag, file);
+        var resourceKey = ResourceKeyStrategy.generate(tag, file);
         return new Resource(resourceKey, userId, new ArrayList<>(), LocalDateTime.now(), null);
     }
 
