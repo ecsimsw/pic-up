@@ -40,7 +40,7 @@ document.addEventListener("DOMContentLoaded", function () {
         cursorCreatedAt = pictures[pictures.length-1].createdAt
     })
 
-    var uploadDropzone = new Dropzone(document.querySelector('#myDropzone'), {
+    const uploadDropzone = new Dropzone(document.querySelector('#myDropzone'), {
         dictDefaultMessage: 'Drop Here!',
         url: serverUrl + "/api/album/" + albumId + "/picture",
         acceptedFiles: ".jpeg,.jpg,.png,.gif",

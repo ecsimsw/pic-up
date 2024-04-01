@@ -1,7 +1,7 @@
 const serverUrl = ""
 const storageUrl = ""
 
-var createMode = false
+let createMode = false;
 
 document.addEventListener("DOMContentLoaded", function () {
     initCreationPanel()
