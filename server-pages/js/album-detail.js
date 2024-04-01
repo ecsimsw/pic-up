@@ -31,15 +31,14 @@ document.addEventListener("DOMContentLoaded", function () {
     })
 });
 
-var myDropzone = new Dropzone(".container", { // Make the whole body a dropzone
-    url: "https://httpbin.org/post", // Set the url
-    thumbnailWidth: 80,
-    thumbnailHeight: 80,
-    parallelUploads: 20,
-    previewTemplate: previewTemplate,
-    autoQueue: false, // Make sure the files aren't queued until manually added
-    previewsContainer: "#previews", // Define the container to display the previews
-    clickable: ".fileinput-button" // Define the element that should be used as click trigger to select files.
+document.getElementById("create-btn").addEventListener("click", function() {
+    document.getElementById("popupBackground").style.display = "flex";
+});
+
+document.getElementById("popupBackground").addEventListener("click", function(e) {
+    if (e.target === this) {
+        this.style.display = "none";
+    }
 });
 
 function addGalleryImage(src, thumb) {
