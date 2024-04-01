@@ -65,11 +65,11 @@ subprojects {
     }
 
     jib {
-        from.image = "adoptopenjdk/openjdk11:jre-11.0.10_9-alpine"
+        from.image = "openjdk:17-jdk-alpine"
         to.image = "ghcr.io/ecsimsw/picup/${project.name}"
-        to.tags = ["latest"]
+        to.tags = ["stage"]
         container {
-            jvmFlags = ['-XX:NewRatio=2', '-XX:SurvivorRatio=8', '-XX:MaxRAMPercentage=25']
+            jvmFlags = ['-Dspring.profiles.active=stage', '-XX:NewRatio=2', '-XX:SurvivorRatio=8', '-XX:MaxRAMPercentage=25']
         }
     }
 }

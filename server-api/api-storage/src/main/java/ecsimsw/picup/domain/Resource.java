@@ -11,7 +11,6 @@ import java.util.List;
 import ecsimsw.picup.storage.ImageStorage;
 import ecsimsw.picup.storage.StorageKey;
 import javax.persistence.Convert;
-import javax.persistence.Converter;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import lombok.AllArgsConstructor;
@@ -32,7 +31,7 @@ public class Resource {
 
     private Long userId;
 
-    @Convert(converter = StringListConverter.class)
+    @Convert(converter = ListStorageKeyConverter.class)
     private List<StorageKey> storedStorages = new ArrayList<>();
 
     private LocalDateTime createRequested;

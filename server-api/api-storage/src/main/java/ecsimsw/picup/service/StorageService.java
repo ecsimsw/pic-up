@@ -63,6 +63,7 @@ public class StorageService {
                 LOGGER.info("offer message queue to delete dummy file : " + result.getResourceKey() + " in " + result.getStorageKey());
                 imageFileMessageQueue.offerDeleteByStorage(result.getResourceKey(), result.getStorageKey());
             }));
+            e.printStackTrace();
             throw new StorageException("exception while uploading");
         }
         return new ImageUploadResponse(resource.getResourceKey(), imageFile.getSize());
