@@ -6,7 +6,4 @@ public class InvalidResourceException extends IllegalArgumentException {
         super(s);
     }
 
-    public InvalidResourceException(String message, Throwable cause) {
-        super(message, cause);
-    }
 }

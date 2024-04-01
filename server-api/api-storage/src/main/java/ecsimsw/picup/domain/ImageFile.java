@@ -1,14 +1,11 @@
 package ecsimsw.picup.domain;
 
 import ecsimsw.picup.exception.InvalidResourceException;
-import ecsimsw.picup.exception.StorageException;
+import java.io.IOException;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.io.File;
-import java.io.IOException;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -25,11 +22,11 @@ public class ImageFile {
 
     public static ImageFile of(MultipartFile file) {
         try {
-            if(file == null) {
+            if (file == null) {
                 throw new InvalidResourceException("file must not be null");
             }
-            final ImageFileType imageFileType = ImageFileType.extensionOf(file.getOriginalFilename());
-            final byte[] fileValue = file.getBytes();
+            var imageFileType = ImageFileType.extensionOf(file.getOriginalFilename());
+            var fileValue = file.getBytes();
             return new ImageFile(imageFileType, fileValue.length, fileValue);
         } catch (IOException e) {
             throw new InvalidResourceException("Invalid multipart file");

@@ -10,17 +10,19 @@ import java.util.List;
 
 import ecsimsw.picup.storage.ImageStorage;
 import ecsimsw.picup.storage.StorageKey;
+import javax.persistence.Entity;
+import javax.persistence.Id;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.Document;
+import lombok.Setter;
 import org.springframework.web.multipart.MultipartFile;
 
 @AllArgsConstructor
 @NoArgsConstructor
+@Setter
 @Getter
-@Document(collection = "resource")
+@Entity
 public class Resource {
 
     @Id

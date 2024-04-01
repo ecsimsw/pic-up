@@ -9,7 +9,7 @@ public class ResourceKeyStrategy {
 
     public static String generate(String tag, MultipartFile file) {
         final String fileName = file.getOriginalFilename();
-        if(fileName == null || fileName.trim().length() == 0) {
+        if(fileName == null || fileName.trim().isEmpty()) {
             throw new InvalidResourceException("Invalid file name resource");
         }
         return uniqueResourceName(tag) + "." + getExtension(fileName);

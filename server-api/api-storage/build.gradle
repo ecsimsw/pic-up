@@ -1,14 +1,12 @@
 dependencies {
     implementation project(':api-common')
 
-    // mongo
-    implementation 'org.springframework.boot:spring-boot-starter-data-mongodb'
+    // H2
+    implementation 'com.h2database:h2:1.4.199'
+    testRuntimeOnly 'com.h2database:h2:1.4.199'
 
-    // embedded mongo db for test env
-    testImplementation 'de.flapdoodle.embed:de.flapdoodle.embed.mongo'
-
-    // h2
-    runtimeOnly 'com.h2database:h2:1.4.199'
+    // Mysql
+    runtimeOnly 'com.mysql:mysql-connector-j'
 
     // s3
     implementation 'com.amazonaws:aws-java-sdk-s3:1.11.343'

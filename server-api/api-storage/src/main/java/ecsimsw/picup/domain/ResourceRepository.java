@@ -1,7 +1,7 @@
 package ecsimsw.picup.domain;
 
-import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface ResourceRepository extends MongoRepository<Resource, String> {
+public interface ResourceRepository extends JpaRepository<Resource, String> {
 
 }
