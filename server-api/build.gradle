@@ -37,6 +37,9 @@ subprojects {
         // redis
         implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 
+        // thumbnail
+        implementation 'net.coobird:thumbnailator:0.4.1'
+
         // Google Guava
         implementation 'com.google.guava:guava:11.0.2'
 

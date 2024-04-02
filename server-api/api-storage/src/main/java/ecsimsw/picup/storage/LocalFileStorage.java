@@ -7,7 +7,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.concurrent.CompletableFuture;
@@ -34,8 +33,8 @@ public class LocalFileStorage implements ImageStorage {
     public CompletableFuture<StorageUploadResponse> create(String resourceKey, ImageFile imageFile) {
         try {
             final String storagePath = storagePath(resourceKey);
-            Files.write(Paths.get(storagePath), imageFile.getFile());
-            return new AsyncResult<>(new StorageUploadResponse(resourceKey, KEY, imageFile.getSize())).completable();
+            Files.write(Paths.get(storagePath), imageFile.file());
+            return new AsyncResult<>(new StorageUploadResponse(resourceKey, KEY, imageFile.size())).completable();
         } catch (IOException e) {
             throw new StorageException("Fail to create image file : " + resourceKey, e);
         }

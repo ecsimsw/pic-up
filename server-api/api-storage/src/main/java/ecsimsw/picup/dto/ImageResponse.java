@@ -17,7 +17,7 @@ public class ImageResponse {
     }
 
     public static ImageResponse of(ImageFile imageFile) {
-        return new ImageResponse(imageFile.getFile(), imageFile.getFileType());
+        return new ImageResponse(imageFile.file(), imageFile.fileType());
     }
 
     public MediaType getMediaType() {

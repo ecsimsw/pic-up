@@ -25,8 +25,8 @@ public class MockImageStorage implements ImageStorage {
         if (imageFile == null) {
             return new AsyncResult<>(new StorageUploadResponse(resourceKey, KEY, 0)).completable();
         }
-        DATA.put(resourceKey, imageFile.getFile());
-        return new AsyncResult<>(new StorageUploadResponse(resourceKey, KEY, imageFile.getSize())).completable();
+        DATA.put(resourceKey, imageFile.file());
+        return new AsyncResult<>(new StorageUploadResponse(resourceKey, KEY, imageFile.size())).completable();
     }
 
     @Override

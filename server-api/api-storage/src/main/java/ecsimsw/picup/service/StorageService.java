@@ -50,23 +50,23 @@ public class StorageService {
         resourceRepository.save(resource);
 
         var imageFile = ImageFile.of(file);
+        var thumbnail = ImageFile.thumbnailFrom(file);
         var futures = List.of(
             upload(mainStorage, imageFile, resource),
-            upload(backUpStorage, imageFile, resource)
+            upload(mainStorage, thumbnail, resource),
+            upload(backUpStorage, imageFile, resource),
+            upload(backUpStorage, thumbnail, resource)
         );
         try {
-            CompletableFuture.allOf(
-                futures.toArray(new CompletableFuture[0])
-            ).orTimeout(5, TimeUnit.SECONDS).join();
+            CompletableFuture.allOf(futures.toArray(new CompletableFuture[0]))
+                .orTimeout(5, TimeUnit.SECONDS).join();
         } catch (CompletionException e) {
-            futures.forEach(it -> it.thenAccept(result -> {
-                LOGGER.info("offer message queue to delete dummy file : " + result.getResourceKey() + " in " + result.getStorageKey());
-                imageFileMessageQueue.offerDeleteByStorage(result.getResourceKey(), result.getStorageKey());
-            }));
-            e.printStackTrace();
+            futures.forEach(it -> it.thenAccept(
+                result -> imageFileMessageQueue.offerDeleteByStorage(result.getResourceKey(), result.getStorageKey()))
+            );
             throw new StorageException("exception while uploading");
         }
-        return new ImageUploadResponse(resource.getResourceKey(), imageFile.getSize());
+        return new ImageUploadResponse(resource.getResourceKey(), imageFile.size());
     }
 
     private CompletableFuture<StorageUploadResponse> upload(ImageStorage storage, ImageFile imageFile, Resource resource) {

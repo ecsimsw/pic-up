@@ -8,8 +8,7 @@ import java.util.Arrays;
 public enum ImageFileType {
     JPEG(MediaType.IMAGE_JPEG),
     JPG(MediaType.IMAGE_JPEG),
-    PNG(MediaType.IMAGE_PNG),
-    HEIC(MediaType.IMAGE_PNG);
+    PNG(MediaType.IMAGE_PNG);
 
     private final MediaType mediaType;
 
@@ -18,15 +17,15 @@ public enum ImageFileType {
     }
 
     public static ImageFileType extensionOf(String fileName) {
-        final String extension = fileName.substring(fileName.lastIndexOf(".") + 1);
+        var extension = fileName.substring(fileName.lastIndexOf(".") + 1);
         return Arrays.stream(values())
-            .filter(it -> it.name().equals(extension.toUpperCase()))
+            .filter(it -> it.isType(extension.toUpperCase()))
             .findAny()
             .orElseThrow(() -> new InvalidResourceException("Invalid resource image type"));
     }
 
-    public static ImageFileType validateSupport(String fileName) {
-        return extensionOf(fileName);
+    public boolean isType(String extension) {
+        return this.name().equalsIgnoreCase(extension);
     }
 
     public MediaType getMediaType() {
