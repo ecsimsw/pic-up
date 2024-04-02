@@ -6,6 +6,7 @@ import static ecsimsw.picup.album.domain.PictureRepository.PictureSearchSpecs.so
 
 import ecsimsw.picup.album.domain.AlbumRepository;
 import ecsimsw.picup.album.domain.FileDeletionEvent;
+import ecsimsw.picup.album.domain.Picture;
 import ecsimsw.picup.album.domain.PictureRepository;
 import ecsimsw.picup.album.dto.PictureInfoResponse;
 import ecsimsw.picup.album.dto.PictureSearchCursor;
@@ -33,7 +34,7 @@ public class PictureService {
         var fileInfo = pictureFileService.upload(userId, file);
         try {
             checkUserAuthInAlbum(userId, albumId);
-            var picture = fileInfo.toPicture(albumId);
+            var picture = new Picture(albumId, fileInfo.resourceKey(), fileInfo.thumbnailResourceKey(), fileInfo.size());
             pictureRepository.save(picture);
             storageUsageService.addUsage(userId, fileInfo.size());
             return PictureInfoResponse.of(picture);

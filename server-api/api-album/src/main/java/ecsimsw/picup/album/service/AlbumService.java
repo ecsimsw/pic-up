@@ -2,9 +2,9 @@ package ecsimsw.picup.album.service;
 
 import ecsimsw.picup.album.domain.*;
 import ecsimsw.picup.album.dto.AlbumSearchCursor;
-import ecsimsw.picup.album.dto.PictureFileInfo;
 import ecsimsw.picup.album.exception.AlbumException;
 import ecsimsw.picup.album.dto.AlbumInfoResponse;
+import ecsimsw.picup.dto.PictureFileInfo;
 import ecsimsw.picup.usage.service.StorageUsageService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;

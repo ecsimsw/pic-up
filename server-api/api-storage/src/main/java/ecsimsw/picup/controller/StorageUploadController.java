@@ -1,6 +1,7 @@
 package ecsimsw.picup.controller;
 
 import ecsimsw.picup.dto.ImageUploadResponse;
+import ecsimsw.picup.dto.PictureFileInfo;
 import ecsimsw.picup.service.StorageService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,13 +27,12 @@ public class StorageUploadController {
     }
 
     @PostMapping("/api/storage")
-    public ResponseEntity<ImageUploadResponse> upload(
+    public ResponseEntity<PictureFileInfo> upload(
         @Valid @NotNull Long userId,
-        @Valid @NotBlank String tag,
         @Valid @NotNull MultipartFile file
     ) {
         var start = System.currentTimeMillis();
-        var uploadedInfo = storageService.upload(userId, tag, file);
+        var uploadedInfo = storageService.upload(userId, file);
         LOGGER.info("Upload response by user " + userId + ", this took " + (System.currentTimeMillis() - start) / 1000.0 + "sec");
         return ResponseEntity.ok(uploadedInfo);
     }

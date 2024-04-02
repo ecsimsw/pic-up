@@ -5,6 +5,7 @@ import ecsimsw.picup.domain.Resource;
 import ecsimsw.picup.domain.ResourceRepository;
 import ecsimsw.picup.dto.ImageResponse;
 import ecsimsw.picup.dto.ImageUploadResponse;
+import ecsimsw.picup.dto.PictureFileInfo;
 import ecsimsw.picup.dto.StorageUploadResponse;
 import ecsimsw.picup.exception.InvalidResourceException;
 import ecsimsw.picup.exception.StorageException;
@@ -45,17 +46,14 @@ public class StorageService {
         this.backUpStorage = backUpStorage;
     }
 
-    public ImageUploadResponse upload(Long userId, String tag, MultipartFile file) {
-        var resource = Resource.createRequested(userId, tag, file);
+    public PictureFileInfo upload(Long userId, MultipartFile file) {
+        var resource = Resource.createRequested(userId, file);
         resourceRepository.save(resource);
 
         var imageFile = ImageFile.of(file);
-        var thumbnail = ImageFile.of(file);
         var futures = List.of(
             upload(mainStorage, imageFile, resource),
-            upload(mainStorage, thumbnail, resource),
-            upload(backUpStorage, imageFile, resource),
-            upload(backUpStorage, thumbnail, resource)
+            upload(backUpStorage, imageFile, resource)
         );
         try {
             CompletableFuture.allOf(futures.toArray(new CompletableFuture[0]))
@@ -64,9 +62,9 @@ public class StorageService {
             futures.forEach(it -> it.thenAccept(
                 result -> imageFileMessageQueue.offerDeleteByStorage(result.getResourceKey(), result.getStorageKey()))
             );
-            throw new StorageException("exception while uploading");
+            throw new StorageException("exception while uploading : " + e.getMessage());
         }
-        return new ImageUploadResponse(resource.getResourceKey(), "", imageFile.size());
+        return new PictureFileInfo(resource.getResourceKey(), "", imageFile.size());
     }
 
     private CompletableFuture<StorageUploadResponse> upload(ImageStorage storage, ImageFile imageFile, Resource resource) {

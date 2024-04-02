@@ -2,12 +2,12 @@ version: '3'
 services:
   redis:
     image: redis:latest
-    container_name: 'picup-redis'
+    container_name: 'redis'
     ports:
       - 6379:6379
     volumes:
-      - ~/redis-data/data:/data
-      - ~/redis-data/conf/redis.conf:/usr/local/conf/redis.conf
+      - ~/dev/data/redis-data:/data
+      - ~/dev/data/redis-data/conf/redis.conf:/usr/local/conf/redis.conf
     labels:
       - "name=redis"
       - "mode=standalone"
@@ -21,13 +21,12 @@ services:
 
   rabbitmq:
     image: rabbitmq:3-management-alpine
-    container_name: 'picup-rabbitmq'
+    container_name: 'rabbitmq'
     ports:
       - 5672:5672     # for AMQP communication and
       - 15672:15672   # for the RabbitMQ management interface, http://localhost:15672
     volumes:
-      - ~/rabbitmq-data/data/:/var/lib/rabbitmq/
-      - ~/rabbitmq-data/log/:/var/log/rabbitmq
+      - ~/dev/data/rabbitmq-data/:/var/lib/rabbitmq/
     environment:
       RABBITMQ_ERLANG_COOKIE: "RabbitMQ-My-Cookies"
       RABBITMQ_DEFAULT_USER: "admin"

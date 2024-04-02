@@ -13,6 +13,8 @@ import ecsimsw.picup.storage.StorageKey;
 import javax.persistence.Convert;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.validation.constraints.NotNull;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -29,17 +31,17 @@ public class Resource {
     @Id
     private String resourceKey;
 
+    @NotNull
     private Long userId;
 
     @Convert(converter = ListStorageKeyConverter.class)
     private List<StorageKey> storedStorages = new ArrayList<>();
 
     private LocalDateTime createRequested;
-
     private LocalDateTime deleteRequested;
 
-    public static Resource createRequested(Long userId, String tag, MultipartFile file) {
-        var resourceKey = ResourceKeyStrategy.generate(tag, file);
+    public static Resource createRequested(Long userId, MultipartFile file) {
+        var resourceKey = ResourceKeyStrategy.generate(userId.toString(), file);
         return new Resource(resourceKey, userId, new ArrayList<>(), LocalDateTime.now(), null);
     }
 
