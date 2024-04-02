@@ -47,7 +47,6 @@ public class GlobalControllerAdvice {
 
     @ExceptionHandler(Throwable.class)
     public ResponseEntity<String> unhandledException(Throwable e) {
-        e.printStackTrace();
         var alertMessage = "[UNHANDLED] : " + e.getMessage();
         LOGGER.error(alertMessage);
         SlackMessageSender.send(alertMessage);

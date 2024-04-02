@@ -1,4 +1,4 @@
-package ecsimsw.picup.domain;
+package ecsimsw.picup.utils;
 
 import static java.util.Collections.emptyList;
 

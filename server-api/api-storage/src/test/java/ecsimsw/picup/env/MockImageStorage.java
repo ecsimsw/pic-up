@@ -1,9 +1,10 @@
 package ecsimsw.picup.env;
 
 import ecsimsw.picup.domain.ImageFile;
+import ecsimsw.picup.domain.Resource;
 import ecsimsw.picup.storage.StorageKey;
-import ecsimsw.picup.dto.StorageUploadResponse;
-import ecsimsw.picup.storage.ImageStorage;
+import ecsimsw.picup.service.ImageStorage;
+import java.io.FileNotFoundException;
 import org.springframework.scheduling.annotation.AsyncResult;
 
 import java.util.Map;
@@ -21,26 +22,21 @@ public class MockImageStorage implements ImageStorage {
     }
 
     @Override
-    public CompletableFuture<StorageUploadResponse> storeAsync(String resourceKey, ImageFile imageFile) {
+    public CompletableFuture<Resource> storeAsync(Resource resource, ImageFile imageFile) {
         if (imageFile == null) {
-            return new AsyncResult<>(new StorageUploadResponse(resourceKey, KEY, 0)).completable();
+            return new AsyncResult<>(resource).completable();
         }
-        DATA.put(resourceKey, imageFile.file());
-        return new AsyncResult<>(new StorageUploadResponse(resourceKey, KEY, imageFile.size())).completable();
+        DATA.put(resource.getResourceKey(), imageFile.file());
+        return new AsyncResult<>(resource).completable();
     }
 
     @Override
-    public ImageFile read(String resourceKey) {
-        return ImageFile.of(resourceKey, DATA.get(resourceKey));
+    public ImageFile read(Resource resource) throws FileNotFoundException {
+        return ImageFile.of(resource.getResourceKey(), DATA.get(resource.getResourceKey()));
     }
 
     @Override
-    public void delete(String resourceKey) {
-        DATA.remove(resourceKey);
-    }
-
-    @Override
-    public StorageKey key() {
-        return KEY;
+    public void delete(Resource resource) {
+        DATA.remove(resource.getResourceKey());
     }
 }

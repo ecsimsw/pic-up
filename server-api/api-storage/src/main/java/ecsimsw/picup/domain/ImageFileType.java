@@ -1,10 +1,12 @@
 package ecsimsw.picup.domain;
 
 import ecsimsw.picup.exception.InvalidResourceException;
+import lombok.Getter;
 import org.springframework.http.MediaType;
 
 import java.util.Arrays;
 
+@Getter
 public enum ImageFileType {
     JPEG(MediaType.IMAGE_JPEG),
     JPG(MediaType.IMAGE_JPEG),
@@ -26,9 +28,5 @@ public enum ImageFileType {
 
     public boolean isType(String extension) {
         return this.name().equalsIgnoreCase(extension);
-    }
-
-    public MediaType getMediaType() {
-        return mediaType;
     }
 }

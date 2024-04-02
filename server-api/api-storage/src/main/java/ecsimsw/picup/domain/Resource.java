@@ -1,8 +1,8 @@
 package ecsimsw.picup.domain;
 
 import ecsimsw.picup.auth.UnauthorizedException;
-import ecsimsw.picup.storage.ImageStorage;
 import ecsimsw.picup.storage.StorageKey;
+import ecsimsw.picup.utils.ListStorageKeyConverter;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -10,12 +10,10 @@ import javax.persistence.Convert;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@AllArgsConstructor
 @NoArgsConstructor
 @Setter
 @Getter
@@ -43,9 +41,9 @@ public class Resource {
         storedStorages.add(storageKey);
     }
 
-    public void deletedFrom(ImageStorage storage) {
+    public void deletedFrom(StorageKey storageKey) {
         storedStorages = new ArrayList<>(storedStorages);
-        storedStorages.remove(storage.key());
+        storedStorages.remove(storageKey);
     }
 
     public void validateAccess(Long userId) {

@@ -28,7 +28,7 @@ public class StorageDeleteController {
     @RabbitListener(queues = FILE_DELETE_ALL_QUEUE_NAME, containerFactory = FILE_DELETION_QUEUE_CF)
     public void deleteAll(List<String> resources) {
         LOGGER.info("Delete file : " + String.join("\n ", resources));
-        storageService.deleteAll(resources);
+        resources.forEach(storageService::delete);
     }
 
     @RabbitListener(queues = FILE_DELETE_QUEUE_NAME, containerFactory = FILE_DELETION_QUEUE_CF)

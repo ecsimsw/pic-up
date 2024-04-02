@@ -1,8 +1,5 @@
 package ecsimsw.picup.controller;
 
-import ecsimsw.auth.anotations.JwtPayload;
-import ecsimsw.picup.auth.AuthTokenPayload;
-import ecsimsw.picup.dto.ImageResponse;
 import ecsimsw.picup.service.StorageService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -23,9 +20,9 @@ public class StorageReadController {
 //        @JwtPayload AuthTokenPayload loginUser,
         @PathVariable String resourceKey
     ) {
-        var imageResponse = storageService.read(1L, resourceKey);
+        var imageFile = storageService.read(1L, resourceKey);
         return ResponseEntity.ok()
-            .contentType(imageResponse.getMediaType())
-            .body(imageResponse.getImageFile());
+            .contentType(imageFile.fileType().getMediaType())
+            .body(imageFile.file());
     }
 }
