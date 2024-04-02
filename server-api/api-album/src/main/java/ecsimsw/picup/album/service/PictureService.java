@@ -23,6 +23,8 @@ import org.springframework.web.multipart.MultipartFile;
 @Service
 public class PictureService {
 
+    private static final float THUMBNAIL_RESIZE_SCALE = 0.3f;
+
     private final AlbumRepository albumRepository;
     private final PictureRepository pictureRepository;
     private final FileStorageService fileStorageService;
@@ -32,7 +34,7 @@ public class PictureService {
     public PictureInfoResponse create(Long userId, Long albumId, MultipartFile file) {
         checkUserAuthInAlbum(userId, albumId);
         var originPicture = ImageFile.of(userId, file);
-        var thumbnailPicture = ImageFile.resizedOf(userId, file, 0.3f);
+        var thumbnailPicture = ImageFile.resizedOf(userId, file, THUMBNAIL_RESIZE_SCALE);
         try {
             var pictureFile = fileStorageService.upload(originPicture);
             var thumbnailFile = fileStorageService.upload(thumbnailPicture);
