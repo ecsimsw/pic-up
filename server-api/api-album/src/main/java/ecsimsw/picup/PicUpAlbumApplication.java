@@ -1,6 +1,6 @@
 package ecsimsw.picup;
 
-import ecsimsw.picup.album.service.ImageEventOutboxService;
+import ecsimsw.picup.album.service.FileEventOutboxService;
 import ecsimsw.picup.member.dto.SignUpRequest;
 import ecsimsw.picup.member.service.MemberService;
 import lombok.RequiredArgsConstructor;
@@ -19,7 +19,7 @@ public class PicUpAlbumApplication {
         var app = new SpringApplication(PicUpAlbumApplication.class);
         app.setAdditionalProfiles("dev");
         var ctx = app.run(args);
-        var outboxService = ctx.getBean(ImageEventOutboxService.class);
+        var outboxService = ctx.getBean(FileEventOutboxService.class);
         outboxService.schedulePublishOut();
 
         Dummy dummy = ctx.getBean(Dummy.class);

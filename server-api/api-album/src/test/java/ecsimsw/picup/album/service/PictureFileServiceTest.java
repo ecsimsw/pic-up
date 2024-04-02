@@ -1,7 +1,7 @@
 package ecsimsw.picup.album.service;
 
 import ecsimsw.picup.album.domain.FileDeletionEventOutbox;
-import ecsimsw.picup.album.dto.FileResourceInfo;
+import ecsimsw.picup.album.dto.PictureFileInfo;
 import ecsimsw.picup.album.exception.AlbumException;
 import ecsimsw.picup.album.exception.UnsupportedFileTypeException;
 import ecsimsw.picup.mq.ImageFileMessageQueue;
@@ -20,7 +20,7 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class FileServiceTest {
+class PictureFileServiceTest {
 
     @Mock
     private StorageHttpClient storageHttpClient;
@@ -31,20 +31,20 @@ class FileServiceTest {
     @Mock
     private ImageFileMessageQueue imageFileMessageQueue;
 
-    private FileService fileService;
+    private PictureFileService pictureFileService;
 
     @BeforeEach
     public void init() {
-        fileService = new FileService(storageHttpClient, fileDeletionEventOutbox, imageFileMessageQueue);
+        pictureFileService = new PictureFileService(storageHttpClient, fileDeletionEventOutbox, imageFileMessageQueue);
     }
 
     @DisplayName("파일을 업로드하고 업로드한 파일 정보를 반환한다.")
     @Test
     void upload() {
-        when(storageHttpClient.requestUpload(MEMBER_ID, MULTIPART_FILE, TAG))
-            .thenReturn(new FileResourceInfo(RESOURCE_KEY, MULTIPART_FILE.getSize()));
+        when(storageHttpClient.requestUpload(MEMBER_ID, MULTIPART_FILE))
+            .thenReturn(new PictureFileInfo(RESOURCE_KEY, THUMBNAIL_RESOURCE_KEY, MULTIPART_FILE.getSize()));
 
-        var fileInfo = fileService.upload(MEMBER_ID, MULTIPART_FILE);
+        var fileInfo = pictureFileService.upload(MEMBER_ID, MULTIPART_FILE);
         assertAll(
             () -> assertThat(fileInfo.resourceKey()).isEqualTo(RESOURCE_KEY),
             () -> assertThat(fileInfo.size()).isEqualTo(MULTIPART_FILE.getSize())
@@ -56,7 +56,7 @@ class FileServiceTest {
     void uploadWithInvalidResourceName() {
         var invalidFileName = "invalidFileName";
         assertThatThrownBy(
-            () -> fileService.upload(MEMBER_ID, mockMultipartFile(invalidFileName))
+            () -> pictureFileService.upload(MEMBER_ID, mockMultipartFile(invalidFileName))
         ).isInstanceOf(AlbumException.class);
     }
 
@@ -65,7 +65,7 @@ class FileServiceTest {
     void uploadWithInvalidResource() {
         var invalidFileExtension = "unsupportedFileExtension.mp4";
         assertThatThrownBy(
-            () -> fileService.upload(MEMBER_ID, mockMultipartFile(invalidFileExtension))
+            () -> pictureFileService.upload(MEMBER_ID, mockMultipartFile(invalidFileExtension))
         ).isInstanceOf(UnsupportedFileTypeException.class);
     }
 }

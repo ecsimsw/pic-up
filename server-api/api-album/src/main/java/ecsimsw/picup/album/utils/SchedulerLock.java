@@ -1,4 +1,4 @@
-package ecsimsw.picup.album.service;
+package ecsimsw.picup.album.utils;
 
 import java.util.concurrent.TimeUnit;
 import org.redisson.api.RLock;

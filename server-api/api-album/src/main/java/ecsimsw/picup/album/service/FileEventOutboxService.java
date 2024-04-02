@@ -1,23 +1,22 @@
 package ecsimsw.picup.album.service;
 
 import com.google.common.collect.Iterables;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import ecsimsw.picup.album.utils.SchedulerLock;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 @Service
-public class ImageEventOutboxService {
+public class FileEventOutboxService {
 
     private final static int FILE_DELETION_SEGMENT_UNIT = 5;
     private final static int FILE_DELETION_SCHED_DELAY = 3000;
     private final static int FILE_DELETION_LOCK_TIME = 30000;
 
-    private final FileService fileService;
+    private final PictureFileService pictureFileService;
     private final SchedulerLock schedulerLock;
 
-    public ImageEventOutboxService(FileService fileService, SchedulerLock schedulerLock) {
-        this.fileService = fileService;
+    public FileEventOutboxService(PictureFileService pictureFileService, SchedulerLock schedulerLock) {
+        this.pictureFileService = pictureFileService;
         this.schedulerLock = schedulerLock;
     }
 
@@ -25,9 +24,9 @@ public class ImageEventOutboxService {
     public void schedulePublishOut() {
         while (true) {
             schedulerLock.afterDelay(FILE_DELETION_LOCK_TIME, FILE_DELETION_SCHED_DELAY, () -> {
-                var toBeDeleted = fileService.findAllDeletionOutBox();
+                var toBeDeleted = pictureFileService.findAllDeletionOutBox();
                 for (var eventSegment : Iterables.partition(toBeDeleted, FILE_DELETION_SEGMENT_UNIT)) {
-                    fileService.publishDeletionEvents(eventSegment);
+                    pictureFileService.publishDeletionEvents(eventSegment);
                 }
             });
         }

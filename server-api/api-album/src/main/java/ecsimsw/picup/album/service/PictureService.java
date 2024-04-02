@@ -6,19 +6,18 @@ import static ecsimsw.picup.album.domain.PictureRepository.PictureSearchSpecs.so
 
 import ecsimsw.picup.album.domain.AlbumRepository;
 import ecsimsw.picup.album.domain.FileDeletionEvent;
-import ecsimsw.picup.album.domain.Picture;
 import ecsimsw.picup.album.domain.PictureRepository;
-import ecsimsw.picup.album.dto.FileResourceInfo;
 import ecsimsw.picup.album.dto.PictureInfoResponse;
 import ecsimsw.picup.album.dto.PictureSearchCursor;
 import ecsimsw.picup.album.exception.AlbumException;
 import ecsimsw.picup.usage.service.StorageUsageService;
 import java.util.List;
-import java.util.Optional;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 @RequiredArgsConstructor
 @Service
@@ -26,19 +25,20 @@ public class PictureService {
 
     private final AlbumRepository albumRepository;
     private final PictureRepository pictureRepository;
-    private final FileService fileService;
+    private final PictureFileService pictureFileService;
     private final StorageUsageService storageUsageService;
 
     @Transactional
-    public PictureInfoResponse create(Long userId, Long albumId, FileResourceInfo uploadFile) {
+    public PictureInfoResponse create(Long userId, Long albumId, MultipartFile file) {
+        var fileInfo = pictureFileService.upload(userId, file);
         try {
             checkUserAuthInAlbum(userId, albumId);
-            var picture = new Picture(albumId, uploadFile.resourceKey(), uploadFile.size());
+            var picture = fileInfo.toPicture(albumId);
             pictureRepository.save(picture);
-            storageUsageService.addUsage(userId, uploadFile.size());
+            storageUsageService.addUsage(userId, fileInfo.size());
             return PictureInfoResponse.of(picture);
         } catch (Exception e) {
-            fileService.delete(uploadFile.resourceKey());
+            pictureFileService.delete(fileInfo.resourceKey());
             throw e;
         }
     }
@@ -48,7 +48,7 @@ public class PictureService {
         checkUserAuthInAlbum(userId, albumId);
         var picture = pictureRepository.findById(pictureId).orElseThrow(() -> new AlbumException("Invalid picture"));
         picture.validateAlbum(albumId);
-        fileService.createDeleteEvent(new FileDeletionEvent(userId, picture.getResourceKey()));
+        pictureFileService.createDeleteEvent(new FileDeletionEvent(userId, picture.getResourceKey()));
         storageUsageService.subtractUsage(userId, picture.getFileSize());
         pictureRepository.delete(picture);
     }
@@ -61,19 +61,18 @@ public class PictureService {
     }
 
     @Transactional(readOnly = true)
-    public List<PictureInfoResponse> cursorBasedFetch(Long userId, Long albumId, int limit, Optional<PictureSearchCursor> cursor) {
+    public List<PictureInfoResponse> cursorBasedFetch(Long userId, Long albumId, PictureSearchCursor cursor) {
         checkUserAuthInAlbum(userId, albumId);
-        if (cursor.isEmpty()) {
+        if(!cursor.hasPrev()) {
             var pictures = pictureRepository.findAllByAlbumId(
                 albumId,
-                PageRequest.of(0, limit, sortByCreatedAtDesc)
+                PageRequest.of(0, cursor.limit(), sortByCreatedAtDesc)
             );
             return PictureInfoResponse.listOf(pictures.getContent());
         }
-        var prev = cursor.orElseThrow();
         var pictures = pictureRepository.fetch(
-            isAlbum(albumId).and(orderThan(prev.createdAt(), prev.id())),
-            limit,
+            isAlbum(albumId).and(orderThan(cursor.createdAt(), cursor.cursorId())),
+            cursor.limit(),
             sortByCreatedAtDesc
         );
         return PictureInfoResponse.listOf(pictures);

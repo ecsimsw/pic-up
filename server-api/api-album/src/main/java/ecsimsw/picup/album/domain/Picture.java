@@ -25,13 +25,12 @@ public class Picture {
     private Long albumId;
 
     private String resourceKey;
-
+    private String thumbnailResourceKey;
     private Long fileSize;
-
     private LocalDateTime createdAt;
 
-    public Picture(Long albumId, String resourceKey, Long fileSize) {
-        this(null, albumId, resourceKey, fileSize, LocalDateTime.now());
+    public Picture(Long albumId, String resourceKey, String thumbnailResourceKey, Long fileSize) {
+        this(null, albumId, resourceKey, thumbnailResourceKey, fileSize, LocalDateTime.now());
     }
 
     public void validateAlbum(Long albumId) {

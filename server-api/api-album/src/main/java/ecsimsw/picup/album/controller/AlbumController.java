@@ -3,7 +3,7 @@ package ecsimsw.picup.album.controller;
 import ecsimsw.picup.album.dto.AlbumInfoResponse;
 import ecsimsw.picup.album.dto.AlbumSearchCursor;
 import ecsimsw.picup.album.service.AlbumService;
-import ecsimsw.picup.album.service.FileService;
+import ecsimsw.picup.album.service.PictureFileService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -17,7 +17,7 @@ import java.util.Optional;
 public class AlbumController {
 
     private final AlbumService albumService;
-    private final FileService fileService;
+    private final PictureFileService pictureFileService;
 
     @PostMapping("/api/album")
     public ResponseEntity<AlbumInfoResponse> createAlbum(
@@ -26,7 +26,7 @@ public class AlbumController {
         @RequestParam String name
     ) {
         var userId = 1L;
-        var thumbnailResource = fileService.upload(userId, thumbnail);
+        var thumbnailResource = pictureFileService.upload(userId, thumbnail);
         var album = albumService.create(userId, name, thumbnailResource);
         return ResponseEntity.ok(album);
     }

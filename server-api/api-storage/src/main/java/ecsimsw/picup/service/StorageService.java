@@ -50,7 +50,7 @@ public class StorageService {
         resourceRepository.save(resource);
 
         var imageFile = ImageFile.of(file);
-        var thumbnail = ImageFile.thumbnailFrom(file);
+        var thumbnail = ImageFile.of(file);
         var futures = List.of(
             upload(mainStorage, imageFile, resource),
             upload(mainStorage, thumbnail, resource),
@@ -66,7 +66,7 @@ public class StorageService {
             );
             throw new StorageException("exception while uploading");
         }
-        return new ImageUploadResponse(resource.getResourceKey(), imageFile.size());
+        return new ImageUploadResponse(resource.getResourceKey(), "", imageFile.size());
     }
 
     private CompletableFuture<StorageUploadResponse> upload(ImageStorage storage, ImageFile imageFile, Resource resource) {

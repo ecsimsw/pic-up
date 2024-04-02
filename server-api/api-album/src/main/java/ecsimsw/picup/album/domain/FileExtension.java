@@ -1,11 +1,14 @@
 package ecsimsw.picup.album.domain;
 
+import ecsimsw.picup.album.exception.AlbumException;
 import ecsimsw.picup.album.exception.UnsupportedFileTypeException;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Arrays;
+import java.util.Objects;
 
 public enum FileExtension {
-    JPEG, JPG, PNG, HEIC;
+    JPEG, JPG, PNG;
 
     public static FileExtension of(String value) {
         return Arrays.stream(values())
@@ -14,8 +17,12 @@ public enum FileExtension {
             .orElseThrow(() -> new UnsupportedFileTypeException("Invalid file type"));
     }
 
-    public static FileExtension fromFileName(String fileName) {
-        final String extension = fileName.substring(fileName.lastIndexOf(".") + 1);
-        return of(extension);
+    public static void validate(MultipartFile file) {
+        var fileName = file.getOriginalFilename();
+        if (Objects.isNull(fileName) || !fileName.contains(".")) {
+            throw new AlbumException("Invalid file name");
+        }
+        var extension = fileName.substring(fileName.lastIndexOf(".") + 1);
+        of(extension);
     }
 }
