@@ -1,5 +1,6 @@
 package ecsimsw.picup.usage.service;
 
+import ecsimsw.picup.album.domain.Picture;
 import ecsimsw.picup.album.exception.AlbumException;
 import ecsimsw.picup.usage.domain.StorageUsage;
 import ecsimsw.picup.usage.domain.StorageUsageRepository;
@@ -27,6 +28,11 @@ public class StorageUsageService {
     public StorageUsage getUsage(Long userId) {
         return storageUsageRepository.findByUserId(userId)
             .orElseThrow(() -> new AlbumException("Invalid member id"));
+    }
+
+    @Transactional
+    public void addUsage(Long userId, Picture picture) {
+        addUsage(userId, picture.getFileSize());
     }
 
     @Transactional

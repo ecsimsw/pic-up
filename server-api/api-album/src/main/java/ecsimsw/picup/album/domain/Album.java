@@ -27,18 +27,18 @@ public class Album {
 
     private String name;
 
-    private String thumbnailResourceKey;
+    private String resourceKey;
 
-    private Long thumbnailFileSize;
+    private Long resourceFileSize;
 
     private LocalDateTime createdAt;
 
-    public Album(Long userId, String name, String thumbnailResourceKey, Long thumbnailFileSize, LocalDateTime createdAt) {
-        this(null, userId, name, thumbnailResourceKey, thumbnailFileSize, createdAt);
+    public Album(Long userId, String name, String resourceKey, Long thumbnailFileSize, LocalDateTime createdAt) {
+        this(null, userId, name, resourceKey, thumbnailFileSize, createdAt);
     }
 
-    public Album(Long userId, String name, String thumbnailResourceKey, Long thumbnailFileSize) {
-        this(null, userId, name, thumbnailResourceKey, thumbnailFileSize, LocalDateTime.now());
+    public Album(Long userId, String name, String resourceKey, Long thumbnailFileSize) {
+        this(null, userId, name, resourceKey, thumbnailFileSize, LocalDateTime.now());
     }
 
     public void updateName(String name) {
@@ -46,7 +46,7 @@ public class Album {
     }
 
     public void updateThumbnail(String thumbnailImage) {
-        this.thumbnailResourceKey = thumbnailImage;
+        this.resourceKey = thumbnailImage;
     }
 
     public void authorize(Long userId) {

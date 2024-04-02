@@ -40,8 +40,7 @@ public class Resource {
     private LocalDateTime createRequested;
     private LocalDateTime deleteRequested;
 
-    public static Resource createRequested(Long userId, MultipartFile file) {
-        var resourceKey = ResourceKeyStrategy.generate(userId.toString(), file);
+    public static Resource createRequested(Long userId, String resourceKey) {
         return new Resource(resourceKey, userId, new ArrayList<>(), LocalDateTime.now(), null);
     }
 

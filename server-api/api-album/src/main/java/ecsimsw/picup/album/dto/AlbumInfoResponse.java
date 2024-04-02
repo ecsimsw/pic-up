@@ -23,7 +23,7 @@ public class AlbumInfoResponse {
         return new AlbumInfoResponse(
             album.getId(),
             album.getName(),
-            album.getThumbnailResourceKey(),
+            album.getResourceKey(),
             album.getCreatedAt()
         );
     }

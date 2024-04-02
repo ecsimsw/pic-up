@@ -14,9 +14,7 @@ import java.util.List;
 public interface PictureRepository extends JpaRepository<Picture, Long>, JpaSpecificationExecutor<Picture>, PictureSpecRepository {
 
     List<Picture> findAllByAlbumId(Long albumId);
-
     Slice<Picture> findAllByAlbumId(Long albumId, Pageable pageable);
-
     List<Picture> fetch(Specification<Picture> specification, int limit, Sort sort);
 
     interface PictureSearchSpecs {

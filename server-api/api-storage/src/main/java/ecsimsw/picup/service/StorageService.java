@@ -4,8 +4,7 @@ import ecsimsw.picup.domain.ImageFile;
 import ecsimsw.picup.domain.Resource;
 import ecsimsw.picup.domain.ResourceRepository;
 import ecsimsw.picup.dto.ImageResponse;
-import ecsimsw.picup.dto.ImageUploadResponse;
-import ecsimsw.picup.dto.PictureFileInfo;
+import ecsimsw.picup.dto.FileUploadResponse;
 import ecsimsw.picup.dto.StorageUploadResponse;
 import ecsimsw.picup.exception.InvalidResourceException;
 import ecsimsw.picup.exception.StorageException;
@@ -22,6 +21,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 @Service
@@ -46,8 +46,9 @@ public class StorageService {
         this.backUpStorage = backUpStorage;
     }
 
-    public PictureFileInfo upload(Long userId, MultipartFile file) {
-        var resource = Resource.createRequested(userId, file);
+    @Transactional
+    public FileUploadResponse upload(Long userId, MultipartFile file, String resourceKey) {
+        var resource = Resource.createRequested(userId, resourceKey);
         resourceRepository.save(resource);
 
         var imageFile = ImageFile.of(file);
@@ -59,12 +60,13 @@ public class StorageService {
             CompletableFuture.allOf(futures.toArray(new CompletableFuture[0]))
                 .orTimeout(5, TimeUnit.SECONDS).join();
         } catch (CompletionException e) {
-            futures.forEach(it -> it.thenAccept(
-                result -> imageFileMessageQueue.offerDeleteByStorage(result.getResourceKey(), result.getStorageKey()))
-            );
-            throw new StorageException("exception while uploading : " + e.getMessage());
+//            futures.forEach(it -> it.thenAccept(
+//                result -> imageFileMessageQueue.offerDeleteByStorage(result.getResourceKey(), result.getStorageKey()))
+//            );
+//            e.printStackTrace();
+//            throw new StorageException("exception while uploading : " + e.getMessage());
         }
-        return new PictureFileInfo(resource.getResourceKey(), "", imageFile.size());
+        return new FileUploadResponse(resource.getResourceKey(), imageFile.size());
     }
 
     private CompletableFuture<StorageUploadResponse> upload(ImageStorage storage, ImageFile imageFile, Resource resource) {

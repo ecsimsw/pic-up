@@ -20,7 +20,7 @@ public class PictureSpecRepositoryImpl extends SimpleJpaRepository<Picture, Long
 
     @Override
     public List<Picture> fetch(Specification<Picture> specification, int limit, Sort sort) {
-        final TypedQuery<Picture> query = getQuery(specification, sort);
+        var query = getQuery(specification, sort);
         query.setFirstResult(0);
         query.setMaxResults(limit);
         return query.getResultList();

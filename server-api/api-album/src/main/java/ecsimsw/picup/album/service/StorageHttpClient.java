@@ -1,8 +1,8 @@
 package ecsimsw.picup.album.service;
 
 import ecsimsw.picup.album.exception.FileUploadFailException;
-import ecsimsw.picup.dto.PictureFileInfo;
-import ecsimsw.picup.dto.StorageImageUploadRequest;
+import ecsimsw.picup.dto.FileUploadResponse;
+import ecsimsw.picup.dto.FileUploadRequest;
 import ecsimsw.picup.usage.exception.InvalidStorageServerResponseException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
@@ -38,13 +38,13 @@ public class StorageHttpClient {
         backoff = @Backoff(delayExpression = "${rt.retry.delay.time.ms}"),
         recover = "recoverRequestUpload"
     )
-    public PictureFileInfo requestUpload(Long userId, MultipartFile file) {
+    public FileUploadResponse requestUpload(Long userId, MultipartFile file, String resourceKey) {
         try {
             var response = restTemplate.exchange(
                 STORAGE_SERVER_URL + "/api/storage",
                 HttpMethod.POST,
-                new StorageImageUploadRequest(userId, file).toHttpEntity(),
-                new ParameterizedTypeReference<PictureFileInfo>() {
+                new FileUploadRequest(userId, file, resourceKey).toHttpEntity(),
+                new ParameterizedTypeReference<FileUploadResponse>() {
                 });
             if (Objects.isNull(response.getBody()) || Objects.isNull(response.getBody().resourceKey())) {
                 throw new InvalidStorageServerResponseException("Failed to upload resources.\nStorage server is on, but invalid response body.");
@@ -56,7 +56,7 @@ public class StorageHttpClient {
     }
 
     @Recover
-    public PictureFileInfo recoverRequestUpload(Throwable exception, Long userId, MultipartFile file) {
+    public FileUploadResponse recoverRequestUpload(Throwable exception, Long userId, MultipartFile file) {
         throw new FileUploadFailException(exception.getMessage(), exception);
     }
 }

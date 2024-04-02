@@ -4,18 +4,19 @@ import static ecsimsw.picup.album.domain.PictureRepository.PictureSearchSpecs.is
 import static ecsimsw.picup.album.domain.PictureRepository.PictureSearchSpecs.orderThan;
 import static ecsimsw.picup.album.domain.PictureRepository.PictureSearchSpecs.sortByCreatedAtDesc;
 
-import ecsimsw.picup.album.domain.AlbumRepository;
-import ecsimsw.picup.album.domain.FileDeletionEvent;
-import ecsimsw.picup.album.domain.Picture;
-import ecsimsw.picup.album.domain.PictureRepository;
+import ecsimsw.picup.album.domain.*;
 import ecsimsw.picup.album.dto.PictureInfoResponse;
 import ecsimsw.picup.album.dto.PictureSearchCursor;
 import ecsimsw.picup.album.exception.AlbumException;
 import ecsimsw.picup.usage.service.StorageUsageService;
+
+import java.io.FileInputStream;
 import java.util.List;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.tomcat.util.http.fileupload.IOUtils;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -31,15 +32,20 @@ public class PictureService {
 
     @Transactional
     public PictureInfoResponse create(Long userId, Long albumId, MultipartFile file) {
-        var fileInfo = pictureFileService.upload(userId, file);
+        checkUserAuthInAlbum(userId, albumId);
+        var resourceKey = ResourceKeyStrategy.generate(userId.toString(), file);
+        var thumbnailResourceKey = "thumb-" + resourceKey;
         try {
-            checkUserAuthInAlbum(userId, albumId);
-            var picture = new Picture(albumId, fileInfo.resourceKey(), fileInfo.thumbnailResourceKey(), fileInfo.size());
+            var pictureFile = pictureFileService.upload(userId, file, resourceKey);
+            var thumbnail = new Thumbnail().resize(file, 0.3f);
+            var thumbnailFile = pictureFileService.upload(userId, new MockMultipartFile("file", thumbnail), thumbnailResourceKey);
+            var picture = new Picture(albumId, pictureFile.resourceKey(), thumbnailFile.resourceKey(), pictureFile.size());
             pictureRepository.save(picture);
-            storageUsageService.addUsage(userId, fileInfo.size());
+            storageUsageService.addUsage(userId, picture);
             return PictureInfoResponse.of(picture);
         } catch (Exception e) {
-            pictureFileService.delete(fileInfo.resourceKey());
+            pictureFileService.delete(resourceKey);
+            pictureFileService.delete(thumbnailResourceKey);
             throw e;
         }
     }

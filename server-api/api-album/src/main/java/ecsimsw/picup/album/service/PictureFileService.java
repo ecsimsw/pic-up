@@ -4,10 +4,8 @@ import ecsimsw.picup.album.domain.FileDeletionEvent;
 import ecsimsw.picup.album.domain.FileDeletionEventOutbox;
 import ecsimsw.picup.album.domain.FileDeletionEvent_;
 import ecsimsw.picup.album.domain.FileExtension;
-import ecsimsw.picup.alert.SlackMessageSender;
-import ecsimsw.picup.dto.PictureFileInfo;
+import ecsimsw.picup.dto.FileUploadResponse;
 import ecsimsw.picup.mq.ImageFileMessageQueue;
-import ecsimsw.picup.mq.exception.MessageBrokerDownException;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,19 +27,9 @@ public class PictureFileService {
     private final FileDeletionEventOutbox fileDeletionEventOutbox;
     private final ImageFileMessageQueue imageFileMessageQueue;
 
-    public PictureFileInfo upload(Long userId, MultipartFile file) {
+    public FileUploadResponse upload(Long userId, MultipartFile file, String resourceKey) {
         FileExtension.validate(file);
-        return storageHttpClient.requestUpload(userId, file);
-    }
-
-    @Transactional
-    public void createDeleteEvent(FileDeletionEvent event) {
-        fileDeletionEventOutbox.save(event);
-    }
-
-    @Transactional
-    public void createDeleteEvents(List<FileDeletionEvent> events) {
-        events.forEach(this::createDeleteEvent);
+        return storageHttpClient.requestUpload(userId, file, resourceKey);
     }
 
     public void delete(String resourceKey) {
@@ -50,23 +38,27 @@ public class PictureFileService {
 
     @Transactional
     public void publishDeletionEvents(List<FileDeletionEvent> events) {
-        try {
-            var resourceKeys = events.stream()
-                .map(FileDeletionEvent::getResourceKey)
-                .collect(Collectors.toList());
-            imageFileMessageQueue.offerDeleteAllRequest(resourceKeys);
-            fileDeletionEventOutbox.deleteAll(events);
-            LOGGER.info("publish deletion event : " + String.join(", ", resourceKeys));
-        } catch (MessageBrokerDownException e) {
-            var alertMessage = "[MESSAGE_BROKER_CONNECT_] : " + e.getMessage();
-            LOGGER.error(alertMessage + "\n" + e.getCause());
-            SlackMessageSender.send(alertMessage);
-        }
+        var resourceKeys = events.stream()
+            .map(FileDeletionEvent::getResourceKey)
+            .collect(Collectors.toList());
+        imageFileMessageQueue.offerDeleteAllRequest(resourceKeys);
+        fileDeletionEventOutbox.deleteAll(events);
+        LOGGER.info("publish deletion event : " + String.join(", ", resourceKeys));
     }
 
     public List<FileDeletionEvent> findAllDeletionOutBox() {
         return fileDeletionEventOutbox.findAll(
             Sort.by(FileDeletionEvent_.CREATION_TIME)
         );
+    }
+
+    @Transactional
+    public void createDeleteEvents(List<FileDeletionEvent> events) {
+        events.forEach(this::createDeleteEvent);
+    }
+
+    @Transactional
+    public void createDeleteEvent(FileDeletionEvent event) {
+        fileDeletionEventOutbox.save(event);
     }
 }

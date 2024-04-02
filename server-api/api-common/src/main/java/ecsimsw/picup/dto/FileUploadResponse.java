@@ -1,8 +1,7 @@
 package ecsimsw.picup.dto;
 
-public record PictureFileInfo(
+public record FileUploadResponse(
     String resourceKey,
-    String thumbnailResourceKey,
     long size
 ) {
 }

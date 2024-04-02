@@ -4,12 +4,12 @@ import ecsimsw.picup.album.domain.*;
 import ecsimsw.picup.album.dto.AlbumSearchCursor;
 import ecsimsw.picup.album.exception.AlbumException;
 import ecsimsw.picup.album.dto.AlbumInfoResponse;
-import ecsimsw.picup.dto.PictureFileInfo;
 import ecsimsw.picup.usage.service.StorageUsageService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Optional;
@@ -26,14 +26,16 @@ public class AlbumService {
     private final StorageUsageService storageUsageService;
 
     @Transactional
-    public AlbumInfoResponse create(Long userId, String name, PictureFileInfo resource) {
+    public AlbumInfoResponse create(Long userId, String name, MultipartFile file) {
+        var resourceKey = ResourceKeyStrategy.generate(userId.toString(), file);
         try {
-            var album = new Album(userId, name, resource.resourceKey(), resource.size());
-            storageUsageService.addUsage(userId, resource.size());
+            var albumFile = pictureFileService.upload(userId, file, resourceKey);
+            var album = new Album(userId, name, resourceKey, albumFile.size());
+            storageUsageService.addUsage(userId, album.getResourceFileSize());
             albumRepository.save(album);
             return AlbumInfoResponse.of(album);
         } catch (Exception e) {
-            pictureFileService.delete(resource.resourceKey());
+            pictureFileService.delete(resourceKey);
             throw e;
         }
     }
@@ -47,8 +49,8 @@ public class AlbumService {
     @Transactional
     public void delete(Long userId, Long albumId) {
         var album = getUserAlbum(userId, albumId);
-        pictureFileService.createDeleteEvent(new FileDeletionEvent(userId, album.getThumbnailResourceKey()));
-        storageUsageService.subtractUsage(userId, album.getThumbnailFileSize());
+        pictureFileService.createDeleteEvent(new FileDeletionEvent(userId, album.getResourceKey()));
+        storageUsageService.subtractUsage(userId, album.getResourceFileSize());
         albumRepository.delete(album);
 
         var pictures = pictureRepository.findAllByAlbumId(albumId);

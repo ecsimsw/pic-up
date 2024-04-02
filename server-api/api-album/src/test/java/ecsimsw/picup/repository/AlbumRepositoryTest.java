@@ -87,7 +87,7 @@ public class AlbumRepositoryTest {
             () -> assertThat(saved.getId()).isNotNull(),
             () -> assertThat(saved.getUserId()).isEqualTo(MEMBER_ID),
             () -> assertThat(saved.getName()).isEqualTo(ALBUM_NAME),
-            () -> assertThat(saved.getThumbnailResourceKey()).isEqualTo(THUMBNAIL_RESOURCE_KEY),
+            () -> assertThat(saved.getResourceKey()).isEqualTo(THUMBNAIL_RESOURCE_KEY),
             () -> assertThat(saved.getCreatedAt()).isNotNull()
         );
     }

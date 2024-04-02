@@ -17,7 +17,6 @@ import java.util.Optional;
 public class AlbumController {
 
     private final AlbumService albumService;
-    private final PictureFileService pictureFileService;
 
     @PostMapping("/api/album")
     public ResponseEntity<AlbumInfoResponse> createAlbum(
@@ -26,8 +25,7 @@ public class AlbumController {
         @RequestParam String name
     ) {
         var userId = 1L;
-        var thumbnailResource = pictureFileService.upload(userId, thumbnail);
-        var album = albumService.create(userId, name, thumbnailResource);
+        var album = albumService.create(userId, name, thumbnail);
         return ResponseEntity.ok(album);
     }
 

@@ -10,31 +10,26 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.util.Map;
 
-public record StorageImageUploadRequest(
+public record FileUploadRequest(
     @NotBlank Long userId,
-    @NotNull MultipartFile file
+    @NotNull MultipartFile file,
+    String resourceKey
 ) {
     private static final HttpHeaders REQUEST_HEADERS = new HttpHeaders();
     private static final String ID_REQUEST_KEY_NAME = "userId";
     private static final String FILE_REQUEST_KEY_NAME = "file";
+    private static final String RESOURCE_KEY_REQUEST_KEY_NAME = "resourceKey";
 
     static {
         REQUEST_HEADERS.setContentType(MediaType.MULTIPART_FORM_DATA);
-    }
-
-    public StorageImageUploadRequest(Long userId, MultipartFile file) {
-        if (file == null || file.isEmpty()) {
-            throw new IllegalArgumentException("File must not be empty");
-        }
-        this.userId = userId;
-        this.file = file;
     }
 
     public HttpEntity<Object> toHttpEntity() {
         var body = new LinkedMultiValueMap<String, Object>();
         body.setAll(Map.of(
             ID_REQUEST_KEY_NAME, userId,
-            FILE_REQUEST_KEY_NAME, file.getResource()
+            FILE_REQUEST_KEY_NAME, file.getResource(),
+            RESOURCE_KEY_REQUEST_KEY_NAME, resourceKey
         ));
         return new HttpEntity<>(body, REQUEST_HEADERS);
     }
