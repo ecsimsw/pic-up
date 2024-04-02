@@ -18,14 +18,4 @@ public class FileFixture {
     public static MultipartFile MULTIPART_FILE = new MockMultipartFile("name", "name.png", "png", "Image binary file for test".getBytes());
 
     public static ImageFile IMAGE_FILE = ImageFile.of(MULTIPART_FILE);
-
-    public static Resource createdResource(String key) {
-        return new Resource(
-            key,
-            USER_ID,
-            List.of(StorageKey.LOCAL_FILE_STORAGE, StorageKey.S3_OBJECT_STORAGE),
-            LocalDateTime.now(),
-            null
-        );
-    }
 }

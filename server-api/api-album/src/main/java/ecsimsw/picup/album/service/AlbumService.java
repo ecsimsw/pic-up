@@ -20,6 +20,7 @@ import static ecsimsw.picup.album.domain.AlbumRepository.AlbumSearchSpecs.*;
 @Service
 public class AlbumService {
 
+    private final PictureService pictureService;
     private final AlbumRepository albumRepository;
     private final PictureRepository pictureRepository;
     private final FileStorageService fileStorageService;
@@ -29,9 +30,8 @@ public class AlbumService {
     public AlbumInfoResponse create(Long userId, String name, MultipartFile file) {
         var originPicture = ImageFile.of(userId, file);
         try {
-            var pictureFile = fileStorageService.upload(userId, file, originPicture.resourceKey());
+            var pictureFile = fileStorageService.upload(originPicture);
             var album = new Album(userId, name, pictureFile.resourceKey(), pictureFile.size());
-            storageUsageService.addUsage(userId, album.getResourceFileSize());
             albumRepository.save(album);
             return AlbumInfoResponse.of(album);
         } catch (Exception e) {
@@ -50,14 +50,9 @@ public class AlbumService {
     public void delete(Long userId, Long albumId) {
         var album = getUserAlbum(userId, albumId);
         fileStorageService.createDeleteEvent(new FileDeletionEvent(userId, album.getResourceKey()));
-        storageUsageService.subtractUsage(userId, album.getResourceFileSize());
         albumRepository.delete(album);
 
-        var pictures = pictureRepository.findAllByAlbumId(albumId);
-        fileStorageService.createDeleteEvents(FileDeletionEvent.listOf(userId, pictures));
-        var picturesFileSize = pictures.stream().mapToLong(Picture::getFileSize).sum();
-        storageUsageService.subtractUsage(userId, picturesFileSize);
-        pictureRepository.deleteAll(pictures);
+        pictureService.deleteAllInAlbum(userId, albumId);
     }
 
     @Transactional(readOnly = true)

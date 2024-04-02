@@ -12,6 +12,7 @@ import ecsimsw.picup.usage.service.StorageUsageService;
 
 import java.util.List;
 
+import java.util.NoSuchElementException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -48,8 +49,13 @@ public class PictureService {
 
     @Transactional
     public void delete(Long userId, Long albumId, Long pictureId) {
+        var picture = pictureRepository.findById(pictureId).orElseThrow(() -> new NoSuchElementException("Not exists picture"));
+        delete(userId, albumId, picture);
+    }
+
+    @Transactional
+    public void delete(Long userId, Long albumId, Picture picture) {
         checkUserAuthInAlbum(userId, albumId);
-        var picture = getPicture(pictureId);
         picture.validateAlbum(albumId);
         fileStorageService.createDeleteEvent(new FileDeletionEvent(userId, picture.getResourceKey()));
         storageUsageService.subtractUsage(userId, picture.getFileSize());
@@ -58,8 +64,17 @@ public class PictureService {
 
     @Transactional
     public void deleteAll(Long userId, Long albumId, List<Long> pictureIds) {
-        pictureIds.forEach(
-            pictureId -> delete(userId, albumId, pictureId)
+        var pictures = pictureRepository.findAllById(pictureIds);
+        pictures.forEach(
+            it -> delete(userId, albumId, it)
+        );
+    }
+
+    @Transactional
+    public void deleteAllInAlbum(Long userId, Long albumId) {
+        var pictures = pictureRepository.findAllByAlbumId(albumId);
+        pictures.forEach(
+            it -> delete(userId, albumId, it)
         );
     }
 
@@ -79,10 +94,6 @@ public class PictureService {
             sortByCreatedAtDesc
         );
         return PictureInfoResponse.listOf(pictures);
-    }
-
-    private Picture getPicture(Long pictureId) {
-        return pictureRepository.findById(pictureId).orElseThrow(() -> new AlbumException("Invalid picture"));
     }
 
     private void checkUserAuthInAlbum(Long userId, Long albumId) {

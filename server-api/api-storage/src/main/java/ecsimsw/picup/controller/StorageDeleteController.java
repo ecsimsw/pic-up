@@ -34,12 +34,12 @@ public class StorageDeleteController {
     @RabbitListener(queues = FILE_DELETE_QUEUE_NAME, containerFactory = FILE_DELETION_QUEUE_CF)
     public void delete(FileDeletionRequest request) {
         LOGGER.info("Delete file : " + request.getResourceKey());
-        storageService.deleteByResourceKey(request.getResourceKey());
+        storageService.delete(request.getResourceKey());
     }
 
     @RabbitListener(queues = FILE_DELETION_RECOVER_QUEUE_NAME)
     public void deleteAllRecover(Message failedMessage) {
-        final String alertMessage = "dead letter from file deletion queue \n" + "body : " + failedMessage.getPayload();
+        var alertMessage = "dead letter from file deletion queue \n" + "body : " + failedMessage.getPayload();
         LOGGER.error(alertMessage);
         SlackMessageSender.send(alertMessage);
     }

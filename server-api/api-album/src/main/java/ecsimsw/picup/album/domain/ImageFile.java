@@ -10,7 +10,7 @@ import java.io.IOException;
 public record ImageFile(
     Long userId,
     String resourceKey,
-    String format,
+    ImageFileExtension format,
     byte[] file
 ) {
 
@@ -18,9 +18,9 @@ public record ImageFile(
         try {
             var resourceKey = ResourceKeyStrategy.generate(userId.toString(), file);
             var fileName = file.getOriginalFilename();
-            var format = resourceKey.substring(fileName.lastIndexOf(".") + 1);
+            var format = ImageFileExtension.fromFileName(fileName);
             return new ImageFile(userId, resourceKey, format, file.getBytes());
-        } catch (IOException e) {
+        } catch (IOException | NullPointerException e) {
             throw new AlbumException("Invalid multipart file");
         }
     }
@@ -29,9 +29,9 @@ public record ImageFile(
         try {
             var resourceKey = ResourceKeyStrategy.generate(userId.toString(), file);
             var fileName = file.getOriginalFilename();
-            var format = fileName.substring(fileName.lastIndexOf(".") + 1);
+            var format = ImageFileExtension.fromFileName(fileName);
             var inputStream = file.getInputStream();
-            var resized = ThumbnailUtils.resize(inputStream, format, scale);
+            var resized = ThumbnailUtils.resize(inputStream, format.name(), scale);
             return new ImageFile(userId, resourceKey, format, resized);
         } catch (IOException | NullPointerException e) {
             throw new AlbumException("Invalid multipart upload request");
@@ -39,6 +39,6 @@ public record ImageFile(
     }
 
     public MultipartFile toMultipartFile() {
-        return new MockMultipartFile(resourceKey, resourceKey, format, file);
+        return new MockMultipartFile(resourceKey, resourceKey, format.name(), file);
     }
 }

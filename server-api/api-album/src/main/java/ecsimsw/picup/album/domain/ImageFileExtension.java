@@ -7,19 +7,22 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.Arrays;
 import java.util.Objects;
 
-public enum FileExtension {
+public enum ImageFileExtension {
     JPEG, JPG, PNG;
 
-    public static FileExtension of(String value) {
+    public static ImageFileExtension of(String value) {
         return Arrays.stream(values())
-            .filter(it -> it.name().equals(value.toUpperCase()))
+            .filter(it -> it.name().equalsIgnoreCase(value))
             .findAny()
             .orElseThrow(() -> new UnsupportedFileTypeException("Invalid file type"));
     }
 
+    public static ImageFileExtension fromFileName(String fileName) {
+        return of(fileName.substring(fileName.lastIndexOf(".") + 1));
+    }
+
     public static void validate(MultipartFile file) {
         var fileName = file.getOriginalFilename();
-        System.out.println("name : "  + fileName);
         if (Objects.isNull(fileName) || !fileName.contains(".")) {
             throw new AlbumException("Invalid file name");
         }

@@ -1,10 +1,8 @@
 package ecsimsw.picup.domain;
 
 import ecsimsw.picup.auth.UnauthorizedException;
-import ecsimsw.picup.exception.InvalidResourceException;
 import ecsimsw.picup.storage.ImageStorage;
 import ecsimsw.picup.storage.StorageKey;
-import java.io.FileNotFoundException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -33,15 +31,11 @@ public class Resource {
     @Convert(converter = ListStorageKeyConverter.class)
     private List<StorageKey> storedStorages = new ArrayList<>();
 
-    private LocalDateTime createRequested;
-    private LocalDateTime deleteRequested;
+    private LocalDateTime createdAt = LocalDateTime.now();
 
-    public static Resource createRequested(Long userId, String resourceKey) {
-        return new Resource(resourceKey, userId, new ArrayList<>(), LocalDateTime.now(), null);
-    }
-
-    public void storedTo(ImageStorage storage) {
-        storedTo(storage.key());
+    public Resource(Long userId, String resourceKey) {
+        this.resourceKey = resourceKey;
+        this.userId = userId;
     }
 
     public void storedTo(StorageKey storageKey) {
@@ -50,44 +44,13 @@ public class Resource {
     }
 
     public void deletedFrom(ImageStorage storage) {
-        deletedFrom(storage.key());
-    }
-
-    public void deletedFrom(StorageKey storageKey) {
         storedStorages = new ArrayList<>(storedStorages);
-        storedStorages.remove(storageKey);
+        storedStorages.remove(storage.key());
     }
 
-    public void deleteRequested() {
-        if (createRequested == null) {
-            throw new InvalidResourceException("Never created resource");
-        }
-        this.deleteRequested = LocalDateTime.now();
-    }
-
-    public boolean isLived() {
-        return createRequested != null && deleteRequested == null;
-    }
-
-    public boolean isStoredAt(ImageStorage storage) {
-        return storedStorages.contains(storage.key());
-    }
-
-    public void requireSameUser(Long userId) {
+    public void validateAccess(Long userId) {
         if (!this.userId.equals(userId)) {
             throw new UnauthorizedException("Unauthorized request");
-        }
-    }
-
-    public void requireLived() {
-        if (!isLived()) {
-            throw new InvalidResourceException("Invalid resource");
-        }
-    }
-
-    public void requireStoredAt(ImageStorage storage) throws FileNotFoundException {
-        if (!isStoredAt(storage)) {
-            throw new FileNotFoundException("Not exists resource");
         }
     }
 
