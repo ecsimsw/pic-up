@@ -28,13 +28,15 @@ import org.springframework.web.multipart.MultipartFile;
 @Service
 public class AlbumService {
 
+    private static final float THUMBNAIL_RESIZE_SCALE = 0.5f;
+
     private final PictureService pictureService;
     private final AlbumRepository albumRepository;
     private final FileStorageService fileStorageService;
 
     @Transactional
     public AlbumInfoResponse create(Long userId, String name, MultipartFile file) {
-        var originPicture = ImageFile.of(userId, file);
+        var originPicture = ImageFile.resizedOf(userId, file, THUMBNAIL_RESIZE_SCALE);
         try {
             var pictureFile = fileStorageService.upload(originPicture);
             var album = new Album(userId, name, pictureFile.resourceKey(), pictureFile.size());
