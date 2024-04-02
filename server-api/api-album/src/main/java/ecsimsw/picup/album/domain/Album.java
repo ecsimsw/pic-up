@@ -24,15 +24,10 @@ public class Album {
 
     @NotNull
     private Long userId;
-
     private String name;
     private String resourceKey;
     private Long resourceFileSize;
     private LocalDateTime createdAt;
-
-    public Album(Long userId, String name, String resourceKey, Long thumbnailFileSize, LocalDateTime createdAt) {
-        this(null, userId, name, resourceKey, thumbnailFileSize, createdAt);
-    }
 
     public Album(Long userId, String name, String resourceKey, Long thumbnailFileSize) {
         this(null, userId, name, resourceKey, thumbnailFileSize, LocalDateTime.now());

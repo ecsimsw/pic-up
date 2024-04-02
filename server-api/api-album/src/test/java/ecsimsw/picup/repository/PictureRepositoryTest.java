@@ -27,13 +27,13 @@ public class PictureRepositoryTest {
     @DisplayName("같은 유저의 createdAt, id 를 키로 커서 기반 페이지 조회를 확인한다.")
     @Test
     public void testCursorBased() {
-        var picture1 = pictureRepository.save(new Picture(1L, "resource1", SIZE));
-        var picture2 = pictureRepository.save(new Picture(1L, "resource2", SIZE));
-        var picture3 = pictureRepository.save(new Picture(1L, "resource3", SIZE));
-        var picture4 = pictureRepository.save(new Picture(2L, "resource4", SIZE));
-        var picture5 = pictureRepository.save(new Picture(1L, "resource5", SIZE));
-        var picture6 = pictureRepository.save(new Picture(2L, "resource6", SIZE));
-        var picture7 = pictureRepository.save(new Picture(1L, "resource7", SIZE));
+        var picture1 = pictureRepository.save(new Picture(1L, "resource1", "resource1", SIZE));
+        var picture2 = pictureRepository.save(new Picture(1L, "resource2", "resource1", SIZE));
+        var picture3 = pictureRepository.save(new Picture(1L, "resource3", "resource3", SIZE));
+        var picture4 = pictureRepository.save(new Picture(2L, "resource4", "resource4", SIZE));
+        var picture5 = pictureRepository.save(new Picture(1L, "resource5", "resource5", SIZE));
+        var picture6 = pictureRepository.save(new Picture(2L, "resource6", "resource6", SIZE));
+        var picture7 = pictureRepository.save(new Picture(1L, "resource7", "resource7", SIZE));
 
         pictureRepository.save(picture1);
         pictureRepository.save(picture2);
@@ -48,7 +48,7 @@ public class PictureRepositoryTest {
         final List<Picture> pictures = pictureRepository.fetch(
             isAlbum(1L)
                 .and(createdBefore(prev.createdAt()).or(
-                    equalsCreatedTime(prev.createdAt()).and(greaterId(prev.id())))),
+                    equalsCreatedTime(prev.createdAt()).and(greaterId(prev.cursorId())))),
             limit, sortByCreatedAtDesc
         );
         assertThat(pictures)
@@ -60,15 +60,15 @@ public class PictureRepositoryTest {
     @Test
     public void testCursorBasedSameCreateTime() {
         LocalDateTime sameTime = LocalDateTime.now();
-        var picture1 = new Picture(1L, 1L, "resource1", SIZE, sameTime);
-        var picture2 = new Picture(2L, 1L, "resource2", SIZE, sameTime);
-        var picture3 = new Picture(3L, 1L, "resource3", SIZE, sameTime);
-        var picture4 = new Picture(4L, 2L, "resource4", SIZE, sameTime);
-        var picture5 = new Picture(5L, 1L, "resource5", SIZE, sameTime);
-        var picture6 = new Picture(6L, 2L, "resource6", SIZE, sameTime);
-        var picture7 = new Picture(7L, 1L, "resource7", SIZE, sameTime);
-        var picture8 = new Picture(8L, 1L, "resource8", SIZE, LocalDateTime.now());
-        var picture9 = new Picture(9L, 1L, "resource9", SIZE, sameTime);
+        var picture1 = new Picture(1L, 1L, "resource1", "resource1", SIZE, sameTime);
+        var picture2 = new Picture(2L, 1L, "resource2", "resource2", SIZE, sameTime);
+        var picture3 = new Picture(3L, 1L, "resource3", "resource3", SIZE, sameTime);
+        var picture4 = new Picture(4L, 2L, "resource4", "resource4", SIZE, sameTime);
+        var picture5 = new Picture(5L, 1L, "resource5", "resource5", SIZE, sameTime);
+        var picture6 = new Picture(6L, 2L, "resource6", "resource6", SIZE, sameTime);
+        var picture7 = new Picture(7L, 1L, "resource7", "resource7", SIZE, sameTime);
+        var picture8 = new Picture(8L, 1L, "resource8", "resource8", SIZE, LocalDateTime.now());
+        var picture9 = new Picture(9L, 1L, "resource9", "resource9", SIZE, sameTime);
 
         pictureRepository.save(picture1);
         pictureRepository.save(picture2);
@@ -84,7 +84,7 @@ public class PictureRepositoryTest {
         var limit = 5;
         final List<Picture> pictures = pictureRepository.fetch(
             isAlbum(1L)
-                .and(createdBefore(prev.createdAt()).or(equalsCreatedTime(prev.createdAt()).and(greaterId(prev.id()))))
+                .and(createdBefore(prev.createdAt()).or(equalsCreatedTime(prev.createdAt()).and(greaterId(prev.cursorId()))))
             , limit, sortByCreatedAtDesc
         );
         assertThat(pictures)
@@ -95,7 +95,7 @@ public class PictureRepositoryTest {
     @DisplayName("Picture 을 저장한다. id와 생성 시각이 함께 저장된다.")
     @Test
     public void createAlbum() {
-        var saved = pictureRepository.save(new Picture(ALBUM_ID, RESOURCE_KEY, SIZE));
+        var saved = pictureRepository.save(new Picture(ALBUM_ID, RESOURCE_KEY, RESOURCE_KEY, SIZE));
         assertAll(
             () -> assertThat(saved.getId()).isNotNull(),
             () -> assertThat(saved.getAlbumId()).isEqualTo(ALBUM_ID),

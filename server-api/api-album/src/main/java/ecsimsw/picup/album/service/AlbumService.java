@@ -1,20 +1,28 @@
 package ecsimsw.picup.album.service;
 
-import ecsimsw.picup.album.domain.*;
+import static ecsimsw.picup.album.domain.AlbumRepository.AlbumSearchSpecs.ascByCreatedAt;
+import static ecsimsw.picup.album.domain.AlbumRepository.AlbumSearchSpecs.createdLater;
+import static ecsimsw.picup.album.domain.AlbumRepository.AlbumSearchSpecs.equalsCreatedTime;
+import static ecsimsw.picup.album.domain.AlbumRepository.AlbumSearchSpecs.isUser;
+import static ecsimsw.picup.album.domain.AlbumRepository.AlbumSearchSpecs.lessId;
+import static ecsimsw.picup.album.domain.AlbumRepository.AlbumSearchSpecs.where;
+
+import ecsimsw.picup.album.domain.Album;
+import ecsimsw.picup.album.domain.AlbumRepository;
+import ecsimsw.picup.album.domain.FileDeletionEvent;
+import ecsimsw.picup.album.domain.ImageFile;
+import ecsimsw.picup.album.domain.PictureRepository;
+import ecsimsw.picup.album.dto.AlbumInfoResponse;
 import ecsimsw.picup.album.dto.AlbumSearchCursor;
 import ecsimsw.picup.album.exception.AlbumException;
-import ecsimsw.picup.album.dto.AlbumInfoResponse;
 import ecsimsw.picup.usage.service.StorageUsageService;
+import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.util.List;
-import java.util.Optional;
-
-import static ecsimsw.picup.album.domain.AlbumRepository.AlbumSearchSpecs.*;
 
 @RequiredArgsConstructor
 @Service
@@ -22,9 +30,7 @@ public class AlbumService {
 
     private final PictureService pictureService;
     private final AlbumRepository albumRepository;
-    private final PictureRepository pictureRepository;
     private final FileStorageService fileStorageService;
-    private final StorageUsageService storageUsageService;
 
     @Transactional
     public AlbumInfoResponse create(Long userId, String name, MultipartFile file) {
@@ -51,7 +57,6 @@ public class AlbumService {
         var album = getUserAlbum(userId, albumId);
         fileStorageService.createDeleteEvent(new FileDeletionEvent(userId, album.getResourceKey()));
         albumRepository.delete(album);
-
         pictureService.deleteAllInAlbum(userId, albumId);
     }
 

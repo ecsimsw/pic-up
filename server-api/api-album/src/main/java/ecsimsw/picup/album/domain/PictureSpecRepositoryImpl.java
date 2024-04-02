@@ -10,7 +10,6 @@ import org.springframework.data.jpa.repository.support.SimpleJpaRepository;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-@Transactional
 @Repository
 public class PictureSpecRepositoryImpl extends SimpleJpaRepository<Picture, Long> implements PictureSpecRepository {
 
@@ -18,6 +17,7 @@ public class PictureSpecRepositoryImpl extends SimpleJpaRepository<Picture, Long
         super(Picture.class, entityManager);
     }
 
+    @Transactional(readOnly = true)
     @Override
     public List<Picture> fetch(Specification<Picture> specification, int limit, Sort sort) {
         var query = getQuery(specification, sort);

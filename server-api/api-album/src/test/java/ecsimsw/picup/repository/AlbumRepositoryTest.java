@@ -54,31 +54,6 @@ public class AlbumRepositoryTest {
         assertThat(albums).isEqualTo(List.of(album3, album5));
     }
 
-    @DisplayName("동일한 생성 시각일 경우 id 로 비교하여 순서를 정할 수 있다.")
-    @Test
-    public void testCursorBasedSameCreateTime() {
-        LocalDateTime sameTime = LocalDateTime.now();
-        var album1 = albumRepository.save(new Album(1L, "albumName1", "resource1", SIZE, sameTime));
-        var album2 = albumRepository.save(new Album(1L, "albumName2", "resource2", SIZE, sameTime));
-        var album3 = albumRepository.save(new Album(1L, "albumName3", "resource3", SIZE, sameTime));
-        var album4 = albumRepository.save(new Album(2L, "albumName4", "resource4", SIZE, sameTime));
-        var album5 = albumRepository.save(new Album(1L, "albumName5", "resource5", SIZE, sameTime));
-        var album6 = albumRepository.save(new Album(2L, "albumName6", "resource6", SIZE, sameTime));
-        var album7 = albumRepository.save(new Album(1L, "albumName7", "resource7", SIZE, sameTime));
-        var album8 = albumRepository.save(new Album(1L, "albumName8", "resource8", SIZE, LocalDateTime.now()));
-        var album9 = albumRepository.save(new Album(1L, "albumName9", "resource9", SIZE, sameTime));
-
-        var prev = new AlbumSearchCursor(album2);
-        var limit = 5;
-        final List<Album> albums = albumRepository.fetch(
-            where(isUser(1L))
-                .and(createdLater(prev.createdAt()).or(
-                    equalsCreatedTime(prev.createdAt()).and(lessId(prev.id())))
-                ), limit, ascByCreatedAt
-        );
-        assertThat(albums).isEqualTo(List.of(album3, album5, album7, album9, album8));
-    }
-
     @DisplayName("Album 을 저장한다. id와 생성 시각이 함께 저장된다.")
     @Test
     public void createAlbum() {

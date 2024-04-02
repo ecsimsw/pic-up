@@ -20,6 +20,9 @@ import java.util.Objects;
 @Service
 public class StorageHttpClient {
 
+    private static final int RETRY_COUNT = 2;
+    private static final int RETRY_DELAY_TIME_MS = 100;
+
     private final String STORAGE_SERVER_URL;
     private final RestTemplate restTemplate;
 
@@ -33,28 +36,11 @@ public class StorageHttpClient {
 
     @Retryable(
         label = "Retry when storage server is down or bad response",
-        maxAttemptsExpression = "${rt.retry.count}",
+        maxAttempts = RETRY_COUNT,
         value = Throwable.class,
-        backoff = @Backoff(delayExpression = "${rt.retry.delay.time.ms}"),
+        backoff = @Backoff(RETRY_DELAY_TIME_MS),
         recover = "recoverRequestUpload"
     )
-    public FileUploadResponse requestUpload(Long userId, MultipartFile file, String resourceKey) {
-        try {
-            var response = restTemplate.exchange(
-                STORAGE_SERVER_URL + "/api/storage",
-                HttpMethod.POST,
-                new FileUploadRequest(userId, file, resourceKey).toHttpEntity(),
-                new ParameterizedTypeReference<FileUploadResponse>() {
-                });
-            if (Objects.isNull(response.getBody()) || Objects.isNull(response.getBody().resourceKey())) {
-                throw new InvalidStorageServerResponseException("Failed to upload resources.\nStorage server is on, but invalid response body.");
-            }
-            return response.getBody();
-        } catch (HttpStatusCodeException e) {
-            throw new InvalidStorageServerResponseException("Failed to upload resources.\nStorage server is on, but invalid response status.", e);
-        }
-    }
-
     public FileUploadResponse requestUpload(FileUploadRequest request) {
         try {
             var response = restTemplate.exchange(
@@ -73,7 +59,7 @@ public class StorageHttpClient {
     }
 
     @Recover
-    public FileUploadResponse recoverRequestUpload(Throwable exception, Long userId, MultipartFile file) {
+    public FileUploadResponse recoverRequestUpload(Throwable exception, FileUploadRequest request) {
         throw new FileUploadFailException(exception.getMessage(), exception);
     }
 }

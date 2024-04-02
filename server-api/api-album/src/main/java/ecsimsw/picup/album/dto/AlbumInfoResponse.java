@@ -9,15 +9,12 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@Getter
-@Setter
-@AllArgsConstructor
-@NoArgsConstructor
-public class AlbumInfoResponse {
-    private Long id;
-    private String name;
-    private String thumbnailImage;
-    private LocalDateTime createdAt;
+public record AlbumInfoResponse(
+    Long id,
+    String name,
+    String thumbnailImage,
+    LocalDateTime createdAt
+) {
 
     public static AlbumInfoResponse of(Album album) {
         return new AlbumInfoResponse(

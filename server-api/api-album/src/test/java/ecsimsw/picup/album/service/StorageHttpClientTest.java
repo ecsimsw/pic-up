@@ -1,6 +1,7 @@
 package ecsimsw.picup.album.service;
 
 import ecsimsw.picup.album.exception.FileUploadFailException;
+import ecsimsw.picup.dto.FileUploadRequest;
 import ecsimsw.picup.dto.FileUploadResponse;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -48,7 +49,7 @@ class StorageHttpClientTest {
                 ResponseEntity.ok(new FileUploadResponse(RESOURCE_KEY, SIZE))
             );
 
-        storageHttpClient.requestUpload(MEMBER_ID, MULTIPART_FILE, RESOURCE_KEY);
+        storageHttpClient.requestUpload(new FileUploadRequest(MEMBER_ID, MULTIPART_FILE, RESOURCE_KEY));
 
         verify(restTemplate, times(2))
             .exchange(any(String.class), any(HttpMethod.class), any(HttpEntity.class), any(ParameterizedTypeReference.class));
@@ -63,7 +64,7 @@ class StorageHttpClientTest {
             .thenReturn(ResponseEntity.badRequest().build());
 
         assertThatThrownBy(
-            () -> storageHttpClient.requestUpload(MEMBER_ID, MULTIPART_FILE, RESOURCE_KEY)
+            () -> storageHttpClient.requestUpload(new FileUploadRequest(MEMBER_ID, MULTIPART_FILE, RESOURCE_KEY))
         ).isInstanceOf(FileUploadFailException.class);
 
         verify(restTemplate, times(retryCount))
@@ -76,7 +77,7 @@ class StorageHttpClientTest {
         when(restTemplate.exchange(any(String.class), any(HttpMethod.class), any(HttpEntity.class), any(ParameterizedTypeReference.class)))
             .thenReturn(ResponseEntity.ok(new FileUploadResponse(RESOURCE_KEY, SIZE)));
 
-        var fileInfo = storageHttpClient.requestUpload(MEMBER_ID, MULTIPART_FILE, RESOURCE_KEY);
+        var fileInfo = storageHttpClient.requestUpload(new FileUploadRequest(MEMBER_ID, MULTIPART_FILE, RESOURCE_KEY));
         assertAll(
             () -> assertThat(fileInfo.resourceKey()).isEqualTo(RESOURCE_KEY),
             () -> assertThat(fileInfo.size()).isEqualTo(SIZE)

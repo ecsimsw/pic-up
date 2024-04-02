@@ -6,7 +6,6 @@ import ecsimsw.picup.domain.ResourceRepository;
 import ecsimsw.picup.storage.StorageKey;
 import ecsimsw.picup.exception.StorageException;
 import ecsimsw.picup.mq.ImageFileMessageQueue;
-import ecsimsw.picup.service.ImageStorage;
 import ecsimsw.picup.env.MockImageStorage;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -278,13 +277,13 @@ public class StorageServiceTest {
         @DisplayName("업로드에 성공하고 저장된 리소스 정보를 기록한다.")
         @Test
         public void uploadSuccessfully() {
-            var result = storageService.upload(USER_ID, FILE_TAG, MULTIPART_FILE);
+            var result = storageService.upload(USER_ID, MULTIPART_FILE, RESOURCE_KEY);
             verify(resourceRepository, atLeast(3))
                 .save(resourceArgumentCaptor.capture());
 
             var saved = getResourceSavedData();
             assertAll(
-                () -> assertNotNull(result.getResourceKey()),
+                () -> assertNotNull(result.resourceKey()),
                 () -> assertThat(saved.getResourceKey()).isEqualTo(result.getResourceKey()),
                 () -> assertThat(saved.getStoredStorages()).isEqualTo(
                     List.of(LOCAL_FILE_STORAGE, StorageKey.S3_OBJECT_STORAGE)

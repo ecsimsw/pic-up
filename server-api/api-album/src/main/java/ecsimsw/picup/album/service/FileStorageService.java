@@ -62,11 +62,6 @@ public class FileStorageService {
     }
 
     @Transactional
-    public void createDeleteEvents(List<FileDeletionEvent> events) {
-        events.forEach(this::createDeleteEvent);
-    }
-
-    @Transactional
     public void createDeleteEvent(FileDeletionEvent event) {
         fileDeletionEventOutbox.save(event);
     }
