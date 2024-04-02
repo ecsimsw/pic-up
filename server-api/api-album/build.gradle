@@ -20,6 +20,9 @@ dependencies {
 
     // redisson
     implementation 'org.redisson:redisson-spring-boot-starter:3.17.0'
+
+    // thumbnailator
+    implementation 'net.coobird:thumbnailator:0.4.20'
 }
 
 test {

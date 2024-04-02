@@ -22,7 +22,7 @@ class CorsConfig implements WebMvcConfigurer {
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
-            .allowedOrigins("http://www.ecsimsw.com:8082")
+            .allowedOrigins("http://localhost:63342")
             .allowedMethods("*")
             .allowedHeaders("*")
             .maxAge(3600);

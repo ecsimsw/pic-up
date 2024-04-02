@@ -32,10 +32,10 @@ document.addEventListener("DOMContentLoaded", function () {
             if(inPagePictures.has(picture.id)) {
                 return
             }
-            createNewPicture(albumId, picture.id, picture.resourceKey)
+            createNewPicture(albumId, picture.id, picture.thumbnailResourceKey)
             addGalleryImage(
                 storageUrl + "/api/storage/" + picture.resourceKey,
-                storageUrl + "/api/storage/" + picture.resourceKey
+                storageUrl + "/api/storage/" + picture.thumbnailResourceKey
             )
             addImageViewer(`album-${albumId}-picture-${picture.id}`, galleryOrderNumber);
             galleryOrderNumber++
@@ -91,10 +91,10 @@ function handleScroll() {
                 if(inPagePictures.has(picture.id)) {
                     return
                 }
-                createNewPicture(albumId, picture.id, picture.resourceKey)
+                createNewPicture(albumId, picture.id, picture.thumbnailResourceKey)
                 addGalleryImage(
                     storageUrl + "/api/storage/" + picture.resourceKey,
-                    storageUrl + "/api/storage/" + picture.resourceKey
+                    storageUrl + "/api/storage/" + picture.thumbnailResourceKey
                 )
                 addImageViewer(`album-${albumId}-picture-${picture.id}`, galleryOrderNumber);
                 galleryOrderNumber++
