@@ -19,6 +19,7 @@ public enum FileExtension {
 
     public static void validate(MultipartFile file) {
         var fileName = file.getOriginalFilename();
+        System.out.println("name : "  + fileName);
         if (Objects.isNull(fileName) || !fileName.contains(".")) {
             throw new AlbumException("Invalid file name");
         }

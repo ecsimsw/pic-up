@@ -3,19 +3,17 @@ package ecsimsw.picup.service;
 import ecsimsw.picup.domain.ImageFile;
 import ecsimsw.picup.domain.Resource;
 import ecsimsw.picup.domain.ResourceRepository;
-import ecsimsw.picup.dto.ImageResponse;
 import ecsimsw.picup.dto.FileUploadResponse;
-import ecsimsw.picup.dto.StorageUploadResponse;
+import ecsimsw.picup.dto.ImageResponse;
 import ecsimsw.picup.exception.InvalidResourceException;
 import ecsimsw.picup.exception.StorageException;
-import ecsimsw.picup.mq.ImageFileMessageQueue;
 import ecsimsw.picup.mq.message.FileDeletionRequest;
 import ecsimsw.picup.storage.ImageStorage;
-import ecsimsw.picup.storage.StorageKey;
 import java.io.FileNotFoundException;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,18 +27,15 @@ public class StorageService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(StorageService.class);
 
-    private final ImageFileMessageQueue imageFileMessageQueue;
     private final ResourceRepository resourceRepository;
     private final ImageStorage mainStorage;
     private final ImageStorage backUpStorage;
 
     public StorageService(
-        ImageFileMessageQueue imageFileMessageQueue,
         ResourceRepository resourceRepository,
         @Qualifier(value = "localFileStorage") ImageStorage localFileStorage,
         @Qualifier(value = "objectStorage") ImageStorage backUpStorage
     ) {
-        this.imageFileMessageQueue = imageFileMessageQueue;
         this.resourceRepository = resourceRepository;
         this.mainStorage = localFileStorage;
         this.backUpStorage = backUpStorage;
@@ -51,31 +46,28 @@ public class StorageService {
         var resource = Resource.createRequested(userId, resourceKey);
         resourceRepository.save(resource);
 
+
         var imageFile = ImageFile.of(file);
         var futures = List.of(
-            upload(mainStorage, imageFile, resource),
-            upload(backUpStorage, imageFile, resource)
+            mainStorage.storeAsync(resource.getResourceKey(), imageFile),
+            backUpStorage.storeAsync(resource.getResourceKey(), imageFile)
         );
         try {
             CompletableFuture.allOf(futures.toArray(new CompletableFuture[0]))
-                .orTimeout(5, TimeUnit.SECONDS).join();
-        } catch (CompletionException e) {
-//            futures.forEach(it -> it.thenAccept(
-//                result -> imageFileMessageQueue.offerDeleteByStorage(result.getResourceKey(), result.getStorageKey()))
-//            );
-//            e.printStackTrace();
-//            throw new StorageException("exception while uploading : " + e.getMessage());
+                .orTimeout(5, TimeUnit.SECONDS)
+                .join();
+            for(var future : futures) {
+                resource.storedTo(future.get().getStorageKey());
+                resourceRepository.save(resource);
+            }
+        } catch (CompletionException | InterruptedException | ExecutionException e) {
+            futures.forEach(uploadFuture -> uploadFuture.thenAccept(
+                uploadResponse -> deleteByResourceKey(uploadResponse.getResourceKey())
+            ));
+            throw new StorageException("exception while uploading : " + e.getMessage());
         }
+        LOGGER.info("upload file : " + resourceKey);
         return new FileUploadResponse(resource.getResourceKey(), imageFile.size());
-    }
-
-    private CompletableFuture<StorageUploadResponse> upload(ImageStorage storage, ImageFile imageFile, Resource resource) {
-        var uploadFuture = storage.create(resource.getResourceKey(), imageFile);
-        return uploadFuture.thenApply(result -> {
-            resource.storedTo(result.getStorageKey());
-            resourceRepository.save(resource);
-            return result;
-        });
     }
 
     public ImageResponse read(Long userId, String resourceKey) {
@@ -97,7 +89,7 @@ public class StorageService {
 
             var imageFile = readFromBackUpStorage(resource);
             try {
-                mainStorage.create(resource.getResourceKey(), imageFile);
+                mainStorage.storeAsync(resource.getResourceKey(), imageFile);
                 resource.storedTo(mainStorage);
                 resourceRepository.save(resource);
                 return ImageResponse.of(imageFile);
@@ -123,56 +115,31 @@ public class StorageService {
     }
 
     public void deleteAll(List<String> resourceKeys) {
-        resourceKeys.forEach(this::delete);
+        resourceKeys.forEach(this::deleteByResourceKey);
     }
 
-    public void delete(String resourceKey) {
+    public void deleteByResourceKey(String resourceKey) {
         LOGGER.info("delete resource : " + resourceKey);
-
-        if (!resourceRepository.existsById(resourceKey)) {
-            LOGGER.error("non-existence resource : " + resourceKey);
+        var optionalResource = resourceRepository.findById(resourceKey);
+        if(optionalResource.isEmpty()) {
             return;
         }
-
-        var resource = resourceRepository.findById(resourceKey)
-            .orElseThrow(() -> new InvalidResourceException("Not exists resources for : " + resourceKey));
-        if (resource.isLived()) {
-            resource.deleteRequested();
-            resourceRepository.save(resource);
-        }
-        if (resource.isStoredAt(mainStorage)) {
-            deleteFileFromStorage(resource, mainStorage);
-        }
-        if (resource.isStoredAt(backUpStorage)) {
-            deleteFileFromStorage(resource, backUpStorage);
+        var resource = optionalResource.orElseThrow(() -> new InvalidResourceException("Not exists resources for : " + resourceKey));
+        resource.deleteRequested();
+        deleteFileFromStorage(resource, mainStorage);
+        deleteFileFromStorage(resource, backUpStorage);
+        if(resource.isNotStored()) {
+            resourceRepository.delete(resource);
         }
     }
 
-    public void deleteByStorage(FileDeletionRequest request) {
-        LOGGER.info("delete resource : " + request + " on " + request.getStorageKey());
-        var resourceKey = request.getResourceKey();
-        var resource = resourceRepository.findById(resourceKey)
-            .orElseThrow(() -> new InvalidResourceException("Not exists resources for : " + resourceKey));
-
-        if (resource.isLived()) {
-            resource.deleteRequested();
-            resourceRepository.save(resource);
-        }
-        if (request.getStorageKey() == StorageKey.LOCAL_FILE_STORAGE) {
-            deleteFileFromStorage(resource, mainStorage);
-        }
-        if (request.getStorageKey() == StorageKey.S3_OBJECT_STORAGE) {
-            deleteFileFromStorage(resource, backUpStorage);
-        }
-    }
-
-    private void deleteFileFromStorage(Resource resource, ImageStorage backUpStorage) {
+    private void deleteFileFromStorage(Resource resource, ImageStorage storage) {
         try {
-            backUpStorage.delete(resource.getResourceKey());
-            resource.deletedFrom(backUpStorage);
+            storage.delete(resource.getResourceKey());
+            resource.deletedFrom(storage);
             resourceRepository.save(resource);
         } catch (FileNotFoundException fileAlreadyNotExists) {
-            resource.deletedFrom(backUpStorage);
+            resource.deletedFrom(storage);
             resourceRepository.save(resource);
         } catch (Exception ignored) {
             LOGGER.error("Failed to delete resource : " + resource.getResourceKey());

@@ -22,20 +22,20 @@ public class AlbumService {
 
     private final AlbumRepository albumRepository;
     private final PictureRepository pictureRepository;
-    private final PictureFileService pictureFileService;
+    private final FileStorageService fileStorageService;
     private final StorageUsageService storageUsageService;
 
     @Transactional
     public AlbumInfoResponse create(Long userId, String name, MultipartFile file) {
-        var resourceKey = ResourceKeyStrategy.generate(userId.toString(), file);
+        var originPicture = ImageFile.of(userId, file);
         try {
-            var albumFile = pictureFileService.upload(userId, file, resourceKey);
-            var album = new Album(userId, name, resourceKey, albumFile.size());
+            var pictureFile = fileStorageService.upload(userId, file, originPicture.resourceKey());
+            var album = new Album(userId, name, pictureFile.resourceKey(), pictureFile.size());
             storageUsageService.addUsage(userId, album.getResourceFileSize());
             albumRepository.save(album);
             return AlbumInfoResponse.of(album);
         } catch (Exception e) {
-            pictureFileService.delete(resourceKey);
+            fileStorageService.deleteAsync(originPicture.resourceKey());
             throw e;
         }
     }
@@ -49,13 +49,14 @@ public class AlbumService {
     @Transactional
     public void delete(Long userId, Long albumId) {
         var album = getUserAlbum(userId, albumId);
-        pictureFileService.createDeleteEvent(new FileDeletionEvent(userId, album.getResourceKey()));
+        fileStorageService.createDeleteEvent(new FileDeletionEvent(userId, album.getResourceKey()));
         storageUsageService.subtractUsage(userId, album.getResourceFileSize());
         albumRepository.delete(album);
 
         var pictures = pictureRepository.findAllByAlbumId(albumId);
-        pictureFileService.createDeleteEvents(FileDeletionEvent.listOf(userId, pictures));
-        storageUsageService.subtractUsage(userId, pictures.stream().mapToLong(Picture::getFileSize).sum());
+        fileStorageService.createDeleteEvents(FileDeletionEvent.listOf(userId, pictures));
+        var picturesFileSize = pictures.stream().mapToLong(Picture::getFileSize).sum();
+        storageUsageService.subtractUsage(userId, picturesFileSize);
         pictureRepository.deleteAll(pictures);
     }
 

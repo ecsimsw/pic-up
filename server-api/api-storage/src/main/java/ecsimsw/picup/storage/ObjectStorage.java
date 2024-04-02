@@ -34,7 +34,7 @@ public class ObjectStorage implements ImageStorage {
 
     @Async
     @Override
-    public CompletableFuture<StorageUploadResponse> create(String resourceKey, ImageFile imageFile) {
+    public CompletableFuture<StorageUploadResponse> storeAsync(String resourceKey, ImageFile imageFile) {
         try {
             putImageFile(resourceKey, imageFile);
             return new AsyncResult<>(new StorageUploadResponse(resourceKey, KEY, imageFile.size())).completable();

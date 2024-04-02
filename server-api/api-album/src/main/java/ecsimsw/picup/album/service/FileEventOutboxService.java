@@ -12,11 +12,11 @@ public class FileEventOutboxService {
     private final static int FILE_DELETION_SCHED_DELAY = 3000;
     private final static int FILE_DELETION_LOCK_TIME = 30000;
 
-    private final PictureFileService pictureFileService;
+    private final FileStorageService fileStorageService;
     private final SchedulerLock schedulerLock;
 
-    public FileEventOutboxService(PictureFileService pictureFileService, SchedulerLock schedulerLock) {
-        this.pictureFileService = pictureFileService;
+    public FileEventOutboxService(FileStorageService fileStorageService, SchedulerLock schedulerLock) {
+        this.fileStorageService = fileStorageService;
         this.schedulerLock = schedulerLock;
     }
 
@@ -24,9 +24,9 @@ public class FileEventOutboxService {
     public void schedulePublishOut() {
         while (true) {
             schedulerLock.afterDelay(FILE_DELETION_LOCK_TIME, FILE_DELETION_SCHED_DELAY, () -> {
-                var toBeDeleted = pictureFileService.findAllDeletionOutBox();
+                var toBeDeleted = fileStorageService.findAllDeletionOutBox();
                 for (var eventSegment : Iterables.partition(toBeDeleted, FILE_DELETION_SEGMENT_UNIT)) {
-                    pictureFileService.publishDeletionEvents(eventSegment);
+                    fileStorageService.publishDeletionEvents(eventSegment);
                 }
             });
         }

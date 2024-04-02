@@ -9,21 +9,20 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-@AllArgsConstructor
-@NoArgsConstructor
-@Getter
-public class PictureInfoResponse {
-
-    private Long id;
-    private Long albumId;
-    private String resourceKey;
-    private LocalDateTime createdAt;
+public record PictureInfoResponse (
+    Long id,
+    Long albumId,
+    String resourceKey,
+    String thumbnailResourceKey,
+    LocalDateTime createdAt
+) {
 
     public static PictureInfoResponse of(Picture picture) {
         return new PictureInfoResponse(
             picture.getId(),
             picture.getAlbumId(),
             picture.getResourceKey(),
+            picture.getThumbnailResourceKey(),
             picture.getCreatedAt()
         );
     }

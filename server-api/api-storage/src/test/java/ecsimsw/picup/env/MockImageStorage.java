@@ -21,7 +21,7 @@ public class MockImageStorage implements ImageStorage {
     }
 
     @Override
-    public CompletableFuture<StorageUploadResponse> create(String resourceKey, ImageFile imageFile) {
+    public CompletableFuture<StorageUploadResponse> storeAsync(String resourceKey, ImageFile imageFile) {
         if (imageFile == null) {
             return new AsyncResult<>(new StorageUploadResponse(resourceKey, KEY, 0)).completable();
         }

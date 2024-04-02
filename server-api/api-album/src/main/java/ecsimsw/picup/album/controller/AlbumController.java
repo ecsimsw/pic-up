@@ -3,7 +3,6 @@ package ecsimsw.picup.album.controller;
 import ecsimsw.picup.album.dto.AlbumInfoResponse;
 import ecsimsw.picup.album.dto.AlbumSearchCursor;
 import ecsimsw.picup.album.service.AlbumService;
-import ecsimsw.picup.album.service.PictureFileService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

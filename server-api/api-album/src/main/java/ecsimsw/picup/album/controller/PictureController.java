@@ -61,7 +61,7 @@ public class PictureController {
         @PathVariable Long albumId,
         @RequestBody(required = false) PicturesDeleteRequest pictures
     ) {
-        pictureService.deleteAll(1L, albumId, pictures.getPictureIds());
-        return ResponseEntity.ok("hi");
+        pictureService.deleteAll(1L, albumId, pictures.pictureIds());
+        return ResponseEntity.ok().build();
     }
 }

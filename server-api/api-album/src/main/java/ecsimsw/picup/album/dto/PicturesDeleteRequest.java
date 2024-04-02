@@ -6,11 +6,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@Setter
-@Getter
-@AllArgsConstructor
-@NoArgsConstructor
-public class PicturesDeleteRequest{
+public record PicturesDeleteRequest(
+    List<Long> pictureIds
+) {
 
-    private List<Long> pictureIds;
 }

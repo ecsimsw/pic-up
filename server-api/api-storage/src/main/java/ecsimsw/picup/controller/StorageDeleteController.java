@@ -34,7 +34,7 @@ public class StorageDeleteController {
     @RabbitListener(queues = FILE_DELETE_QUEUE_NAME, containerFactory = FILE_DELETION_QUEUE_CF)
     public void delete(FileDeletionRequest request) {
         LOGGER.info("Delete file : " + request.getResourceKey());
-        storageService.deleteByStorage(request);
+        storageService.deleteByResourceKey(request.getResourceKey());
     }
 
     @RabbitListener(queues = FILE_DELETION_RECOVER_QUEUE_NAME)

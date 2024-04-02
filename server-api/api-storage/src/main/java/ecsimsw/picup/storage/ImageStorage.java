@@ -10,7 +10,7 @@ public interface ImageStorage {
 
     StorageKey key();
 
-    CompletableFuture<StorageUploadResponse> create(String resourceKey, ImageFile imageFile);
+    CompletableFuture<StorageUploadResponse> storeAsync(String resourceKey, ImageFile imageFile);
 
     ImageFile read(String resourceKey) throws FileNotFoundException;
 

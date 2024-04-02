@@ -1,6 +1,7 @@
 package ecsimsw.picup.storage;
 
 import ecsimsw.picup.domain.ImageFile;
+import ecsimsw.picup.domain.ResourceRepository;
 import ecsimsw.picup.dto.StorageUploadResponse;
 import ecsimsw.picup.exception.StorageException;
 import java.io.File;
@@ -10,6 +11,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.concurrent.CompletableFuture;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.AsyncResult;
@@ -30,11 +32,12 @@ public class LocalFileStorage implements ImageStorage {
 
     @Async
     @Override
-    public CompletableFuture<StorageUploadResponse> create(String resourceKey, ImageFile imageFile) {
+    public CompletableFuture<StorageUploadResponse> storeAsync(String resourceKey, ImageFile imageFile) {
         try {
-            final String storagePath = storagePath(resourceKey);
+            var storagePath = storagePath(resourceKey);
             Files.write(Paths.get(storagePath), imageFile.file());
-            return new AsyncResult<>(new StorageUploadResponse(resourceKey, KEY, imageFile.size())).completable();
+            var uploadResponse = new StorageUploadResponse(resourceKey, KEY, imageFile.size());
+            return new AsyncResult<>(uploadResponse).completable();
         } catch (IOException e) {
             throw new StorageException("Fail to create image file : " + resourceKey, e);
         }

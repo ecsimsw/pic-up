@@ -2,24 +2,20 @@ package ecsimsw.picup.domain;
 
 import ecsimsw.picup.auth.UnauthorizedException;
 import ecsimsw.picup.exception.InvalidResourceException;
-
+import ecsimsw.picup.storage.ImageStorage;
+import ecsimsw.picup.storage.StorageKey;
 import java.io.FileNotFoundException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-
-import ecsimsw.picup.storage.ImageStorage;
-import ecsimsw.picup.storage.StorageKey;
 import javax.persistence.Convert;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.validation.constraints.NotNull;
-
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.springframework.web.multipart.MultipartFile;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -63,7 +59,7 @@ public class Resource {
     }
 
     public void deleteRequested() {
-        if(createRequested == null) {
+        if (createRequested == null) {
             throw new InvalidResourceException("Never created resource");
         }
         this.deleteRequested = LocalDateTime.now();
@@ -78,7 +74,7 @@ public class Resource {
     }
 
     public void requireSameUser(Long userId) {
-        if(!this.userId.equals(userId)) {
+        if (!this.userId.equals(userId)) {
             throw new UnauthorizedException("Unauthorized request");
         }
     }
@@ -90,8 +86,12 @@ public class Resource {
     }
 
     public void requireStoredAt(ImageStorage storage) throws FileNotFoundException {
-        if(!isStoredAt(storage)) {
+        if (!isStoredAt(storage)) {
             throw new FileNotFoundException("Not exists resource");
         }
+    }
+
+    public boolean isNotStored() {
+        return storedStorages.isEmpty();
     }
 }

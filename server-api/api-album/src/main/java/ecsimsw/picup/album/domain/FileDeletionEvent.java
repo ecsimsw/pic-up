@@ -1,5 +1,6 @@
 package ecsimsw.picup.album.domain;
 
+import java.util.LinkedList;
 import lombok.*;
 
 import javax.persistence.Entity;
@@ -29,8 +30,11 @@ public class FileDeletionEvent {
     }
 
     public static List<FileDeletionEvent> listOf(Long userId, List<Picture> pictures) {
-        return pictures.stream()
-            .map(picture -> new FileDeletionEvent(userId, picture.getResourceKey()))
-            .collect(Collectors.toList());
+        var deletionEvents = new LinkedList<FileDeletionEvent>();
+        for(var picture : pictures) {
+            deletionEvents.add(new FileDeletionEvent(userId, picture.getResourceKey()));
+            deletionEvents.add(new FileDeletionEvent(userId, picture.getThumbnailResourceKey()));
+        }
+        return deletionEvents;
     }
 }

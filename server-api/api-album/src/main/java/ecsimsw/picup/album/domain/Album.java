@@ -26,11 +26,8 @@ public class Album {
     private Long userId;
 
     private String name;
-
     private String resourceKey;
-
     private Long resourceFileSize;
-
     private LocalDateTime createdAt;
 
     public Album(Long userId, String name, String resourceKey, Long thumbnailFileSize, LocalDateTime createdAt) {
@@ -39,14 +36,6 @@ public class Album {
 
     public Album(Long userId, String name, String resourceKey, Long thumbnailFileSize) {
         this(null, userId, name, resourceKey, thumbnailFileSize, LocalDateTime.now());
-    }
-
-    public void updateName(String name) {
-        this.name = name;
-    }
-
-    public void updateThumbnail(String thumbnailImage) {
-        this.resourceKey = thumbnailImage;
     }
 
     public void authorize(Long userId) {

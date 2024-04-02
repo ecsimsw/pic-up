@@ -10,13 +10,10 @@ import ecsimsw.picup.album.dto.PictureSearchCursor;
 import ecsimsw.picup.album.exception.AlbumException;
 import ecsimsw.picup.usage.service.StorageUsageService;
 
-import java.io.FileInputStream;
 import java.util.List;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.tomcat.util.http.fileupload.IOUtils;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -27,25 +24,24 @@ public class PictureService {
 
     private final AlbumRepository albumRepository;
     private final PictureRepository pictureRepository;
-    private final PictureFileService pictureFileService;
+    private final FileStorageService fileStorageService;
     private final StorageUsageService storageUsageService;
 
     @Transactional
     public PictureInfoResponse create(Long userId, Long albumId, MultipartFile file) {
         checkUserAuthInAlbum(userId, albumId);
-        var resourceKey = ResourceKeyStrategy.generate(userId.toString(), file);
-        var thumbnailResourceKey = "thumb-" + resourceKey;
+        var originPicture = ImageFile.of(userId, file);
+        var thumbnailPicture = ImageFile.resizedOf(userId, file, 0.3f);
         try {
-            var pictureFile = pictureFileService.upload(userId, file, resourceKey);
-            var thumbnail = new Thumbnail().resize(file, 0.3f);
-            var thumbnailFile = pictureFileService.upload(userId, new MockMultipartFile("file", thumbnail), thumbnailResourceKey);
+            var pictureFile = fileStorageService.upload(originPicture);
+            var thumbnailFile = fileStorageService.upload(thumbnailPicture);
             var picture = new Picture(albumId, pictureFile.resourceKey(), thumbnailFile.resourceKey(), pictureFile.size());
             pictureRepository.save(picture);
             storageUsageService.addUsage(userId, picture);
             return PictureInfoResponse.of(picture);
         } catch (Exception e) {
-            pictureFileService.delete(resourceKey);
-            pictureFileService.delete(thumbnailResourceKey);
+            fileStorageService.deleteAsync(originPicture);
+            fileStorageService.deleteAsync(thumbnailPicture);
             throw e;
         }
     }
@@ -53,9 +49,9 @@ public class PictureService {
     @Transactional
     public void delete(Long userId, Long albumId, Long pictureId) {
         checkUserAuthInAlbum(userId, albumId);
-        var picture = pictureRepository.findById(pictureId).orElseThrow(() -> new AlbumException("Invalid picture"));
+        var picture = getPicture(pictureId);
         picture.validateAlbum(albumId);
-        pictureFileService.createDeleteEvent(new FileDeletionEvent(userId, picture.getResourceKey()));
+        fileStorageService.createDeleteEvent(new FileDeletionEvent(userId, picture.getResourceKey()));
         storageUsageService.subtractUsage(userId, picture.getFileSize());
         pictureRepository.delete(picture);
     }
@@ -83,6 +79,10 @@ public class PictureService {
             sortByCreatedAtDesc
         );
         return PictureInfoResponse.listOf(pictures);
+    }
+
+    private Picture getPicture(Long pictureId) {
+        return pictureRepository.findById(pictureId).orElseThrow(() -> new AlbumException("Invalid picture"));
     }
 
     private void checkUserAuthInAlbum(Long userId, Long albumId) {

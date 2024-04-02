@@ -4,6 +4,8 @@ import ecsimsw.picup.album.domain.FileDeletionEvent;
 import ecsimsw.picup.album.domain.FileDeletionEventOutbox;
 import ecsimsw.picup.album.domain.FileDeletionEvent_;
 import ecsimsw.picup.album.domain.FileExtension;
+import ecsimsw.picup.album.domain.ImageFile;
+import ecsimsw.picup.dto.FileUploadRequest;
 import ecsimsw.picup.dto.FileUploadResponse;
 import ecsimsw.picup.mq.ImageFileMessageQueue;
 import lombok.RequiredArgsConstructor;
@@ -19,20 +21,29 @@ import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
-public class PictureFileService {
+public class FileStorageService {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(PictureFileService.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(FileStorageService.class);
 
     private final StorageHttpClient storageHttpClient;
     private final FileDeletionEventOutbox fileDeletionEventOutbox;
     private final ImageFileMessageQueue imageFileMessageQueue;
 
-    public FileUploadResponse upload(Long userId, MultipartFile file, String resourceKey) {
-        FileExtension.validate(file);
-        return storageHttpClient.requestUpload(userId, file, resourceKey);
+    public FileUploadResponse upload(ImageFile file) {
+        return upload(file.userId(), file.toMultipartFile(), file.resourceKey());
     }
 
-    public void delete(String resourceKey) {
+    public FileUploadResponse upload(Long userId, MultipartFile file, String resourceKey) {
+        FileExtension.validate(file);
+        var request = new FileUploadRequest(userId, file, resourceKey);
+        return storageHttpClient.requestUpload(request);
+    }
+
+    public void deleteAsync(ImageFile file) {
+        deleteAsync(file.resourceKey());
+    }
+
+    public void deleteAsync(String resourceKey) {
         imageFileMessageQueue.offerDeleteAllRequest(List.of(resourceKey));
     }
 
