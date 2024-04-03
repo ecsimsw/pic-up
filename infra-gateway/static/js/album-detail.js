@@ -1,5 +1,4 @@
-const serverUrl = ''
-const storageUrl = ''
+const serverUrl = ""
 
 let albumId = 0;
 let editMode = false
@@ -34,8 +33,8 @@ document.addEventListener("DOMContentLoaded", function () {
             }
             createNewPicture(albumId, picture.id, picture.thumbnailResourceKey)
             addGalleryImage(
-                storageUrl + "/api/storage/" + picture.resourceKey,
-                storageUrl + "/api/storage/" + picture.thumbnailResourceKey
+                serverUrl + "/api/album/" + albumId + "/picture/" + picture.id + "/image",
+                serverUrl + "/api/album/" + albumId + "/picture/" + picture.id + "/thumbnail",
             )
             addImageViewer(`album-${albumId}-picture-${picture.id}`, galleryOrderNumber);
             galleryOrderNumber++
@@ -92,8 +91,8 @@ function handleScroll() {
                 }
                 createNewPicture(albumId, picture.id, picture.thumbnailResourceKey)
                 addGalleryImage(
-                    storageUrl + "/api/storage/" + picture.resourceKey,
-                    storageUrl + "/api/storage/" + picture.thumbnailResourceKey
+                    serverUrl + "/api/album/" + albumId + "/picture/" + picture.id + "/image",
+                    serverUrl + "/api/album/" + albumId + "/picture/" + picture.id + "/thumbnail",
                 )
                 addImageViewer(`album-${albumId}-picture-${picture.id}`, galleryOrderNumber);
                 galleryOrderNumber++
@@ -185,7 +184,7 @@ function createNewPicture(albumId, pictureId, thumbImageResource) {
     const thumbImage = document.createElement('a');
     thumbImage.className = "album-main-image"
     thumbImage.id = `album-${albumId}-picture-${pictureId}`
-    thumbImage.style.backgroundImage = "url('" + storageUrl + "/api/storage/" + thumbImageResource + "')"
+    thumbImage.style.backgroundImage = "url('"+serverUrl + "/api/album/" + albumId + "/picture/" + pictureId + "/thumbnail"+"')"
     thumbImage.style.cursor = "pointer"
     thumbImage.style.outline = "0px"
     article.appendChild(thumbImage);

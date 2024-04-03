@@ -1,5 +1,4 @@
 const serverUrl = ""
-const storageUrl = ""
 
 let createMode = false;
 
@@ -64,7 +63,7 @@ function createAlbumArticle(albumId, titleText, thumbImageResource) {
     thumbImage.className = "album-main-image"
     thumbImage.id = `album-${albumId}-thumb`
 
-    thumbImage.style.backgroundImage = "url('"+storageUrl+"/api/storage/"+ thumbImageResource +"')"
+    thumbImage.style.backgroundImage = "url('"+serverUrl+"/api/album/"+ albumId + "/thumbnail" +"')"
     thumbImage.style.cursor = "pointer"
     thumbImage.style.outline = "0px"
     article.appendChild(thumbImage);

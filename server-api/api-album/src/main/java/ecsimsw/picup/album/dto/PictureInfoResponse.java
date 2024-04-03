@@ -1,15 +1,11 @@
 package ecsimsw.picup.album.dto;
 
 import ecsimsw.picup.album.domain.Picture;
-
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
 
-public record PictureInfoResponse (
+public record PictureInfoResponse(
     Long id,
     Long albumId,
     String resourceKey,
