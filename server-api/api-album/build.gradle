@@ -7,16 +7,12 @@ dependencies {
     // Spring AOP
     implementation 'org.springframework.boot:spring-boot-starter-aop'
 
-    // H2
-    implementation 'com.h2database:h2:1.4.199'
-    testRuntimeOnly 'com.h2database:h2:1.4.199'
-
-    // Mysql
-    runtimeOnly 'com.mysql:mysql-connector-j'
-
     // Model metadata
     implementation 'org.hibernate:hibernate-jpamodelgen'
     annotationProcessor 'org.hibernate:hibernate-jpamodelgen'
+
+    // redis
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 
     // redisson
     implementation 'org.redisson:redisson-spring-boot-starter:3.17.0'

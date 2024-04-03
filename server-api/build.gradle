@@ -2,7 +2,6 @@ plugins {
     id 'java'
     id 'org.springframework.boot' version '2.7.9'
     id 'io.spring.dependency-management' version '1.0.15.RELEASE'
-    id 'com.google.cloud.tools.jib' version '3.1.4'
 }
 
 group = 'ecsimsw.picup'
@@ -19,7 +18,6 @@ subprojects {
     apply plugin: 'eclipse'
     apply plugin: 'org.springframework.boot'
     apply plugin: 'io.spring.dependency-management'
-    apply plugin: 'com.google.cloud.tools.jib'
 
     repositories {
         mavenCentral()
@@ -31,14 +29,14 @@ subprojects {
         implementation 'org.springframework.boot:spring-boot-starter-validation'
         implementation 'org.springframework.boot:spring-boot-starter-web'
         implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-        implementation 'org.springframework.boot:spring-boot-starter-actuator'
         implementation 'org.springframework.boot:spring-boot-starter-test'
 
-        // redis
-        implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+        // H2
+        implementation 'com.h2database:h2:1.4.199'
+        testRuntimeOnly 'com.h2database:h2:1.4.199'
 
-        // thumbnail
-        implementation 'net.coobird:thumbnailator:0.4.1'
+        // Mysql
+        runtimeOnly 'com.mysql:mysql-connector-j'
 
         // Google Guava
         implementation 'com.google.guava:guava:11.0.2'
@@ -48,9 +46,6 @@ subprojects {
 
         // slack alert
         implementation 'com.slack.api:slack-api-client:1.6.2'
-
-        // prometheus
-        runtimeOnly 'io.micrometer:micrometer-registry-prometheus'
 
         // test
         testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.0'
@@ -65,14 +60,5 @@ subprojects {
         // simple-auth
         implementation 'com.github.ecsimsw:simple-auth:2.0.1'
         testImplementation 'com.github.ecsimsw:simple-auth:2.0.1'
-    }
-
-    jib {
-        from.image = "openjdk:17-jdk-alpine"
-        to.image = "ghcr.io/ecsimsw/picup/${project.name}"
-        to.tags = ["stage"]
-        container {
-            jvmFlags = ['-Dspring.profiles.active=stage', '-XX:NewRatio=2', '-XX:SurvivorRatio=8', '-XX:MaxRAMPercentage=25']
-        }
     }
 }
