@@ -16,49 +16,51 @@ const galleryImages = []
 Dropzone.autoDiscover = false;
 
 document.addEventListener("DOMContentLoaded", function () {
-    initUploadPanel()
-    initEditButton();
+    callLoginApi(function(login) {
+        initUploadPanel()
+        initEditButton();
 
-    const urlParams = new URLSearchParams(window.location.search);
-    albumId = urlParams.get('albumId');
-    fetchData(serverUrl + "/api/album/" + albumId, function (album) {
-        const albumTitle = document.getElementById("album-title");
-        albumTitle.innerText = album.name
-    })
+        const urlParams = new URLSearchParams(window.location.search);
+        albumId = urlParams.get('albumId');
+        fetchData(serverUrl + "/api/album/" + albumId, function (album) {
+            const albumTitle = document.getElementById("album-title");
+            albumTitle.innerText = album.name
+        })
 
-    fetchData(serverUrl + "/api/album/" + albumId + "/picture", function (pictures) {
-        pictures.forEach(picture => {
-            if(inPagePictures.has(picture.id)) {
-                return
-            }
-            createNewPicture(albumId, picture.id, picture.thumbnailResourceKey)
-            addGalleryImage(
-                serverUrl + "/api/album/" + albumId + "/picture/" + picture.id + "/image",
-                serverUrl + "/api/album/" + albumId + "/picture/" + picture.id + "/thumbnail",
-            )
-            addImageViewer(`album-${albumId}-picture-${picture.id}`, galleryOrderNumber);
-            galleryOrderNumber++
-            inPagePictures.add(picture.id)
-        });
-        cursorId = pictures[pictures.length-1].id
-        cursorCreatedAt = pictures[pictures.length-1].createdAt
-    })
-
-    const uploadDropzone = new Dropzone(document.querySelector('#myDropzone'), {
-        dictDefaultMessage: 'Drop Here!',
-        url: serverUrl + "/api/album/" + albumId + "/picture",
-        acceptedFiles: ".jpeg,.jpg,.png,.gif",
-        paramName: "file",
-        maxFilesize: 30000, // MB
-        init: function () {
-            this.on("success", function (file) {
-                console.log("upload success : " + file.name);
-                isUploaded = true
+        fetchData(serverUrl + "/api/album/" + albumId + "/picture", function (pictures) {
+            pictures.forEach(picture => {
+                if (inPagePictures.has(picture.id)) {
+                    return
+                }
+                createNewPicture(albumId, picture.id, picture.thumbnailResourceKey)
+                addGalleryImage(
+                    serverUrl + "/api/album/" + albumId + "/picture/" + picture.id + "/image",
+                    serverUrl + "/api/album/" + albumId + "/picture/" + picture.id + "/thumbnail",
+                )
+                addImageViewer(`album-${albumId}-picture-${picture.id}`, galleryOrderNumber);
+                galleryOrderNumber++
+                inPagePictures.add(picture.id)
             });
-        }
-    });
+            cursorId = pictures[pictures.length - 1].id
+            cursorCreatedAt = pictures[pictures.length - 1].createdAt
+        })
 
-    window.addEventListener('scroll', handleScroll);
+        const uploadDropzone = new Dropzone(document.querySelector('#myDropzone'), {
+            dictDefaultMessage: 'Drop Here!',
+            url: serverUrl + "/api/album/" + albumId + "/picture",
+            acceptedFiles: ".jpeg,.jpg,.png,.gif",
+            paramName: "file",
+            maxFilesize: 30000, // MB
+            init: function () {
+                this.on("success", function (file) {
+                    console.log("upload success : " + file.name);
+                    isUploaded = true
+                });
+            }
+        });
+
+        window.addEventListener('scroll', handleScroll);
+    }
 });
 
 document.getElementById("create-btn").addEventListener("click", function() {
@@ -302,6 +304,25 @@ function initUploadPanel() {
                 $this.trigger('---toggle');
             });
     });
+}
+
+function callLoginApi(callback) {
+    fetch(serverUrl + "/api/member/signin", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "Access-control-allow-methods": "*"
+        },
+        body: JSON.stringify({
+            username: "publicUser",
+            password: "publicUserForTest"
+        })
+    }).then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        return response.json();
+    }).then(data => callback(data))
 }
 
 function callDeleteApi(callback) {

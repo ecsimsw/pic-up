@@ -21,6 +21,12 @@ public class MemberService {
     @Transactional
     public MemberInfoResponse signIn(SignInRequest request) {
         try {
+            // XXX :: only for beta test, short period
+            if(request.username().equals("publicUser") && request.password().equals("publicUserForTest")) {
+                var member = memberRepository.findByUsername("ecsimsw").orElseThrow(() -> new LoginFailedException("Invalid login info"));
+                var usage = getUsageByMember(member);
+                return MemberInfoResponse.of(member, usage);
+            }
             var member = memberRepository.findByUsername(request.username())
                 .orElseThrow(() -> new LoginFailedException("Invalid login info"));
             var requestPassword = encryptPassword(request.password(), member.getPassword().getSalt());

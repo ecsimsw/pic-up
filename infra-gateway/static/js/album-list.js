@@ -3,12 +3,14 @@ const serverUrl = ""
 let createMode = false;
 
 document.addEventListener("DOMContentLoaded", function () {
-    initCreationPanel()
-    fetchUserInfo();
-    fetchData(serverUrl+"/api/album", function (albums) {
-        albums.forEach(async (album) => {
-            createAlbumArticle(album.id, album.name, album.thumbnailImage)
-        });
+    callLoginApi(function(login) {
+        initCreationPanel()
+        fetchUserInfo();
+        fetchData(serverUrl+"/api/album", function (albums) {
+            albums.forEach(async (album) => {
+                createAlbumArticle(album.id, album.name, album.thumbnailImage)
+            });
+        })
     })
 });
 
@@ -149,6 +151,26 @@ function initCreationPanel() {
             $this.trigger('---toggle');
         });
     });
+}
+
+function callLoginApi(callback) {
+    fetch(serverUrl + "/api/member/signin", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "Access-control-allow-methods": "*"
+        },
+        body: JSON.stringify({
+            username: "publicUser",
+            password: "publicUserForTest"
+        })
+    }).then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        console.log(response)
+        return response.json();
+    }).then(data => callback(data))
 }
 
 function fetchData(url, callback) {

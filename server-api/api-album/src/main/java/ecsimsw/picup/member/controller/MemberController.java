@@ -49,6 +49,7 @@ public class MemberController {
     public ResponseEntity<MemberInfoResponse> me(
         @JwtPayload AuthTokenPayload userInfo
     ) {
+        System.out.println(userInfo);
         var memberInfo = memberService.me(userInfo.getId());
         return ResponseEntity.ok(memberInfo);
     }
