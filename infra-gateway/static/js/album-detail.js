@@ -6,7 +6,7 @@ let editMode = false
 let isUploaded = false
 
 let cursorId = 0
-let cursorCreatedAt = '2000-10-31T01:30:00'
+let cursorCreatedAt = '2000-05-20T01:30:00'
 let cursorEnd = false
 const inPagePictures = new Set()
 
@@ -80,11 +80,10 @@ function handleScroll() {
     if(cursorEnd) {
         return;
     }
-
-    var scrollPosition = window.scrollY;
-    var viewportHeight = window.innerHeight;
-    var documentHeight = document.body.clientHeight;
-    var isAlmostEndOfPage = scrollPosition > (documentHeight - viewportHeight) * 0.9;
+    const scrollPosition = window.scrollY;
+    const viewportHeight = window.innerHeight;
+    const documentHeight = document.body.clientHeight;
+    const isAlmostEndOfPage = scrollPosition > (documentHeight - viewportHeight) * 0.9;
     if (isAlmostEndOfPage) {
         fetchData(serverUrl + "/api/album/" + albumId + "/picture" + "?cursorId=" + cursorId + "&cursorCreatedAt=" + cursorCreatedAt, function (pictures) {
             pictures.forEach(picture => {
@@ -100,7 +99,7 @@ function handleScroll() {
                 galleryOrderNumber++
                 inPagePictures.add(picture.id)
             });
-            if (pictures.length == 0) {
+            if (pictures.length === 0) {
                 cursorEnd = true;
             } else {
                 cursorId = pictures[pictures.length - 1].id

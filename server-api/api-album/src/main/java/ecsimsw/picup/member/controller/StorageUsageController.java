@@ -1,9 +1,9 @@
-package ecsimsw.picup.usage.controller;
+package ecsimsw.picup.member.controller;
 
 import ecsimsw.auth.anotations.JwtPayload;
 import ecsimsw.picup.auth.AuthTokenPayload;
-import ecsimsw.picup.usage.domain.StorageUsage;
-import ecsimsw.picup.usage.service.StorageUsageService;
+import ecsimsw.picup.member.domain.StorageUsage;
+import ecsimsw.picup.member.service.StorageUsageService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;

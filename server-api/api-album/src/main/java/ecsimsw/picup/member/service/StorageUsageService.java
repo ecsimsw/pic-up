@@ -1,9 +1,8 @@
-package ecsimsw.picup.usage.service;
+package ecsimsw.picup.member.service;
 
 import ecsimsw.picup.album.exception.AlbumException;
-import ecsimsw.picup.usage.domain.StorageUsage;
-import ecsimsw.picup.usage.domain.StorageUsageRepository;
-import ecsimsw.picup.usage.dto.StorageUsageDto;
+import ecsimsw.picup.member.domain.StorageUsage;
+import ecsimsw.picup.member.domain.StorageUsageRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,14 +13,8 @@ import java.util.concurrent.TimeoutException;
 @Service
 public class StorageUsageService {
 
-    private final StorageUsageRepository storageUsageRepository;
     private final StorageUsageLock storageUsageLock;
-
-    @Transactional
-    public void initNewUsage(StorageUsageDto storageUsageDto) {
-        var storageUsage = new StorageUsage(storageUsageDto.getUserId(), storageUsageDto.getLimitAsByte());
-        storageUsageRepository.save(storageUsage);
-    }
+    private final StorageUsageRepository storageUsageRepository;
 
     @Transactional(readOnly = true)
     public StorageUsage getUsage(Long userId) {

@@ -1,4 +1,4 @@
-package ecsimsw.picup.usage.service;
+package ecsimsw.picup.member.service;
 
 import org.redisson.api.RedissonClient;
 import org.springframework.stereotype.Component;

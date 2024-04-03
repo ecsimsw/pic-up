@@ -1,4 +1,4 @@
-package ecsimsw.picup.usage.domain;
+package ecsimsw.picup.member.domain;
 
 import ecsimsw.picup.album.exception.AlbumException;
 import javax.persistence.Entity;
@@ -19,6 +19,10 @@ public class StorageUsage {
     private Long userId;
     private long limitAsByte;
     private long usageAsByte;
+
+    public static StorageUsage init(Member member) {
+        return new StorageUsage(member.getId(), Long.MAX_VALUE);
+    }
 
     public StorageUsage(Long userId, long limitAsByte) {
         this.userId = userId;

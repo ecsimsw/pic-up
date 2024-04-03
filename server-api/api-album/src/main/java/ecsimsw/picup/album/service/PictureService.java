@@ -8,7 +8,8 @@ import ecsimsw.picup.album.domain.*;
 import ecsimsw.picup.album.dto.PictureInfoResponse;
 import ecsimsw.picup.album.dto.PictureSearchCursor;
 import ecsimsw.picup.album.exception.AlbumException;
-import ecsimsw.picup.usage.service.StorageUsageService;
+import ecsimsw.picup.member.service.StorageUsageLock;
+import ecsimsw.picup.member.service.StorageUsageService;
 
 import java.util.List;
 

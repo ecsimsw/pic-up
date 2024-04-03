@@ -5,7 +5,7 @@ let createMode = false;
 
 document.addEventListener("DOMContentLoaded", function () {
     initCreationPanel()
-
+    fetchUserInfo();
     fetchData(serverUrl+"/api/album", function (albums) {
         albums.forEach(async (album) => {
             createAlbumArticle(album.id, album.name, album.thumbnailImage)
@@ -37,6 +37,22 @@ document.getElementById('createAlbumForm').onsubmit = function (event) {
     }).catch(error => {
         console.log(error)
     });
+}
+
+function fetchUserInfo() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const isPublicUser = urlParams.get('isPublicUser');
+    if (isPublicUser) {
+        fetchData(serverUrl + "/api/member/public", function (member) {
+            const logo = document.getElementById('logo')
+            logo.innerText = member.username + " / " + bytesToSize(member.usageAsByte)
+        })
+    } else {
+        fetchData(serverUrl + "/api/member/me", function (member) {
+            const logo = document.getElementById('logo')
+            logo.innerText = member.username + " / " + bytesToSize(member.usageAsByte)
+        })
+    }
 }
 
 function createAlbumArticle(albumId, titleText, thumbImageResource) {
@@ -148,4 +164,12 @@ function fetchData(url, callback) {
         .catch(error => {
             console.log(error)
         });
+}
+
+function bytesToSize(bytes) {
+    const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB']
+    if (bytes === 0) return '0MB'
+    const i = parseInt(Math.floor(Math.log(bytes) / Math.log(1024)), 10)
+    if (i === 0) return `${bytes} ${sizes[i]})`
+    return `${(bytes / (1024 ** i)).toFixed(1)} ${sizes[i]}`
 }

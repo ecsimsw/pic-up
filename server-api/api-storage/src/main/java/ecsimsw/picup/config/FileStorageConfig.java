@@ -11,10 +11,10 @@ public class FileStorageConfig {
     public static final int UPLOAD_TIME_OUT_SEC = 5;
 
     private static final String MAIN_STORAGE_KEY = "MAIN_STORAGE";
-    private static final String MAIN_STORAGE_PATH = "./storage";
+    private static final String MAIN_STORAGE_PATH = "./storage/";
 
     private static final String BACKUP_STORAGE_KEY = "BACKUP_STORAGE";
-    private static final String BACKUP_STORAGE_PATH = "./storage-backup";
+    private static final String BACKUP_STORAGE_PATH = "./storage-backup/";
 
     @Bean
     public ImageStorage mainStorage() {

@@ -2,7 +2,7 @@ package ecsimsw.picup.album.controller;
 
 import ecsimsw.auth.exception.SimpleAuthException;
 import ecsimsw.picup.album.exception.AlbumException;
-import ecsimsw.picup.usage.exception.InvalidStorageServerResponseException;
+import ecsimsw.picup.member.exception.InvalidStorageServerResponseException;
 import ecsimsw.picup.album.exception.UnsupportedFileTypeException;
 import ecsimsw.picup.alert.SlackMessageSender;
 import ecsimsw.picup.auth.UnauthorizedException;

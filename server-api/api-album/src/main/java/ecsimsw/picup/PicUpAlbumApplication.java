@@ -24,19 +24,18 @@ public class PicUpAlbumApplication {
         var ctx = app.run(args);
         var outboxService = ctx.getBean(FileEventOutboxService.class);
         outboxService.schedulePublishOut();
-
-        Dummy dummy = ctx.getBean(Dummy.class);
-        dummy.saveMember();
     }
 }
 
-@RequiredArgsConstructor
-@Component
-class Dummy {
+@Configuration
+class CorsConfig implements WebMvcConfigurer {
 
-    private final MemberService service;
-
-    public void saveMember() {
-        service.signUp(new SignUpRequest("ecsimsw", "hihihihhihi"));
+    @Override
+    public void addCorsMappings(CorsRegistry registry) {
+        registry.addMapping("/**")
+            .allowedOrigins("http://localhost:63342")
+            .allowedMethods("*")
+            .allowedHeaders("*")
+            .maxAge(3600);
     }
 }

@@ -3,7 +3,7 @@ package ecsimsw.picup.album.service;
 import ecsimsw.picup.album.exception.FileUploadFailException;
 import ecsimsw.picup.dto.FileUploadResponse;
 import ecsimsw.picup.dto.FileUploadRequest;
-import ecsimsw.picup.usage.exception.InvalidStorageServerResponseException;
+import ecsimsw.picup.member.exception.InvalidStorageServerResponseException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpMethod;
@@ -13,7 +13,6 @@ import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Objects;
 

@@ -1,16 +1,12 @@
 package ecsimsw.picup.member.service;
 
 import ecsimsw.picup.ecrypt.SHA256Utils;
-import ecsimsw.picup.member.domain.Member;
-import ecsimsw.picup.member.domain.MemberRepository;
-import ecsimsw.picup.member.domain.Password;
+import ecsimsw.picup.member.domain.*;
 import ecsimsw.picup.member.dto.MemberInfoResponse;
 import ecsimsw.picup.member.dto.SignInRequest;
 import ecsimsw.picup.member.dto.SignUpRequest;
 import ecsimsw.picup.member.exception.LoginFailedException;
 import ecsimsw.picup.member.exception.MemberException;
-import ecsimsw.picup.usage.domain.StorageUsage;
-import ecsimsw.picup.usage.domain.StorageUsageRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,11 +21,12 @@ public class MemberService {
     @Transactional
     public MemberInfoResponse signIn(SignInRequest request) {
         try {
-            var member = memberRepository.findByUsername(request.getUsername())
+            var member = memberRepository.findByUsername(request.username())
                 .orElseThrow(() -> new LoginFailedException("Invalid login info"));
-            var requestPassword = encryptPassword(request.getPassword(), member.getPassword().getSalt());
+            var requestPassword = encryptPassword(request.password(), member.getPassword().getSalt());
             member.authenticate(requestPassword);
-            return MemberInfoResponse.of(member);
+            var usage = getUsageByMember(member);
+            return MemberInfoResponse.of(member, usage);
         } catch (Exception e) {
             throw new LoginFailedException("Invalid login info");
         }
@@ -37,22 +34,21 @@ public class MemberService {
 
     @Transactional
     public MemberInfoResponse signUp(SignUpRequest request) {
-        if (memberRepository.existsByUsername(request.getUsername())) {
+        if (memberRepository.existsByUsername(request.username())) {
             throw new MemberException("Duplicated username");
         }
-        var password = encryptPassword(request.getPassword());
-        var member = new Member(request.getUsername(), password);
+        var password = encryptPassword(request.password());
+        var member = new Member(request.username(), password);
         memberRepository.save(member);
-        storageUsageRepository.save(new StorageUsage(member.getId(), 10000000000L));
-        return MemberInfoResponse.of(member);
+        var usage = storageUsageRepository.save(StorageUsage.init(member));
+        return MemberInfoResponse.of(member, usage);
     }
 
     @Transactional(readOnly = true)
     public MemberInfoResponse me(Long id) {
-        var member = memberRepository.findById(id).orElseThrow(
-            () -> new MemberException("Invalid member")
-        );
-        return MemberInfoResponse.of(member);
+        var member = getMember(id);
+        var usage = getUsageByMember(member);
+        return MemberInfoResponse.of(member, usage);
     }
 
     private Password encryptPassword(String plainPassword) {
@@ -68,5 +64,13 @@ public class MemberService {
             SHA256Utils.encrypt(plainPassword, salt),
             salt
         );
+    }
+
+    private Member getMember(Long id) {
+        return memberRepository.findById(id).orElseThrow(() -> new MemberException("Not exists member"));
+    }
+
+    private StorageUsage getUsageByMember(Member member) {
+        return storageUsageRepository.findByUserId(member.getId()).orElseThrow(() -> new MemberException("Not exists member"));
     }
 }

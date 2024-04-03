@@ -3,6 +3,7 @@ package ecsimsw.picup.member.controller;
 import ecsimsw.auth.anotations.JwtPayload;
 import ecsimsw.auth.service.AuthTokenService;
 import ecsimsw.picup.auth.AuthTokenPayload;
+import ecsimsw.picup.config.PublicTesPageConfig;
 import ecsimsw.picup.member.dto.MemberInfoResponse;
 import ecsimsw.picup.member.dto.SignInRequest;
 import ecsimsw.picup.member.dto.SignUpRequest;
@@ -49,6 +50,12 @@ public class MemberController {
         @JwtPayload AuthTokenPayload userInfo
     ) {
         var me = memberService.me(userInfo.getId());
+        return ResponseEntity.ok(me);
+    }
+
+    @GetMapping("/api/member/public")
+    public ResponseEntity<MemberInfoResponse> publicUser() {
+        var me = memberService.me(PublicTesPageConfig.publicMemberId);
         return ResponseEntity.ok(me);
     }
 }

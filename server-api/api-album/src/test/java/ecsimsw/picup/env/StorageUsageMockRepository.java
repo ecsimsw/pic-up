@@ -1,7 +1,7 @@
 package ecsimsw.picup.env;
 
-import ecsimsw.picup.usage.domain.StorageUsage;
-import ecsimsw.picup.usage.domain.StorageUsageRepository;
+import ecsimsw.picup.member.domain.StorageUsage;
+import ecsimsw.picup.member.domain.StorageUsageRepository;
 
 import java.util.HashMap;
 import java.util.Map;

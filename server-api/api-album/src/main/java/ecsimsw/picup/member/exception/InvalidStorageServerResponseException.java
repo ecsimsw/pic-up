@@ -1,4 +1,4 @@
-package ecsimsw.picup.usage.exception;
+package ecsimsw.picup.member.exception;
 
 import org.springframework.web.client.HttpStatusCodeException;
 

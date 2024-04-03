@@ -13,7 +13,6 @@ import javax.persistence.Embeddable;
 public class Password {
 
     private String encrypted;
-
     private String salt;
 
     public boolean isSame(Password other) {

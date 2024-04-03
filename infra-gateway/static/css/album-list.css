@@ -3,6 +3,10 @@
   color : #ffffff;
 }
 
+#logo {
+  font-size: 16px;
+}
+
 .custom-file-upload {
   width: 150px;
   height: 30px;

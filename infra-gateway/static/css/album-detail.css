@@ -34,10 +34,14 @@ body {
   font-family: 'Roboto', sans-serif;
 }
 
+#album-title {
+  font-size: 16px;
+}
+
 .dropzone {
   width: 98%;
   margin: 1%;
-  border: 2px dashed #3498db !important;
+  border: 2px dashed grey !important;
   border-radius: 5px;
   -webkit-transition: .2s;
   transition: .2s;

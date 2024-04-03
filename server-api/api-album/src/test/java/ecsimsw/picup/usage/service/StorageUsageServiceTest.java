@@ -2,8 +2,9 @@ package ecsimsw.picup.usage.service;
 
 import ecsimsw.picup.album.exception.AlbumException;
 import ecsimsw.picup.env.StorageUsageMockRepository;
-import ecsimsw.picup.usage.domain.StorageUsageRepository;
-import ecsimsw.picup.usage.dto.StorageUsageDto;
+import ecsimsw.picup.member.domain.StorageUsageRepository;
+import ecsimsw.picup.member.service.StorageUsageLock;
+import ecsimsw.picup.member.service.StorageUsageService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -40,7 +41,7 @@ public class StorageUsageServiceTest {
         StorageUsageMockRepository.init(storageUsageRepository);
         storageUsageService = new StorageUsageService(storageUsageRepository, storageUsageLock);
 
-        storageUsageService.initNewUsage(new StorageUsageDto(userId, 10000L));
+//        storageUsageService.initNewUsage(new StorageUsageDto(userId, 10000L));
     }
 
     @DisplayName("동시 업로드 동시성 문제를 테스트한다.")
