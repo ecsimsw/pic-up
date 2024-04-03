@@ -95,7 +95,7 @@ public class StorageServiceTest {
                 .when(mainStorage).read(any(String.class));
 
             doThrow(StorageException.class)
-                .when(mainStorage).create(any(String.class), any(ImageFile.class));
+                .when(mainStorage).storeAsync(any(String.class), any(ImageFile.class));
 
             var result = storageService.read(USER_ID, resourceKey);
             assertThat(result.getImageFile()).isNotNull();
