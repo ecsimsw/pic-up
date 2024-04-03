@@ -6,25 +6,22 @@ import static ecsimsw.picup.album.domain.PictureRepository.PictureSearchSpecs.so
 
 import ecsimsw.picup.album.domain.AlbumRepository;
 import ecsimsw.picup.album.domain.FileDeletionEvent;
-import ecsimsw.picup.album.domain.ImageFile;
 import ecsimsw.picup.album.domain.Picture;
 import ecsimsw.picup.album.domain.PictureRepository;
 import ecsimsw.picup.album.dto.PictureInfoResponse;
 import ecsimsw.picup.album.dto.PictureSearchCursor;
 import ecsimsw.picup.album.exception.AlbumException;
+import ecsimsw.picup.dto.FileUploadResponse;
 import ecsimsw.picup.member.service.StorageUsageService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 
 @RequiredArgsConstructor
 @Service
 public class PictureService {
-
-    private static final float THUMBNAIL_RESIZE_SCALE = 0.3f;
 
     private final AlbumRepository albumRepository;
     private final PictureRepository pictureRepository;
@@ -32,22 +29,12 @@ public class PictureService {
     private final StorageUsageService storageUsageService;
 
     @Transactional
-    public PictureInfoResponse create(Long userId, Long albumId, MultipartFile file) {
+    public PictureInfoResponse create(Long userId, Long albumId, FileUploadResponse imageFile, FileUploadResponse thumbnailFile) {
         checkUserAuthInAlbum(userId, albumId);
-        var image = ImageFile.of(file);
-        var thumbnail = ImageFile.resizedOf(file, THUMBNAIL_RESIZE_SCALE);
-        try {
-            var imageFile = fileStorageService.upload(userId, image);
-            var thumbnailFile = fileStorageService.upload(userId, thumbnail);
-            var picture = new Picture(albumId, imageFile.resourceKey(), thumbnailFile.resourceKey(), imageFile.size());
-            pictureRepository.save(picture);
-            storageUsageService.addUsage(userId, picture.getFileSize());
-            return PictureInfoResponse.of(picture);
-        } catch (Exception e) {
-            fileStorageService.deleteAsync(image);
-            fileStorageService.deleteAsync(thumbnail);
-            throw e;
-        }
+        var picture = new Picture(albumId, imageFile.resourceKey(), thumbnailFile.resourceKey(), imageFile.size());
+        pictureRepository.save(picture);
+        storageUsageService.addUsage(userId, picture.getFileSize());
+        return PictureInfoResponse.of(picture);
     }
 
     @Transactional
@@ -95,7 +82,8 @@ public class PictureService {
     }
 
     private void checkUserAuthInAlbum(Long userId, Long albumId) {
-        var album = albumRepository.findById(albumId).orElseThrow(() -> new AlbumException("Invalid album : " + albumId));
+        var album = albumRepository.findById(albumId)
+            .orElseThrow(() -> new AlbumException("Invalid album : " + albumId));
         album.authorize(userId);
     }
 }

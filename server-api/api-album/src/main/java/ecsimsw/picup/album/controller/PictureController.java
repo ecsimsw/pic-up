@@ -3,13 +3,12 @@ package ecsimsw.picup.album.controller;
 import ecsimsw.picup.album.dto.PictureInfoResponse;
 import ecsimsw.picup.album.dto.PictureSearchCursor;
 import ecsimsw.picup.album.dto.PicturesDeleteRequest;
-import ecsimsw.picup.album.exception.AlbumException;
+import ecsimsw.picup.album.service.AlbumDeleteService;
+import ecsimsw.picup.album.service.AlbumUploadService;
 import ecsimsw.picup.album.service.PictureService;
-import ecsimsw.picup.member.service.MemberDistributedLock;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.TimeoutException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
@@ -27,8 +26,9 @@ import org.springframework.web.multipart.MultipartFile;
 @RestController
 public class PictureController {
 
-    private final MemberDistributedLock lock;
     private final PictureService pictureService;
+    private final AlbumUploadService albumUploadService;
+    private final AlbumDeleteService imageDeleteService;
 
     @PostMapping("/api/album/{albumId}/picture")
     public ResponseEntity<PictureInfoResponse> createPicture(
@@ -37,8 +37,8 @@ public class PictureController {
         @RequestPart MultipartFile file
     ) {
         var userId = 1L;
-        var response = lock.run(userId, () -> pictureService.create(userId, albumId, file));
-        return ResponseEntity.ok(response);
+        var pictureInfo = albumUploadService.uploadPicture(userId, albumId, file);
+        return ResponseEntity.ok(pictureInfo);
     }
 
     @GetMapping("/api/album/{albumId}/picture")
@@ -51,8 +51,8 @@ public class PictureController {
         Optional<LocalDateTime> cursorCreatedAt
     ) {
         var cursor = PictureSearchCursor.from(limit, cursorId, cursorCreatedAt);
-        var response = pictureService.cursorBasedFetch(1L, albumId, cursor);
-        return ResponseEntity.ok(response);
+        var pictureInfos = pictureService.cursorBasedFetch(1L, albumId, cursor);
+        return ResponseEntity.ok(pictureInfos);
     }
 
     @DeleteMapping("/api/album/{albumId}/picture")
@@ -62,7 +62,7 @@ public class PictureController {
         @RequestBody(required = false) PicturesDeleteRequest pictures
     ) {
         var userId = 1L;
-        lock.run(userId, () -> pictureService.deleteAllByIds(userId, albumId, pictures.pictureIds()));
+        imageDeleteService.deletePictures(userId, albumId, pictures.pictureIds());
         return ResponseEntity.ok().build();
     }
 }

@@ -22,7 +22,7 @@ public class StorageReadController {
 //        @JwtPayload AuthTokenPayload loginUser,
         @PathVariable String resourceKey
     ) {
-        var imageFile = storageService.read(1L, resourceKey);
+        var imageFile = storageService.read(resourceKey);
         return ResponseEntity.ok()
             .contentType(imageFile.fileType().getMediaType())
             .cacheControl(CacheControl.maxAge(2, TimeUnit.HOURS))

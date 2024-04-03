@@ -1,8 +1,6 @@
 package ecsimsw.picup.service;
 
 import ecsimsw.picup.domain.ImageFile;
-import ecsimsw.picup.domain.Resource;
-import ecsimsw.picup.domain.ResourceRepository;
 import ecsimsw.picup.dto.FileUploadResponse;
 import ecsimsw.picup.exception.InvalidResourceException;
 import ecsimsw.picup.exception.StorageException;
@@ -26,56 +24,47 @@ public class StorageService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(StorageService.class);
 
-    private final ResourceRepository resourceRepository;
     private final ImageStorage mainStorage;
     private final ImageStorage backUpStorage;
 
     public StorageService(
-        ResourceRepository resourceRepository,
         @Qualifier(value = "mainStorage") ImageStorage mainStorage,
         @Qualifier(value = "backUpStorage") ImageStorage backUpStorage
-
     ) {
-        this.resourceRepository = resourceRepository;
         this.mainStorage = mainStorage;
         this.backUpStorage = backUpStorage;
     }
 
     @Transactional
-    public FileUploadResponse upload(Long userId, MultipartFile file, String resourceKey) {
+    public FileUploadResponse upload(MultipartFile file, String resourceKey) {
         LOGGER.info("upload file : " + resourceKey);
-        var resource = new Resource(userId, resourceKey);
         var imageFile = ImageFile.of(file);
         var futures = List.of(
-            mainStorage.storeAsync(resource, imageFile),
-            backUpStorage.storeAsync(resource, imageFile)
+            mainStorage.storeAsync(resourceKey, imageFile),
+            backUpStorage.storeAsync(resourceKey, imageFile)
         );
         try {
             CompletableFuture.allOf(futures.toArray(new CompletableFuture[0]))
                 .orTimeout(UPLOAD_TIME_OUT_SEC, TimeUnit.SECONDS)
                 .join();
-            resourceRepository.save(resource);
         } catch (CompletionException e) {
             futures.forEach(uploadFuture -> uploadFuture.thenAccept(
                 uploadResponse -> {
-                    mainStorage.deleteIfExists(resource);
-                    backUpStorage.deleteIfExists(resource);
+                    mainStorage.deleteIfExists(resourceKey);
+                    backUpStorage.deleteIfExists(resourceKey);
                 })
             );
             throw new StorageException("exception while uploading : " + e.getMessage());
         }
-        return new FileUploadResponse(resource.getResourceKey(), imageFile.size());
+        return new FileUploadResponse(resourceKey, imageFile.size());
     }
 
-    public ImageFile read(Long userId, String resourceKey) {
-        var resource = resourceRepository.findById(resourceKey)
-            .orElseThrow(() -> new InvalidResourceException("Not exists resources : " + resourceKey));
-        resource.validateAccess(userId);
+    public ImageFile read(String resourceKey) {
         try {
-            return mainStorage.read(resource);
+            return mainStorage.read(resourceKey);
         } catch (FileNotFoundException notInMainStorage) {
             try {
-                return backUpStorage.read(resource);
+                return backUpStorage.read(resourceKey);
             } catch (FileNotFoundException notInBackUpStorage) {
                 throw new InvalidResourceException("Not exists resources : " + resourceKey);
             }
@@ -83,19 +72,15 @@ public class StorageService {
     }
 
     public void delete(String resourceKey) {
-        LOGGER.info("delete resource : " + resourceKey);
-        var optionalResource = resourceRepository.findById(resourceKey);
-        if (optionalResource.isEmpty()) {
-            return;
-        }
-        var resource = optionalResource.orElseThrow();
         try {
-            mainStorage.deleteIfExists(resource);
-            backUpStorage.deleteIfExists(resource);
-            resourceRepository.delete(resource);
+            mainStorage.deleteIfExists(resourceKey);
         } catch (Exception ignored) {
-            resourceRepository.save(resource);
-            LOGGER.error("Failed to delete resource : " + resource.getResourceKey());
+            LOGGER.error("Failed to delete resource from main storage: " + resourceKey);
+        }
+        try {
+            backUpStorage.deleteIfExists(resourceKey);
+        } catch (Exception ignored) {
+            LOGGER.error("Failed to delete resource from backUp storage: " + resourceKey);
         }
     }
 }

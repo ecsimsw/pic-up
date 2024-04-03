@@ -32,8 +32,8 @@ public class FileStorageService {
         return storageHttpClient.requestUpload(request);
     }
 
-    public void deleteAsync(ImageFile file) {
-        imageFileMessageQueue.offerDeleteAllRequest(List.of(file.resourceKey()));
+    public void deleteAsync(String resourceKey) {
+        imageFileMessageQueue.offerDeleteAllRequest(List.of(resourceKey));
     }
 
     @Transactional

@@ -1,0 +1,50 @@
+package ecsimsw.picup.album.service;
+
+import ecsimsw.picup.album.domain.ImageFile;
+import ecsimsw.picup.album.dto.AlbumInfoResponse;
+import ecsimsw.picup.album.dto.PictureInfoResponse;
+import ecsimsw.picup.member.service.MemberDistributedLock;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+
+@RequiredArgsConstructor
+@Service
+public class AlbumUploadService {
+
+    private final MemberDistributedLock memberLock;
+    private final FileStorageService fileStorageService;
+    private final PictureService pictureService;
+    private final AlbumService albumService;
+
+    public AlbumInfoResponse initAlbum(Long userId, String name, MultipartFile file) {
+        var thumbnail = ImageFile.resizedOf(file, 0.5f);
+        try {
+            var thumbnailFile = fileStorageService.upload(userId, thumbnail);
+            return memberLock.run(
+                userId,
+                () -> albumService.create(userId, name, thumbnailFile)
+            );
+        } catch (Exception e) {
+            fileStorageService.deleteAsync(thumbnail.resourceKey());
+            throw e;
+        }
+    }
+
+    public PictureInfoResponse uploadPicture(Long userId, Long albumId, MultipartFile file) {
+        var image = ImageFile.of(file);
+        var thumbnail = ImageFile.resizedOf(file, 0.3f);
+        try {
+            var imageFile = fileStorageService.upload(userId, image);
+            var thumbnailFile = fileStorageService.upload(userId, thumbnail);
+            return memberLock.run(
+                userId,
+                () -> pictureService.create(userId, albumId, imageFile, thumbnailFile)
+            );
+        } catch (Exception e) {
+            fileStorageService.deleteAsync(image.resourceKey());
+            fileStorageService.deleteAsync(thumbnail.resourceKey());
+            throw e;
+        }
+    }
+}

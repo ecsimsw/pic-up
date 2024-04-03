@@ -2,7 +2,6 @@ package ecsimsw.picup.service;
 
 import com.amazonaws.services.s3.AmazonS3;
 import ecsimsw.picup.domain.ImageFile;
-import ecsimsw.picup.domain.Resource;
 import ecsimsw.picup.exception.StorageException;
 import ecsimsw.picup.utils.AwsS3Utils;
 import java.util.concurrent.CompletableFuture;
@@ -11,42 +10,37 @@ import org.springframework.scheduling.annotation.AsyncResult;
 
 public class ObjectStorage implements ImageStorage {
 
-    private final String storageKey;
     private final AmazonS3 s3Client;
     private final String bucketName;
 
     public ObjectStorage(
-        String storageKey,
         String bucketName,
         AmazonS3 s3Client
     ) {
-        this.storageKey = storageKey;
         this.s3Client = s3Client;
         this.bucketName = bucketName;
     }
 
     @Async
     @Override
-    public CompletableFuture<Resource> storeAsync(Resource resource, ImageFile imageFile) {
+    public CompletableFuture<String> storeAsync(String resourceKey, ImageFile imageFile) {
         try {
-            AwsS3Utils.upload(s3Client, bucketName, resource.getResourceKey(), imageFile);
-            resource.storedTo(storageKey);
-            return new AsyncResult<>(resource).completable();
+            AwsS3Utils.upload(s3Client, bucketName, resourceKey, imageFile);
+            return new AsyncResult<>(resourceKey).completable();
         } catch (Exception e) {
             throw new StorageException("Object storage server exception while uploading", e);
         }
     }
 
     @Override
-    public ImageFile read(Resource resource) {
-        var file = AwsS3Utils.read(s3Client, bucketName, resource.getResourceKey());
-        return ImageFile.of(resource.getResourceKey(), file);
+    public ImageFile read(String resourceKey) {
+        var file = AwsS3Utils.read(s3Client, bucketName, resourceKey);
+        return ImageFile.of(resourceKey, file);
     }
 
     @Override
-    public void deleteIfExists(Resource resource) {
-        AwsS3Utils.deleteIfExists(s3Client, bucketName, resource.getResourceKey());
-        resource.deletedFrom(storageKey);
+    public void deleteIfExists(String resourceKey) {
+        AwsS3Utils.deleteIfExists(s3Client, bucketName, resourceKey);
     }
 }
 

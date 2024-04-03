@@ -32,7 +32,7 @@ public class StorageUploadController {
         String resourceKey
     ) {
         var start = System.currentTimeMillis();
-        var uploadedInfo = storageService.upload(userId, file, resourceKey);
+        var uploadedInfo = storageService.upload(file, resourceKey);
         LOGGER.info("Upload response by user " + userId + ", this took " + (System.currentTimeMillis() - start) / 1000.0 + "sec");
         return ResponseEntity.ok(uploadedInfo);
     }

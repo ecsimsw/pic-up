@@ -22,21 +22,21 @@ public class MockImageStorage implements ImageStorage {
     }
 
     @Override
-    public CompletableFuture<Resource> storeAsync(Resource resource, ImageFile imageFile) {
+    public CompletableFuture<String> storeAsync(String resourceKey, ImageFile imageFile) {
         if (imageFile == null) {
-            return new AsyncResult<>(resource).completable();
+            return new AsyncResult<>(resourceKey).completable();
         }
-        DATA.put(resource.getResourceKey(), imageFile.file());
-        return new AsyncResult<>(resource).completable();
+        DATA.put(resourceKey, imageFile.file());
+        return new AsyncResult<>(resourceKey).completable();
     }
 
     @Override
-    public ImageFile read(Resource resource) throws FileNotFoundException {
-        return ImageFile.of(resource.getResourceKey(), DATA.get(resource.getResourceKey()));
+    public ImageFile read(String resourceKey) throws FileNotFoundException {
+        return ImageFile.of(resourceKey, DATA.get(resourceKey));
     }
 
     @Override
-    public void deleteIfExists(Resource resource) {
-        DATA.remove(resource.getResourceKey());
+    public void deleteIfExists(String resourceKey) {
+        DATA.remove(resourceKey);
     }
 }

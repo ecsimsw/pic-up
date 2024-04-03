@@ -1,7 +1,6 @@
 package ecsimsw.picup.service;
 
 import ecsimsw.picup.domain.ImageFile;
-import ecsimsw.picup.domain.Resource;
 import ecsimsw.picup.utils.FileUtils;
 import java.io.FileNotFoundException;
 import java.util.concurrent.CompletableFuture;
@@ -20,24 +19,21 @@ public class FileStorage implements ImageStorage {
 
     @Async
     @Override
-    public CompletableFuture<Resource> storeAsync(Resource resource, ImageFile imageFile) {
-        FileUtils.writeFile(storagePath(resource.getResourceKey()), imageFile.file());
-        resource.storedTo(storageKey);
-        return new AsyncResult<>(resource).completable();
+    public CompletableFuture<String> storeAsync(String resourceKey, ImageFile imageFile) {
+        FileUtils.writeFile(storagePath(resourceKey), imageFile.file());
+        return new AsyncResult<>(resourceKey).completable();
     }
 
     @Override
-    public ImageFile read(Resource resource) throws FileNotFoundException {
-        var resourceKey = resource.getResourceKey();
+    public ImageFile read(String resourceKey) throws FileNotFoundException {
         var storagePath = storagePath(resourceKey);
         var file = FileUtils.read(storagePath);
         return ImageFile.of(resourceKey, file);
     }
 
     @Override
-    public void deleteIfExists(Resource resource) {
-        FileUtils.deleteIfExists(storagePath(resource.getResourceKey()));
-        resource.deletedFrom(storageKey);
+    public void deleteIfExists(String resourceKey) {
+        FileUtils.deleteIfExists(storagePath(resourceKey));
     }
 
     private String storagePath(String resourceKey) {

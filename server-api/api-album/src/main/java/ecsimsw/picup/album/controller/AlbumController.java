@@ -3,7 +3,8 @@ package ecsimsw.picup.album.controller;
 import ecsimsw.picup.album.dto.AlbumInfoResponse;
 import ecsimsw.picup.album.dto.AlbumSearchCursor;
 import ecsimsw.picup.album.service.AlbumService;
-import ecsimsw.picup.member.service.MemberDistributedLock;
+import ecsimsw.picup.album.service.AlbumDeleteService;
+import ecsimsw.picup.album.service.AlbumUploadService;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
@@ -20,7 +21,8 @@ import org.springframework.web.multipart.MultipartFile;
 @RestController
 public class AlbumController {
 
-    private final MemberDistributedLock lock;
+    private final AlbumUploadService albumUploadService;
+    private final AlbumDeleteService imageDeleteService;
     private final AlbumService albumService;
 
     @PostMapping("/api/album")
@@ -30,18 +32,8 @@ public class AlbumController {
         @RequestParam String name
     ) {
         var userId = 1L;
-        var album = albumService.create(userId, name, thumbnail);
-        return ResponseEntity.ok(album);
-    }
-
-    @DeleteMapping("/api/album/{albumId}")
-    public ResponseEntity<Void> deleteAlbum(
-//        @JwtPayload AuthTokenPayload loginUser,
-        @PathVariable Long albumId
-    ) {
-        var userId = 1L;
-        lock.run(userId, () -> albumService.delete(userId, albumId));
-        return ResponseEntity.ok().build();
+        var albumInfo = albumUploadService.initAlbum(userId, name, thumbnail);
+        return ResponseEntity.ok(albumInfo);
     }
 
     @GetMapping("/api/album")
@@ -54,5 +46,15 @@ public class AlbumController {
 //        var albums = albumService.cursorBasedFetch(loginUser.getId(), limit, cursor);
         var albums = albumService.cursorBasedFetch(userId, limit, cursor);
         return ResponseEntity.ok(albums);
+    }
+
+    @DeleteMapping("/api/album/{albumId}")
+    public ResponseEntity<Void> deleteAlbum(
+//        @JwtPayload AuthTokenPayload loginUser,
+        @PathVariable Long albumId
+    ) {
+        var userId = 1L;
+        imageDeleteService.deleteAlbum(userId, albumId);
+        return ResponseEntity.ok().build();
     }
 }

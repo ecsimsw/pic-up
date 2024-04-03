@@ -1,25 +1,22 @@
 package ecsimsw.picup.usage.service;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+
 import ecsimsw.picup.album.exception.AlbumException;
 import ecsimsw.picup.env.StorageUsageMockRepository;
 import ecsimsw.picup.member.domain.StorageUsageRepository;
-import ecsimsw.picup.member.service.MemberDistributedLock;
 import ecsimsw.picup.member.service.StorageUsageService;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.Executors;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
-
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.Executors;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @ActiveProfiles("dev")
 @ExtendWith(MockitoExtension.class)
@@ -31,15 +28,12 @@ public class StorageUsageServiceTest {
     @Mock
     private StorageUsageRepository storageUsageRepository;
 
-    @Autowired
-    private MemberDistributedLock memberDistributedLock;
-
     private StorageUsageService storageUsageService;
 
     @BeforeEach
     public void init() {
         StorageUsageMockRepository.init(storageUsageRepository);
-        storageUsageService = new StorageUsageService(storageUsageRepository, memberDistributedLock);
+        storageUsageService = new StorageUsageService(storageUsageRepository);
 
 //        storageUsageService.initNewUsage(new StorageUsageDto(userId, 10000L));
     }

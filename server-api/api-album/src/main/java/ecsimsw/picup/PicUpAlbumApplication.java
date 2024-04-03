@@ -1,15 +1,11 @@
 package ecsimsw.picup;
 
 import ecsimsw.picup.album.service.FileEventOutboxService;
-import ecsimsw.picup.member.dto.SignUpRequest;
-import ecsimsw.picup.member.service.MemberService;
-import lombok.RequiredArgsConstructor;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.retry.annotation.EnableRetry;
 import org.springframework.scheduling.annotation.EnableScheduling;
-import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
