@@ -3,7 +3,6 @@ package ecsimsw.picup.album.service;
 import ecsimsw.picup.album.domain.FileDeletionEvent;
 import ecsimsw.picup.album.domain.FileDeletionEventOutbox;
 import ecsimsw.picup.album.domain.FileDeletionEvent_;
-import ecsimsw.picup.album.domain.ImageFileExtension;
 import ecsimsw.picup.album.domain.ImageFile;
 import ecsimsw.picup.dto.FileUploadRequest;
 import ecsimsw.picup.dto.FileUploadResponse;
@@ -14,7 +13,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -29,22 +27,13 @@ public class FileStorageService {
     private final FileDeletionEventOutbox fileDeletionEventOutbox;
     private final ImageFileMessageQueue imageFileMessageQueue;
 
-    public FileUploadResponse upload(ImageFile file) {
-        return upload(file.userId(), file.toMultipartFile(), file.resourceKey());
-    }
-
-    public FileUploadResponse upload(Long userId, MultipartFile file, String resourceKey) {
-        ImageFileExtension.validate(file);
-        var request = new FileUploadRequest(userId, file, resourceKey);
+    public FileUploadResponse upload(Long userId, ImageFile file) {
+        var request = new FileUploadRequest(userId, file.toMultipartFile(), file.resourceKey());
         return storageHttpClient.requestUpload(request);
     }
 
     public void deleteAsync(ImageFile file) {
-        deleteAsync(file.resourceKey());
-    }
-
-    public void deleteAsync(String resourceKey) {
-        imageFileMessageQueue.offerDeleteAllRequest(List.of(resourceKey));
+        imageFileMessageQueue.offerDeleteAllRequest(List.of(file.resourceKey()));
     }
 
     @Transactional

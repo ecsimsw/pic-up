@@ -1,6 +1,5 @@
 package ecsimsw.picup.usage.service;
 
-import ecsimsw.picup.album.domain.Picture;
 import ecsimsw.picup.album.exception.AlbumException;
 import ecsimsw.picup.usage.domain.StorageUsage;
 import ecsimsw.picup.usage.domain.StorageUsageRepository;
@@ -31,15 +30,9 @@ public class StorageUsageService {
     }
 
     @Transactional
-    public void addUsage(Long userId, Picture picture) {
-        addUsage(userId, picture.getFileSize());
-    }
-
-    @Transactional
     public void addUsage(Long userId, long fileSize) {
         try {
             storageUsageLock.acquire(userId);
-
             var storageUsage = getUsage(userId);
             storageUsage.add(fileSize);
             storageUsageRepository.save(storageUsage);
@@ -54,7 +47,6 @@ public class StorageUsageService {
     public void subtractUsage(Long userId, long fileSize) {
         try {
             storageUsageLock.acquire(userId);
-
             var usage = getUsage(userId);
             usage.subtract(fileSize);
             storageUsageRepository.save(usage);

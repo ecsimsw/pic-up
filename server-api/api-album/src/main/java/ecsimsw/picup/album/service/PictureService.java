@@ -33,18 +33,18 @@ public class PictureService {
     @Transactional
     public PictureInfoResponse create(Long userId, Long albumId, MultipartFile file) {
         checkUserAuthInAlbum(userId, albumId);
-        var originPicture = ImageFile.of(userId, file);
-        var thumbnailPicture = ImageFile.resizedOf(userId, file, THUMBNAIL_RESIZE_SCALE);
+        var image = ImageFile.of(file);
+        var thumbnail = ImageFile.resizedOf(file, THUMBNAIL_RESIZE_SCALE);
         try {
-            var pictureFile = fileStorageService.upload(originPicture);
-            var thumbnailFile = fileStorageService.upload(thumbnailPicture);
-            var picture = new Picture(albumId, pictureFile.resourceKey(), thumbnailFile.resourceKey(), pictureFile.size());
+            var imageFile = fileStorageService.upload(userId, image);
+            var thumbnailFile = fileStorageService.upload(userId, thumbnail);
+            var picture = new Picture(albumId, imageFile.resourceKey(), thumbnailFile.resourceKey(), imageFile.size());
             pictureRepository.save(picture);
-            storageUsageService.addUsage(userId, picture);
+            storageUsageService.addUsage(userId, picture.getFileSize());
             return PictureInfoResponse.of(picture);
         } catch (Exception e) {
-            fileStorageService.deleteAsync(originPicture);
-            fileStorageService.deleteAsync(thumbnailPicture);
+            fileStorageService.deleteAsync(image);
+            fileStorageService.deleteAsync(thumbnail);
             throw e;
         }
     }

@@ -27,7 +27,6 @@ public class PicUpAlbumApplication {
 
         Dummy dummy = ctx.getBean(Dummy.class);
         dummy.saveMember();
-
     }
 }
 
@@ -39,19 +38,5 @@ class Dummy {
 
     public void saveMember() {
         service.signUp(new SignUpRequest("ecsimsw", "hihihihhihi"));
-    }
-
-}
-
-@Configuration
-class CorsConfig implements WebMvcConfigurer {
-
-    @Override
-    public void addCorsMappings(CorsRegistry registry) {
-        registry.addMapping("/**")
-            .allowedOrigins("http://localhost:63342")
-            .allowedMethods("*")
-            .allowedHeaders("*")
-            .maxAge(3600);
     }
 }

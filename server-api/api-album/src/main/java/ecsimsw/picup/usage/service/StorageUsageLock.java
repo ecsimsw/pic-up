@@ -21,9 +21,9 @@ public class StorageUsageLock {
         this.redissonClient = redissonClient;
     }
 
-    public void acquire(Long userId) throws TimeoutException {
+    public void acquire(Long key) throws TimeoutException {
         try {
-            var lockKeyName = getLockKeyName(userId);
+            var lockKeyName = LOCK_KEY_PREFIX + getIdHash(key);
             var locks = redissonClient.getLock(lockKeyName);
             if (!locks.tryLock(LOCK_WAIT_TIME, LOCK_TTL, TimeUnit.MILLISECONDS)) {
                 throw new TimeoutException();
@@ -33,16 +33,12 @@ public class StorageUsageLock {
         }
     }
 
-    public void release(Long userId) {
-        var lockKeyName = getLockKeyName(userId);
+    public void release(Long key) {
+        var lockKeyName = LOCK_KEY_PREFIX + getIdHash(key);
         var locks = redissonClient.getLock(lockKeyName);
         if(locks.isHeldByCurrentThread()) {
             locks.unlock();
         }
-    }
-
-    private String getLockKeyName(Long userId) {
-        return LOCK_KEY_PREFIX + getIdHash(userId);
     }
 
     private int getIdHash(Long userId) {

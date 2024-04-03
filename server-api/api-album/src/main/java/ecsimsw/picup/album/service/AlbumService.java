@@ -11,13 +11,13 @@ import ecsimsw.picup.album.domain.Album;
 import ecsimsw.picup.album.domain.AlbumRepository;
 import ecsimsw.picup.album.domain.FileDeletionEvent;
 import ecsimsw.picup.album.domain.ImageFile;
-import ecsimsw.picup.album.domain.PictureRepository;
 import ecsimsw.picup.album.dto.AlbumInfoResponse;
 import ecsimsw.picup.album.dto.AlbumSearchCursor;
 import ecsimsw.picup.album.exception.AlbumException;
-import ecsimsw.picup.usage.service.StorageUsageService;
+
 import java.util.List;
 import java.util.Optional;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -36,15 +36,15 @@ public class AlbumService {
 
     @Transactional
     public AlbumInfoResponse create(Long userId, String name, MultipartFile file) {
-        var originPicture = ImageFile.resizedOf(userId, file, THUMBNAIL_RESIZE_SCALE);
+        var thumbnail = ImageFile.resizedOf(file, THUMBNAIL_RESIZE_SCALE);
         try {
-            var pictureFile = fileStorageService.upload(originPicture);
-            var album = new Album(userId, name, pictureFile.resourceKey(), pictureFile.size());
+            var thumbnailFile = fileStorageService.upload(userId, thumbnail);
+            var album = new Album(userId, name, thumbnailFile.resourceKey(), thumbnailFile.size());
             albumRepository.save(album);
             return AlbumInfoResponse.of(album);
         } catch (Exception e) {
-            fileStorageService.deleteAsync(originPicture.resourceKey());
-            throw e;
+            fileStorageService.deleteAsync(thumbnail);
+            throw new AlbumException("Failed to upload album file");
         }
     }
 
