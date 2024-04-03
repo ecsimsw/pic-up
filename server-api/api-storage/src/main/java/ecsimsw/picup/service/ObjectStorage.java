@@ -12,18 +12,18 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.stereotype.Component;
 
-@Component(value = "objectStorage")
 public class ObjectStorage implements ImageStorage {
 
-    private static final StorageKey KEY = StorageKey.S3_OBJECT_STORAGE;
-
+    private final String storageKey;
     private final AmazonS3 s3Client;
     private final String bucketName;
 
     public ObjectStorage(
-        @Value("${object.storage.bucket.name}") String bucketName,
+        String storageKey,
+        String bucketName,
         AmazonS3 s3Client
     ) {
+        this.storageKey = storageKey;
         this.s3Client = s3Client;
         this.bucketName = bucketName;
     }
@@ -33,7 +33,7 @@ public class ObjectStorage implements ImageStorage {
     public CompletableFuture<Resource> storeAsync(Resource resource, ImageFile imageFile) {
         try {
             AwsS3Utils.upload(s3Client, bucketName, resource.getResourceKey(), imageFile);
-            resource.storedTo(KEY);
+            resource.storedTo(storageKey);
             return new AsyncResult<>(resource).completable();
         } catch (Exception e) {
             throw new StorageException("Object storage server exception while uploading", e);
@@ -47,9 +47,9 @@ public class ObjectStorage implements ImageStorage {
     }
 
     @Override
-    public void delete(Resource resource) {
+    public void deleteIfExists(Resource resource) {
         AwsS3Utils.deleteIfExists(s3Client, bucketName, resource.getResourceKey());
-        resource.deletedFrom(KEY);
+        resource.deletedFrom(storageKey);
     }
 }
 

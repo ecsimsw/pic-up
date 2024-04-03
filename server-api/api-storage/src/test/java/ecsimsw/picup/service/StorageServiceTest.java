@@ -197,7 +197,7 @@ public class StorageServiceTest {
         @Test
         public void fileNotFoundOnMain() throws FileNotFoundException {
             doThrow(FileNotFoundException.class)
-                .when(mainStorage).delete(any(String.class));
+                .when(mainStorage).deleteIfExists(any(String.class));
 
             storageService.delete(resourceKey);
 
@@ -213,7 +213,7 @@ public class StorageServiceTest {
         @Test
         public void deleteFailedOnMain() throws FileNotFoundException {
             doThrow(StorageException.class)
-                .when(mainStorage).delete(any(String.class));
+                .when(mainStorage).deleteIfExists(any(String.class));
 
             storageService.delete(resourceKey);
 
@@ -230,7 +230,7 @@ public class StorageServiceTest {
         @Test
         public void fileNotFoundOnBackUp() throws FileNotFoundException {
             doThrow(FileNotFoundException.class)
-                .when(backUpStorage).delete(any(String.class));
+                .when(backUpStorage).deleteIfExists(any(String.class));
 
             storageService.delete(resourceKey);
 
@@ -247,10 +247,10 @@ public class StorageServiceTest {
         @Test
         public void deleteAllFailedFromStorages() throws FileNotFoundException {
             doThrow(StorageException.class)
-                .when(mainStorage).delete(any(String.class));
+                .when(mainStorage).deleteIfExists(any(String.class));
 
             doThrow(StorageException.class)
-                .when(backUpStorage).delete(any(String.class));
+                .when(backUpStorage).deleteIfExists(any(String.class));
 
             storageService.delete(resourceKey);
 

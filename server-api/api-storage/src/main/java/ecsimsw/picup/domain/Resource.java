@@ -27,7 +27,7 @@ public class Resource {
     private Long userId;
 
     @Convert(converter = ListStorageKeyConverter.class)
-    private List<StorageKey> storedStorages = new ArrayList<>();
+    private List<String> storedStorages = new ArrayList<>();
 
     private LocalDateTime createdAt = LocalDateTime.now();
 
@@ -36,12 +36,12 @@ public class Resource {
         this.userId = userId;
     }
 
-    public void storedTo(StorageKey storageKey) {
+    public void storedTo(String storageKey) {
         storedStorages = new ArrayList<>(storedStorages);
         storedStorages.add(storageKey);
     }
 
-    public void deletedFrom(StorageKey storageKey) {
+    public void deletedFrom(String storageKey) {
         storedStorages = new ArrayList<>(storedStorages);
         storedStorages.remove(storageKey);
     }

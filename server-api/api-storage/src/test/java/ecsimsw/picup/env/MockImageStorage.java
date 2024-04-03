@@ -36,7 +36,7 @@ public class MockImageStorage implements ImageStorage {
     }
 
     @Override
-    public void delete(Resource resource) {
+    public void deleteIfExists(Resource resource) {
         DATA.remove(resource.getResourceKey());
     }
 }

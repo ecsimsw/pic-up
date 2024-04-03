@@ -2,25 +2,27 @@ package ecsimsw.picup.service;
 
 import ecsimsw.picup.domain.ImageFile;
 import ecsimsw.picup.domain.Resource;
-import ecsimsw.picup.storage.StorageKey;
 import ecsimsw.picup.utils.FileUtils;
 import java.io.FileNotFoundException;
 import java.util.concurrent.CompletableFuture;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.AsyncResult;
-import org.springframework.stereotype.Component;
 
-@Component(value = "localFileStorage")
-public class LocalFileStorage implements ImageStorage {
+public class FileStorage implements ImageStorage {
 
-    public static final StorageKey KEY = StorageKey.LOCAL_FILE_STORAGE;
-    private static final String rootPath = "./storage/";
+    public final String storageKey;
+    private final String rootPath;
+
+    public FileStorage(String storageKey, String rootPath) {
+        this.storageKey = storageKey;
+        this.rootPath = rootPath;
+    }
 
     @Async
     @Override
     public CompletableFuture<Resource> storeAsync(Resource resource, ImageFile imageFile) {
         FileUtils.writeFile(storagePath(resource.getResourceKey()), imageFile.file());
-        resource.storedTo(KEY);
+        resource.storedTo(storageKey);
         return new AsyncResult<>(resource).completable();
     }
 
@@ -33,9 +35,9 @@ public class LocalFileStorage implements ImageStorage {
     }
 
     @Override
-    public void delete(Resource resource) {
+    public void deleteIfExists(Resource resource) {
         FileUtils.deleteIfExists(storagePath(resource.getResourceKey()));
-        resource.deletedFrom(KEY);
+        resource.deletedFrom(storageKey);
     }
 
     private String storagePath(String resourceKey) {

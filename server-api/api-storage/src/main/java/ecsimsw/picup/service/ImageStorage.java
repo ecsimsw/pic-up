@@ -11,5 +11,5 @@ public interface ImageStorage {
 
     ImageFile read(Resource resource) throws FileNotFoundException;
 
-    void delete(Resource resource);
+    void deleteIfExists(Resource resource);
 }

@@ -6,25 +6,25 @@ import ecsimsw.picup.domain.ResourceRepository;
 import ecsimsw.picup.dto.FileUploadResponse;
 import ecsimsw.picup.exception.InvalidResourceException;
 import ecsimsw.picup.exception.StorageException;
-import ecsimsw.picup.storage.StorageKey;
-import java.io.FileNotFoundException;
-import java.util.List;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CompletionException;
-import java.util.concurrent.TimeUnit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-import scala.collection.SpecificIterableFactory;
+
+import java.io.FileNotFoundException;
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
+import java.util.concurrent.TimeUnit;
+
+import static ecsimsw.picup.config.FileStorageConfig.UPLOAD_TIME_OUT_SEC;
 
 @Service
 public class StorageService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(StorageService.class);
-    private static final int UPLOAD_TIME_OUT_SEC = 5;
 
     private final ResourceRepository resourceRepository;
     private final ImageStorage mainStorage;
@@ -32,11 +32,12 @@ public class StorageService {
 
     public StorageService(
         ResourceRepository resourceRepository,
-        @Qualifier(value = "localFileStorage") ImageStorage localFileStorage,
-        @Qualifier(value = "objectStorage") ImageStorage backUpStorage
+        @Qualifier(value = "mainStorage") ImageStorage mainStorage,
+        @Qualifier(value = "backUpStorage") ImageStorage backUpStorage
+
     ) {
         this.resourceRepository = resourceRepository;
-        this.mainStorage = localFileStorage;
+        this.mainStorage = mainStorage;
         this.backUpStorage = backUpStorage;
     }
 
@@ -56,8 +57,11 @@ public class StorageService {
             resourceRepository.save(resource);
         } catch (CompletionException e) {
             futures.forEach(uploadFuture -> uploadFuture.thenAccept(
-                uploadResponse -> delete(resource.getResourceKey())
-            ));
+                uploadResponse -> {
+                    mainStorage.deleteIfExists(resource);
+                    backUpStorage.deleteIfExists(resource);
+                })
+            );
             throw new StorageException("exception while uploading : " + e.getMessage());
         }
         return new FileUploadResponse(resource.getResourceKey(), imageFile.size());
@@ -81,23 +85,16 @@ public class StorageService {
     public void delete(String resourceKey) {
         LOGGER.info("delete resource : " + resourceKey);
         var optionalResource = resourceRepository.findById(resourceKey);
-        if(optionalResource.isEmpty()) {
+        if (optionalResource.isEmpty()) {
             return;
         }
         var resource = optionalResource.orElseThrow();
-        deleteFileFromStorage(resource, mainStorage);
-        deleteFileFromStorage(resource, backUpStorage);
-        if(resource.isNotStored()) {
-            resourceRepository.delete(resource);
-        } else {
-            resourceRepository.save(resource);
-        }
-    }
-
-    private void deleteFileFromStorage(Resource resource, ImageStorage storage) {
         try {
-            storage.delete(resource);
+            mainStorage.deleteIfExists(resource);
+            backUpStorage.deleteIfExists(resource);
+            resourceRepository.delete(resource);
         } catch (Exception ignored) {
+            resourceRepository.save(resource);
             LOGGER.error("Failed to delete resource : " + resource.getResourceKey());
         }
     }
