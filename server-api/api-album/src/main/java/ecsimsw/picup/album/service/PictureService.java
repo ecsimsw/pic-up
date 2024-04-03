@@ -51,28 +51,29 @@ public class PictureService {
     }
 
     @Transactional
-    public void delete(Long userId, Long albumId, Picture picture) {
-        checkUserAuthInAlbum(userId, albumId);
-        picture.validateAlbum(albumId);
-        fileStorageService.createDeleteEvent(new FileDeletionEvent(userId, picture.getResourceKey()));
-        storageUsageService.subtractUsage(userId, picture.getFileSize());
-        pictureRepository.delete(picture);
-    }
-
-    @Transactional
-    public void deleteAll(Long userId, Long albumId, List<Long> pictureIds) {
+    public void deleteAllByIds(Long userId, Long albumId, List<Long> pictureIds) {
         var pictures = pictureRepository.findAllById(pictureIds);
-        pictures.forEach(
-            it -> delete(userId, albumId, it)
-        );
+        deleteAll(userId, albumId, pictures);
     }
 
     @Transactional
     public void deleteAllInAlbum(Long userId, Long albumId) {
         var pictures = pictureRepository.findAllByAlbumId(albumId);
-        pictures.forEach(
-            it -> delete(userId, albumId, it)
-        );
+        deleteAll(userId, albumId, pictures);
+    }
+
+    @Transactional
+    public void deleteAll(Long userId, Long albumId, List<Picture> pictures) {
+        checkUserAuthInAlbum(userId, albumId);
+        pictures.forEach(pic -> {
+            pic.validateAlbum(albumId);
+            fileStorageService.createDeletionEvent(new FileDeletionEvent(userId, pic.getResourceKey()));
+        });
+        var usageSum = pictures.stream()
+            .mapToLong(Picture::getFileSize)
+            .sum();
+        storageUsageService.subtractUsage(userId, usageSum);
+        pictureRepository.deleteAll(pictures);
     }
 
     @Transactional(readOnly = true)

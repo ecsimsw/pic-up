@@ -51,7 +51,7 @@ public class FileStorageService {
     }
 
     @Transactional
-    public void createDeleteEvent(FileDeletionEvent event) {
+    public void createDeletionEvent(FileDeletionEvent event) {
         fileDeletionEventOutbox.save(event);
     }
 }

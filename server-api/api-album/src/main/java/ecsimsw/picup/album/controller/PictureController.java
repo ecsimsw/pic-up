@@ -37,15 +37,8 @@ public class PictureController {
         @RequestPart MultipartFile file
     ) {
         var userId = 1L;
-        try {
-            lock.acquire(userId);
-            var response = pictureService.create(userId, albumId, file);
-            return ResponseEntity.ok(response);
-        } catch (TimeoutException e) {
-            throw new AlbumException("Too many requests");
-        } finally {
-            lock.release(userId);
-        }
+        var response = lock.run(userId, () -> pictureService.create(userId, albumId, file));
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/api/album/{albumId}/picture")
@@ -63,20 +56,13 @@ public class PictureController {
     }
 
     @DeleteMapping("/api/album/{albumId}/picture")
-    public ResponseEntity<String> deletePictures(
+    public ResponseEntity<Void> deletePictures(
 //        @JwtPayload AuthTokenPayload loginUser,
         @PathVariable Long albumId,
         @RequestBody(required = false) PicturesDeleteRequest pictures
     ) {
         var userId = 1L;
-        try {
-            lock.acquire(userId);
-            pictureService.deleteAll(userId, albumId, pictures.pictureIds());
-            return ResponseEntity.ok().build();
-        } catch (TimeoutException e) {
-            throw new AlbumException("Too many requests");
-        } finally {
-            lock.release(userId);
-        }
+        lock.run(userId, () -> pictureService.deleteAllByIds(userId, albumId, pictures.pictureIds()));
+        return ResponseEntity.ok().build();
     }
 }

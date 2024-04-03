@@ -55,7 +55,7 @@ public class AlbumService {
     @Transactional
     public void delete(Long userId, Long albumId) {
         var album = getUserAlbum(userId, albumId);
-        fileStorageService.createDeleteEvent(new FileDeletionEvent(userId, album.getResourceKey()));
+        fileStorageService.createDeletionEvent(new FileDeletionEvent(userId, album.getResourceKey()));
         albumRepository.delete(album);
         pictureService.deleteAllInAlbum(userId, albumId);
     }

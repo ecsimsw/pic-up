@@ -3,18 +3,24 @@ package ecsimsw.picup.album.controller;
 import ecsimsw.picup.album.dto.AlbumInfoResponse;
 import ecsimsw.picup.album.dto.AlbumSearchCursor;
 import ecsimsw.picup.album.service.AlbumService;
-import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
-
+import ecsimsw.picup.member.service.MemberDistributedLock;
 import java.util.List;
 import java.util.Optional;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 @RequiredArgsConstructor
 @RestController
 public class AlbumController {
 
+    private final MemberDistributedLock lock;
     private final AlbumService albumService;
 
     @PostMapping("/api/album")
@@ -34,18 +40,8 @@ public class AlbumController {
         @PathVariable Long albumId
     ) {
         var userId = 1L;
-        albumService.delete(userId, albumId);
+        lock.run(userId, () -> albumService.delete(userId, albumId));
         return ResponseEntity.ok().build();
-    }
-
-    @GetMapping("/api/album/{albumId}")
-    public ResponseEntity<AlbumInfoResponse> getAlbum(
-//        @JwtPayload AuthTokenPayload loginUser,
-        @PathVariable Long albumId
-    ) {
-        var userId = 1L;
-        var album = albumService.read(userId, albumId);
-        return ResponseEntity.ok(album);
     }
 
     @GetMapping("/api/album")
