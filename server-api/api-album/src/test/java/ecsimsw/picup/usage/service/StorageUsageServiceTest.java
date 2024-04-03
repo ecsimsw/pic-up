@@ -3,7 +3,7 @@ package ecsimsw.picup.usage.service;
 import ecsimsw.picup.album.exception.AlbumException;
 import ecsimsw.picup.env.StorageUsageMockRepository;
 import ecsimsw.picup.member.domain.StorageUsageRepository;
-import ecsimsw.picup.member.service.StorageUsageLock;
+import ecsimsw.picup.member.service.MemberDistributedLock;
 import ecsimsw.picup.member.service.StorageUsageService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -32,14 +32,14 @@ public class StorageUsageServiceTest {
     private StorageUsageRepository storageUsageRepository;
 
     @Autowired
-    private StorageUsageLock storageUsageLock;
+    private MemberDistributedLock memberDistributedLock;
 
     private StorageUsageService storageUsageService;
 
     @BeforeEach
     public void init() {
         StorageUsageMockRepository.init(storageUsageRepository);
-        storageUsageService = new StorageUsageService(storageUsageRepository, storageUsageLock);
+        storageUsageService = new StorageUsageService(storageUsageRepository, memberDistributedLock);
 
 //        storageUsageService.initNewUsage(new StorageUsageDto(userId, 10000L));
     }

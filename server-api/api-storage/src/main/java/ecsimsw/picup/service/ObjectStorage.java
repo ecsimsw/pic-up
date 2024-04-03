@@ -4,13 +4,10 @@ import com.amazonaws.services.s3.AmazonS3;
 import ecsimsw.picup.domain.ImageFile;
 import ecsimsw.picup.domain.Resource;
 import ecsimsw.picup.exception.StorageException;
-import ecsimsw.picup.storage.StorageKey;
 import ecsimsw.picup.utils.AwsS3Utils;
 import java.util.concurrent.CompletableFuture;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.AsyncResult;
-import org.springframework.stereotype.Component;
 
 public class ObjectStorage implements ImageStorage {
 

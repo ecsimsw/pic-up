@@ -4,16 +4,16 @@ import static ecsimsw.picup.album.domain.PictureRepository.PictureSearchSpecs.is
 import static ecsimsw.picup.album.domain.PictureRepository.PictureSearchSpecs.orderThan;
 import static ecsimsw.picup.album.domain.PictureRepository.PictureSearchSpecs.sortByCreatedAtDesc;
 
-import ecsimsw.picup.album.domain.*;
+import ecsimsw.picup.album.domain.AlbumRepository;
+import ecsimsw.picup.album.domain.FileDeletionEvent;
+import ecsimsw.picup.album.domain.ImageFile;
+import ecsimsw.picup.album.domain.Picture;
+import ecsimsw.picup.album.domain.PictureRepository;
 import ecsimsw.picup.album.dto.PictureInfoResponse;
 import ecsimsw.picup.album.dto.PictureSearchCursor;
 import ecsimsw.picup.album.exception.AlbumException;
-import ecsimsw.picup.member.service.StorageUsageLock;
 import ecsimsw.picup.member.service.StorageUsageService;
-
 import java.util.List;
-
-import java.util.NoSuchElementException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -51,12 +51,6 @@ public class PictureService {
     }
 
     @Transactional
-    public void delete(Long userId, Long albumId, Long pictureId) {
-        var picture = pictureRepository.findById(pictureId).orElseThrow(() -> new NoSuchElementException("Not exists picture"));
-        delete(userId, albumId, picture);
-    }
-
-    @Transactional
     public void delete(Long userId, Long albumId, Picture picture) {
         checkUserAuthInAlbum(userId, albumId);
         picture.validateAlbum(albumId);
@@ -84,7 +78,7 @@ public class PictureService {
     @Transactional(readOnly = true)
     public List<PictureInfoResponse> cursorBasedFetch(Long userId, Long albumId, PictureSearchCursor cursor) {
         checkUserAuthInAlbum(userId, albumId);
-        if(!cursor.hasPrev()) {
+        if (!cursor.hasPrev()) {
             var pictures = pictureRepository.findAllByAlbumId(
                 albumId,
                 PageRequest.of(0, cursor.limit(), sortByCreatedAtDesc)

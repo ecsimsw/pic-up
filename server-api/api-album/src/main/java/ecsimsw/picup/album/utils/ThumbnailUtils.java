@@ -2,6 +2,7 @@ package ecsimsw.picup.album.utils;
 
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -15,7 +16,7 @@ public class ThumbnailUtils {
     private static final Color COLOR = new Color(0, 0, 0);
 
     public static byte[] resize(InputStream input, String format, float scale) throws IOException {
-        var imageBuff = Thumbnails.of(input)
+        BufferedImage imageBuff = Thumbnails.of(input)
             .scale(1)
             .useExifOrientation(true)
             .addFilter(getImageFilter(scale))

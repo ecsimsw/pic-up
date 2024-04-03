@@ -35,7 +35,7 @@ public class DataSourceHealth {
         indicatorSlave.setDataSource(dataSourceSlave);
     }
 
-    @Scheduled(fixedDelay = 3000)
+    @Scheduled(fixedDelay = 30000)
     public void healthCheck() {
         healthCheck(DataSourceType.MASTER, indicatorMaster);
         healthCheck(DataSourceType.SLAVE, indicatorSlave);
