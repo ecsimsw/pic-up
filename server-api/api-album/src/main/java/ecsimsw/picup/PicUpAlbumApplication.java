@@ -49,6 +49,7 @@ class CorsConfig implements WebMvcConfigurer {
             .allowedOrigins("http://localhost:63342")
             .allowedMethods("*")
             .allowedHeaders("*")
+            .allowCredentials(true)
             .maxAge(3600);
     }
 }

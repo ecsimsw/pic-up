@@ -1,6 +1,5 @@
 package ecsimsw.picup.member.controller;
 
-import ecsimsw.auth.exception.SimpleAuthException;
 import ecsimsw.picup.auth.UnauthorizedException;
 import ecsimsw.picup.member.exception.LoginFailedException;
 import ecsimsw.picup.member.exception.MemberException;
@@ -19,7 +18,7 @@ public class MemberControllerAdvice {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MemberControllerAdvice.class);
 
-    @ExceptionHandler({LoginFailedException.class, UnauthorizedException.class, SimpleAuthException.class})
+    @ExceptionHandler({LoginFailedException.class, UnauthorizedException.class})
     public ResponseEntity<String> loginFailedException() {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized request");
     }

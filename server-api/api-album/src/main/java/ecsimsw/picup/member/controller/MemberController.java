@@ -1,8 +1,8 @@
 package ecsimsw.picup.member.controller;
 
-import ecsimsw.auth.anotations.JwtPayload;
-import ecsimsw.auth.service.AuthTokenService;
 import ecsimsw.picup.auth.AuthTokenPayload;
+import ecsimsw.picup.auth.AuthTokenService;
+import ecsimsw.picup.auth.TokenPayload;
 import ecsimsw.picup.config.PublicTesPageConfig;
 import ecsimsw.picup.member.dto.MemberInfoResponse;
 import ecsimsw.picup.member.dto.SignInRequest;
@@ -23,7 +23,7 @@ import javax.validation.Valid;
 public class MemberController {
 
     private final MemberService memberService;
-    private final AuthTokenService<AuthTokenPayload> authTokenService;
+    private final AuthTokenService authTokenService;
 
     @PostMapping("/api/member/signin")
     public ResponseEntity<MemberInfoResponse> signIn(
@@ -31,7 +31,9 @@ public class MemberController {
         HttpServletResponse response
     ) {
         var memberInfo = memberService.signIn(request);
-        authTokenService.issue(response, memberInfo.toTokenPayload());
+        var tokens = authTokenService.issue(memberInfo.toTokenPayload());
+        response.addCookie(authTokenService.accessTokenCookie(tokens));
+        response.addCookie(authTokenService.refreshTokenCookie(tokens));
         return ResponseEntity.ok(memberInfo);
     }
 
@@ -41,22 +43,23 @@ public class MemberController {
         HttpServletResponse response
     ) {
         var memberInfo = memberService.signUp(request);
-        authTokenService.issue(response, memberInfo.toTokenPayload());
+        var tokens = authTokenService.issue(memberInfo.toTokenPayload());
+        response.addCookie(authTokenService.accessTokenCookie(tokens));
+        response.addCookie(authTokenService.refreshTokenCookie(tokens));
         return ResponseEntity.ok(memberInfo);
     }
 
     @GetMapping("/api/member/me")
     public ResponseEntity<MemberInfoResponse> me(
-        @JwtPayload AuthTokenPayload userInfo
+        @TokenPayload AuthTokenPayload userInfo
     ) {
-        System.out.println(userInfo);
-        var memberInfo = memberService.me(userInfo.getId());
+        var memberInfo = memberService.me(userInfo.getUsername());
         return ResponseEntity.ok(memberInfo);
     }
 
-    @GetMapping("/api/member/public")
-    public ResponseEntity<MemberInfoResponse> publicUser() {
-        var memberInfo = memberService.me(PublicTesPageConfig.publicMemberId);
-        return ResponseEntity.ok(memberInfo);
-    }
+//    @GetMapping("/api/member/public")
+//    public ResponseEntity<MemberInfoResponse> publicUser() {
+//        var memberInfo = memberService.me(PublicTesPageConfig.publicMemberId);
+//        return ResponseEntity.ok(memberInfo);
+//    }
 }

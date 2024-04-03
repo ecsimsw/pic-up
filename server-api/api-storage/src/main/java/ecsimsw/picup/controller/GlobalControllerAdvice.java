@@ -1,6 +1,5 @@
 package ecsimsw.picup.controller;
 
-import ecsimsw.auth.exception.SimpleAuthException;
 import ecsimsw.picup.alert.SlackMessageSender;
 import ecsimsw.picup.auth.UnauthorizedException;
 import ecsimsw.picup.exception.InvalidResourceException;
@@ -40,7 +39,7 @@ public class GlobalControllerAdvice {
         return ResponseEntity.badRequest().body(e.getMessage());
     }
 
-    @ExceptionHandler({UnauthorizedException.class, SimpleAuthException.class})
+    @ExceptionHandler({UnauthorizedException.class})
     public ResponseEntity<String> unauthorizedException() {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("unauthorized user request");
     }

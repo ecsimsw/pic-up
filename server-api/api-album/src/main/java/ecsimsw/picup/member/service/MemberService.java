@@ -23,12 +23,11 @@ public class MemberService {
         try {
             // XXX :: only for beta test, short period
             if(request.username().equals("publicUser") && request.password().equals("publicUserForTest")) {
-                var member = memberRepository.findByUsername("ecsimsw").orElseThrow(() -> new LoginFailedException("Invalid login info"));
+                var member = getMember("ecsimsw");
                 var usage = getUsageByMember(member);
                 return MemberInfoResponse.of(member, usage);
             }
-            var member = memberRepository.findByUsername(request.username())
-                .orElseThrow(() -> new LoginFailedException("Invalid login info"));
+            var member = getMember(request.username());
             var requestPassword = encryptPassword(request.password(), member.getPassword().getSalt());
             member.authenticate(requestPassword);
             var usage = getUsageByMember(member);
@@ -51,8 +50,8 @@ public class MemberService {
     }
 
     @Transactional(readOnly = true)
-    public MemberInfoResponse me(Long id) {
-        var member = getMember(id);
+    public MemberInfoResponse me(String username) {
+        var member = getMember(username);
         var usage = getUsageByMember(member);
         return MemberInfoResponse.of(member, usage);
     }
@@ -72,8 +71,9 @@ public class MemberService {
         );
     }
 
-    private Member getMember(Long id) {
-        return memberRepository.findById(id).orElseThrow(() -> new MemberException("Not exists member"));
+    private Member getMember(String username) {
+        return memberRepository.findByUsername(username)
+            .orElseThrow(() -> new LoginFailedException("Invalid login info"));
     }
 
     private StorageUsage getUsageByMember(Member member) {

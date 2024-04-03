@@ -27,6 +27,6 @@ public class MemberInfoResponse {
     }
 
     public AuthTokenPayload toTokenPayload() {
-        return new AuthTokenPayload(id, username);
+        return new AuthTokenPayload(username);
     }
 }

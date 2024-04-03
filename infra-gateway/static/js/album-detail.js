@@ -60,7 +60,7 @@ document.addEventListener("DOMContentLoaded", function () {
         });
 
         window.addEventListener('scroll', handleScroll);
-    }
+    })
 });
 
 document.getElementById("create-btn").addEventListener("click", function() {

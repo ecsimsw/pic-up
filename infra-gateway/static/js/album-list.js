@@ -28,12 +28,12 @@ document.getElementById('createAlbumForm').onsubmit = function (event) {
     const form = document.getElementById('createAlbumForm')
     const url = serverUrl + "/api/album";
     const formData = new FormData(form);
-    const fetchOptions = {
+    event.preventDefault();
+    fetch(url,  {
+        credentials: 'include',
         method: form.method,
         body: formData,
-    };
-    event.preventDefault();
-    fetch(url, fetchOptions).then(response => {
+    }).then(response => {
         window.location.reload();
     }).catch(error => {
         console.log(error)
@@ -174,17 +174,21 @@ function callLoginApi(callback) {
 }
 
 function fetchData(url, callback) {
-    fetch(url)
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
-            }
-            return response.json();
-        })
-        .then(data => callback(data))
-        .catch(error => {
-            console.log(error)
-        });
+    fetch(
+        url, {
+            credentials: 'include',
+            "Access-control-allow-methods": "*"
+        }
+    ).then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        return response.json();
+    })
+    .then(data => callback(data))
+    .catch(error => {
+        console.log(error)
+    });
 }
 
 function bytesToSize(bytes) {

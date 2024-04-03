@@ -8,17 +8,12 @@ import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
+import static ecsimsw.picup.auth.AuthConfig.*;
+
 @RequiredArgsConstructor
 @Component
 public class AuthTokenService {
 
-    private static final Key jwtSecretKey = JwtUtils.createSecretKey("thisissecretkeythisissecretkeythisis");
-
-    public static final String ACCESS_TOKEN_COOKIE_NAME = "PICUP_AT";
-    public static final String REFRESH_TOKEN_COOKIE_NAME = "PICUP_RT";
-
-    public static final int REFRESH_TOKEN_JWT_EXPIRE_TIME = 2 * 60 * 60;
-    public static final int ACCESS_TOKEN_JWT_EXPIRE_TIME = 30 * 60;
     private static final String TOKEN_PAYLOAD_KEY = "token";
 
     private final AuthTokensCacheRepository authTokensCacheRepository;
@@ -69,12 +64,27 @@ public class AuthTokenService {
     }
 
     public AuthTokenPayload tokenPayload(String token) {
-        return JwtUtils.tokenValue(jwtSecretKey, token, TOKEN_PAYLOAD_KEY);
+        return JwtUtils.tokenValue(JWT_SECRET_KEY, token, TOKEN_PAYLOAD_KEY);
+    }
+
+    public Cookie accessTokenCookie(AuthTokens tokens) {
+        var cookie = new Cookie(ACCESS_TOKEN_COOKIE_NAME, tokens.getAccessToken());
+        cookie.setMaxAge(ACCESS_TOKEN_JWT_EXPIRE_TIME);
+        cookie.setHttpOnly(true);
+        cookie.setPath("/");
+        return cookie;
+    }
+
+    public Cookie refreshTokenCookie(AuthTokens tokens) {
+        var cookie = new Cookie(REFRESH_TOKEN_COOKIE_NAME, tokens.getRefreshToken());
+        cookie.setMaxAge(REFRESH_TOKEN_JWT_EXPIRE_TIME);
+        cookie.setHttpOnly(true);
+        return cookie;
     }
 
     private boolean isValidToken(String token) {
         try {
-            JwtUtils.tokenValue(jwtSecretKey, token, TOKEN_PAYLOAD_KEY);
+            JwtUtils.tokenValue(JWT_SECRET_KEY, token, TOKEN_PAYLOAD_KEY);
             return true;
         } catch (Exception e) {
             return false;
@@ -82,6 +92,6 @@ public class AuthTokenService {
     }
 
     private String createToken(AuthTokenPayload payload, int expiredTime) {
-        return JwtUtils.createToken(jwtSecretKey, Map.of(TOKEN_PAYLOAD_KEY, payload), expiredTime);
+        return JwtUtils.createToken(JWT_SECRET_KEY, Map.of(TOKEN_PAYLOAD_KEY, payload), expiredTime);
     }
 }

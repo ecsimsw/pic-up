@@ -1,7 +1,5 @@
 package ecsimsw.picup.auth;
 
-import static ecsimsw.picup.auth.AuthTokenService.ACCESS_TOKEN_COOKIE_NAME;
-
 import java.util.Arrays;
 import javax.servlet.http.Cookie;
 import org.springframework.core.MethodParameter;
@@ -12,6 +10,8 @@ import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 
 import javax.servlet.http.HttpServletRequest;
+
+import static ecsimsw.picup.auth.AuthConfig.ACCESS_TOKEN_COOKIE_NAME;
 
 @Component
 public class AuthArgumentResolver implements HandlerMethodArgumentResolver {

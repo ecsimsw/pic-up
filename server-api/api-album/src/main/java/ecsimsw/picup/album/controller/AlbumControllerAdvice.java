@@ -1,6 +1,5 @@
 package ecsimsw.picup.album.controller;
 
-import ecsimsw.auth.exception.SimpleAuthException;
 import ecsimsw.picup.album.exception.AlbumException;
 import ecsimsw.picup.member.exception.InvalidStorageServerResponseException;
 import ecsimsw.picup.album.exception.UnsupportedFileTypeException;
@@ -41,7 +40,7 @@ public class AlbumControllerAdvice {
         return ResponseEntity.status(HttpStatus.PAYLOAD_TOO_LARGE).body(e.getMessage());
     }
 
-    @ExceptionHandler({UnauthorizedException.class, SimpleAuthException.class})
+    @ExceptionHandler({UnauthorizedException.class})
     public ResponseEntity<String> unauthorizedException() {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("unauthorized user request");
     }
