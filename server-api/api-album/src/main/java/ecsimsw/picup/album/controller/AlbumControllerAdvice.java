@@ -6,7 +6,7 @@ import ecsimsw.picup.member.exception.InvalidStorageServerResponseException;
 import ecsimsw.picup.album.exception.UnsupportedFileTypeException;
 import ecsimsw.picup.alert.SlackMessageSender;
 import ecsimsw.picup.auth.UnauthorizedException;
-import ecsimsw.picup.album.exception.FileUploadFailException;
+import ecsimsw.picup.album.exception.FileStorageConnectionDownException;
 import ecsimsw.picup.mq.exception.MessageBrokerDownException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,7 +48,6 @@ public class AlbumControllerAdvice {
 
     @ExceptionHandler({MethodArgumentTypeMismatchException.class, MissingServletRequestPartException.class})
     public ResponseEntity<String> methodArgumentTypeMismatchException(Exception e) {
-        e.printStackTrace();
         return ResponseEntity.badRequest().body("wrong type of api path variable or quest parameter");
     }
 
@@ -65,7 +64,7 @@ public class AlbumControllerAdvice {
         return ResponseEntity.internalServerError().body("unhandled server exception");
     }
 
-    @ExceptionHandler({FileUploadFailException.class, InvalidStorageServerResponseException.class})
+    @ExceptionHandler({FileStorageConnectionDownException.class, InvalidStorageServerResponseException.class})
     public ResponseEntity<String> storageUploadFailedException(IllegalArgumentException e) {
         var alertMessage = "[STORAGE_SERVER_CONNECTION] : " + e.getMessage();
         LOGGER.error(alertMessage + "\n" + e.getCause());

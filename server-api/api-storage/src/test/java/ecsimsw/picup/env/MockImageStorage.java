@@ -1,7 +1,6 @@
 package ecsimsw.picup.env;
 
 import ecsimsw.picup.domain.ImageFile;
-import ecsimsw.picup.domain.Resource;
 import ecsimsw.picup.storage.StorageKey;
 import ecsimsw.picup.service.ImageStorage;
 import java.io.FileNotFoundException;
@@ -31,7 +30,7 @@ public class MockImageStorage implements ImageStorage {
     }
 
     @Override
-    public ImageFile read(String resourceKey) throws FileNotFoundException {
+    public ImageFile read(String resourceKey) {
         return ImageFile.of(resourceKey, DATA.get(resourceKey));
     }
 

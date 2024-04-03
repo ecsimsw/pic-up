@@ -28,4 +28,12 @@ public record ImageFile(
             throw new InvalidResourceException("Invalid multipart file");
         }
     }
+
+    public String extension() {
+        return fileType.name();
+    }
+
+    public byte[] byteArray() {
+        return file;
+    }
 }

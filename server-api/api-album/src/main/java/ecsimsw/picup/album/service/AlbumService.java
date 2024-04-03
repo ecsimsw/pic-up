@@ -45,22 +45,21 @@ public class AlbumService {
     }
 
     @Transactional(readOnly = true)
-    public List<AlbumInfoResponse> cursorBasedFetch(Long userId, int limit, Optional<AlbumSearchCursor> cursor) {
-        if (cursor.isEmpty()) {
-            var albums = albumRepository.findAllByUserId(userId, PageRequest.of(0, limit, ascByCreatedAt));
+    public List<AlbumInfoResponse> cursorBasedFetch(Long userId, AlbumSearchCursor cursor) {
+        if (!cursor.hasPrev()) {
+            var albums = albumRepository.findAllByUserId(userId, PageRequest.of(0, cursor.limit(), ascByCreatedAt));
             return AlbumInfoResponse.listOf(albums.getContent());
         }
-        var prev = cursor.orElseThrow();
         var albums = albumRepository.fetch(
             where(isUser(userId))
-                .and(createdLater(prev.createdAt()).or(equalsCreatedTime(prev.createdAt()).and(lessId(prev.id())))),
-            limit,
+                .and(createdLater(cursor.createdAt()).or(equalsCreatedTime(cursor.createdAt()).and(lessId(cursor.cursorId())))),
+            cursor.limit(),
             ascByCreatedAt
         );
         return AlbumInfoResponse.listOf(albums);
     }
 
-    private Album getUserAlbum(Long userId, Long albumId) {
+    public Album getUserAlbum(Long userId, Long albumId) {
         var album = albumRepository.findById(albumId).orElseThrow(() -> new AlbumException("Invalid album"));
         album.authorize(userId);
         return album;

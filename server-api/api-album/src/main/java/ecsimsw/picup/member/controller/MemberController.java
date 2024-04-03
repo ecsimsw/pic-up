@@ -30,9 +30,9 @@ public class MemberController {
         @Valid @RequestBody SignInRequest request,
         HttpServletResponse response
     ) {
-        var me = memberService.signIn(request);
-        authTokenService.issue(response, me.toTokenPayload());
-        return ResponseEntity.ok(me);
+        var memberInfo = memberService.signIn(request);
+        authTokenService.issue(response, memberInfo.toTokenPayload());
+        return ResponseEntity.ok(memberInfo);
     }
 
     @PostMapping("/api/member/signup")
@@ -40,22 +40,22 @@ public class MemberController {
         @Valid @RequestBody SignUpRequest request,
         HttpServletResponse response
     ) {
-        var me = memberService.signUp(request);
-        authTokenService.issue(response, me.toTokenPayload());
-        return ResponseEntity.ok(me);
+        var memberInfo = memberService.signUp(request);
+        authTokenService.issue(response, memberInfo.toTokenPayload());
+        return ResponseEntity.ok(memberInfo);
     }
 
     @GetMapping("/api/member/me")
     public ResponseEntity<MemberInfoResponse> me(
         @JwtPayload AuthTokenPayload userInfo
     ) {
-        var me = memberService.me(userInfo.getId());
-        return ResponseEntity.ok(me);
+        var memberInfo = memberService.me(userInfo.getId());
+        return ResponseEntity.ok(memberInfo);
     }
 
     @GetMapping("/api/member/public")
     public ResponseEntity<MemberInfoResponse> publicUser() {
-        var me = memberService.me(PublicTesPageConfig.publicMemberId);
-        return ResponseEntity.ok(me);
+        var memberInfo = memberService.me(PublicTesPageConfig.publicMemberId);
+        return ResponseEntity.ok(memberInfo);
     }
 }

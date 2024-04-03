@@ -13,7 +13,6 @@ import ecsimsw.picup.domain.ImageFile;
 import ecsimsw.picup.exception.InvalidResourceException;
 import ecsimsw.picup.exception.StorageException;
 import java.io.ByteArrayInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 
 public class AwsS3Utils {
@@ -37,9 +36,6 @@ public class AwsS3Utils {
 
     public static byte[] read(AmazonS3 s3Client, String bucketName, String resourceKey) {
         try {
-            if (!s3Client.doesObjectExist(bucketName, resourceKey)) {
-                throw new FileNotFoundException("file not exists : " + resourceKey);
-            }
             var object = s3Client.getObject(new GetObjectRequest(bucketName, resourceKey));
             return IOUtils.toByteArray(object.getObjectContent());
         } catch (AmazonS3Exception | IOException e) {

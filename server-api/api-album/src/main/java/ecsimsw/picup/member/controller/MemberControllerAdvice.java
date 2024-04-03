@@ -15,9 +15,9 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
 @ControllerAdvice
-public class GlobalControllerAdvice {
+public class MemberControllerAdvice {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(GlobalControllerAdvice.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(MemberControllerAdvice.class);
 
     @ExceptionHandler({LoginFailedException.class, UnauthorizedException.class, SimpleAuthException.class})
     public ResponseEntity<String> loginFailedException() {

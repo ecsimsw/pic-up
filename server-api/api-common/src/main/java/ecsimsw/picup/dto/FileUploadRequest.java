@@ -11,12 +11,10 @@ import javax.validation.constraints.NotNull;
 import java.util.Map;
 
 public record FileUploadRequest(
-    @NotBlank Long userId,
     @NotNull MultipartFile file,
     String resourceKey
 ) {
     private static final HttpHeaders REQUEST_HEADERS = new HttpHeaders();
-    private static final String ID_REQUEST_KEY_NAME = "userId";
     private static final String FILE_REQUEST_KEY_NAME = "file";
     private static final String RESOURCE_KEY_REQUEST_KEY_NAME = "resourceKey";
 
@@ -27,7 +25,6 @@ public record FileUploadRequest(
     public HttpEntity<Object> toHttpEntity() {
         var body = new LinkedMultiValueMap<String, Object>();
         body.setAll(Map.of(
-            ID_REQUEST_KEY_NAME, userId,
             FILE_REQUEST_KEY_NAME, file.getResource(),
             RESOURCE_KEY_REQUEST_KEY_NAME, resourceKey
         ));

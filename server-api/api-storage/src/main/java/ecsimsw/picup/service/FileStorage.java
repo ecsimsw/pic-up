@@ -25,7 +25,7 @@ public class FileStorage implements ImageStorage {
     }
 
     @Override
-    public ImageFile read(String resourceKey) throws FileNotFoundException {
+    public ImageFile read(String resourceKey) {
         var storagePath = storagePath(resourceKey);
         var file = FileUtils.read(storagePath);
         return ImageFile.of(resourceKey, file);

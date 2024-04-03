@@ -1,8 +1,7 @@
 package ecsimsw.picup.controller;
 
+import ecsimsw.picup.dto.FileReadResponse;
 import ecsimsw.picup.service.StorageService;
-import java.util.concurrent.TimeUnit;
-import org.springframework.http.CacheControl;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -18,14 +17,10 @@ public class StorageReadController {
     }
 
     @GetMapping("/api/storage/{resourceKey}")
-    public ResponseEntity<byte[]> read(
-//        @JwtPayload AuthTokenPayload loginUser,
+    public ResponseEntity<FileReadResponse> read(
         @PathVariable String resourceKey
     ) {
-        var imageFile = storageService.read(resourceKey);
-        return ResponseEntity.ok()
-            .contentType(imageFile.fileType().getMediaType())
-            .cacheControl(CacheControl.maxAge(2, TimeUnit.HOURS))
-            .body(imageFile.file());
+        var fileInfo = storageService.read(resourceKey);
+        return ResponseEntity.ok(fileInfo);
     }
 }

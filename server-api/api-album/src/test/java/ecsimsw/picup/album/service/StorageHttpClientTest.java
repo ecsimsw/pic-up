@@ -1,6 +1,6 @@
 package ecsimsw.picup.album.service;
 
-import ecsimsw.picup.album.exception.FileUploadFailException;
+import ecsimsw.picup.album.exception.FileStorageConnectionDownException;
 import ecsimsw.picup.dto.FileUploadRequest;
 import ecsimsw.picup.dto.FileUploadResponse;
 import org.junit.jupiter.api.DisplayName;
@@ -65,7 +65,7 @@ class StorageHttpClientTest {
 
         assertThatThrownBy(
             () -> storageHttpClient.requestUpload(new FileUploadRequest(MEMBER_ID, MULTIPART_FILE, RESOURCE_KEY))
-        ).isInstanceOf(FileUploadFailException.class);
+        ).isInstanceOf(FileStorageConnectionDownException.class);
 
         verify(restTemplate, times(retryCount))
             .exchange(any(String.class), any(HttpMethod.class), any(HttpEntity.class), any(ParameterizedTypeReference.class));

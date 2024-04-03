@@ -10,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.TestPropertySource;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 import static ecsimsw.picup.album.domain.AlbumRepository.AlbumSearchSpecs.*;
@@ -32,7 +31,7 @@ public class AlbumRepositoryTest {
     }
 
 
-    @DisplayName("같은 유저의 createdAt, id 를 키로 커서 기반 페이지 조회를 확인한다.")
+    @DisplayName("같은 유저의 createdAt, cursorId 를 키로 커서 기반 페이지 조회를 확인한다.")
     @Test
     public void testCursorBased() {
         var album1 = albumRepository.save(new Album(1L, "albumName1", "resource1", SIZE));
@@ -43,12 +42,12 @@ public class AlbumRepositoryTest {
         var album6 = albumRepository.save(new Album(2L, "albumName6", "resource6", SIZE));
         var album7 = albumRepository.save(new Album(1L, "albumName7", "resource7", SIZE));
 
-        var prev = new AlbumSearchCursor(album2);
         var limit = 2;
+        var prev = new AlbumSearchCursor(limit, album2);
         final List<Album> albums = albumRepository.fetch(
             where(isUser(1L))
                 .and(createdLater(prev.createdAt()).or(
-                    equalsCreatedTime(prev.createdAt()).and(lessId(prev.id())))),
+                    equalsCreatedTime(prev.createdAt()).and(lessId(prev.cursorId())))),
             limit, ascByCreatedAt
         );
         assertThat(albums).isEqualTo(List.of(album3, album5));

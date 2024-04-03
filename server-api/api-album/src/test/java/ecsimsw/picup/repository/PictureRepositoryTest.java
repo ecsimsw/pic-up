@@ -24,7 +24,7 @@ public class PictureRepositoryTest {
     @Autowired
     private PictureRepository pictureRepository;
 
-    @DisplayName("같은 유저의 createdAt, id 를 키로 커서 기반 페이지 조회를 확인한다.")
+    @DisplayName("같은 유저의 createdAt, cursorId 를 키로 커서 기반 페이지 조회를 확인한다.")
     @Test
     public void testCursorBased() {
         var picture1 = pictureRepository.save(new Picture(1L, "resource1", "resource1", SIZE));
@@ -56,7 +56,7 @@ public class PictureRepositoryTest {
             .isEqualTo(List.of(picture3, picture5));
     }
 
-    @DisplayName("동일한 생성 시각일 경우 id 로 비교하여 조회 순서를 정할 수 있다.")
+    @DisplayName("동일한 생성 시각일 경우 cursorId 로 비교하여 조회 순서를 정할 수 있다.")
     @Test
     public void testCursorBasedSameCreateTime() {
         LocalDateTime sameTime = LocalDateTime.now();

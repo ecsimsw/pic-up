@@ -4,6 +4,7 @@ import ecsimsw.picup.album.domain.FileDeletionEvent;
 import ecsimsw.picup.album.domain.FileDeletionEventOutbox;
 import ecsimsw.picup.album.domain.FileDeletionEvent_;
 import ecsimsw.picup.album.domain.ImageFile;
+import ecsimsw.picup.dto.FileReadResponse;
 import ecsimsw.picup.dto.FileUploadRequest;
 import ecsimsw.picup.dto.FileUploadResponse;
 import ecsimsw.picup.mq.ImageFileMessageQueue;
@@ -27,9 +28,13 @@ public class FileStorageService {
     private final FileDeletionEventOutbox fileDeletionEventOutbox;
     private final ImageFileMessageQueue imageFileMessageQueue;
 
-    public FileUploadResponse upload(Long userId, ImageFile file) {
-        var request = new FileUploadRequest(userId, file.toMultipartFile(), file.resourceKey());
+    public FileUploadResponse upload(ImageFile file) {
+        var request = new FileUploadRequest(file.toMultipartFile(), file.resourceKey());
         return storageHttpClient.requestUpload(request);
+    }
+
+    public FileReadResponse read(String resourceKey) {
+        return storageHttpClient.requestFile(resourceKey);
     }
 
     public void deleteAsync(String resourceKey) {
@@ -46,6 +51,7 @@ public class FileStorageService {
         LOGGER.info("publish deletion event : " + String.join(", ", resourceKeys));
     }
 
+    @Transactional(readOnly = true)
     public List<FileDeletionEvent> findAllDeletionOutBox() {
         return fileDeletionEventOutbox.findAll(Sort.by(FileDeletionEvent_.CREATION_TIME));
     }

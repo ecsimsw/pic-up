@@ -37,6 +37,13 @@ public class PictureService {
         return PictureInfoResponse.of(picture);
     }
 
+    @Transactional(readOnly = true)
+    public PictureInfoResponse read(Long userId, Long albumId, Long pictureId) {
+        checkUserAuthInAlbum(userId, albumId);
+        var picture = pictureRepository.findById(pictureId).orElseThrow();
+        return PictureInfoResponse.of(picture);
+    }
+
     @Transactional
     public void deleteAllByIds(Long userId, Long albumId, List<Long> pictureIds) {
         var pictures = pictureRepository.findAllById(pictureIds);

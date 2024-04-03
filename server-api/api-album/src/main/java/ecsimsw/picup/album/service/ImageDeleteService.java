@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 
 @RequiredArgsConstructor
 @Service
-public class AlbumDeleteService {
+public class ImageDeleteService {
 
     private final MemberDistributedLock memberLock;
     private final PictureService pictureService;

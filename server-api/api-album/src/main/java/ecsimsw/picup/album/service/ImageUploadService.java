@@ -10,7 +10,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 @RequiredArgsConstructor
 @Service
-public class AlbumUploadService {
+public class ImageUploadService {
 
     private final MemberDistributedLock memberLock;
     private final FileStorageService fileStorageService;
@@ -20,7 +20,7 @@ public class AlbumUploadService {
     public AlbumInfoResponse initAlbum(Long userId, String name, MultipartFile file) {
         var thumbnail = ImageFile.resizedOf(file, 0.5f);
         try {
-            var thumbnailFile = fileStorageService.upload(userId, thumbnail);
+            var thumbnailFile = fileStorageService.upload(thumbnail);
             return memberLock.run(
                 userId,
                 () -> albumService.create(userId, name, thumbnailFile)
@@ -35,8 +35,8 @@ public class AlbumUploadService {
         var image = ImageFile.of(file);
         var thumbnail = ImageFile.resizedOf(file, 0.3f);
         try {
-            var imageFile = fileStorageService.upload(userId, image);
-            var thumbnailFile = fileStorageService.upload(userId, thumbnail);
+            var imageFile = fileStorageService.upload(image);
+            var thumbnailFile = fileStorageService.upload(thumbnail);
             return memberLock.run(
                 userId,
                 () -> pictureService.create(userId, albumId, imageFile, thumbnailFile)

@@ -1,6 +1,7 @@
 package ecsimsw.picup.service;
 
 import ecsimsw.picup.domain.ImageFile;
+import ecsimsw.picup.dto.FileReadResponse;
 import ecsimsw.picup.dto.FileUploadResponse;
 import ecsimsw.picup.exception.InvalidResourceException;
 import ecsimsw.picup.exception.StorageException;
@@ -59,13 +60,15 @@ public class StorageService {
         return new FileUploadResponse(resourceKey, imageFile.size());
     }
 
-    public ImageFile read(String resourceKey) {
+    public FileReadResponse read(String resourceKey) {
         try {
-            return mainStorage.read(resourceKey);
-        } catch (FileNotFoundException notInMainStorage) {
+            var file = mainStorage.read(resourceKey);
+            return new FileReadResponse(resourceKey, file.byteArray(), file.size(), file.extension());
+        } catch (StorageException notInMainStorage) {
             try {
-                return backUpStorage.read(resourceKey);
-            } catch (FileNotFoundException notInBackUpStorage) {
+                var file = backUpStorage.read(resourceKey);
+                return new FileReadResponse(resourceKey, file.byteArray(), file.size(), file.extension());
+            } catch (StorageException notInBackUpStorage) {
                 throw new InvalidResourceException("Not exists resources : " + resourceKey);
             }
         }

@@ -14,8 +14,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.concurrent.ExecutionException;
-
 import static ecsimsw.picup.env.AlbumFixture.*;
 import static ecsimsw.picup.env.MemberFixture.MEMBER_ID;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -48,7 +46,7 @@ class FileStorageServiceTest {
         when(storageHttpClient.requestUpload(new FileUploadRequest(MEMBER_ID, MULTIPART_FILE, RESOURCE_KEY)))
             .thenReturn(new FileUploadResponse(RESOURCE_KEY, MULTIPART_FILE.getSize()));
 
-        var fileInfo = fileStorageService.upload(MEMBER_ID, ImageFile.of(MULTIPART_FILE));
+        var fileInfo = fileStorageService.upload(ImageFile.of(MULTIPART_FILE));
         assertAll(
             () -> assertThat(fileInfo.resourceKey()).isEqualTo(RESOURCE_KEY),
             () -> assertThat(fileInfo.size()).isEqualTo(MULTIPART_FILE.getSize())
@@ -60,7 +58,7 @@ class FileStorageServiceTest {
     void uploadWithInvalidResourceName() {
         var invalidFileName = "invalidFileName";
         assertThatThrownBy(
-            () -> fileStorageService.upload(MEMBER_ID, ImageFile.of(mockMultipartFile(invalidFileName)))
+            () -> fileStorageService.upload(ImageFile.of(mockMultipartFile(invalidFileName)))
         ).isInstanceOf(AlbumException.class);
     }
 
@@ -69,7 +67,7 @@ class FileStorageServiceTest {
     void uploadWithInvalidResource() {
         var invalidFileExtension = "unsupportedFileExtension.mp4";
         assertThatThrownBy(
-            () -> fileStorageService.upload(MEMBER_ID, ImageFile.of(mockMultipartFile(invalidFileExtension)))
+            () -> fileStorageService.upload(ImageFile.of(mockMultipartFile(invalidFileExtension)))
         ).isInstanceOf(UnsupportedFileTypeException.class);
     }
 }

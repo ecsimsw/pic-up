@@ -8,7 +8,7 @@ public interface ImageStorage {
 
     CompletableFuture<String> storeAsync(String resourceKey, ImageFile imageFile);
 
-    ImageFile read(String resourceKey) throws FileNotFoundException;
+    ImageFile read(String resourceKey);
 
     void deleteIfExists(String resourceKey);
 }
