@@ -1,6 +1,6 @@
 package ecsimsw.picup.album.service;
 
-import ecsimsw.picup.album.domain.ImageFile;
+import ecsimsw.picup.album.domain.PictureFile;
 import ecsimsw.picup.album.dto.AlbumInfoResponse;
 import ecsimsw.picup.album.dto.PictureInfoResponse;
 import ecsimsw.picup.member.service.MemberDistributedLock;
@@ -18,7 +18,7 @@ public class ImageUploadService {
     private final AlbumService albumService;
 
     public AlbumInfoResponse initAlbum(Long userId, String name, MultipartFile file) {
-        var thumbnail = ImageFile.resizedOf(file, 0.5f);
+        var thumbnail = PictureFile.resizedOf(file, 0.5f);
         try {
             var thumbnailFile = fileStorageService.upload(thumbnail);
             return memberLock.run(
@@ -32,7 +32,7 @@ public class ImageUploadService {
     }
 
     public PictureInfoResponse uploadPicture(Long userId, Long albumId, MultipartFile file) {
-        var image = ImageFile.of(file);
+        var image = PictureFile.of(file);
 //        var thumbnail = ImageFile.resizedOf(file, 0.3f);
         try {
             var imageFile = fileStorageService.upload(image);

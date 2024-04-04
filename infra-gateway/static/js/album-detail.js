@@ -17,78 +17,93 @@ Dropzone.autoDiscover = false;
 
 document.addEventListener("DOMContentLoaded", function () {
     callLoginApi(function(login) {
-        // initUploadPanel()
         initEditButton();
-
         const urlParams = new URLSearchParams(window.location.search);
         albumId = urlParams.get('albumId');
-        fetchData(serverUrl + "/api/album/" + albumId, function (album) {
-            const albumTitle = document.getElementById("album-title");
-            albumTitle.innerText = album.name
-        })
-
+        addDropZone(albumId);
+        setAlbumInfo();
         fetchData(serverUrl + "/api/album/" + albumId + "/picture", function (pictures) {
             pictures.forEach(picture => {
                 if (inPagePictures.has(picture.id)) {
                     return
                 }
                 const itemId = createNewPictureItem(albumId, picture.id, picture.thumbnailResourceKey)
-                if picture is image file
-                addGalleryImage(
-                    serverUrl + "/api/album/" + albumId + "/picture/" + picture.id + "/image",
-                    serverUrl + "/api/album/" + albumId + "/picture/" + picture.id + "/thumbnail",
-                )
-                addImageViewer(`album-${albumId}-picture-${picture.id}`, galleryOrderNumber);
-                galleryOrderNumber++
+                if(!picture.isVideo) {
+                    addGalleryImage(
+                        serverUrl + "/api/album/" + albumId + "/picture/" + picture.id + "/image",
+                        serverUrl + "/api/album/" + albumId + "/picture/" + picture.id + "/thumbnail",
+                    )
+                    addImageViewer(`album-${albumId}-picture-${picture.id}`, galleryOrderNumber);
+                    galleryOrderNumber++
+                } else {
+                    addVideo(itemId, picture)
+                }
                 inPagePictures.add(picture.id)
             });
             cursorId = pictures[pictures.length - 1].id
             cursorCreatedAt = pictures[pictures.length - 1].createdAt
         })
-
-        const uploadDropzone = new Dropzone(document.querySelector('#myDropzone'), {
-            dictDefaultMessage: 'Drop Here!',
-            url: serverUrl + "/api/album/" + albumId + "/picture",
-            acceptedFiles: ".jpeg,.jpg,.png,.gif,.mp4",
-            paramName: "file",
-            maxFilesize: 30000, // MB
-            init: function () {
-                this.on("success", function (file) {
-                    console.log("upload success : " + file.name);
-                    isUploaded = true
-                });
-            }
-        });
-
         window.addEventListener('scroll', handleScroll);
     })
 });
 
-function addVideo() {
-    // if picture is video file
-    const pictureItem = document.getElementById(itemId).addEventListener("click", function(event) {
-        document.getElementById("video-popup").style.display = "flex";
-        var div = document.createElement("div");
-        div.id = "my-video-content"
-        div.style.textAlign= "center";
-        div.innerHTML =
-            '  <video\n' +
-            '         id="my-video"\n' +
-            '         className="video-js"\n' +
-            '         controls\n' +
-            '         preload="auto"\n' +
-            '         width="80%"\n' +
-            '         height="80%"\n' +
-            '         poster="http://localhost:8084/api/album/1/picture/1/thumbnail"\n' +
-            '         data-setup="{}"\n' +
-            '         \n' +
-            '        <source src="http://localhost:8084/api/album/1/picture/1/image" type="video/mp4"/>\n' +
-            '     </video>'
-        let elementById = document.getElementById("video-content");
-        while (elementById.firstChild) {
-            elementById.removeChild(elementById.lastChild);
+function handleScroll() {
+    if(cursorEnd) {
+        return;
+    }
+    const scrollPosition = window.scrollY;
+    const viewportHeight = window.innerHeight;
+    const documentHeight = document.body.clientHeight;
+    const isAlmostEndOfPage = scrollPosition > (documentHeight - viewportHeight) * 0.9;
+    if (isAlmostEndOfPage) {
+        fetchData(serverUrl + "/api/album/" + albumId + "/picture" + "?cursorId=" + cursorId + "&cursorCreatedAt=" + cursorCreatedAt, function (pictures) {
+            pictures.forEach(picture => {
+                if(inPagePictures.has(picture.id)) {
+                    return
+                }
+                const itemId = createNewPictureItem(albumId, picture.id, picture.thumbnailResourceKey)
+                if(!picture.isVideo) {
+                    addGalleryImage(
+                        serverUrl + "/api/album/" + albumId + "/picture/" + picture.id + "/image",
+                        serverUrl + "/api/album/" + albumId + "/picture/" + picture.id + "/thumbnail",
+                    )
+                    addImageViewer(`album-${albumId}-picture-${picture.id}`, galleryOrderNumber);
+                    galleryOrderNumber++
+                } else {
+                    addVideo(itemId, picture)
+                }
+                inPagePictures.add(picture.id)
+            });
+            if (pictures.length === 0) {
+                cursorEnd = true;
+            } else {
+                cursorId = pictures[pictures.length - 1].id
+                cursorCreatedAt = pictures[pictures.length - 1].createdAt
+            }
+        })
+    }
+}
+
+function addDropZone(albumId) {
+    new Dropzone(document.querySelector('#myDropzone'), {
+        dictDefaultMessage: 'Drop Here!',
+        url: serverUrl + "/api/album/" + albumId + "/picture",
+        acceptedFiles: ".jpeg,.jpg,.png,.gif,.mp4",
+        paramName: "file",
+        maxFilesize: 30000, // MB
+        init: function () {
+            this.on("success", function (file) {
+                console.log("upload success : " + file.name);
+                isUploaded = true
+            });
         }
-        elementById.append(div)
+    });
+}
+
+function setAlbumInfo() {
+    fetchData(serverUrl + "/api/album/" + albumId, function (album) {
+        const albumTitle = document.getElementById("album-title");
+        albumTitle.innerText = album.name
     })
 }
 
@@ -113,44 +128,38 @@ document.getElementById("video-popup").addEventListener("click", function(e) {
     }
 });
 
-function handleScroll() {
-    if(cursorEnd) {
-        return;
-    }
-    const scrollPosition = window.scrollY;
-    const viewportHeight = window.innerHeight;
-    const documentHeight = document.body.clientHeight;
-    const isAlmostEndOfPage = scrollPosition > (documentHeight - viewportHeight) * 0.9;
-    if (isAlmostEndOfPage) {
-        fetchData(serverUrl + "/api/album/" + albumId + "/picture" + "?cursorId=" + cursorId + "&cursorCreatedAt=" + cursorCreatedAt, function (pictures) {
-            pictures.forEach(picture => {
-                if(inPagePictures.has(picture.id)) {
-                    return
-                }
-                createNewPictureItem(albumId, picture.id, picture.thumbnailResourceKey)
-                addGalleryImage(
-                    serverUrl + "/api/album/" + albumId + "/picture/" + picture.id + "/image",
-                    serverUrl + "/api/album/" + albumId + "/picture/" + picture.id + "/thumbnail",
-                )
-                addImageViewer(`album-${albumId}-picture-${picture.id}`, galleryOrderNumber);
-                galleryOrderNumber++
-                inPagePictures.add(picture.id)
-            });
-            if (pictures.length === 0) {
-                cursorEnd = true;
-            } else {
-                cursorId = pictures[pictures.length - 1].id
-                cursorCreatedAt = pictures[pictures.length - 1].createdAt
-            }
-        })
-    }
-}
-
 function addGalleryImage(src, thumb) {
     galleryImages.push({
         "src": src,
         'thumb': thumb,
         'subHtml': ''
+    })
+}
+
+function addVideo(itemId, picture) {
+    const pictureItem = document.getElementById(itemId).addEventListener("click", function(event) {
+        document.getElementById("video-popup").style.display = "flex";
+        var div = document.createElement("div");
+        div.id = "my-video-content"
+        div.style.textAlign= "center";
+        div.innerHTML =
+            '  <video\n' +
+            '         id="my-video"\n' +
+            '         className="video-js"\n' +
+            '         controls\n' +
+            '         preload="auto"\n' +
+            '         width="80%"\n' +
+            '         height="80%"\n' +
+            '         poster=\"' + serverUrl + "/api/album/" + albumId + "/picture/" + picture.id+ "/thumbnail"+ '\"\n' +
+            '         data-setup="{}"\n' +
+            '         \n' +
+            '        <source src=\"' + serverUrl + "/api/album/" + albumId + "/picture/" + picture.id+ "/image\"" + ' type="video/mp4"/>\n' +
+            '     </video>'
+        let elementById = document.getElementById("video-content");
+        while (elementById.firstChild) {
+            elementById.removeChild(elementById.lastChild);
+        }
+        elementById.append(div)
     })
 }
 

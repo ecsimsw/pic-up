@@ -7,31 +7,31 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 
-public record ImageFile(
+public record PictureFile(
     String resourceKey,
-    ImageFileExtension format,
+    PictureFileExtension format,
     byte[] file
 ) {
 
-    public static ImageFile of(MultipartFile file) {
+    public static PictureFile of(MultipartFile file) {
         try {
             var resourceKey = ResourceKeyStrategy.generate(file);
             var fileName = file.getOriginalFilename();
-            var format = ImageFileExtension.fromFileName(fileName);
-            return new ImageFile(resourceKey, format, file.getBytes());
+            var format = PictureFileExtension.fromFileName(fileName);
+            return new PictureFile(resourceKey, format, file.getBytes());
         } catch (IOException | NullPointerException e) {
             throw new AlbumException("Invalid multipart file");
         }
     }
 
-    public static ImageFile resizedOf(MultipartFile file, float scale) {
+    public static PictureFile resizedOf(MultipartFile file, float scale) {
         try {
             var resourceKey = ResourceKeyStrategy.generate(file);
             var fileName = file.getOriginalFilename();
-            var format = ImageFileExtension.fromFileName(fileName);
+            var format = PictureFileExtension.fromFileName(fileName);
             var inputStream = file.getInputStream();
             var resized = ThumbnailUtils.resize(inputStream, format.name(), scale);
-            return new ImageFile(resourceKey, format, resized);
+            return new PictureFile(resourceKey, format, resized);
         } catch (IOException | NullPointerException e) {
             throw new AlbumException("Invalid multipart upload request");
         }

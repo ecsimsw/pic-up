@@ -3,7 +3,7 @@ package ecsimsw.picup.album.service;
 import ecsimsw.picup.album.domain.FileDeletionEvent;
 import ecsimsw.picup.album.domain.FileDeletionEventOutbox;
 import ecsimsw.picup.album.domain.FileDeletionEvent_;
-import ecsimsw.picup.album.domain.ImageFile;
+import ecsimsw.picup.album.domain.PictureFile;
 import ecsimsw.picup.dto.FileReadResponse;
 import ecsimsw.picup.dto.FileUploadRequest;
 import ecsimsw.picup.dto.FileUploadResponse;
@@ -28,7 +28,7 @@ public class FileStorageService {
     private final FileDeletionEventOutbox fileDeletionEventOutbox;
     private final ImageFileMessageQueue imageFileMessageQueue;
 
-    public FileUploadResponse upload(ImageFile file) {
+    public FileUploadResponse upload(PictureFile file) {
         var request = new FileUploadRequest(file.toMultipartFile(), file.resourceKey());
         return storageHttpClient.requestUpload(request);
     }

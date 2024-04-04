@@ -1,7 +1,7 @@
 package ecsimsw.picup.album.service;
 
 import ecsimsw.picup.album.domain.FileDeletionEventOutbox;
-import ecsimsw.picup.album.domain.ImageFile;
+import ecsimsw.picup.album.domain.PictureFile;
 import ecsimsw.picup.album.exception.AlbumException;
 import ecsimsw.picup.album.exception.UnsupportedFileTypeException;
 import ecsimsw.picup.dto.FileUploadRequest;
@@ -46,7 +46,7 @@ class FileStorageServiceTest {
         when(storageHttpClient.requestUpload(new FileUploadRequest(MEMBER_ID, MULTIPART_FILE, RESOURCE_KEY)))
             .thenReturn(new FileUploadResponse(RESOURCE_KEY, MULTIPART_FILE.getSize()));
 
-        var fileInfo = fileStorageService.upload(ImageFile.of(MULTIPART_FILE));
+        var fileInfo = fileStorageService.upload(PictureFile.of(MULTIPART_FILE));
         assertAll(
             () -> assertThat(fileInfo.resourceKey()).isEqualTo(RESOURCE_KEY),
             () -> assertThat(fileInfo.size()).isEqualTo(MULTIPART_FILE.getSize())
@@ -58,7 +58,7 @@ class FileStorageServiceTest {
     void uploadWithInvalidResourceName() {
         var invalidFileName = "invalidFileName";
         assertThatThrownBy(
-            () -> fileStorageService.upload(ImageFile.of(mockMultipartFile(invalidFileName)))
+            () -> fileStorageService.upload(PictureFile.of(mockMultipartFile(invalidFileName)))
         ).isInstanceOf(AlbumException.class);
     }
 
@@ -67,7 +67,7 @@ class FileStorageServiceTest {
     void uploadWithInvalidResource() {
         var invalidFileExtension = "unsupportedFileExtension.mp4";
         assertThatThrownBy(
-            () -> fileStorageService.upload(ImageFile.of(mockMultipartFile(invalidFileExtension)))
+            () -> fileStorageService.upload(PictureFile.of(mockMultipartFile(invalidFileExtension)))
         ).isInstanceOf(UnsupportedFileTypeException.class);
     }
 }

@@ -40,9 +40,9 @@ public class PictureController {
         @PathVariable Long albumId,
         @RequestPart MultipartFile file
     ) {
-        System.out.println(file);
-        System.out.println(file.getContentType());
-        System.out.println(file.getName());
+//        System.out.println(file);
+//        System.out.println(file.getContentType());
+//        System.out.println(file.getName());
         var userId = 1L;
         var pictureInfo = imageUploadService.uploadPicture(userId, albumId, file);
         return ResponseEntity.ok(pictureInfo);
