@@ -5,13 +5,13 @@ import java.util.Arrays;
 import lombok.Getter;
 
 @Getter
-public enum ImageFileType {
+public enum StoredFileType {
     JPEG,
     JPG,
     PNG,
     MP4;
 
-    public static ImageFileType extensionOf(String fileName) {
+    public static StoredFileType fromFileName(String fileName) {
         var extension = fileName.substring(fileName.lastIndexOf(".") + 1);
         return Arrays.stream(values())
             .filter(it -> it.isType(extension.toUpperCase()))

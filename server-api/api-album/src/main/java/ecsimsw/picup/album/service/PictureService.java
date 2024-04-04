@@ -11,7 +11,8 @@ import ecsimsw.picup.album.domain.PictureRepository;
 import ecsimsw.picup.album.dto.PictureInfoResponse;
 import ecsimsw.picup.album.dto.PictureSearchCursor;
 import ecsimsw.picup.album.exception.AlbumException;
-import ecsimsw.picup.dto.FileUploadResponse;
+import ecsimsw.picup.dto.ImageFileUploadResponse;
+import ecsimsw.picup.dto.VideoFileUploadResponse;
 import ecsimsw.picup.member.service.StorageUsageService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -29,9 +30,18 @@ public class PictureService {
     private final StorageUsageService storageUsageService;
 
     @Transactional
-    public PictureInfoResponse create(Long userId, Long albumId, FileUploadResponse imageFile, FileUploadResponse thumbnailFile) {
+    public PictureInfoResponse create(Long userId, Long albumId, ImageFileUploadResponse imageFile, ImageFileUploadResponse thumbnailFile) {
         checkUserAuthInAlbum(userId, albumId);
         var picture = new Picture(albumId, imageFile.resourceKey(), thumbnailFile.resourceKey(), imageFile.size());
+        pictureRepository.save(picture);
+        storageUsageService.addUsage(userId, picture.getFileSize());
+        return PictureInfoResponse.of(picture);
+    }
+
+    @Transactional
+    public PictureInfoResponse create(Long userId, Long albumId, VideoFileUploadResponse videoFile) {
+        checkUserAuthInAlbum(userId, albumId);
+        var picture = new Picture(albumId, videoFile.resourceKey(), videoFile.thumbnailResourceKey(), videoFile.size());
         pictureRepository.save(picture);
         storageUsageService.addUsage(userId, picture.getFileSize());
         return PictureInfoResponse.of(picture);

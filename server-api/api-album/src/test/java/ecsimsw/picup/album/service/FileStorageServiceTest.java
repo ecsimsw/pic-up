@@ -4,8 +4,8 @@ import ecsimsw.picup.album.domain.FileDeletionEventOutbox;
 import ecsimsw.picup.album.domain.PictureFile;
 import ecsimsw.picup.album.exception.AlbumException;
 import ecsimsw.picup.album.exception.UnsupportedFileTypeException;
-import ecsimsw.picup.dto.FileUploadRequest;
-import ecsimsw.picup.dto.FileUploadResponse;
+import ecsimsw.picup.dto.ImageFileUploadRequest;
+import ecsimsw.picup.dto.ImageFileUploadResponse;
 import ecsimsw.picup.mq.ImageFileMessageQueue;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -43,10 +43,10 @@ class FileStorageServiceTest {
     @DisplayName("파일을 업로드하고 업로드한 파일 정보를 반환한다.")
     @Test
     void upload() {
-        when(storageHttpClient.requestUpload(new FileUploadRequest(MEMBER_ID, MULTIPART_FILE, RESOURCE_KEY)))
-            .thenReturn(new FileUploadResponse(RESOURCE_KEY, MULTIPART_FILE.getSize()));
+        when(storageHttpClient.requestUploadImage(new ImageFileUploadRequest(MEMBER_ID, MULTIPART_FILE, RESOURCE_KEY)))
+            .thenReturn(new ImageFileUploadResponse(RESOURCE_KEY, MULTIPART_FILE.getSize()));
 
-        var fileInfo = fileStorageService.upload(PictureFile.of(MULTIPART_FILE));
+        var fileInfo = fileStorageService.uploadImage(PictureFile.of(MULTIPART_FILE));
         assertAll(
             () -> assertThat(fileInfo.resourceKey()).isEqualTo(RESOURCE_KEY),
             () -> assertThat(fileInfo.size()).isEqualTo(MULTIPART_FILE.getSize())
@@ -58,7 +58,7 @@ class FileStorageServiceTest {
     void uploadWithInvalidResourceName() {
         var invalidFileName = "invalidFileName";
         assertThatThrownBy(
-            () -> fileStorageService.upload(PictureFile.of(mockMultipartFile(invalidFileName)))
+            () -> fileStorageService.uploadImage(PictureFile.of(mockMultipartFile(invalidFileName)))
         ).isInstanceOf(AlbumException.class);
     }
 
@@ -67,7 +67,7 @@ class FileStorageServiceTest {
     void uploadWithInvalidResource() {
         var invalidFileExtension = "unsupportedFileExtension.mp4";
         assertThatThrownBy(
-            () -> fileStorageService.upload(PictureFile.of(mockMultipartFile(invalidFileExtension)))
+            () -> fileStorageService.uploadImage(PictureFile.of(mockMultipartFile(invalidFileExtension)))
         ).isInstanceOf(UnsupportedFileTypeException.class);
     }
 }

@@ -13,9 +13,8 @@ import ecsimsw.picup.album.domain.FileDeletionEvent;
 import ecsimsw.picup.album.dto.AlbumInfoResponse;
 import ecsimsw.picup.album.dto.AlbumSearchCursor;
 import ecsimsw.picup.album.exception.AlbumException;
-import ecsimsw.picup.dto.FileUploadResponse;
+import ecsimsw.picup.dto.ImageFileUploadResponse;
 import java.util.List;
-import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -30,7 +29,7 @@ public class AlbumService {
     private final FileStorageService fileStorageService;
 
     @Transactional
-    public AlbumInfoResponse create(Long userId, String name, FileUploadResponse thumbnailFile) {
+    public AlbumInfoResponse create(Long userId, String name, ImageFileUploadResponse thumbnailFile) {
         var album = new Album(userId, name, thumbnailFile.resourceKey(), thumbnailFile.size());
         albumRepository.save(album);
         return AlbumInfoResponse.of(album);

@@ -1,6 +1,6 @@
 package ecsimsw.picup.dto;
 
-public record FileUploadResponse(
+public record ImageFileUploadResponse(
     String resourceKey,
     long size
 ) {

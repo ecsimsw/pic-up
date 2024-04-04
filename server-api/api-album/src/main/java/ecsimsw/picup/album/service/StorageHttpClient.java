@@ -2,8 +2,10 @@ package ecsimsw.picup.album.service;
 
 import ecsimsw.picup.album.exception.FileStorageConnectionDownException;
 import ecsimsw.picup.dto.FileReadResponse;
-import ecsimsw.picup.dto.FileUploadResponse;
-import ecsimsw.picup.dto.FileUploadRequest;
+import ecsimsw.picup.dto.ImageFileUploadResponse;
+import ecsimsw.picup.dto.ImageFileUploadRequest;
+import ecsimsw.picup.dto.VideoFileUploadRequest;
+import ecsimsw.picup.dto.VideoFileUploadResponse;
 import ecsimsw.picup.member.exception.InvalidStorageServerResponseException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
@@ -40,15 +42,15 @@ public class StorageHttpClient {
         maxAttempts = RETRY_COUNT,
         value = Throwable.class,
         backoff = @Backoff(RETRY_DELAY_TIME_MS),
-        recover = "recoverRequestUpload"
+        recover = "recoverRequestUploadImage"
     )
-    public FileUploadResponse requestUpload(FileUploadRequest request) {
+    public ImageFileUploadResponse requestUploadImage(ImageFileUploadRequest request) {
         try {
             var response = restTemplate.exchange(
-                STORAGE_SERVER_URL + "/api/storage",
+                STORAGE_SERVER_URL + "/api/storage/image",
                 HttpMethod.POST,
                 request.toHttpEntity(),
-                new ParameterizedTypeReference<FileUploadResponse>() {
+                new ParameterizedTypeReference<ImageFileUploadResponse>() {
                 });
             if (Objects.isNull(response.getBody()) || Objects.isNull(response.getBody().resourceKey())) {
                 throw new InvalidStorageServerResponseException("Failed to upload resources.\nStorage server is on, but invalid response body.");
@@ -60,7 +62,7 @@ public class StorageHttpClient {
     }
 
     @Recover
-    public FileUploadResponse recoverRequestUpload(Throwable exception, FileUploadRequest request) {
+    public ImageFileUploadResponse recoverRequestUploadImage(Throwable exception, ImageFileUploadRequest request) {
         throw new FileStorageConnectionDownException(exception.getMessage(), exception);
     }
 
@@ -71,7 +73,31 @@ public class StorageHttpClient {
         backoff = @Backoff(RETRY_DELAY_TIME_MS),
         recover = "recoverRequestUpload"
     )
-    public FileReadResponse requestFile(String resourceKey) {
+    public VideoFileUploadResponse requestUploadVideo(VideoFileUploadRequest request) {
+        try {
+            var response = restTemplate.exchange(
+                STORAGE_SERVER_URL + "/api/storage/video",
+                HttpMethod.POST,
+                request.toHttpEntity(),
+                new ParameterizedTypeReference<VideoFileUploadResponse>() {
+                });
+            if (Objects.isNull(response.getBody()) || Objects.isNull(response.getBody().resourceKey())) {
+                throw new InvalidStorageServerResponseException("Failed to upload resources.\nStorage server is on, but invalid response body.");
+            }
+            return response.getBody();
+        } catch (HttpStatusCodeException e) {
+            throw new InvalidStorageServerResponseException("Failed to upload resources.\nStorage server is on, but invalid response status.", e);
+        }
+    }
+
+    @Retryable(
+        label = "Retry when storage server is down or bad response",
+        maxAttempts = RETRY_COUNT,
+        value = Throwable.class,
+        backoff = @Backoff(RETRY_DELAY_TIME_MS),
+        recover = "recoverRequestReadFile"
+    )
+    public FileReadResponse requestReadFile(String resourceKey) {
         try {
             var response = restTemplate.exchange(
                 STORAGE_SERVER_URL + "/api/storage/" + resourceKey,
@@ -79,12 +105,9 @@ public class StorageHttpClient {
                 HttpEntity.EMPTY,
                 new ParameterizedTypeReference<FileReadResponse>() {
                 });
-            System.out.println("w전송"
-                + "");
             if (Objects.isNull(response.getBody()) || Objects.isNull(response.getBody().resourceKey())) {
                 throw new InvalidStorageServerResponseException("Failed to read resources.\nStorage server is on, but invalid response body.");
             }
-            System.out.println(response.getBody());
             return response.getBody();
         } catch (HttpStatusCodeException e) {
             throw new InvalidStorageServerResponseException("Failed to read resources.\nStorage server is on, but invalid response status.", e);
@@ -92,7 +115,7 @@ public class StorageHttpClient {
     }
 
     @Recover
-    public FileUploadResponse recoverRequestFile(Throwable exception, String resourceKey) {
+    public ImageFileUploadResponse recoverRequestReadFile(Throwable exception, String resourceKey) {
         throw new FileStorageConnectionDownException(exception.getMessage(), exception);
     }
 }

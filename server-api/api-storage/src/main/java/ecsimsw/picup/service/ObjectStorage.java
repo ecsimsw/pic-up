@@ -1,7 +1,7 @@
 package ecsimsw.picup.service;
 
 import com.amazonaws.services.s3.AmazonS3;
-import ecsimsw.picup.domain.ImageFile;
+import ecsimsw.picup.domain.StoredFile;
 import ecsimsw.picup.exception.StorageException;
 import ecsimsw.picup.utils.AwsS3Utils;
 import java.util.concurrent.CompletableFuture;
@@ -23,9 +23,9 @@ public class ObjectStorage implements ImageStorage {
 
     @Async
     @Override
-    public CompletableFuture<String> storeAsync(String resourceKey, ImageFile imageFile) {
+    public CompletableFuture<String> storeAsync(String resourceKey, StoredFile storedFile) {
         try {
-            AwsS3Utils.upload(s3Client, bucketName, resourceKey, imageFile);
+            AwsS3Utils.upload(s3Client, bucketName, resourceKey, storedFile);
             return new AsyncResult<>(resourceKey).completable();
         } catch (Exception e) {
             throw new StorageException("Object storage server exception while uploading", e);
@@ -33,9 +33,9 @@ public class ObjectStorage implements ImageStorage {
     }
 
     @Override
-    public ImageFile read(String resourceKey) {
+    public StoredFile read(String resourceKey) {
         var file = AwsS3Utils.read(s3Client, bucketName, resourceKey);
-        return ImageFile.of(resourceKey, file);
+        return StoredFile.of(resourceKey, file);
     }
 
     @Override

@@ -1,14 +1,13 @@
 package ecsimsw.picup.service;
 
-import ecsimsw.picup.domain.ImageFile;
-import java.io.FileNotFoundException;
+import ecsimsw.picup.domain.StoredFile;
 import java.util.concurrent.CompletableFuture;
 
 public interface ImageStorage {
 
-    CompletableFuture<String> storeAsync(String resourceKey, ImageFile imageFile);
+    CompletableFuture<String> storeAsync(String resourceKey, StoredFile storedFile);
 
-    ImageFile read(String resourceKey);
+    StoredFile read(String resourceKey);
 
     void deleteIfExists(String resourceKey);
 }

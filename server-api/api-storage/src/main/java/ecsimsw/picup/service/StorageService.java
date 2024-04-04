@@ -1,24 +1,21 @@
 package ecsimsw.picup.service;
 
-import ecsimsw.picup.domain.ImageFile;
+import static ecsimsw.picup.config.FileStorageConfig.UPLOAD_TIME_OUT_SEC;
+
+import ecsimsw.picup.domain.StoredFile;
 import ecsimsw.picup.dto.FileReadResponse;
-import ecsimsw.picup.dto.FileUploadResponse;
+import ecsimsw.picup.dto.ImageFileUploadResponse;
 import ecsimsw.picup.exception.InvalidResourceException;
 import ecsimsw.picup.exception.StorageException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
-
-import java.io.FileNotFoundException;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 import java.util.concurrent.TimeUnit;
-
-import static ecsimsw.picup.config.FileStorageConfig.UPLOAD_TIME_OUT_SEC;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 @Service
 public class StorageService {
@@ -27,27 +24,30 @@ public class StorageService {
 
     private final ImageStorage mainStorage;
     private final ImageStorage backUpStorage;
+    private final VideoThumbnailService thumbnailService;
 
     public StorageService(
         @Qualifier(value = "mainStorage") ImageStorage mainStorage,
-        @Qualifier(value = "backUpStorage") ImageStorage backUpStorage
+        @Qualifier(value = "backUpStorage") ImageStorage backUpStorage,
+        VideoThumbnailService thumbnailService
     ) {
         this.mainStorage = mainStorage;
         this.backUpStorage = backUpStorage;
+        this.thumbnailService = thumbnailService;
     }
 
-    @Transactional
-    public FileUploadResponse upload(MultipartFile file, String resourceKey) {
+    public StoredFile upload(MultipartFile file, String resourceKey) {
         LOGGER.info("upload file : " + resourceKey);
-        var imageFile = ImageFile.of(file);
+        var storedFile = StoredFile.of(file);
         var futures = List.of(
-            mainStorage.storeAsync(resourceKey, imageFile),
-            backUpStorage.storeAsync(resourceKey, imageFile)
+            mainStorage.storeAsync(resourceKey, storedFile),
+            backUpStorage.storeAsync(resourceKey, storedFile)
         );
         try {
             CompletableFuture.allOf(futures.toArray(new CompletableFuture[0]))
                 .orTimeout(UPLOAD_TIME_OUT_SEC, TimeUnit.SECONDS)
                 .join();
+            return storedFile;
         } catch (CompletionException e) {
             futures.forEach(uploadFuture -> uploadFuture.thenAccept(
                 uploadResponse -> {
@@ -57,7 +57,6 @@ public class StorageService {
             );
             throw new StorageException("exception while uploading : " + e.getMessage());
         }
-        return new FileUploadResponse(resourceKey, imageFile.size());
     }
 
     public FileReadResponse read(String resourceKey) {

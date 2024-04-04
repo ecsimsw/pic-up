@@ -5,8 +5,10 @@ import ecsimsw.picup.album.domain.FileDeletionEventOutbox;
 import ecsimsw.picup.album.domain.FileDeletionEvent_;
 import ecsimsw.picup.album.domain.PictureFile;
 import ecsimsw.picup.dto.FileReadResponse;
-import ecsimsw.picup.dto.FileUploadRequest;
-import ecsimsw.picup.dto.FileUploadResponse;
+import ecsimsw.picup.dto.ImageFileUploadRequest;
+import ecsimsw.picup.dto.ImageFileUploadResponse;
+import ecsimsw.picup.dto.VideoFileUploadRequest;
+import ecsimsw.picup.dto.VideoFileUploadResponse;
 import ecsimsw.picup.mq.ImageFileMessageQueue;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -28,13 +30,18 @@ public class FileStorageService {
     private final FileDeletionEventOutbox fileDeletionEventOutbox;
     private final ImageFileMessageQueue imageFileMessageQueue;
 
-    public FileUploadResponse upload(PictureFile file) {
-        var request = new FileUploadRequest(file.toMultipartFile(), file.resourceKey());
-        return storageHttpClient.requestUpload(request);
+    public ImageFileUploadResponse uploadImage(PictureFile file) {
+        var request = new ImageFileUploadRequest(file.toMultipartFile(), file.resourceKey());
+        return storageHttpClient.requestUploadImage(request);
+    }
+
+    public VideoFileUploadResponse uploadVideo(PictureFile file) {
+        var request = new VideoFileUploadRequest(file.toMultipartFile(), file.resourceKey());
+        return storageHttpClient.requestUploadVideo(request);
     }
 
     public FileReadResponse read(String resourceKey) {
-        return storageHttpClient.requestFile(resourceKey);
+        return storageHttpClient.requestReadFile(resourceKey);
     }
 
     public void deleteAsync(String resourceKey) {

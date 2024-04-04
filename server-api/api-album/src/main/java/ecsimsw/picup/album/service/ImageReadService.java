@@ -29,7 +29,7 @@ public class ImageReadService {
 
     public FileReadResponse thumbnailFile(Long userId, Long albumId, Long pictureId) {
         var picture = pictureService.read(userId, albumId, pictureId);
-        return fileStorageService.read("76eddb9d-34d8-4b50-af79-9ff75128cfc8.jpg");
+        return fileStorageService.read(picture.thumbnailResourceKey());
     }
 
     public List<PictureInfoResponse> readPictures(Long userId, Long albumId, PictureSearchCursor cursor) {

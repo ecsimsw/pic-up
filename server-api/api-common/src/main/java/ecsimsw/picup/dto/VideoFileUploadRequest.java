@@ -1,16 +1,14 @@
 package ecsimsw.picup.dto;
 
+import java.util.Map;
+import javax.validation.constraints.NotNull;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
-import java.util.Map;
-
-public record FileUploadRequest(
+public record VideoFileUploadRequest(
     @NotNull MultipartFile file,
     String resourceKey
 ) {

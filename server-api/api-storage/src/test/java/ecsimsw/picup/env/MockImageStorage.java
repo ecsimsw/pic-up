@@ -1,9 +1,8 @@
 package ecsimsw.picup.env;
 
-import ecsimsw.picup.domain.ImageFile;
+import ecsimsw.picup.domain.StoredFile;
 import ecsimsw.picup.storage.StorageKey;
 import ecsimsw.picup.service.ImageStorage;
-import java.io.FileNotFoundException;
 import org.springframework.scheduling.annotation.AsyncResult;
 
 import java.util.Map;
@@ -21,17 +20,17 @@ public class MockImageStorage implements ImageStorage {
     }
 
     @Override
-    public CompletableFuture<String> storeAsync(String resourceKey, ImageFile imageFile) {
-        if (imageFile == null) {
+    public CompletableFuture<String> storeAsync(String resourceKey, StoredFile storedFile) {
+        if (storedFile == null) {
             return new AsyncResult<>(resourceKey).completable();
         }
-        DATA.put(resourceKey, imageFile.file());
+        DATA.put(resourceKey, storedFile.file());
         return new AsyncResult<>(resourceKey).completable();
     }
 
     @Override
-    public ImageFile read(String resourceKey) {
-        return ImageFile.of(resourceKey, DATA.get(resourceKey));
+    public StoredFile read(String resourceKey) {
+        return StoredFile.of(resourceKey, DATA.get(resourceKey));
     }
 
     @Override

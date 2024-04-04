@@ -1,17 +1,16 @@
-package ecsimsw.picup.member.service;
+package ecsimsw.picup.album.utils;
 
 import ecsimsw.picup.album.exception.AlbumException;
 import java.util.concurrent.TimeUnit;
-import java.util.function.Supplier;
 import org.redisson.api.RedissonClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 @Component
-public class MemberDistributedLock {
+public class DistributedLock {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(MemberDistributedLock.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(DistributedLock.class);
 
     private static final int HASH_USER_ID_MOD = 1000;
     private static final String LOCK_KEY_PREFIX = "STORAGE_USAGE_LOCK_";
@@ -21,26 +20,8 @@ public class MemberDistributedLock {
 
     private final RedissonClient redissonClient;
 
-    public MemberDistributedLock(RedissonClient redissonClient) {
+    public DistributedLock(RedissonClient redissonClient) {
         this.redissonClient = redissonClient;
-    }
-
-    public <T> T run(Long key, Supplier<T> supplier) {
-        try {
-            acquire(key);
-            return supplier.get();
-        } finally {
-            release(key);
-        }
-    }
-
-    public void run(Long key, Runnable consumer) {
-        try {
-            acquire(key);
-            consumer.run();
-        } finally {
-            release(key);
-        }
     }
 
     public void acquire(Long key) {

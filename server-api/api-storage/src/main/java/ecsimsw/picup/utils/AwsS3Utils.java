@@ -9,7 +9,7 @@ import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.Permission;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.amazonaws.util.IOUtils;
-import ecsimsw.picup.domain.ImageFile;
+import ecsimsw.picup.domain.StoredFile;
 import ecsimsw.picup.exception.InvalidResourceException;
 import ecsimsw.picup.exception.StorageException;
 import java.io.ByteArrayInputStream;
@@ -17,18 +17,18 @@ import java.io.IOException;
 
 public class AwsS3Utils {
 
-    public static void upload(AmazonS3 s3Client, String bucketName, String resourceKey, ImageFile imageFile) {
+    public static void upload(AmazonS3 s3Client, String bucketName, String resourceKey, StoredFile storedFile) {
         if (s3Client.doesObjectExist(bucketName, resourceKey)) {
             throw new StorageException("resource already exists");
         }
         var metadata = new ObjectMetadata();
-        metadata.setContentType(imageFile.fileType().name());
-        metadata.setContentLength(imageFile.size());
+        metadata.setContentType(storedFile.fileType().name());
+        metadata.setContentLength(storedFile.size());
 
         var accessControlList = new AccessControlList();
         accessControlList.grantPermission(GroupGrantee.AuthenticatedUsers, Permission.Read);
 
-        var putObjectRequest = new PutObjectRequest(bucketName, resourceKey, new ByteArrayInputStream(imageFile.file()),
+        var putObjectRequest = new PutObjectRequest(bucketName, resourceKey, new ByteArrayInputStream(storedFile.file()),
             metadata);
         putObjectRequest.setAccessControlList(accessControlList);
         s3Client.putObject(putObjectRequest);

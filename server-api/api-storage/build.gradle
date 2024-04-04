@@ -6,6 +6,9 @@ dependencies {
 
     // embedded s3
     implementation "io.findify:s3mock_2.13:0.2.6"
+
+    // jcodec, video thumbnail
+    implementation 'org.jcodec:jcodec-javase:0.2.5'
 }
 
 test {

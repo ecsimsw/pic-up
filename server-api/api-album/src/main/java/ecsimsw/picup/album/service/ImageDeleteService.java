@@ -1,6 +1,6 @@
 package ecsimsw.picup.album.service;
 
-import ecsimsw.picup.member.service.MemberDistributedLock;
+import ecsimsw.picup.album.utils.DistributedLock;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -9,21 +9,25 @@ import org.springframework.stereotype.Service;
 @Service
 public class ImageDeleteService {
 
-    private final MemberDistributedLock memberLock;
+    private final DistributedLock memberLock;
     private final PictureService pictureService;
     private final AlbumService albumService;
 
     public void deleteAlbum(Long userId, Long albumId) {
-        memberLock.run(
-            userId,
-            () -> albumService.delete(userId, albumId)
-        );
+        try {
+            memberLock.acquire(userId);
+            albumService.delete(userId, albumId);
+        } finally {
+            memberLock.release(userId);
+        }
     }
 
     public void deletePictures(Long userId, Long albumId, List<Long> pictureIds) {
-        memberLock.run(
-            userId,
-            () -> pictureService.deleteAllByIds(userId, albumId, pictureIds)
-        );
+        try {
+            memberLock.acquire(userId);
+            pictureService.deleteAllByIds(userId, albumId, pictureIds);
+        } finally {
+            memberLock.release(userId);
+        }
     }
 }
