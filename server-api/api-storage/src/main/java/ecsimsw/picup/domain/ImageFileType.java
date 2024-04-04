@@ -8,7 +8,8 @@ import lombok.Getter;
 public enum ImageFileType {
     JPEG,
     JPG,
-    PNG;
+    PNG,
+    MP4;
 
     public static ImageFileType extensionOf(String fileName) {
         var extension = fileName.substring(fileName.lastIndexOf(".") + 1);

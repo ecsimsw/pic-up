@@ -1,4 +1,4 @@
-const serverUrl = ""
+const serverUrl = "http://localhost:8084"
 
 let createMode = false;
 

@@ -1,4 +1,4 @@
-const serverUrl = ""
+const serverUrl = "http://localhost:8084"
 
 let albumId = 0;
 let editMode = false
@@ -17,7 +17,7 @@ Dropzone.autoDiscover = false;
 
 document.addEventListener("DOMContentLoaded", function () {
     callLoginApi(function(login) {
-        initUploadPanel()
+        // initUploadPanel()
         initEditButton();
 
         const urlParams = new URLSearchParams(window.location.search);
@@ -32,7 +32,8 @@ document.addEventListener("DOMContentLoaded", function () {
                 if (inPagePictures.has(picture.id)) {
                     return
                 }
-                createNewPicture(albumId, picture.id, picture.thumbnailResourceKey)
+                const itemId = createNewPictureItem(albumId, picture.id, picture.thumbnailResourceKey)
+                if picture is image file
                 addGalleryImage(
                     serverUrl + "/api/album/" + albumId + "/picture/" + picture.id + "/image",
                     serverUrl + "/api/album/" + albumId + "/picture/" + picture.id + "/thumbnail",
@@ -48,7 +49,7 @@ document.addEventListener("DOMContentLoaded", function () {
         const uploadDropzone = new Dropzone(document.querySelector('#myDropzone'), {
             dictDefaultMessage: 'Drop Here!',
             url: serverUrl + "/api/album/" + albumId + "/picture",
-            acceptedFiles: ".jpeg,.jpg,.png,.gif",
+            acceptedFiles: ".jpeg,.jpg,.png,.gif,.mp4",
             paramName: "file",
             maxFilesize: 30000, // MB
             init: function () {
@@ -63,6 +64,34 @@ document.addEventListener("DOMContentLoaded", function () {
     })
 });
 
+function addVideo() {
+    // if picture is video file
+    const pictureItem = document.getElementById(itemId).addEventListener("click", function(event) {
+        document.getElementById("video-popup").style.display = "flex";
+        var div = document.createElement("div");
+        div.id = "my-video-content"
+        div.style.textAlign= "center";
+        div.innerHTML =
+            '  <video\n' +
+            '         id="my-video"\n' +
+            '         className="video-js"\n' +
+            '         controls\n' +
+            '         preload="auto"\n' +
+            '         width="80%"\n' +
+            '         height="80%"\n' +
+            '         poster="http://localhost:8084/api/album/1/picture/1/thumbnail"\n' +
+            '         data-setup="{}"\n' +
+            '         \n' +
+            '        <source src="http://localhost:8084/api/album/1/picture/1/image" type="video/mp4"/>\n' +
+            '     </video>'
+        let elementById = document.getElementById("video-content");
+        while (elementById.firstChild) {
+            elementById.removeChild(elementById.lastChild);
+        }
+        elementById.append(div)
+    })
+}
+
 document.getElementById("create-btn").addEventListener("click", function() {
     document.getElementById("popupBackground").style.display = "flex";
 });
@@ -74,6 +103,13 @@ document.getElementById("popupBackground").addEventListener("click", function(e)
             isUploaded = false
             window.location.reload();
         }
+    }
+});
+
+document.getElementById("video-popup").addEventListener("click", function(e) {
+    if (e.target === this) {
+        this.style.display = "none";
+        document.getElementById("my-video-content").remove();
     }
 });
 
@@ -91,7 +127,7 @@ function handleScroll() {
                 if(inPagePictures.has(picture.id)) {
                     return
                 }
-                createNewPicture(albumId, picture.id, picture.thumbnailResourceKey)
+                createNewPictureItem(albumId, picture.id, picture.thumbnailResourceKey)
                 addGalleryImage(
                     serverUrl + "/api/album/" + albumId + "/picture/" + picture.id + "/image",
                     serverUrl + "/api/album/" + albumId + "/picture/" + picture.id + "/thumbnail",
@@ -178,7 +214,7 @@ function disableAlbumSortable() {
     $('#album-main').sortable("destroy")
 }
 
-function createNewPicture(albumId, pictureId, thumbImageResource) {
+function createNewPictureItem(albumId, pictureId, thumbImageResource) {
     const article = document.createElement('article');
     article.id = `album-${albumId}-picture-${pictureId}`
     article.className = 'thumb'
@@ -186,13 +222,14 @@ function createNewPicture(albumId, pictureId, thumbImageResource) {
     const thumbImage = document.createElement('a');
     thumbImage.className = "album-main-image"
     thumbImage.id = `album-${albumId}-picture-${pictureId}`
-    thumbImage.style.backgroundImage = "url('"+serverUrl + "/api/album/" + albumId + "/picture/" + pictureId + "/thumbnail"+"')"
+    thumbImage.style.backgroundImage = "url('" + serverUrl + "/api/album/" + albumId + "/picture/" + pictureId + "/thumbnail" + "')"
     thumbImage.style.cursor = "pointer"
     thumbImage.style.outline = "0px"
     article.appendChild(thumbImage);
 
     const albumMain = document.getElementById("album-main");
     albumMain.append(article);
+    return thumbImage.id
 }
 
 function addImageViewer(albumArticleId, orderNumber) {
@@ -237,73 +274,6 @@ function initLightGallery(articleElement, orderNumber) {
         })
         window.lgData[articleElement.getAttribute('lg-uid')].slide(1);
     };
-}
-
-function initUploadPanel() {
-    const $body = $('body');
-    let $panels = $('.panel');
-
-    $panels.each(function () {
-        let $this = $(this),
-            $toggles = $('[href="#' + $this.attr('id') + '"]'),
-            $closer = $('<div class="closer" />').appendTo($this);
-
-        // Closer.
-        $closer.on('click', function (event) {
-            $this.trigger('---hide');
-        });
-
-        // Events.
-        $this.on('click', function (event) {
-            event.stopPropagation();
-        })
-
-        $this.on('---toggle', function () {
-
-            if ($this.hasClass('active')) {
-                $this.triggerHandler('---hide');
-            } else {
-                $this.triggerHandler('---show');
-            }
-
-        })
-
-        $this.on('---show', function () {
-
-            // Hide other content.
-            if ($body.hasClass('content-active')) {
-                $panels.trigger('---hide');
-            }
-
-            // Activate content, toggles.
-            $this.addClass('active');
-            $toggles.addClass('active');
-
-            // Activate body.
-            $body.addClass('content-active');
-
-        })
-
-        $this.on('---hide', function () {
-
-            // Deactivate content, toggles.
-            $this.removeClass('active');
-            $toggles.removeClass('active');
-
-            // Deactivate body.
-            $body.removeClass('content-active');
-
-        });
-
-        // Toggles.
-        $toggles.removeAttr('href')
-            .css('cursor', 'pointer')
-            .on('click', function (event) {
-                event.preventDefault();
-                event.stopPropagation();
-                $this.trigger('---toggle');
-            });
-    });
 }
 
 function callLoginApi(callback) {

@@ -51,15 +51,10 @@ public class MemberController {
 
     @GetMapping("/api/member/me")
     public ResponseEntity<MemberInfoResponse> me(
-        @TokenPayload AuthTokenPayload userInfo
+//        @TokenPayload AuthTokenPayload userInfo
     ) {
-        var memberInfo = memberService.me(userInfo.getUsername());
+        var username = "ecsimsw";
+        var memberInfo = memberService.me(username);
         return ResponseEntity.ok(memberInfo);
     }
-
-//    @GetMapping("/api/member/public")
-//    public ResponseEntity<MemberInfoResponse> publicUser() {
-//        var memberInfo = memberService.me(PublicTesPageConfig.publicMemberId);
-//        return ResponseEntity.ok(memberInfo);
-//    }
 }

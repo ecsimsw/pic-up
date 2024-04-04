@@ -113,6 +113,48 @@ span.plus {
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
 }
 
+.video-popup-background {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5); /* 반투명한 배경색 */
+  z-index: 9999; /* 다른 요소 위에 표시 */
+  justify-content: center;
+  align-items: center;
+}
+
+.video-content {
+  height: 80%;
+  width: 80%;
+}
+
+/* 팝업을 감싸는 배경 요소 스타일 */
+.video-background {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5); /* 반투명한 배경색 */
+  z-index: 9999; /* 다른 요소 위에 표시 */
+  justify-content: center;
+  align-items: center;
+}
+
+/* 팝업 요소 스타일 */
+.video-content {
+  width: 80%;
+  height: 80%;
+  background-color: black;
+  padding: 20px;
+  border-radius: 5px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+}
+
 /* TIP :: Vibration */
 /*.vibration {*/
 /*  animation: vibration 1s infinite;*/

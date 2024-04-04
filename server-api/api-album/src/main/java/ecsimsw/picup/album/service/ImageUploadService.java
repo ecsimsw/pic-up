@@ -33,17 +33,17 @@ public class ImageUploadService {
 
     public PictureInfoResponse uploadPicture(Long userId, Long albumId, MultipartFile file) {
         var image = ImageFile.of(file);
-        var thumbnail = ImageFile.resizedOf(file, 0.3f);
+//        var thumbnail = ImageFile.resizedOf(file, 0.3f);
         try {
             var imageFile = fileStorageService.upload(image);
-            var thumbnailFile = fileStorageService.upload(thumbnail);
+//            var thumbnailFile = fileStorageService.upload(thumbnail);
             return memberLock.run(
                 userId,
-                () -> pictureService.create(userId, albumId, imageFile, thumbnailFile)
+                () -> pictureService.create(userId, albumId, imageFile, imageFile)
             );
         } catch (Exception e) {
             fileStorageService.deleteAsync(image.resourceKey());
-            fileStorageService.deleteAsync(thumbnail.resourceKey());
+            fileStorageService.deleteAsync(image.resourceKey());
             throw e;
         }
     }

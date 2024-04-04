@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 import lombok.RequiredArgsConstructor;
+import org.apache.tomcat.util.net.openssl.OpenSSLUtil;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.CacheControl;
 import org.springframework.http.ResponseEntity;
@@ -39,6 +40,9 @@ public class PictureController {
         @PathVariable Long albumId,
         @RequestPart MultipartFile file
     ) {
+        System.out.println(file);
+        System.out.println(file.getContentType());
+        System.out.println(file.getName());
         var userId = 1L;
         var pictureInfo = imageUploadService.uploadPicture(userId, albumId, file);
         return ResponseEntity.ok(pictureInfo);
@@ -78,6 +82,7 @@ public class PictureController {
     ) {
         var userId = 1L;
         var imageFile = imageReadService.imageFile(userId, albumId, pictureId);
+        System.out.println("여기까진:" + imageFile.file());
         return ResponseEntity.ok()
             .cacheControl(CacheControl.maxAge(2, TimeUnit.HOURS))
             .body(imageFile.file());

@@ -79,9 +79,12 @@ public class StorageHttpClient {
                 HttpEntity.EMPTY,
                 new ParameterizedTypeReference<FileReadResponse>() {
                 });
+            System.out.println("w전송"
+                + "");
             if (Objects.isNull(response.getBody()) || Objects.isNull(response.getBody().resourceKey())) {
                 throw new InvalidStorageServerResponseException("Failed to read resources.\nStorage server is on, but invalid response body.");
             }
+            System.out.println(response.getBody());
             return response.getBody();
         } catch (HttpStatusCodeException e) {
             throw new InvalidStorageServerResponseException("Failed to read resources.\nStorage server is on, but invalid response status.", e);
