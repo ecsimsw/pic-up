@@ -5,6 +5,7 @@ import ecsimsw.picup.album.domain.PictureFileExtension;
 import ecsimsw.picup.album.dto.AlbumInfoResponse;
 import ecsimsw.picup.album.dto.PictureInfoResponse;
 import ecsimsw.picup.album.utils.DistributedLock;
+import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -32,7 +33,8 @@ public class ImageUploadService {
     }
 
     public PictureInfoResponse uploadPicture(Long userId, Long albumId, MultipartFile file) {
-        if(PictureFileExtension.fromFileName(file.getOriginalFilename()).isVideo) {
+        var fileName = Objects.requireNonNull(file.getOriginalFilename());
+        if(PictureFileExtension.fromFileName(fileName).isVideo) {
             return uploadPictureVideo(userId, albumId, file);
         }
         return uploadPictureImage(userId, albumId, file);

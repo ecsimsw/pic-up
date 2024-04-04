@@ -1,17 +1,18 @@
 package ecsimsw.picup.album.domain;
 
-import ecsimsw.picup.album.exception.AlbumException;
 import java.time.LocalDateTime;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.ManyToOne;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-@AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Entity
@@ -21,21 +22,34 @@ public class Picture {
     @Id
     private Long id;
 
-    @NotNull
-    private Long albumId;
+    @ManyToOne
+    private Album album;
 
+    @NotBlank
     private String resourceKey;
-    private String thumbnailResourceKey;
-    private Long fileSize;
-    private LocalDateTime createdAt;
 
-    public Picture(Long albumId, String resourceKey, String thumbnailResourceKey, Long fileSize) {
-        this(null, albumId, resourceKey, thumbnailResourceKey, fileSize, LocalDateTime.now());
+    @NotBlank
+    private String thumbnailResourceKey;
+
+    @Min(0)
+    private long fileSize;
+
+    @NotNull
+    private final LocalDateTime createdAt = LocalDateTime.now();
+
+    public Picture(Long id, Album album, String resourceKey, String thumbnailResourceKey, long fileSize) {
+        this.id = id;
+        this.album = album;
+        this.resourceKey = resourceKey;
+        this.thumbnailResourceKey = thumbnailResourceKey;
+        this.fileSize = fileSize;
     }
 
-    public void validateAlbum(Long albumId) {
-        if (!this.albumId.equals(albumId)) {
-            throw new AlbumException("Invalid album");
-        }
+    public Picture(Album album, String resourceKey, String thumbnailResourceKey, Long fileSize) {
+        this(null, album, resourceKey, thumbnailResourceKey, fileSize);
+    }
+
+    public void checkSameUser(Long userId) {
+        album.authorize(userId);
     }
 }

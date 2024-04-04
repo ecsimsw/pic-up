@@ -1,16 +1,12 @@
 package ecsimsw.picup.album.service;
 
-import static ecsimsw.picup.album.domain.PictureRepository.PictureSearchSpecs.isAlbum;
-import static ecsimsw.picup.album.domain.PictureRepository.PictureSearchSpecs.orderThan;
-import static ecsimsw.picup.album.domain.PictureRepository.PictureSearchSpecs.sortByCreatedAtDesc;
-
 import ecsimsw.picup.album.domain.AlbumRepository;
 import ecsimsw.picup.album.domain.FileDeletionEvent;
 import ecsimsw.picup.album.domain.Picture;
 import ecsimsw.picup.album.domain.PictureRepository;
 import ecsimsw.picup.album.dto.PictureInfoResponse;
 import ecsimsw.picup.album.dto.PictureSearchCursor;
-import ecsimsw.picup.album.exception.AlbumException;
+import ecsimsw.picup.auth.UnauthorizedException;
 import ecsimsw.picup.dto.ImageFileUploadResponse;
 import ecsimsw.picup.dto.VideoFileUploadResponse;
 import ecsimsw.picup.member.service.StorageUsageService;
@@ -31,8 +27,8 @@ public class PictureService {
 
     @Transactional
     public PictureInfoResponse create(Long userId, Long albumId, ImageFileUploadResponse imageFile, ImageFileUploadResponse thumbnailFile) {
-        checkUserAuthInAlbum(userId, albumId);
-        var picture = new Picture(albumId, imageFile.resourceKey(), thumbnailFile.resourceKey(), imageFile.size());
+        var album = albumRepository.findByIdAndUserId(albumId, userId).orElseThrow(() -> new UnauthorizedException("Invalid album"));
+        var picture = new Picture(album, imageFile.resourceKey(), thumbnailFile.resourceKey(), imageFile.size());
         pictureRepository.save(picture);
         storageUsageService.addUsage(userId, picture.getFileSize());
         return PictureInfoResponse.of(picture);
@@ -40,8 +36,8 @@ public class PictureService {
 
     @Transactional
     public PictureInfoResponse create(Long userId, Long albumId, VideoFileUploadResponse videoFile) {
-        checkUserAuthInAlbum(userId, albumId);
-        var picture = new Picture(albumId, videoFile.resourceKey(), videoFile.thumbnailResourceKey(), videoFile.size());
+        var album = albumRepository.findByIdAndUserId(albumId, userId).orElseThrow(() -> new UnauthorizedException("Invalid album"));
+        var picture = new Picture(album, videoFile.resourceKey(), videoFile.thumbnailResourceKey(), videoFile.size());
         pictureRepository.save(picture);
         storageUsageService.addUsage(userId, picture.getFileSize());
         return PictureInfoResponse.of(picture);
@@ -49,58 +45,49 @@ public class PictureService {
 
     @Transactional(readOnly = true)
     public PictureInfoResponse read(Long userId, Long albumId, Long pictureId) {
-        checkUserAuthInAlbum(userId, albumId);
+        albumRepository.findByIdAndUserId(albumId, userId).orElseThrow(() -> new UnauthorizedException("Invalid album"));
         var picture = pictureRepository.findById(pictureId).orElseThrow();
         return PictureInfoResponse.of(picture);
     }
 
     @Transactional
-    public void deleteAllByIds(Long userId, Long albumId, List<Long> pictureIds) {
+    public void deleteAllByIds(Long userId, List<Long> pictureIds) {
         var pictures = pictureRepository.findAllById(pictureIds);
-        deleteAll(userId, albumId, pictures);
+        deleteAll(userId, pictures);
     }
 
     @Transactional
     public void deleteAllInAlbum(Long userId, Long albumId) {
         var pictures = pictureRepository.findAllByAlbumId(albumId);
-        deleteAll(userId, albumId, pictures);
+        deleteAll(userId, pictures);
     }
 
     @Transactional
-    public void deleteAll(Long userId, Long albumId, List<Picture> pictures) {
-        checkUserAuthInAlbum(userId, albumId);
+    public void deleteAll(Long userId, List<Picture> pictures) {
         pictures.forEach(pic -> {
-            pic.validateAlbum(albumId);
+            pic.checkSameUser(userId);
             fileStorageService.createDeletionEvent(new FileDeletionEvent(userId, pic.getResourceKey()));
         });
-        var usageSum = pictures.stream()
-            .mapToLong(Picture::getFileSize)
-            .sum();
-        storageUsageService.subtractUsage(userId, usageSum);
+        storageUsageService.subtractUsage(userId, pictures);
         pictureRepository.deleteAll(pictures);
     }
 
     @Transactional(readOnly = true)
     public List<PictureInfoResponse> cursorBasedFetch(Long userId, Long albumId, PictureSearchCursor cursor) {
-        checkUserAuthInAlbum(userId, albumId);
+        albumRepository.findByIdAndUserId(albumId, userId).orElseThrow(() -> new UnauthorizedException("Invalid album"));
         if (!cursor.hasPrev()) {
-            var pictures = pictureRepository.findAllByAlbumId(
+            var pictures = pictureRepository.findAllByAlbumIdOrderByCreatedAt(
                 albumId,
-                PageRequest.of(0, cursor.limit(), sortByCreatedAtDesc)
+                PageRequest.of(0, cursor.limit())
             );
-            return PictureInfoResponse.listOf(pictures.getContent());
+            return PictureInfoResponse.listOf(pictures);
         }
-        var pictures = pictureRepository.fetch(
-            isAlbum(albumId).and(orderThan(cursor.createdAt(), cursor.cursorId())),
-            cursor.limit(),
-            sortByCreatedAtDesc
+        var pictures = pictureRepository.findAllByAlbumOrderThan(
+            albumId,
+            cursor.cursorId(),
+            cursor.createdAt(),
+            PageRequest.of(0, cursor.limit())
         );
         return PictureInfoResponse.listOf(pictures);
-    }
-
-    private void checkUserAuthInAlbum(Long userId, Long albumId) {
-        var album = albumRepository.findById(albumId)
-            .orElseThrow(() -> new AlbumException("Invalid album : " + albumId));
-        album.authorize(userId);
     }
 }

@@ -61,11 +61,10 @@ public class PictureController {
     @DeleteMapping("/api/album/{albumId}/picture")
     public ResponseEntity<Void> deletePictures(
 //        @JwtPayload AuthTokenPayload loginUser,
-        @PathVariable Long albumId,
         @RequestBody(required = false) PicturesDeleteRequest pictures
     ) {
         var userId = 1L;
-        imageDeleteService.deletePictures(userId, albumId, pictures.pictureIds());
+        imageDeleteService.deletePictures(userId, pictures.pictureIds());
         return ResponseEntity.ok().build();
     }
 

@@ -18,7 +18,7 @@ public record PictureInfoResponse(
     public static PictureInfoResponse of(Picture picture) {
         return new PictureInfoResponse(
             picture.getId(),
-            picture.getAlbumId(),
+            picture.getAlbum().getId(),
             PictureFileExtension.fromFileName(picture.getResourceKey()).isVideo,
             picture.getResourceKey(),
             picture.getThumbnailResourceKey(),

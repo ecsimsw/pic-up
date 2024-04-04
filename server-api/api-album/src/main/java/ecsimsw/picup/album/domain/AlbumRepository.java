@@ -1,6 +1,7 @@
 package ecsimsw.picup.album.domain;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.Sort;
@@ -11,6 +12,8 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import java.util.List;
 
 public interface AlbumRepository extends JpaRepository<Album, Long>, JpaSpecificationExecutor<Album>, AlbumSpecRepository {
+
+    Optional<Album> findByIdAndUserId(Long albumId, Long userId);
 
     Slice<Album> findAllByUserId(Long userId, Pageable pageable);
 
@@ -26,6 +29,12 @@ public interface AlbumRepository extends JpaRepository<Album, Long>, JpaSpecific
 
         static Specification<Album> where(Specification<Album> spec) {
             return where().and(spec);
+        }
+
+        static Specification<Album> createdLater(LocalDateTime createdAt, Long cursorAlbumId) {
+            return createdLater(createdAt, cursorAlbumId)
+                    .or(equalsCreatedTime(createdAt).and(lessId(cursorAlbumId))
+            );
         }
 
         static Specification<Album> isUser(Long userId) {
