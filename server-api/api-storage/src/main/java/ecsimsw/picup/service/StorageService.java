@@ -55,7 +55,6 @@ public class StorageService {
                     backUpStorage.deleteIfExists(resourceKey);
                 })
             );
-            e.printStackTrace();
             throw new StorageException("exception while uploading : " + e.getMessage());
         }
     }

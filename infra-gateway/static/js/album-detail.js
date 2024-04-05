@@ -1,5 +1,6 @@
 const serverUrl = ""
 
+let mobileMode = false
 let albumId = 0;
 let editMode = false
 let isUploaded = false
@@ -16,6 +17,7 @@ const galleryImages = []
 Dropzone.autoDiscover = false;
 
 document.addEventListener("DOMContentLoaded", function () {
+    mobileMode = Mobile()
     callLoginApi(function(login) {
         initEditButton();
         const urlParams = new URLSearchParams(window.location.search);
@@ -29,10 +31,17 @@ document.addEventListener("DOMContentLoaded", function () {
                 }
                 const itemId = createNewPictureItem(albumId, picture.id, picture.thumbnailResourceKey)
                 if(!picture.isVideo) {
-                    addGalleryImage(
-                        serverUrl + "/api/album/" + albumId + "/picture/" + picture.id + "/image",
-                        serverUrl + "/api/album/" + albumId + "/picture/" + picture.id + "/thumbnail",
-                    )
+                    if(mobileMode) {
+                        addGalleryImage(
+                            serverUrl + "/api/album/" + albumId + "/picture/" + picture.id + "/thumbnail",
+                            serverUrl + "/api/album/" + albumId + "/picture/" + picture.id + "/thumbnail",
+                        )
+                    } else {
+                        addGalleryImage(
+                            serverUrl + "/api/album/" + albumId + "/picture/" + picture.id + "/image",
+                            serverUrl + "/api/album/" + albumId + "/picture/" + picture.id + "/thumbnail",
+                        )
+                    }
                     addImageViewer(`album-${albumId}-picture-${picture.id}`, galleryOrderNumber);
                     galleryOrderNumber++
                 } else {
@@ -45,8 +54,8 @@ document.addEventListener("DOMContentLoaded", function () {
         })
         window.addEventListener('scroll', handleScroll);
     })
-});
 
+});
 function handleScroll() {
     if(cursorEnd) {
         return;
@@ -63,10 +72,17 @@ function handleScroll() {
                 }
                 const itemId = createNewPictureItem(albumId, picture.id, picture.thumbnailResourceKey)
                 if(!picture.isVideo) {
-                    addGalleryImage(
-                        serverUrl + "/api/album/" + albumId + "/picture/" + picture.id + "/image",
-                        serverUrl + "/api/album/" + albumId + "/picture/" + picture.id + "/thumbnail",
-                    )
+                    if(mobileMode) {
+                        addGalleryImage(
+                            serverUrl + "/api/album/" + albumId + "/picture/" + picture.id + "/thumbnail",
+                            serverUrl + "/api/album/" + albumId + "/picture/" + picture.id + "/thumbnail",
+                        )
+                    } else {
+                        addGalleryImage(
+                            serverUrl + "/api/album/" + albumId + "/picture/" + picture.id + "/image",
+                            serverUrl + "/api/album/" + albumId + "/picture/" + picture.id + "/thumbnail",
+                        )
+                    }
                     addImageViewer(`album-${albumId}-picture-${picture.id}`, galleryOrderNumber);
                     galleryOrderNumber++
                 } else {
@@ -334,3 +350,6 @@ function fetchData(url, callback) {
     });
 }
 
+function Mobile() {
+    return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+}
