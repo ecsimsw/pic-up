@@ -1,9 +1,7 @@
 # server
 storage
 storage-backup
-
-server-api/api-album/src/main/resources/properties/prod/*
-server-api/api-storage/src/main/resources/properties/prod/*
+#prod-properties.sh
 
 # User-specific stuff
 .idea
