@@ -1,7 +1,7 @@
 # server
 storage
 storage-backup
-#prod-properties.sh
+prod-properties.sh
 
 # User-specific stuff
 .idea
