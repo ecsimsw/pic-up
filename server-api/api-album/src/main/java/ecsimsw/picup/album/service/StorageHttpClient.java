@@ -1,37 +1,48 @@
 package ecsimsw.picup.album.service;
 
-import ecsimsw.picup.dto.*;
+import ecsimsw.picup.dto.FileReadResponse;
+import ecsimsw.picup.dto.ImageFileUploadRequest;
+import ecsimsw.picup.dto.ImageFileUploadResponse;
+import ecsimsw.picup.dto.VideoFileUploadRequest;
+import ecsimsw.picup.dto.VideoFileUploadResponse;
 import ecsimsw.picup.member.exception.InvalidStorageServerResponseException;
+import java.util.Objects;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.Objects;
-
 @Service
 public class StorageHttpClient {
 
-    private final String STORAGE_SERVER_URL;
+    private final String storageServerUrl;
     private final RestTemplate restTemplate;
+    private final String storageAuthKey;
+    private final String storageAuthValue;
 
     public StorageHttpClient(
-        @Value("${storage.server.url}") String STORAGE_SERVER_URL,
+        @Value("${storage.server.url}") String storageServerUrl,
+        @Value("${storage.server.auth.key}") String storageAuthKey,
+        @Value("${storage.server.auth.value}") String storageAuthValue,
         RestTemplate restTemplate
     ) {
-        this.STORAGE_SERVER_URL = STORAGE_SERVER_URL;
+        this.storageServerUrl = storageServerUrl;
+        this.storageAuthKey = storageAuthKey;
+        this.storageAuthValue = storageAuthValue;
         this.restTemplate = restTemplate;
     }
 
     public ImageFileUploadResponse requestUploadImage(ImageFileUploadRequest request) {
         try {
             var response = restTemplate.exchange(
-                STORAGE_SERVER_URL + "/api/storage/image",
+                storageServerUrl + "/api/storage/image",
                 HttpMethod.POST,
-                request.toHttpEntity(),
+                request.toHttpEntity(headers(MediaType.MULTIPART_FORM_DATA)),
                 new ParameterizedTypeReference<ImageFileUploadResponse>() {
                 });
             if (Objects.isNull(response.getBody()) || Objects.isNull(response.getBody().resourceKey())) {
@@ -46,9 +57,9 @@ public class StorageHttpClient {
     public VideoFileUploadResponse requestUploadVideo(VideoFileUploadRequest request) {
         try {
             var response = restTemplate.exchange(
-                STORAGE_SERVER_URL + "/api/storage/video",
+                storageServerUrl + "/api/storage/video",
                 HttpMethod.POST,
-                request.toHttpEntity(),
+                request.toHttpEntity(headers(MediaType.MULTIPART_FORM_DATA)),
                 new ParameterizedTypeReference<VideoFileUploadResponse>() {
                 });
             if (Objects.isNull(response.getBody()) || Objects.isNull(response.getBody().resourceKey())) {
@@ -63,9 +74,9 @@ public class StorageHttpClient {
     public FileReadResponse requestReadFile(String resourceKey) {
         try {
             var response = restTemplate.exchange(
-                STORAGE_SERVER_URL + "/api/storage/" + resourceKey,
+                storageServerUrl + "/api/storage/" + resourceKey,
                 HttpMethod.GET,
-                HttpEntity.EMPTY,
+                new HttpEntity<>(headers(MediaType.APPLICATION_JSON)),
                 new ParameterizedTypeReference<FileReadResponse>() {
                 });
             if (Objects.isNull(response.getBody()) || Objects.isNull(response.getBody().resourceKey())) {
@@ -75,5 +86,12 @@ public class StorageHttpClient {
         } catch (HttpStatusCodeException e) {
             throw new InvalidStorageServerResponseException("Failed to read resources.\nStorage server is on, but invalid response status.", e);
         }
+    }
+
+    private HttpHeaders headers(MediaType mediaType) {
+        var httpHeaders = new HttpHeaders();
+        httpHeaders.setContentType(mediaType);
+        httpHeaders.add(storageAuthKey, storageAuthValue);
+        return httpHeaders;
     }
 }

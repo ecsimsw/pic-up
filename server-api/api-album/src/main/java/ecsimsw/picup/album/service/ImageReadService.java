@@ -12,27 +12,27 @@ import org.springframework.stereotype.Service;
 @Service
 public class ImageReadService {
 
-    private final FileStorageService fileStorageService;
+    private final FileService fileService;
     private final AlbumService albumService;
     private final PictureService pictureService;
 
-    public FileReadResponse imageFile(Long userId, Long albumId, Long pictureId) {
-        var picture = pictureService.read(userId, albumId, pictureId);
-        return fileStorageService.read(picture.resourceKey());
+    public FileReadResponse imageFile(Long userId, Long pictureId) {
+        var picture = pictureService.read(userId, pictureId);
+        return fileService.read(picture.resourceKey());
     }
 
     public FileReadResponse thumbnailFile(Long userId, Long albumId) {
         var album = albumService.getUserAlbum(userId, albumId);
-        return fileStorageService.read(album.getResourceKey());
+        return fileService.read(album.getResourceKey());
     }
 
     public FileReadResponse thumbnailFile(Long userId, Long albumId, Long pictureId) {
-        var picture = pictureService.read(userId, albumId, pictureId);
-        return fileStorageService.read(picture.thumbnailResourceKey());
+        var picture = pictureService.read(userId, pictureId);
+        return fileService.read(picture.thumbnailResourceKey());
     }
 
     public List<PictureInfoResponse> readPictures(Long userId, Long albumId, PictureSearchCursor cursor) {
-        return pictureService.cursorBasedFetch(userId, albumId, cursor);
+        return pictureService.fetchOrderByCursor(userId, albumId, cursor);
     }
 
     public AlbumInfoResponse readAlbum(Long userId, Long albumId) {

@@ -17,7 +17,7 @@ public class AlbumService {
 
     private final PictureService pictureService;
     private final AlbumRepository albumRepository;
-    private final FileStorageService fileStorageService;
+    private final FileService fileService;
 
     @Transactional(readOnly = true)
     public List<AlbumInfoResponse> findAll(Long userId) {
@@ -35,7 +35,7 @@ public class AlbumService {
     @Transactional
     public void delete(Long userId, Long albumId) {
         var album = getUserAlbum(userId, albumId);
-        fileStorageService.createDeletionEvent(new FileDeletionEvent(userId, album.getResourceKey()));
+        fileService.createDeletionEvent(new FileDeletionEvent(userId, album.getResourceKey()));
         albumRepository.delete(album);
         pictureService.deleteAllInAlbum(userId, albumId);
     }

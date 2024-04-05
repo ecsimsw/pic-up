@@ -25,7 +25,7 @@ public class PictureService {
 
     private final AlbumRepository albumRepository;
     private final PictureRepository pictureRepository;
-    private final FileStorageService fileStorageService;
+    private final FileService fileService;
     private final StorageUsageService storageUsageService;
 
     @Transactional
@@ -47,7 +47,7 @@ public class PictureService {
     }
 
     @Transactional(readOnly = true)
-    public PictureInfoResponse read(Long userId, Long albumId, Long pictureId) {
+    public PictureInfoResponse read(Long userId, Long pictureId) {
         var picture = pictureRepository.findById(pictureId).orElseThrow();
         picture.checkSameUser(userId);
         return PictureInfoResponse.of(picture);
@@ -69,38 +69,25 @@ public class PictureService {
     public void deleteAll(Long userId, List<Picture> pictures) {
         pictures.forEach(picture -> {
             picture.checkSameUser(userId);
-            fileStorageService.createDeletionEvent(new FileDeletionEvent(userId, picture.getResourceKey()));
+            fileService.createDeletionEvent(new FileDeletionEvent(userId, picture.getResourceKey()));
         });
         storageUsageService.subtractUsage(userId, pictures);
         pictureRepository.deleteAll(pictures);
     }
 
     @Transactional(readOnly = true)
-    public List<PictureInfoResponse> cursorBasedFetch(Long userId, Long albumId, PictureSearchCursor cursor) {
+    public List<PictureInfoResponse> fetchOrderByCursor(Long userId, Long albumId, PictureSearchCursor cursor) {
         var album = getUserAlbum(userId, albumId);
-        if (!cursor.hasPrev()) {
-            var pictures = pictureRepository.findAllByAlbumId(
-                album.getId(),
-                PageRequest.of(0, cursor.limit(), Direction.DESC, Picture_.CREATED_AT)
-            );
-            for(var pic : pictures) {
-                System.out.println(pic.getCreatedAt());
-            }
-
-            return PictureInfoResponse.listOf(pictures);
-        }
         var pictures = pictureRepository.findAllByAlbumOrderThan(
             album.getId(),
             cursor.createdAt(),
             PageRequest.of(0, cursor.limit(), Direction.DESC, Picture_.CREATED_AT)
         );
-        for(var pic : pictures) {
-            System.out.println(pic.getCreatedAt());
-        }
         return PictureInfoResponse.listOf(pictures);
     }
 
     private Album getUserAlbum(Long userId, Long albumId) {
-        return albumRepository.findByIdAndUserId(albumId, userId).orElseThrow(() -> new UnauthorizedException("Invalid album"));
+        return albumRepository.findByIdAndUserId(albumId, userId)
+            .orElseThrow(() -> new UnauthorizedException("Invalid album"));
     }
 }

@@ -48,12 +48,11 @@ public class PictureController {
 //        @JwtPayload AuthTokenPayload loginUser,
         @PathVariable Long albumId,
         @RequestParam(defaultValue = "10") int limit,
-        @RequestParam Optional<Long> cursorId,
         @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
         Optional<LocalDateTime> cursorCreatedAt
     ) {
         var userId = 1L;
-        var cursor = PictureSearchCursor.from(limit, cursorId, cursorCreatedAt);
+        var cursor = PictureSearchCursor.from(limit, cursorCreatedAt);
         var pictureInfos = imageReadService.readPictures(userId, albumId, cursor);
         return ResponseEntity.ok(pictureInfos);
     }
@@ -75,7 +74,7 @@ public class PictureController {
         @PathVariable Long pictureId
     ) {
         var userId = 1L;
-        var imageFile = imageReadService.imageFile(userId, albumId, pictureId);
+        var imageFile = imageReadService.imageFile(userId, pictureId);
         return ResponseEntity.ok()
             .cacheControl(CacheControl.maxAge(2, TimeUnit.HOURS))
             .body(imageFile.file());

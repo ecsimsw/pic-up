@@ -22,9 +22,9 @@ import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
-public class FileStorageService {
+public class FileService {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(FileStorageService.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(FileService.class);
 
     private final StorageHttpClient storageHttpClient;
     private final FileDeletionEventOutbox fileDeletionEventOutbox;

@@ -2,7 +2,7 @@ package ecsimsw.picup;
 
 import ecsimsw.picup.album.domain.AlbumRepository;
 import ecsimsw.picup.album.domain.PictureRepository;
-import ecsimsw.picup.album.service.FileEventOutboxService;
+import ecsimsw.picup.album.service.FileDeletionScheduler;
 import ecsimsw.picup.member.dto.SignUpRequest;
 import ecsimsw.picup.member.service.MemberService;
 import javax.annotation.PostConstruct;
@@ -26,7 +26,7 @@ public class PicUpAlbumApplication {
         app.setAdditionalProfiles("dev");
         var ctx = app.run(args);
 
-        var outboxService = ctx.getBean(FileEventOutboxService.class);
+        var outboxService = ctx.getBean(FileDeletionScheduler.class);
         outboxService.schedulePublishOut();
     }
 }

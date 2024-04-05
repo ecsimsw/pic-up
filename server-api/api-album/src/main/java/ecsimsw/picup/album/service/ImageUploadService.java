@@ -15,17 +15,17 @@ import org.springframework.web.multipart.MultipartFile;
 public class ImageUploadService {
 
     private final DistributedLock memberLock;
-    private final FileStorageService fileStorageService;
+    private final FileService fileService;
     private final PictureService pictureService;
     private final AlbumService albumService;
 
     public AlbumInfoResponse initAlbum(Long userId, String name, MultipartFile file) {
-        var thumbnailFile = fileStorageService.uploadImage(PictureFile.resizedOf(file, 0.5f));
+        var thumbnailFile = fileService.uploadImage(PictureFile.resizedOf(file, 0.5f));
         try {
             memberLock.acquire(userId);
             return albumService.create(userId, name, thumbnailFile);
         } catch (Exception e) {
-            fileStorageService.deleteAsync(thumbnailFile.resourceKey());
+            fileService.deleteAsync(thumbnailFile.resourceKey());
             throw e;
         } finally {
             memberLock.release(userId);
@@ -41,14 +41,14 @@ public class ImageUploadService {
     }
 
     public PictureInfoResponse uploadPictureImage(Long userId, Long albumId, MultipartFile file) {
-        var imageFile = fileStorageService.uploadImage(PictureFile.of(file));
-        var thumbnailFile = fileStorageService.uploadImage(PictureFile.resizedOf(file, 0.3f));
+        var imageFile = fileService.uploadImage(PictureFile.of(file));
+        var thumbnailFile = fileService.uploadImage(PictureFile.resizedOf(file, 0.3f));
         try {
             memberLock.acquire(userId);
             return pictureService.create(userId, albumId, imageFile, thumbnailFile);
         } catch (Exception e) {
-            fileStorageService.deleteAsync(imageFile.resourceKey());
-            fileStorageService.deleteAsync(thumbnailFile.resourceKey());
+            fileService.deleteAsync(imageFile.resourceKey());
+            fileService.deleteAsync(thumbnailFile.resourceKey());
             throw e;
         } finally {
             memberLock.release(userId);
@@ -56,13 +56,13 @@ public class ImageUploadService {
     }
 
     public PictureInfoResponse uploadPictureVideo(Long userId, Long albumId, MultipartFile file) {
-        var uploadedVideo = fileStorageService.uploadVideo(PictureFile.of(file));
+        var uploadedVideo = fileService.uploadVideo(PictureFile.of(file));
         try {
             memberLock.acquire(userId);
             return pictureService.create(userId, albumId, uploadedVideo);
         } catch (Exception e) {
-            fileStorageService.deleteAsync(uploadedVideo.resourceKey());
-            fileStorageService.deleteAsync(uploadedVideo.thumbnailResourceKey());
+            fileService.deleteAsync(uploadedVideo.resourceKey());
+            fileService.deleteAsync(uploadedVideo.thumbnailResourceKey());
             throw e;
         } finally {
             memberLock.release(userId);

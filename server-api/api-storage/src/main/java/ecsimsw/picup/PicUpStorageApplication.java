@@ -2,6 +2,7 @@ package ecsimsw.picup;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.web.servlet.ServletComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
@@ -15,7 +16,6 @@ public class PicUpStorageApplication {
         app.run(args);
     }
 }
-
 
 @Configuration
 class CorsConfig implements WebMvcConfigurer {
