@@ -1,7 +1,0 @@
-# kong 2.90
-# https://docs.konghq.com/kubernetes-ingress-controller/2.9.x/guides/getting-started/
-
-helm repo add kong https://charts.konghq.com
-helm repo update
-helm install kong kong/ingress -n kong --create-namespace
-

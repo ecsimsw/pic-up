@@ -1,5 +1,0 @@
-helm repo add metrics-server https://kubernetes-sigs.github.io/metrics-server/
-
-helm install --namespace kube-system metrics-server metrics-server/metrics-server \
---set replicas=2 \
---set args={--kubelet-insecure-tls}
