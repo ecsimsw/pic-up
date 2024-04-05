@@ -12,20 +12,7 @@ public class PicUpStorageApplication {
 
     public static void main(String[] args) {
         SpringApplication app = new SpringApplication(PicUpStorageApplication.class);
-        app.setAdditionalProfiles("dev");
+        app.setAdditionalProfiles("prod");
         app.run(args);
-    }
-}
-
-@Configuration
-class CorsConfig implements WebMvcConfigurer {
-
-    @Override
-    public void addCorsMappings(CorsRegistry registry) {
-        registry.addMapping("/**")
-            .allowedOrigins("http://localhost:63342")
-            .allowedMethods("*")
-            .allowedHeaders("*")
-            .maxAge(3600);
     }
 }
