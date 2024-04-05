@@ -36,8 +36,8 @@ public class AlbumService {
     public void delete(Long userId, Long albumId) {
         var album = getUserAlbum(userId, albumId);
         fileService.createDeletionEvent(new FileDeletionEvent(userId, album.getResourceKey()));
-        albumRepository.delete(album);
         pictureService.deleteAllInAlbum(userId, albumId);
+        albumRepository.delete(album);
     }
 
     public Album getUserAlbum(Long userId, Long albumId) {
