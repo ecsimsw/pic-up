@@ -1,11 +1,11 @@
 # This is sample in local env.
 # Make this file private.
 
-export PICUP_MASTER_DB_URL="jdbc:mysql://localhost:13306/picup?useSSL=false&characterEncoding=UTF-8&serverTimezone=UTC"
+export PICUP_MASTER_DB_URL="jdbc:mysql://localhost:13306/picup?useSSL=false&characterEncoding=UTF-8&serverTimezone=UTC&allowPublicKeyRetrieval=true"
 export PICUP_MASTER_DB_USERNAME="root"
 export PICUP_MASTER_DB_PASSWORD="root"
 
-export PICUP_SLAVE_DB_URL="jdbc:mysql://localhost:13306/picup?useSSL=false&characterEncoding=UTF-8&serverTimezone=UTC"
+export PICUP_SLAVE_DB_URL="jdbc:mysql://localhost:13306/picup?useSSL=false&characterEncoding=UTF-8&serverTimezone=UTC&allowPublicKeyRetrieval=true"
 export PICUP_SLAVE_DB_PASSWORD="root"
 export PICUP_SLAVE_DB_PASSWORD="root"
 
