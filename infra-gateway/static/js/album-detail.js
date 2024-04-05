@@ -18,7 +18,6 @@ Dropzone.autoDiscover = false;
 
 document.addEventListener("DOMContentLoaded", function () {
     mobileMode = Mobile()
-    mobileMode = false
     callLoginApi(function(login) {
         initEditButton();
         const urlParams = new URLSearchParams(window.location.search);
