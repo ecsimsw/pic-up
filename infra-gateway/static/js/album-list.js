@@ -76,7 +76,7 @@ function createAlbumArticle(albumId, titleText, thumbImageResource) {
 
     article.addEventListener('click', function () {
         if(!createMode) {
-            location.href = "../html/album-detail.html?albumId="+albumId
+            location.href = "/static/html/album-detail.html?albumId="+albumId
         }
     })
 
