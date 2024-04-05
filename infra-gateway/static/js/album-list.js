@@ -7,6 +7,7 @@ document.addEventListener("DOMContentLoaded", function () {
         initCreationPanel()
         fetchUserInfo();
         fetchData(serverUrl+"/api/album", function (albums) {
+            albums.reverse()
             albums.forEach(async (album) => {
                 createAlbumArticle(album.id, album.name, album.thumbnailImage)
             });
@@ -168,7 +169,6 @@ function callLoginApi(callback) {
         if (!response.ok) {
             throw new Error('Network response was not ok');
         }
-        console.log(response)
         return response.json();
     }).then(data => callback(data))
 }
