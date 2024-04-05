@@ -10,6 +10,8 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
+
+import ecsimsw.picup.auth.TokenPayload;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.CacheControl;
@@ -32,56 +34,51 @@ public class AlbumController {
 
     @PostMapping("/api/album")
     public ResponseEntity<AlbumInfoResponse> createAlbum(
-//        @JwtPayload AuthTokenPayload loginUser,
+        @TokenPayload AuthTokenPayload loginUser,
         @RequestParam MultipartFile thumbnail,
         @RequestParam String name
     ) {
-        var userId = 1L;
-        var albumInfo = imageUploadService.initAlbum(userId, name, thumbnail);
+        var albumInfo = imageUploadService.initAlbum(loginUser.userId(), name, thumbnail);
         return ResponseEntity.ok(albumInfo);
     }
 
     @GetMapping("/api/album/{albumId}")
     public ResponseEntity<AlbumInfoResponse> getAlbum(
-//        @JwtPayload AuthTokenPayload loginUser,
+        @TokenPayload AuthTokenPayload loginUser,
         @PathVariable Long albumId
     ) {
-        var userId = 1L;
-        var albumInfo = imageReadService.readAlbum(userId, albumId);
+        var albumInfo = imageReadService.readAlbum(loginUser.userId(), albumId);
         return ResponseEntity.ok(albumInfo);
     }
 
     @GetMapping("/api/album")
     public ResponseEntity<List<AlbumInfoResponse>> getAlbums(
-//        @JwtPayload AuthTokenPayload loginUser,
+        @TokenPayload AuthTokenPayload loginUser,
         @RequestParam(defaultValue = "10") int limit,
         @RequestParam Optional<Long> cursorId,
         @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
         Optional<LocalDateTime> cursorCreatedAt
     ) {
-        var userId = 1L;
         var cursor = AlbumSearchCursor.from(limit, cursorId, cursorCreatedAt);
-        var albums = imageReadService.readAlbums(userId, cursor);
+        var albums = imageReadService.readAlbums(loginUser.userId(), cursor);
         return ResponseEntity.ok(albums);
     }
 
     @DeleteMapping("/api/album/{albumId}")
     public ResponseEntity<Void> deleteAlbum(
-//        @JwtPayload AuthTokenPayload loginUser,
+        @TokenPayload AuthTokenPayload loginUser,
         @PathVariable Long albumId
     ) {
-        var userId = 1L;
-        imageDeleteService.deleteAlbum(userId, albumId);
+        imageDeleteService.deleteAlbum(loginUser.userId(), albumId);
         return ResponseEntity.ok().build();
     }
 
     @GetMapping("/api/album/{albumId}/thumbnail")
-    public ResponseEntity<byte[]> thumbnailFile(
-//      @JwtPayload AuthTokenPayload loginUser,
-        @PathVariable Long albumId
+    public ResponseEntity<byte[]> albumThumbnail(
+      @TokenPayload AuthTokenPayload loginUser,
+      @PathVariable Long albumId
     ) {
-        var userId = 1L;
-        var thumbnailFile = imageReadService.thumbnailFile(userId, albumId);
+        var thumbnailFile = imageReadService.thumbnailFile(loginUser.userId(), albumId);
         return ResponseEntity.ok()
             .cacheControl(CacheControl.maxAge(2, TimeUnit.HOURS))
             .body(thumbnailFile.file());

@@ -30,12 +30,7 @@ public class AuthArgumentResolver implements HandlerMethodArgumentResolver {
     @Override
     public AuthTokenPayload resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer, NativeWebRequest webRequest, WebDataBinderFactory binderFactory) {
         var request = (HttpServletRequest) webRequest.getNativeRequest();
-        var cookies = request.getCookies();
-        var accessToken = Arrays.stream(cookies)
-            .filter(cookie -> ACCESS_TOKEN_COOKIE_NAME.equals(cookie.getName()))
-            .findFirst()
-            .map(Cookie::getValue)
-            .orElseThrow(() -> new UnauthorizedException("Access token is not available"));
+        var accessToken = authTokenService.getAccessToken(request);
         return authTokenService.tokenPayload(accessToken);
     }
 }

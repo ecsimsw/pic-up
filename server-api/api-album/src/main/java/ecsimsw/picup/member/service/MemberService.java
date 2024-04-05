@@ -1,5 +1,6 @@
 package ecsimsw.picup.member.service;
 
+import ecsimsw.picup.auth.UnauthorizedException;
 import ecsimsw.picup.ecrypt.SHA256Utils;
 import ecsimsw.picup.member.domain.*;
 import ecsimsw.picup.member.dto.MemberInfoResponse;
@@ -21,19 +22,13 @@ public class MemberService {
     @Transactional
     public MemberInfoResponse signIn(SignInRequest request) {
         try {
-            // XXX :: only for beta test, short period
-            if(request.username().equals("publicUser") && request.password().equals("publicUserForTest")) {
-                var member = getMember("ecsimsw");
-                var usage = getUsageByMember(member);
-                return MemberInfoResponse.of(member, usage);
-            }
             var member = getMember(request.username());
             var requestPassword = encryptPassword(request.password(), member.getPassword().getSalt());
-            member.authenticate(requestPassword);
+//            member.authenticate(requestPassword);
             var usage = getUsageByMember(member);
             return MemberInfoResponse.of(member, usage);
         } catch (Exception e) {
-            throw new LoginFailedException("Invalid login info");
+            throw new UnauthorizedException("Invalid login info");
         }
     }
 

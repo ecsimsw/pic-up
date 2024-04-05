@@ -14,4 +14,12 @@ public class AuthTokens {
     private final String tokenKey;
     private final String accessToken;
     private final String refreshToken;
+
+    public static AuthTokens of(AuthTokenPayload payload, String accessToken, String refreshToken) {
+        return new AuthTokens(
+            payload.tokenKey(),
+            accessToken,
+            refreshToken
+        );
+    }
 }
