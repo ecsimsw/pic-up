@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
+import org.springframework.web.HttpMediaTypeNotSupportedException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -24,7 +25,7 @@ public class AlbumControllerAdvice {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AlbumControllerAdvice.class);
 
-    @ExceptionHandler({AlbumException.class, UnsupportedFileTypeException.class})
+    @ExceptionHandler({AlbumException.class, UnsupportedFileTypeException.class, HttpMediaTypeNotSupportedException.class})
     public ResponseEntity<String> albumException(IllegalArgumentException e) {
         return ResponseEntity.badRequest().body(e.getMessage());
     }
