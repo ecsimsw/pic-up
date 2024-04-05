@@ -12,16 +12,17 @@ public interface PictureRepository extends JpaRepository<Picture, Long> {
 
     List<Picture> findAllByAlbumId(Long albumId);
 
-    List<Picture> findAllByAlbumIdOrderByCreatedAt(Long albumId, Pageable pageable);
+    List<Picture> findAllByAlbumId(Long albumId, Pageable pageable);
+
 
     @Query(value =
         "select picture from Picture picture " +
-            "where picture.album.id = :albumId and "
-            + "picture.createdAt < :createdAt or (picture.createdAt = :createdAt and picture.id < :cursorId)"
+            "JOIN FETCH picture.album " +
+            "where picture.album.id = :albumId and " +
+            "picture.createdAt < :createdAt"
     )
     List<Picture> findAllByAlbumOrderThan(
         @Param("albumId") Long albumId,
-        @Param("cursorId") Long cursorId,
         @Param("createdAt") LocalDateTime createdAt,
         PageRequest pageRequest
     );

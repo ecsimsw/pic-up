@@ -1,4 +1,4 @@
-package ecsimsw.picup.usage.service;
+package ecsimsw.picup.member.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -6,7 +6,6 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import ecsimsw.picup.album.exception.AlbumException;
 import ecsimsw.picup.env.StorageUsageMockRepository;
 import ecsimsw.picup.member.domain.StorageUsageRepository;
-import ecsimsw.picup.member.service.StorageUsageService;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executors;
 import org.junit.jupiter.api.BeforeEach;
@@ -16,9 +15,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ActiveProfiles;
 
-@ActiveProfiles("dev")
 @ExtendWith(MockitoExtension.class)
 @SpringBootTest
 public class StorageUsageServiceTest {

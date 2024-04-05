@@ -1,7 +1,6 @@
 package ecsimsw.picup.album.service;
 
 import ecsimsw.picup.album.dto.AlbumInfoResponse;
-import ecsimsw.picup.album.dto.AlbumSearchCursor;
 import ecsimsw.picup.album.dto.PictureInfoResponse;
 import ecsimsw.picup.album.dto.PictureSearchCursor;
 import ecsimsw.picup.dto.FileReadResponse;
@@ -41,7 +40,7 @@ public class ImageReadService {
         return AlbumInfoResponse.of(album);
     }
 
-    public List<AlbumInfoResponse> readAlbums(Long userId, AlbumSearchCursor cursor) {
-        return albumService.cursorBasedFetch(userId, cursor);
+    public List<AlbumInfoResponse> readAlbums(Long userId) {
+        return albumService.findAll(userId);
     }
 }

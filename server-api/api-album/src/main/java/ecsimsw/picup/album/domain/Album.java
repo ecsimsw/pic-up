@@ -6,17 +6,20 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Index;
 import javax.persistence.Table;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+@AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Table(indexes = {
-//    @Index(name = "idx_post_title_and_content", columnList = "post_title, post_content")
+    @Index(name = "idx_userId_createdAt", columnList = "userId, createdAt")
 })
 @Entity
 public class Album {
@@ -38,18 +41,10 @@ public class Album {
     private long resourceFileSize;
 
     @NotNull
-    private final LocalDateTime createdAt = LocalDateTime.now();
+    private LocalDateTime createdAt;
 
-    public Album(Long id, Long userId, String name, String resourceKey, long resourceFileSize) {
-        this.id = id;
-        this.userId = userId;
-        this.name = name;
-        this.resourceKey = resourceKey;
-        this.resourceFileSize = resourceFileSize;
-    }
-
-    public Album(Long userId, String name, String resourceKey, Long thumbnailFileSize) {
-        this(null, userId, name, resourceKey, thumbnailFileSize);
+    public Album(Long userId, String name, String resourceKey, long resourceFileSize) {
+        this(null, userId, name, resourceKey, resourceFileSize, LocalDateTime.now());
     }
 
     public void authorize(Long userId) {

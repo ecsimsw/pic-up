@@ -161,7 +161,7 @@ function callLoginApi(callback) {
             "Access-control-allow-methods": "*"
         },
         body: JSON.stringify({
-            username: "publicUser",
+            username: "ecsimsw",
             password: "publicUserForTest"
         })
     }).then(response => {
