@@ -8,7 +8,7 @@ public class DataSourceRoutingRule extends AbstractRoutingDataSource {
 
     @Override
     protected Object determineCurrentLookupKey() {
-//        if (DataSourceTargetContextHolder.hasDirectTargetDataSource()) {
+//         if (DataSourceTargetContextHolder.hasDirectTargetDataSource()) {
 //            return DataSourceTargetContextHolder.getTargetContext();
 //        }
 //        var isReadOnlyQuery = TransactionSynchronizationManager.isCurrentTransactionReadOnly();

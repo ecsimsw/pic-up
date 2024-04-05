@@ -9,6 +9,5 @@ import java.util.List;
 
 public interface FileDeletionEventOutbox extends JpaRepository<FileDeletionEvent, Long> {
 
-    @Lock(LockModeType.PESSIMISTIC_WRITE)
     List<FileDeletionEvent> findAll(Sort sort);
 }

@@ -6,6 +6,8 @@ import ecsimsw.picup.album.dto.PicturesDeleteRequest;
 import ecsimsw.picup.album.service.ImageDeleteService;
 import ecsimsw.picup.album.service.ImageReadService;
 import ecsimsw.picup.album.service.ImageUploadService;
+import ecsimsw.picup.auth.AuthTokenPayload;
+import ecsimsw.picup.auth.TokenPayload;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -34,47 +36,43 @@ public class PictureController {
 
     @PostMapping("/api/album/{albumId}/picture")
     public ResponseEntity<PictureInfoResponse> createPicture(
-//        @JwtPayload AuthTokenPayload loginUser,
+        @TokenPayload AuthTokenPayload loginUser,
         @PathVariable Long albumId,
         @RequestPart MultipartFile file
     ) {
-        var userId = 1L;
-        var response = imageUploadService.uploadPicture(userId, albumId, file);
+        var response = imageUploadService.uploadPicture(loginUser.userId(), albumId, file);
         return ResponseEntity.ok(response);
     }
 
     @GetMapping("/api/album/{albumId}/picture")
     public ResponseEntity<List<PictureInfoResponse>> getPictures(
-//        @JwtPayload AuthTokenPayload loginUser,
+        @TokenPayload AuthTokenPayload loginUser,
         @PathVariable Long albumId,
         @RequestParam(defaultValue = "10") int limit,
         @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
         Optional<LocalDateTime> cursorCreatedAt
     ) {
-        var userId = 1L;
         var cursor = PictureSearchCursor.from(limit, cursorCreatedAt);
-        var pictureInfos = imageReadService.readPictures(userId, albumId, cursor);
+        var pictureInfos = imageReadService.readPictures(loginUser.userId(), albumId, cursor);
         return ResponseEntity.ok(pictureInfos);
     }
 
     @DeleteMapping("/api/album/{albumId}/picture")
     public ResponseEntity<Void> deletePictures(
-//        @JwtPayload AuthTokenPayload loginUser,
+        @TokenPayload AuthTokenPayload loginUser,
         @RequestBody(required = false) PicturesDeleteRequest pictures
     ) {
-        var userId = 1L;
-        imageDeleteService.deletePictures(userId, pictures.pictureIds());
+        imageDeleteService.deletePictures(loginUser.userId(), pictures.pictureIds());
         return ResponseEntity.ok().build();
     }
 
     @GetMapping("/api/album/{albumId}/picture/{pictureId}/image")
     public ResponseEntity<byte[]> imageFile(
-//      @JwtPayload AuthTokenPayload loginUser,
+        @TokenPayload AuthTokenPayload loginUser,
         @PathVariable Long albumId,
         @PathVariable Long pictureId
     ) {
-        var userId = 1L;
-        var imageFile = imageReadService.imageFile(userId, pictureId);
+        var imageFile = imageReadService.imageFile(loginUser.userId(), pictureId);
         return ResponseEntity.ok()
             .cacheControl(CacheControl.maxAge(2, TimeUnit.HOURS))
             .body(imageFile.file());
@@ -82,14 +80,13 @@ public class PictureController {
 
     @GetMapping("/api/album/{albumId}/picture/{pictureId}/thumbnail")
     public ResponseEntity<byte[]> thumbnailFile(
-//      @JwtPayload AuthTokenPayload loginUser,
+        @TokenPayload AuthTokenPayload loginUser,
         @PathVariable Long albumId,
         @PathVariable Long pictureId
     ) {
-        var userId = 1L;
-        var thumbnailFile = imageReadService.thumbnailFile(userId, albumId, pictureId);
+        var thumbnailFile = imageReadService.thumbnailFile(loginUser.userId(), albumId, pictureId);
         return ResponseEntity.ok()
-            .cacheControl(CacheControl.maxAge(2, TimeUnit.HOURS))
+            .cacheControl(CacheControl.maxAge(loginUser.userId(), TimeUnit.HOURS))
             .body(thumbnailFile.file());
     }
 }

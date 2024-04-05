@@ -31,11 +31,9 @@ public class AlbumController {
     private final ImageDeleteService imageDeleteService;
     private final ImageReadService imageReadService;
 
-    private final AuthTokenPayload loginUser= new AuthTokenPayload(1L, "ecsimsw");
-
     @PostMapping("/api/album")
     public ResponseEntity<AlbumInfoResponse> createAlbum(
-//        @TokenPayload AuthTokenPayload loginUser,
+        @TokenPayload AuthTokenPayload loginUser,
         @RequestParam MultipartFile thumbnail,
         @RequestParam String name
     ) {
@@ -45,7 +43,7 @@ public class AlbumController {
 
     @GetMapping("/api/album/{albumId}")
     public ResponseEntity<AlbumInfoResponse> getAlbum(
-//        @TokenPayload AuthTokenPayload loginUser,
+        @TokenPayload AuthTokenPayload loginUser,
         @PathVariable Long albumId
     ) {
         var albumInfo = imageReadService.readAlbum(loginUser.userId(), albumId);
@@ -54,7 +52,7 @@ public class AlbumController {
 
     @GetMapping("/api/album")
     public ResponseEntity<List<AlbumInfoResponse>> getAlbums(
-//        @TokenPayload AuthTokenPayload loginUser
+        @TokenPayload AuthTokenPayload loginUser
     ) {
         var albums = imageReadService.readAlbums(loginUser.userId());
         return ResponseEntity.ok(albums);
@@ -62,7 +60,7 @@ public class AlbumController {
 
     @DeleteMapping("/api/album/{albumId}")
     public ResponseEntity<Void> deleteAlbum(
-//        @TokenPayload AuthTokenPayload loginUser,
+        @TokenPayload AuthTokenPayload loginUser,
         @PathVariable Long albumId
     ) {
         imageDeleteService.deleteAlbum(loginUser.userId(), albumId);
@@ -71,7 +69,7 @@ public class AlbumController {
 
     @GetMapping("/api/album/{albumId}/thumbnail")
     public ResponseEntity<byte[]> albumThumbnail(
-//      @TokenPayload AuthTokenPayload loginUser,
+      @TokenPayload AuthTokenPayload loginUser,
       @PathVariable Long albumId
     ) {
         var thumbnailFile = imageReadService.thumbnailFile(loginUser.userId(), albumId);

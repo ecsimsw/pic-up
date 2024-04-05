@@ -8,6 +8,7 @@ import ecsimsw.picup.album.domain.PictureRepository;
 import ecsimsw.picup.album.domain.Picture_;
 import ecsimsw.picup.album.dto.PictureInfoResponse;
 import ecsimsw.picup.album.dto.PictureSearchCursor;
+import ecsimsw.picup.album.exception.AlbumException;
 import ecsimsw.picup.auth.UnauthorizedException;
 import ecsimsw.picup.dto.ImageFileUploadResponse;
 import ecsimsw.picup.dto.VideoFileUploadResponse;
@@ -48,7 +49,7 @@ public class PictureService {
 
     @Transactional(readOnly = true)
     public PictureInfoResponse read(Long userId, Long pictureId) {
-        var picture = pictureRepository.findById(pictureId).orElseThrow();
+        var picture = pictureRepository.findById(pictureId).orElseThrow(() -> new AlbumException("Invalid picture request"));
         picture.checkSameUser(userId);
         return PictureInfoResponse.of(picture);
     }

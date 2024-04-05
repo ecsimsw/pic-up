@@ -1,7 +1,9 @@
 package ecsimsw.picup.album.domain;
 
+import ecsimsw.picup.album.utils.AesStringConverter;
 import ecsimsw.picup.auth.UnauthorizedException;
 import java.time.LocalDateTime;
+import javax.persistence.Convert;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -31,6 +33,7 @@ public class Album {
     @NotNull
     private Long userId;
 
+    @Convert(converter = AesStringConverter.class)
     @NotBlank
     private String name;
 

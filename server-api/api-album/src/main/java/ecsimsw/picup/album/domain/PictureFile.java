@@ -2,6 +2,7 @@ package ecsimsw.picup.album.domain;
 
 import ecsimsw.picup.album.exception.AlbumException;
 import ecsimsw.picup.album.utils.ThumbnailUtils;
+import java.util.Objects;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -39,9 +40,7 @@ public record PictureFile(
     }
 
     private static PictureFileExtension getFileFormat(MultipartFile file) {
-        if(file.getOriginalFilename() == null) {
-            throw new AlbumException("Invalid multipart video request, file must have name");
-        }
+        Objects.requireNonNull(file.getOriginalFilename());
         return PictureFileExtension.fromFileName(file.getOriginalFilename());
     }
 

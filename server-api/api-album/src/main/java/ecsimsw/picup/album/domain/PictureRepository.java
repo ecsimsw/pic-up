@@ -12,9 +12,6 @@ public interface PictureRepository extends JpaRepository<Picture, Long> {
 
     List<Picture> findAllByAlbumId(Long albumId);
 
-    List<Picture> findAllByAlbumId(Long albumId, Pageable pageable);
-
-
     @Query(value =
         "select picture from Picture picture " +
             "JOIN FETCH picture.album " +
