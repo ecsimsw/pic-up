@@ -1,4 +1,4 @@
-const serverUrl = "http://localhost:8084"
+const serverUrl = ""
 
 let albumId = 0;
 let editMode = false
