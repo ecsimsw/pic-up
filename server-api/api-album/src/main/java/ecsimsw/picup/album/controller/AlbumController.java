@@ -1,14 +1,11 @@
 package ecsimsw.picup.album.controller;
 
 import ecsimsw.picup.album.dto.AlbumInfoResponse;
-import ecsimsw.picup.album.dto.AlbumSearchCursor;
 import ecsimsw.picup.album.service.ImageDeleteService;
 import ecsimsw.picup.album.service.ImageReadService;
 import ecsimsw.picup.album.service.ImageUploadService;
 import ecsimsw.picup.auth.AuthTokenPayload;
-import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 import ecsimsw.picup.auth.TokenPayload;

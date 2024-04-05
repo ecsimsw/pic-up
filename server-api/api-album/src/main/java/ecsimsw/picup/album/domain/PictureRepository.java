@@ -15,8 +15,7 @@ public interface PictureRepository extends JpaRepository<Picture, Long> {
     @Query(value =
         "select picture from Picture picture " +
             "JOIN FETCH picture.album " +
-            "where picture.album.id = :albumId and " +
-            "picture.createdAt < :createdAt"
+            "where picture.album.id = :albumId and picture.createdAt < :createdAt"
     )
     List<Picture> findAllByAlbumOrderThan(
         @Param("albumId") Long albumId,
