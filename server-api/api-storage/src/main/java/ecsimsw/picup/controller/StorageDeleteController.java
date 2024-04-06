@@ -1,7 +1,5 @@
 package ecsimsw.picup.controller;
 
-import ecsimsw.picup.alert.SlackMessageSender;
-import ecsimsw.picup.mq.message.FileDeletionRequest;
 import ecsimsw.picup.service.StorageService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,16 +29,9 @@ public class StorageDeleteController {
         resources.forEach(storageService::delete);
     }
 
-    @RabbitListener(queues = FILE_DELETE_QUEUE_NAME, containerFactory = FILE_DELETION_QUEUE_CF)
-    public void delete(FileDeletionRequest request) {
-        LOGGER.info("Delete file : " + request.getResourceKey());
-        storageService.delete(request.getResourceKey());
-    }
-
     @RabbitListener(queues = FILE_DELETION_RECOVER_QUEUE_NAME)
     public void deleteAllRecover(Message failedMessage) {
         var alertMessage = "dead letter from file deletion queue \n" + "body : " + failedMessage.getPayload();
         LOGGER.error(alertMessage);
-        SlackMessageSender.send(alertMessage);
     }
 }

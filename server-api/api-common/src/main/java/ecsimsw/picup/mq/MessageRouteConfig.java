@@ -16,9 +16,6 @@ public class MessageRouteConfig {
     public static final String FILE_DELETE_ALL_QUEUE_NAME = "file.deleteAll.queue";
     public static final String FILE_DELETE_ALL_QUEUE_KEY = "file.deleteAll";
 
-    public static final String FILE_DELETE_QUEUE_NAME = "file.delete.queue";
-    public static final String FILE_DELETE_QUEUE_KEY = "file.delete";
-
     public static final String FILE_DELETION_RECOVER_QUEUE_NAME = "file.deletion.recover.queue";
     public static final String FILE_DELETION_RECOVER_QUEUE_KEY = "file.deletion.recover";
 
@@ -44,31 +41,8 @@ public class MessageRouteConfig {
     }
 
     @Bean
-    public Queue fileDeleteQueue(
-    ) {
-        return QueueBuilder.durable(FILE_DELETE_QUEUE_NAME)
-            .deadLetterExchange(DEAD_LETTER_EXCHANGE_NAME)
-            .withArguments(Map.of(
-                "x-dead-letter-exchange", DEAD_LETTER_EXCHANGE_NAME,
-                "x-dead-letter-routing-key", FILE_DELETION_RECOVER_QUEUE_KEY
-            ))
-            .build();
-    }
-
-    @Bean
     public Queue fileDeletionRecoverQueue() {
         return QueueBuilder.durable(FILE_DELETION_RECOVER_QUEUE_NAME).build();
-    }
-
-    @Bean
-    public Binding fileDeleteQueueBinding(
-        DirectExchange globalExchange,
-        Queue fileDeleteQueue
-    ) {
-        return BindingBuilder
-            .bind(fileDeleteQueue)
-            .to(globalExchange)
-            .with(FILE_DELETE_QUEUE_KEY);
     }
 
     @Bean

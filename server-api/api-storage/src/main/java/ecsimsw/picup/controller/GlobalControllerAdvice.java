@@ -1,6 +1,5 @@
 package ecsimsw.picup.controller;
 
-import ecsimsw.picup.alert.SlackMessageSender;
 import ecsimsw.picup.auth.UnauthorizedException;
 import ecsimsw.picup.exception.InvalidResourceException;
 import org.slf4j.Logger;
@@ -48,7 +47,6 @@ public class GlobalControllerAdvice {
     public ResponseEntity<String> unhandledException(Throwable e) {
         var alertMessage = "[UNHANDLED] : " + e.getMessage();
         LOGGER.error(alertMessage);
-        SlackMessageSender.send(alertMessage);
         return ResponseEntity.internalServerError().body("unhandled server exception");
     }
 }
