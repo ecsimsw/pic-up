@@ -22,10 +22,10 @@ public class ImageDeleteService {
         }
     }
 
-    public void deletePictures(Long userId, List<Long> pictureIds) {
+    public void deletePictures(Long userId, Long albumId, List<Long> pictureIds) {
         try {
             memberLock.acquire(userId);
-            pictureService.deleteAllByIds(userId, pictureIds);
+            pictureService.deleteAllByIds(userId, albumId, pictureIds);
         } finally {
             memberLock.release(userId);
         }

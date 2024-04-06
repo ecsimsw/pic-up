@@ -14,6 +14,8 @@ services:
     restart: always
     command:
       redis-server --save "" --appendonly no --databases 1 --maxmemory 256mb --maxmemory-policy allkeys-lru
+    # AOF, RDB : none
+    # database : only 1 namespace, default number of namespaces is 16
     deploy:
       resources:
         limits:

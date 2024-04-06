@@ -53,16 +53,17 @@ public class PictureController {
         Optional<LocalDateTime> cursorCreatedAt
     ) {
         var cursor = PictureSearchCursor.from(limit, cursorCreatedAt);
-        var pictureInfos = imageReadService.readPictures(loginUser.userId(), albumId, cursor);
+        var pictureInfos = imageReadService.pictures(loginUser.userId(), albumId, cursor);
         return ResponseEntity.ok(pictureInfos);
     }
 
     @DeleteMapping("/api/album/{albumId}/picture")
     public ResponseEntity<Void> deletePictures(
         @TokenPayload AuthTokenPayload loginUser,
+        @PathVariable Long albumId,
         @RequestBody(required = false) PicturesDeleteRequest pictures
     ) {
-        imageDeleteService.deletePictures(loginUser.userId(), pictures.pictureIds());
+        imageDeleteService.deletePictures(loginUser.userId(), albumId, pictures.pictureIds());
         return ResponseEntity.ok().build();
     }
 
@@ -72,7 +73,7 @@ public class PictureController {
         @PathVariable Long albumId,
         @PathVariable Long pictureId
     ) {
-        var imageFile = imageReadService.imageFile(loginUser.userId(), pictureId);
+        var imageFile = imageReadService.pictureImage(loginUser.userId(), pictureId);
         return ResponseEntity.ok()
             .cacheControl(CacheControl.maxAge(2, TimeUnit.HOURS))
             .body(imageFile.file());
@@ -84,7 +85,7 @@ public class PictureController {
         @PathVariable Long albumId,
         @PathVariable Long pictureId
     ) {
-        var thumbnailFile = imageReadService.thumbnailFile(loginUser.userId(), albumId, pictureId);
+        var thumbnailFile = imageReadService.pictureThumbnail(loginUser.userId(), pictureId);
         return ResponseEntity.ok()
             .cacheControl(CacheControl.maxAge(loginUser.userId(), TimeUnit.HOURS))
             .body(thumbnailFile.file());

@@ -43,7 +43,7 @@ public class AlbumController {
         @TokenPayload AuthTokenPayload loginUser,
         @PathVariable Long albumId
     ) {
-        var albumInfo = imageReadService.readAlbum(loginUser.userId(), albumId);
+        var albumInfo = imageReadService.album(loginUser.userId(), albumId);
         return ResponseEntity.ok(albumInfo);
     }
 
@@ -51,7 +51,7 @@ public class AlbumController {
     public ResponseEntity<List<AlbumInfoResponse>> getAlbums(
         @TokenPayload AuthTokenPayload loginUser
     ) {
-        var albums = imageReadService.readAlbums(loginUser.userId());
+        var albums = imageReadService.albums(loginUser.userId());
         return ResponseEntity.ok(albums);
     }
 
@@ -69,7 +69,7 @@ public class AlbumController {
       @TokenPayload AuthTokenPayload loginUser,
       @PathVariable Long albumId
     ) {
-        var thumbnailFile = imageReadService.thumbnailFile(loginUser.userId(), albumId);
+        var thumbnailFile = imageReadService.albumThumbnail(loginUser.userId(), albumId);
         return ResponseEntity.ok()
             .cacheControl(CacheControl.maxAge(2, TimeUnit.HOURS))
             .body(thumbnailFile.file());

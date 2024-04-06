@@ -1,5 +1,7 @@
 package ecsimsw.picup.config;
 
+import static ecsimsw.picup.config.CacheType.CACHE_ENTRY_TTL_HOURS;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.json.JsonMapper;
@@ -23,13 +25,11 @@ import java.time.Duration;
 @Configuration
 public class RedisDataCacheConfig {
 
-    private static final int CACHE_ENTRY_TTL_MIN = 5;
-
     @Bean
     public CacheManager redisCacheManager(RedisConnectionFactory redisConnectionFactory){
         var configuration = RedisCacheConfiguration.defaultCacheConfig()
             .disableCachingNullValues()
-            .entryTtl(Duration.ofMinutes(CACHE_ENTRY_TTL_MIN))
+            .entryTtl(Duration.ofHours(CACHE_ENTRY_TTL_HOURS))
             .computePrefixWith(CacheKeyPrefix.simple())
             .serializeKeysWith(RedisSerializationContext.SerializationPair.fromSerializer(
                 new StringRedisSerializer())
