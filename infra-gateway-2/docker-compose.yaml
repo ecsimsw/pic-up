@@ -8,7 +8,7 @@ services:
       - ./route-picup.conf:/etc/nginx/conf.d/route-picup.conf
       - ./static-blog/:/static-blog
       - ./static-picup/:/static-picup
-#      - /etc/letsencrypt:/etc/letsencrypt
+      - /etc/letsencrypt:/etc/letsencrypt
       - ~/dev/data/nginx:/var/log/nginx
     ports:
       - "80:80"
