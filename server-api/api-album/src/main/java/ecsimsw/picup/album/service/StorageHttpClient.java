@@ -1,14 +1,7 @@
 package ecsimsw.picup.album.service;
 
-import ecsimsw.picup.dto.FileReadResponse;
-import ecsimsw.picup.dto.ImageFileUploadRequest;
-import ecsimsw.picup.dto.ImageFileUploadResponse;
-import ecsimsw.picup.dto.VideoFileUploadRequest;
-import ecsimsw.picup.dto.VideoFileUploadResponse;
+import ecsimsw.picup.dto.*;
 import ecsimsw.picup.member.exception.InvalidStorageServerResponseException;
-import java.net.ConnectException;
-import java.util.Objects;
-import java.util.function.Supplier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
@@ -20,6 +13,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestTemplate;
+
+import java.net.ConnectException;
+import java.util.Objects;
 
 @Service
 public class StorageHttpClient {

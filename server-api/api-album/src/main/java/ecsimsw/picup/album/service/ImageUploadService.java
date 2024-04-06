@@ -20,12 +20,13 @@ public class ImageUploadService {
     private final AlbumService albumService;
 
     public AlbumInfoResponse initAlbum(Long userId, String name, MultipartFile file) {
-        var thumbnailFile = fileService.uploadImage(PictureFile.resizedOf(file, 0.5f));
+        var thumbnail = PictureFile.resizedOf(file, 0.5f);
+        var uploadedImage = fileService.uploadImage(thumbnail);
         try {
             memberLock.acquire(userId);
-            return albumService.create(userId, name, thumbnailFile);
+            return albumService.create(userId, name, uploadedImage);
         } catch (Exception e) {
-            fileService.deleteAsync(thumbnailFile.resourceKey());
+            fileService.deleteAsync(uploadedImage.resourceKey());
             throw e;
         } finally {
             memberLock.release(userId);

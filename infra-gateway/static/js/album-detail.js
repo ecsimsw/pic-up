@@ -153,7 +153,7 @@ function addGalleryImage(src, thumb) {
 }
 
 function addVideo(itemId, picture) {
-    const pictureItem = document.getElementById(itemId).addEventListener("click", function(event) {
+    document.getElementById(itemId).addEventListener("click", function(event) {
         document.getElementById("video-popup").style.display = "flex";
         var div = document.createElement("div");
         div.id = "my-video-content"
@@ -176,7 +176,7 @@ function addVideo(itemId, picture) {
             elementById.removeChild(elementById.lastChild);
         }
         elementById.append(div)
-    })
+    });
 }
 
 function initEditButton() {
@@ -283,11 +283,6 @@ function addEditViewer(albumArticleId) {
         deletedImageIds.push(pictureId)
         articleElement.style.display = 'none'
     })
-}
-
-function removeEditViewer(albumArticleId) {
-    const articleElement = document.getElementById(albumArticleId);
-    articleElement.replaceWith(articleElement.cloneNode(true));
 }
 
 function initLightGallery(articleElement, orderNumber) {
