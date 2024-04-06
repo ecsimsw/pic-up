@@ -3,7 +3,6 @@ package ecsimsw.picup.album.controller;
 import ecsimsw.picup.album.exception.AlbumException;
 import ecsimsw.picup.member.exception.InvalidStorageServerResponseException;
 import ecsimsw.picup.album.exception.UnsupportedFileTypeException;
-import ecsimsw.picup.alert.SlackMessageSender;
 import ecsimsw.picup.auth.UnauthorizedException;
 import ecsimsw.picup.album.exception.FileStorageConnectionDownException;
 import ecsimsw.picup.mq.exception.MessageBrokerDownException;
@@ -59,7 +58,6 @@ public class AlbumControllerAdvice {
     public ResponseEntity<String> messageBrokerDownException(IllegalArgumentException e) {
         var alertMessage = "[MESSAGE_BROKER_CONNECTION] : " + e.getMessage();
         LOGGER.error(alertMessage + "\n" + e.getCause());
-        SlackMessageSender.send(alertMessage);
         return ResponseEntity.internalServerError().body("unhandled server exception");
     }
 
@@ -67,7 +65,6 @@ public class AlbumControllerAdvice {
     public ResponseEntity<String> storageUploadFailedException(IllegalArgumentException e) {
         var alertMessage = "[STORAGE_SERVER_CONNECTION] : " + e.getMessage();
         LOGGER.error(alertMessage + "\n" + e.getCause());
-        SlackMessageSender.send(alertMessage);
         return ResponseEntity.internalServerError().body("unhandled server exception");
     }
 
@@ -76,7 +73,6 @@ public class AlbumControllerAdvice {
         e.printStackTrace();
         var alertMessage = "[UNHANDLED] : " + e.getMessage();
         LOGGER.error(alertMessage + "\n" + e.getCause());
-        SlackMessageSender.send(alertMessage);
         return ResponseEntity.internalServerError().body("unhandled server exception");
     }
 }
