@@ -1,0 +1,82 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <title>PICUP</title>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no"/>
+    <link rel="stylesheet" href="/static-picup/assets/main.css"/>
+    <link rel="stylesheet" href="/static-picup/css/album-list.css"/>
+    <noscript>
+        <link rel="stylesheet" href="/static-picup/assets/noscript.css"/>
+    </noscript>
+    <script src="http://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src ="https://code.jquery.com/ui/1.10.4/jquery-ui.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/lightgallery.js@1.4.0/dist/js/lightgallery.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/lightgallery.js@1.4.0/dist/css/lightgallery.min.css" rel="stylesheet">
+</head>
+<body class="is-preload">
+
+<!-- Wrapper -->
+<div id="wrapper">
+
+    <!-- Header -->
+    <header id="header">
+        <h1>
+            <strong id="logo"></strong>
+        </h1>
+        <nav>
+            <ul>
+                <li><button href="#footer" id="create-btn" class="icon solid fa-info-circle">생성</button></li>
+            </ul>
+        </nav>
+    </header>
+
+    <!-- album-main -->
+    <div id="album-main">
+
+    </div>
+
+    <!-- Footer -->
+    <footer id="footer" class="panel">
+        <div class="inner split" style="text-align: center; justify-content: center;">
+            <div>
+                <section>
+                    <h2>새로운 앨범 등록</h2>
+                    <form id="createAlbumForm"
+                          method="post"
+                          enctype="multipart/form-data"
+                    >
+                        <div class="fields">
+                            <div class="field">
+                                <input type="text" name="name" id="name" placeholder="이름" style="color: white"/>
+                            </div>
+                            <div class="field">
+                                <input type="text" placeholder="썸네일 이미지" id="imageBoxText" readonly style="color: white">
+                                <label class="custom-file-upload" for="imageBoxButton" id="imageBox">파일</label>
+                                <input type="file" name="thumbnail" id="imageBoxButton">
+                            </div>
+                        </div>
+                        <ul class="actions">
+                            <li style="width: 100%;">
+                                <input type="submit" value="등록" class="primary" style="width: 100%; background-color: dimgray"/>
+                            </li>
+                        </ul>
+                    </form>
+                </section>
+            </div>
+        </div>
+    </footer>
+
+</div>
+
+
+<!-- Scripts -->
+<script src="/static-picup/assets/browser.min.js"></script>
+<script src="/static-picup/assets/breakpoints.min.js"></script>
+<script src="/static-picup/assets/main.js"></script>
+<script src="/static-picup/js/album-list.js"></script>
+</body>
+</html>
+
+
+

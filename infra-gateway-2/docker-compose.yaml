@@ -1,0 +1,30 @@
+version: '3'
+services:
+  gateway-nginx:
+    image: nginx
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf
+      - ./route-blog.conf:/etc/nginx/conf.d/route-blog.conf
+      - ./route-picup.conf:/etc/nginx/conf.d/route-picup.conf
+      - ./static-blog/:/static-blog
+      - ./static-picup/:/static-picup
+#      - /etc/letsencrypt:/etc/letsencrypt
+      - ~/dev/data/nginx:/var/log/nginx
+    ports:
+      - "80:80"
+      - "443:443"
+      - "8082:8082"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+  nginx-log-exporter:
+    image: ghcr.io/martin-helmich/prometheus-nginxlog-exporter/exporter:v1.11-amd64
+    volumes:
+      - ~/dev/data/nginx:/var/log/nginx
+      - ./exporter/prometheus-nginxlog-exporter.yaml:/config/prometheus-nginxlog-exporter.yaml
+    command:
+      - -config-file
+      - /config/prometheus-nginxlog-exporter.yaml
+    ports:
+      - "4040:4040"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
