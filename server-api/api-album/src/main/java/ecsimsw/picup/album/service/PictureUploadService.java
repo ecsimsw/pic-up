@@ -3,7 +3,7 @@ package ecsimsw.picup.album.service;
 import ecsimsw.picup.album.domain.PictureFile;
 import ecsimsw.picup.album.domain.PictureFileExtension;
 import ecsimsw.picup.album.dto.PictureInfoResponse;
-import ecsimsw.picup.album.utils.DistributedLock;
+import ecsimsw.picup.album.utils.UserLock;
 import ecsimsw.picup.dto.ImageFileUploadResponse;
 import ecsimsw.picup.dto.VideoFileUploadResponse;
 import lombok.RequiredArgsConstructor;
@@ -14,7 +14,7 @@ import org.springframework.web.multipart.MultipartFile;
 @Service
 public class PictureUploadService {
 
-    private final DistributedLock memberLock;
+    private final UserLock userLock;
     private final FileService fileService;
     private final PictureService pictureService;
 
@@ -30,27 +30,27 @@ public class PictureUploadService {
 
     public PictureInfoResponse uploadImage(Long userId, Long albumId, ImageFileUploadResponse imageFile, ImageFileUploadResponse thumbnailFile) {
         try {
-            memberLock.acquire(userId);
+            userLock.acquire(userId);
             return pictureService.createImage(userId, albumId, imageFile, thumbnailFile);
         } catch (Exception e) {
             fileService.deleteAsync(imageFile.resourceKey());
             fileService.deleteAsync(thumbnailFile.resourceKey());
             throw e;
         } finally {
-            memberLock.release(userId);
+            userLock.release(userId);
         }
     }
 
     public PictureInfoResponse uploadVideo(Long userId, Long albumId, VideoFileUploadResponse videoFile) {
         try {
-            memberLock.acquire(userId);
+            userLock.acquire(userId);
             return pictureService.createVideo(userId, albumId, videoFile);
         } catch (Exception e) {
             fileService.deleteAsync(videoFile.resourceKey());
             fileService.deleteAsync(videoFile.thumbnailResourceKey());
             throw e;
         } finally {
-            memberLock.release(userId);
+            userLock.release(userId);
         }
     }
 }

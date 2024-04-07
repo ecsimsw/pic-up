@@ -8,9 +8,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 @Component
-public class DistributedLock {
+public class UserLock {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(DistributedLock.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(UserLock.class);
 
     private static final int HASH_USER_ID_MOD = 100;
     private static final String LOCK_KEY_PREFIX = "STORAGE_USAGE_LOCK_";
@@ -20,7 +20,7 @@ public class DistributedLock {
 
     private final RedissonClient redissonClient;
 
-    public DistributedLock(RedissonClient redissonClient) {
+    public UserLock(RedissonClient redissonClient) {
         this.redissonClient = redissonClient;
     }
 

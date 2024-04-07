@@ -9,6 +9,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.TestPropertySource;
 
 import static ecsimsw.picup.env.AlbumFixture.ALBUM_NAME;
 import static ecsimsw.picup.env.AlbumFixture.IMAGE_FILE;

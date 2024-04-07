@@ -20,6 +20,8 @@ import java.util.Objects;
 @Service
 public class StorageHttpClient {
 
+    public static final int RETRY_COUNT_STORAGE_SERVER_DOWN = 2;
+
     private final String storageServerUrl;
     private final RestTemplate restTemplate;
     private final String storageAuthKey;
@@ -37,7 +39,10 @@ public class StorageHttpClient {
         this.restTemplate = restTemplate;
     }
 
-    @Retryable(maxAttempts = 2, value = {ConnectException.class, ResourceAccessException.class})
+    @Retryable(
+        maxAttempts = RETRY_COUNT_STORAGE_SERVER_DOWN,
+        value = {ConnectException.class, ResourceAccessException.class}
+    )
     public ImageFileUploadResponse requestUploadImage(ImageFileUploadRequest request) {
         try {
             var response = restTemplate.exchange(
@@ -48,12 +53,15 @@ public class StorageHttpClient {
                 });
             Objects.requireNonNull(response.getBody());
             return response.getBody();
-        } catch (HttpStatusCodeException e) {
-            throw new InvalidStorageServerResponseException("Failed to upload resources.\nStorage server is on, but invalid response status.", e);
+        } catch (HttpStatusCodeException | NullPointerException e) {
+            throw new InvalidStorageServerResponseException("Failed to upload resources.\nStorage server is on, but invalid response status.");
         }
     }
 
-    @Retryable(maxAttempts = 2, value = {ConnectException.class, ResourceAccessException.class})
+    @Retryable(
+        maxAttempts = RETRY_COUNT_STORAGE_SERVER_DOWN,
+        value = {ConnectException.class, ResourceAccessException.class}
+    )
     public VideoFileUploadResponse requestUploadVideo(VideoFileUploadRequest request) {
         try {
             var response = restTemplate.exchange(
@@ -64,12 +72,15 @@ public class StorageHttpClient {
                 });
             Objects.requireNonNull(response.getBody());
             return response.getBody();
-        } catch (HttpStatusCodeException e) {
-            throw new InvalidStorageServerResponseException("Failed to upload resources.\nStorage server is on, but invalid response status.", e);
+        } catch (HttpStatusCodeException | NullPointerException e) {
+            throw new InvalidStorageServerResponseException("Failed to upload resources.\nStorage server is on, but invalid response status.");
         }
     }
 
-    @Retryable(maxAttempts = 2, value = {ConnectException.class, ResourceAccessException.class})
+    @Retryable(
+        maxAttempts = RETRY_COUNT_STORAGE_SERVER_DOWN,
+        value = {ConnectException.class, ResourceAccessException.class}
+    )
     public FileReadResponse requestReadFile(String resourceKey) {
         try {
             var response = restTemplate.exchange(
@@ -80,8 +91,8 @@ public class StorageHttpClient {
                 });
             Objects.requireNonNull(response.getBody());
             return response.getBody();
-        } catch (HttpStatusCodeException e) {
-            throw new InvalidStorageServerResponseException("Failed to read resources.\nStorage server is on, but invalid response status.", e);
+        } catch (HttpStatusCodeException | NullPointerException e) {
+            throw new InvalidStorageServerResponseException("Failed to read resources.\nStorage server is on, but invalid response status.");
         }
     }
 

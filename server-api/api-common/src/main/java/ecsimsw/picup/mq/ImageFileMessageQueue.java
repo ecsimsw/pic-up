@@ -28,9 +28,8 @@ public class ImageFileMessageQueue {
 
     @Retryable(
         label = "Retry when message server is down",
-        maxAttemptsExpression = "${mq.server.connection.retry.cnt}",
+        maxAttempts = RabbitMQConfig.CONNECTION_RETRY_COUNT,
         value = AmqpConnectException.class,
-        backoff = @Backoff(delayExpression = "${mq.server.connection.retry.delay.time.ms}"),
         recover = "recoverOfferDeleteAllRequest"
     )
     public void offerDeleteAllRequest(List<String> resources) {

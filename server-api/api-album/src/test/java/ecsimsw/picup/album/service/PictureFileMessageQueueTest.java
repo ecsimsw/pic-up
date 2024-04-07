@@ -1,6 +1,7 @@
 package ecsimsw.picup.album.service;
 
 import ecsimsw.picup.mq.ImageFileMessageQueue;
+import ecsimsw.picup.mq.RabbitMQConfig;
 import ecsimsw.picup.mq.exception.MessageBrokerDownException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -43,9 +44,7 @@ class PictureFileMessageQueueTest {
 
     @DisplayName("message queue 와의 연결에 실패하는 경우 지정된 횟수만큼 재시도한다.")
     @Test
-    void retryInvalidStorageSeverDown(
-        @Value("${mq.server.connection.retry.cnt}") int retryCount
-    ) {
+    void retryInvalidStorageSeverDown() {
         doThrow(AmqpConnectException.class)
             .when(rabbitTemplate).convertAndSend(anyString(), any(Object.class));
 
@@ -53,7 +52,7 @@ class PictureFileMessageQueueTest {
             () -> imageFileMessageQueue.offerDeleteAllRequest(RESOURCES)
         ).isInstanceOf(MessageBrokerDownException.class);
 
-        verify(rabbitTemplate, times(retryCount))
+        verify(rabbitTemplate, times(RabbitMQConfig.CONNECTION_RETRY_COUNT))
             .convertAndSend(queue.getName(), RESOURCES);
     }
 

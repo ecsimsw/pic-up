@@ -18,6 +18,8 @@ public class RabbitMQConfig {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(RabbitMQConfig.class);
 
+    public static final int CONNECTION_RETRY_COUNT = 2;
+
     @Bean
     public RabbitTemplate rabbitTemplate(
         ConnectionFactory connectionFactory

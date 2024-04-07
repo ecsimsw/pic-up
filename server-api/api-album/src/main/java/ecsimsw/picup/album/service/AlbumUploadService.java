@@ -2,7 +2,7 @@ package ecsimsw.picup.album.service;
 
 import ecsimsw.picup.album.domain.PictureFile;
 import ecsimsw.picup.album.dto.AlbumInfoResponse;
-import ecsimsw.picup.album.utils.DistributedLock;
+import ecsimsw.picup.album.utils.UserLock;
 import ecsimsw.picup.dto.ImageFileUploadResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -12,7 +12,6 @@ import org.springframework.web.multipart.MultipartFile;
 @Service
 public class AlbumUploadService {
 
-    private final DistributedLock memberLock;
     private final FileService fileService;
     private final AlbumService albumService;
 
@@ -23,14 +22,6 @@ public class AlbumUploadService {
     }
 
     private AlbumInfoResponse createAlbum(Long userId, String name, ImageFileUploadResponse uploadedImage) {
-        try {
-            memberLock.acquire(userId);
-            return albumService.create(userId, name, uploadedImage);
-        } catch (Exception e) {
-            fileService.deleteAsync(uploadedImage.resourceKey());
-            throw e;
-        } finally {
-            memberLock.release(userId);
-        }
+        return albumService.create(userId, name, uploadedImage);
     }
 }

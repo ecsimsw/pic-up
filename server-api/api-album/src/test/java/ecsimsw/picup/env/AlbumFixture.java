@@ -34,4 +34,9 @@ public class AlbumFixture {
 
     public static ImageFileUploadResponse IMAGE_FILE = new ImageFileUploadResponse("name.png", 1L);
 
+    public static final MultipartFile MULTIPART_FILE = new MockMultipartFile("name", "name.png", "png", "Image binary file for test".getBytes());
+
+    public static MultipartFile MULTIPART_FILE(String fileName) {
+        return new MockMultipartFile(fileName, fileName, "png", "Image binary file for test".getBytes());
+    }
 }
