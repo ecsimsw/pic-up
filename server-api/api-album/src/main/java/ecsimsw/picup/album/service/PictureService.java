@@ -57,6 +57,7 @@ public class PictureService {
     @CacheEvict(value = FIRST_10_PIC_IN_ALBUM, key = "{#userId, #albumId}")
     @Transactional
     public void deleteAll(Long userId, Long albumId, List<Picture> pictures) {
+        validateAlbumOwner(userId, albumId);
         pictures.forEach(picture -> {
             picture.checkSameUser(userId);
             fileService.createDeletionEvent(new FileDeletionEvent(userId, picture.getResourceKey()));
@@ -102,5 +103,10 @@ public class PictureService {
     private Album getUserAlbum(Long userId, Long albumId) {
         return albumRepository.findByIdAndUserId(albumId, userId)
             .orElseThrow(() -> new UnauthorizedException("Invalid album"));
+    }
+
+    private void validateAlbumOwner(Long userId, Long albumId) {
+        var album = getUserAlbum(userId, albumId);
+        album.authorize(userId);
     }
 }

@@ -5,6 +5,7 @@ import ecsimsw.picup.album.domain.AlbumRepository;
 import ecsimsw.picup.album.domain.FileDeletionEvent;
 import ecsimsw.picup.album.dto.AlbumInfoResponse;
 import ecsimsw.picup.album.exception.AlbumException;
+import ecsimsw.picup.auth.UnauthorizedException;
 import ecsimsw.picup.dto.ImageFileUploadResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
@@ -50,6 +51,6 @@ public class AlbumService {
 
     public Album getUserAlbum(Long userId, Long albumId) {
         return albumRepository.findByIdAndUserId(albumId, userId)
-            .orElseThrow(() -> new AlbumException("Invalid album"));
+            .orElseThrow(() -> new UnauthorizedException("Not an accessible album from user"));
     }
 }

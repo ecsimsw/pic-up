@@ -14,6 +14,8 @@ import org.springframework.web.multipart.MultipartFile;
 @Service
 public class PictureUploadService {
 
+    private static final float PICTURE_THUMBNAIL_SCALE = 0.3f;
+
     private final UserLock userLock;
     private final FileService fileService;
     private final PictureService pictureService;
@@ -24,7 +26,7 @@ public class PictureUploadService {
             return uploadVideo(userId, albumId, uploadedVideo);
         }
         var imageFile = fileService.uploadImage(PictureFile.of(file));
-        var thumbnailFile = fileService.uploadImage(PictureFile.resizedOf(file, 0.3f));
+        var thumbnailFile = fileService.uploadImage(PictureFile.resizedOf(file, PICTURE_THUMBNAIL_SCALE));
         return uploadImage(userId, albumId, imageFile, thumbnailFile);
     }
 

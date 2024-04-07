@@ -17,7 +17,7 @@ import static ecsimsw.picup.utils.ConcurrentJobTestUtils.concurrentJob;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
-public class StorageUsageConcurrentTest {
+public class UserLockConcurrentTest {
 
     @Autowired
     private PictureUploadService pictureUploadService;

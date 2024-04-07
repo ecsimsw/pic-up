@@ -30,11 +30,6 @@ public class AlbumControllerAdvice {
         return ResponseEntity.badRequest().body(e.getMessage());
     }
 
-    @ExceptionHandler(ObjectOptimisticLockingFailureException.class)
-    public ResponseEntity<String> raceConditionException(ObjectOptimisticLockingFailureException e) {
-        return ResponseEntity.badRequest().body("Too many requests at the same time");
-    }
-
     @ExceptionHandler(MaxUploadSizeExceededException.class)
     public ResponseEntity<String> fileSizeException(MaxUploadSizeExceededException e) {
         LOGGER.info(e.getMessage());

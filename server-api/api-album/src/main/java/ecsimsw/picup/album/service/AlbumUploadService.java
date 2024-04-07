@@ -12,11 +12,13 @@ import org.springframework.web.multipart.MultipartFile;
 @Service
 public class AlbumUploadService {
 
+    private static final float ALBUM_THUMBNAIL_SCALE = 0.5f;
+
     private final FileService fileService;
     private final AlbumService albumService;
 
     public AlbumInfoResponse initAlbum(Long userId, String name, MultipartFile file) {
-        var thumbnail = PictureFile.resizedOf(file, 0.5f);
+        var thumbnail = PictureFile.resizedOf(file, ALBUM_THUMBNAIL_SCALE);
         var uploadedImage = fileService.uploadImage(thumbnail);
         return createAlbum(userId, name, uploadedImage);
     }

@@ -8,6 +8,7 @@ import java.util.concurrent.TimeUnit;
 
 import ecsimsw.picup.auth.TokenPayload;
 import lombok.RequiredArgsConstructor;
+import org.apache.tomcat.util.net.openssl.OpenSSLUtil;
 import org.springframework.http.CacheControl;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;

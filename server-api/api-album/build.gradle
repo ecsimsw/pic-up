@@ -23,6 +23,8 @@ dependencies {
     // monitoring
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
     implementation 'io.micrometer:micrometer-registry-prometheus'
+
+    implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.8.8'
 }
 
 test {
