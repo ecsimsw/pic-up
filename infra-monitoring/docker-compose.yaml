@@ -1,0 +1,24 @@
+version: '3'
+services:
+  ecsimsw-grafana:
+    image: grafana/grafana:10.2.2
+    ports:
+      - 3000:3000
+    volumes:
+      - ~/dev/data/grafana:/var/lib/grafana
+    restart: always
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+  ecsimsw-prometheus:
+    image: prom/prometheus:v2.48.0
+    volumes:
+      - ./prometheus:/etc/prometheus
+      - ~/dev/data/prometheus:/prometheus
+    ports:
+      - 9090:9090
+    command:
+      - '--web.enable-lifecycle'
+      - '--config.file=/etc/prometheus/prometheus.yaml'
+    restart: always
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
