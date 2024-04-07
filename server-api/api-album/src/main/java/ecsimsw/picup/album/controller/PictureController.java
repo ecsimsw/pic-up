@@ -3,9 +3,9 @@ package ecsimsw.picup.album.controller;
 import ecsimsw.picup.album.dto.PictureInfoResponse;
 import ecsimsw.picup.album.dto.PictureSearchCursor;
 import ecsimsw.picup.album.dto.PicturesDeleteRequest;
-import ecsimsw.picup.album.service.ImageDeleteService;
-import ecsimsw.picup.album.service.ImageReadService;
-import ecsimsw.picup.album.service.ImageUploadService;
+import ecsimsw.picup.album.service.PictureDeleteService;
+import ecsimsw.picup.album.service.PictureReadService;
+import ecsimsw.picup.album.service.PictureUploadService;
 import ecsimsw.picup.auth.AuthTokenPayload;
 import ecsimsw.picup.auth.TokenPayload;
 import java.time.LocalDateTime;
@@ -30,9 +30,9 @@ import org.springframework.web.multipart.MultipartFile;
 @RestController
 public class PictureController {
 
-    private final ImageUploadService imageUploadService;
-    private final ImageDeleteService imageDeleteService;
-    private final ImageReadService imageReadService;
+    private final PictureUploadService pictureUploadService;
+    private final PictureDeleteService pictureDeleteService;
+    private final PictureReadService pictureReadService;
 
     @PostMapping("/api/album/{albumId}/picture")
     public ResponseEntity<PictureInfoResponse> createPicture(
@@ -40,7 +40,7 @@ public class PictureController {
         @PathVariable Long albumId,
         @RequestPart MultipartFile file
     ) {
-        var response = imageUploadService.uploadPicture(loginUser.userId(), albumId, file);
+        var response = pictureUploadService.upload(loginUser.userId(), albumId, file);
         return ResponseEntity.ok(response);
     }
 
@@ -53,7 +53,7 @@ public class PictureController {
         Optional<LocalDateTime> cursorCreatedAt
     ) {
         var cursor = PictureSearchCursor.from(limit, cursorCreatedAt);
-        var pictureInfos = imageReadService.pictures(loginUser.userId(), albumId, cursor);
+        var pictureInfos = pictureReadService.pictures(loginUser.userId(), albumId, cursor);
         return ResponseEntity.ok(pictureInfos);
     }
 
@@ -63,7 +63,7 @@ public class PictureController {
         @PathVariable Long albumId,
         @RequestBody(required = false) PicturesDeleteRequest pictures
     ) {
-        imageDeleteService.deletePictures(loginUser.userId(), albumId, pictures.pictureIds());
+        pictureDeleteService.deletePictures(loginUser.userId(), albumId, pictures.pictureIds());
         return ResponseEntity.ok().build();
     }
 
@@ -73,7 +73,7 @@ public class PictureController {
         @PathVariable Long albumId,
         @PathVariable Long pictureId
     ) {
-        var imageFile = imageReadService.pictureImage(loginUser.userId(), pictureId);
+        var imageFile = pictureReadService.pictureImage(loginUser.userId(), pictureId);
         return ResponseEntity.ok()
             .cacheControl(CacheControl.maxAge(2, TimeUnit.HOURS))
             .body(imageFile.file());
@@ -85,7 +85,7 @@ public class PictureController {
         @PathVariable Long albumId,
         @PathVariable Long pictureId
     ) {
-        var thumbnailFile = imageReadService.pictureThumbnail(loginUser.userId(), pictureId);
+        var thumbnailFile = pictureReadService.pictureThumbnail(loginUser.userId(), pictureId);
         return ResponseEntity.ok()
             .cacheControl(CacheControl.maxAge(loginUser.userId(), TimeUnit.HOURS))
             .body(thumbnailFile.file());

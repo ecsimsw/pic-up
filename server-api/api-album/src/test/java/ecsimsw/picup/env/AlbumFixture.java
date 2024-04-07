@@ -4,6 +4,7 @@ import static ecsimsw.picup.env.MemberFixture.MEMBER_ID;
 
 import ecsimsw.picup.album.domain.Album;
 import ecsimsw.picup.album.domain.Picture;
+import ecsimsw.picup.dto.ImageFileUploadResponse;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -27,9 +28,17 @@ public class AlbumFixture {
         return new Album(MEMBER_ID, ALBUM_NAME, RESOURCE_KEY, SIZE);
     }
 
+    public static Album ALBUM(Long userId) {
+        return new Album(userId, ALBUM_NAME, RESOURCE_KEY, SIZE);
+    }
+
+    public static ImageFileUploadResponse IMAGE_FILE() {
+        return new ImageFileUploadResponse("name.png", 1L);
+    }
+
     public static final MultipartFile MULTIPART_FILE = new MockMultipartFile("name", "name.png", "png", "Image binary file for test".getBytes());
 
-    public static MultipartFile mockMultipartFile(String fileName) {
+    public static MultipartFile MULTIPART_FILE(String fileName) {
         return new MockMultipartFile(fileName, fileName, "png", "Image binary file for test".getBytes());
     }
 }

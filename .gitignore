@@ -3,6 +3,9 @@ storage
 storage-backup
 properties.sh
 
+server-api/api-album/src/main/java/ecsimsw/picup/PicUpAlbumApplication.java
+server-api/api-storage/src/main/java/ecsimsw/picup/PicUpStorageApplication.java
+
 # User-specific stuff
 .idea
 .idea/**/workspace.xml

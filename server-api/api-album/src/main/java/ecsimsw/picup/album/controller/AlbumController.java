@@ -1,9 +1,7 @@
 package ecsimsw.picup.album.controller;
 
 import ecsimsw.picup.album.dto.AlbumInfoResponse;
-import ecsimsw.picup.album.service.ImageDeleteService;
-import ecsimsw.picup.album.service.ImageReadService;
-import ecsimsw.picup.album.service.ImageUploadService;
+import ecsimsw.picup.album.service.*;
 import ecsimsw.picup.auth.AuthTokenPayload;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -24,9 +22,9 @@ import org.springframework.web.multipart.MultipartFile;
 @RestController
 public class AlbumController {
 
-    private final ImageUploadService imageUploadService;
-    private final ImageDeleteService imageDeleteService;
-    private final ImageReadService imageReadService;
+    private final AlbumUploadService albumUploadService;
+    private final AlbumReadService albumReadService;
+    private final AlbumDeleteService albumDeleteService;
 
     @PostMapping("/api/album")
     public ResponseEntity<AlbumInfoResponse> createAlbum(
@@ -34,7 +32,7 @@ public class AlbumController {
         @RequestParam MultipartFile thumbnail,
         @RequestParam String name
     ) {
-        var albumInfo = imageUploadService.initAlbum(loginUser.userId(), name, thumbnail);
+        var albumInfo = albumUploadService.initAlbum(loginUser.userId(), name, thumbnail);
         return ResponseEntity.ok(albumInfo);
     }
 
@@ -43,7 +41,7 @@ public class AlbumController {
         @TokenPayload AuthTokenPayload loginUser,
         @PathVariable Long albumId
     ) {
-        var albumInfo = imageReadService.album(loginUser.userId(), albumId);
+        var albumInfo = albumReadService.album(loginUser.userId(), albumId);
         return ResponseEntity.ok(albumInfo);
     }
 
@@ -51,7 +49,7 @@ public class AlbumController {
     public ResponseEntity<List<AlbumInfoResponse>> getAlbums(
         @TokenPayload AuthTokenPayload loginUser
     ) {
-        var albums = imageReadService.albums(loginUser.userId());
+        var albums = albumReadService.albums(loginUser.userId());
         return ResponseEntity.ok(albums);
     }
 
@@ -60,7 +58,7 @@ public class AlbumController {
         @TokenPayload AuthTokenPayload loginUser,
         @PathVariable Long albumId
     ) {
-        imageDeleteService.deleteAlbum(loginUser.userId(), albumId);
+        albumDeleteService.deleteAlbum(loginUser.userId(), albumId);
         return ResponseEntity.ok().build();
     }
 
@@ -69,7 +67,7 @@ public class AlbumController {
       @TokenPayload AuthTokenPayload loginUser,
       @PathVariable Long albumId
     ) {
-        var thumbnailFile = imageReadService.albumThumbnail(loginUser.userId(), albumId);
+        var thumbnailFile = albumReadService.albumThumbnail(loginUser.userId(), albumId);
         return ResponseEntity.ok()
             .cacheControl(CacheControl.maxAge(2, TimeUnit.HOURS))
             .body(thumbnailFile.file());

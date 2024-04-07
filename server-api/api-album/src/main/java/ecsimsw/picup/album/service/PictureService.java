@@ -36,7 +36,7 @@ public class PictureService {
 
     @CacheEvict(value = FIRST_10_PIC_IN_ALBUM, key = "{#userId, #albumId}")
     @Transactional
-    public PictureInfoResponse create(Long userId, Long albumId, ImageFileUploadResponse imageFile, ImageFileUploadResponse thumbnailFile) {
+    public PictureInfoResponse createImage(Long userId, Long albumId, ImageFileUploadResponse imageFile, ImageFileUploadResponse thumbnailFile) {
         var album = getUserAlbum(userId, albumId);
         var picture = new Picture(album, imageFile.resourceKey(), thumbnailFile.resourceKey(), imageFile.size());
         pictureRepository.save(picture);
@@ -46,7 +46,7 @@ public class PictureService {
 
     @CacheEvict(value = FIRST_10_PIC_IN_ALBUM, key = "{#userId, #albumId}")
     @Transactional
-    public PictureInfoResponse create(Long userId, Long albumId, VideoFileUploadResponse videoFile) {
+    public PictureInfoResponse createVideo(Long userId, Long albumId, VideoFileUploadResponse videoFile) {
         var album = getUserAlbum(userId, albumId);
         var picture = new Picture(album, videoFile.resourceKey(), videoFile.thumbnailResourceKey(), videoFile.size());
         pictureRepository.save(picture);

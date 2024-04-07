@@ -1,10 +1,11 @@
 package ecsimsw.picup.album.utils;
 
 import ecsimsw.picup.ecrypt.AES256Utils;
-import javax.persistence.AttributeConverter;
-import javax.persistence.Converter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+
+import javax.persistence.AttributeConverter;
+import javax.persistence.Converter;
 
 @Component
 @Converter
@@ -14,7 +15,7 @@ public class AesStringConverter implements AttributeConverter<String, String> {
     private String aesKey;
 
     @Value("${data.aes.encryption.iv}")
-    private  String aesIv;
+    private String aesIv;
 
     @Override
     public String convertToDatabaseColumn(String origin) {

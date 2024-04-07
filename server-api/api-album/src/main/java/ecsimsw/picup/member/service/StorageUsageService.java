@@ -18,7 +18,7 @@ public class StorageUsageService {
     @Transactional(readOnly = true)
     public StorageUsage getUsage(Long userId) {
         return storageUsageRepository.findByUserId(userId)
-            .orElseThrow(() -> new AlbumException("Invalid member cursorId"));
+            .orElseThrow(() -> new AlbumException("Invalid memberId"));
     }
 
     @Transactional

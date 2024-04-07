@@ -7,20 +7,10 @@ import org.springframework.stereotype.Service;
 
 @RequiredArgsConstructor
 @Service
-public class ImageDeleteService {
+public class PictureDeleteService {
 
     private final DistributedLock memberLock;
     private final PictureService pictureService;
-    private final AlbumService albumService;
-
-    public void deleteAlbum(Long userId, Long albumId) {
-        try {
-            memberLock.acquire(userId);
-            albumService.delete(userId, albumId);
-        } finally {
-            memberLock.release(userId);
-        }
-    }
 
     public void deletePictures(Long userId, Long albumId, List<Long> pictureIds) {
         try {
