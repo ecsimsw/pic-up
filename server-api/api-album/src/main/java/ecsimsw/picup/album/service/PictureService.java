@@ -40,7 +40,7 @@ public class PictureService {
         var album = getUserAlbum(userId, albumId);
         var picture = new Picture(album, imageFile.resourceKey(), thumbnailFile.resourceKey(), imageFile.size());
         pictureRepository.save(picture);
-        storageUsageService.addUsage(userId, picture.getFileSize());
+        storageUsageService.addUsage(userId, picture);
         return PictureInfoResponse.of(picture);
     }
 
@@ -50,7 +50,7 @@ public class PictureService {
         var album = getUserAlbum(userId, albumId);
         var picture = new Picture(album, videoFile.resourceKey(), videoFile.thumbnailResourceKey(), videoFile.size());
         pictureRepository.save(picture);
-        storageUsageService.addUsage(userId, picture.getFileSize());
+        storageUsageService.addUsage(userId, picture);
         return PictureInfoResponse.of(picture);
     }
 

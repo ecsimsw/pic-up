@@ -22,6 +22,11 @@ public class StorageUsageService {
     }
 
     @Transactional
+    public void addUsage(Long userId, Picture picture) {
+        addUsage(userId, picture.getFileSize());
+    }
+
+    @Transactional
     public void addUsage(Long userId, long fileSize) {
         var storageUsage = getUsage(userId);
         storageUsage.add(fileSize);

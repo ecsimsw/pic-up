@@ -11,4 +11,8 @@ public record PictureSearchCursor(
     public static PictureSearchCursor from(int limit, Optional<LocalDateTime> createdAt) {
         return new PictureSearchCursor(limit, createdAt);
     }
+
+    public static PictureSearchCursor from(int limit, LocalDateTime createdAt) {
+        return new PictureSearchCursor(limit, Optional.of(createdAt));
+    }
 }

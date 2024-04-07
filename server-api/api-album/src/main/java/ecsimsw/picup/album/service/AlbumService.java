@@ -1,21 +1,20 @@
 package ecsimsw.picup.album.service;
 
-import static ecsimsw.picup.config.CacheType.ALBUM;
-import static ecsimsw.picup.config.CacheType.USER_ALBUMS;
-
 import ecsimsw.picup.album.domain.Album;
 import ecsimsw.picup.album.domain.AlbumRepository;
 import ecsimsw.picup.album.domain.FileDeletionEvent;
 import ecsimsw.picup.album.dto.AlbumInfoResponse;
 import ecsimsw.picup.album.exception.AlbumException;
 import ecsimsw.picup.dto.ImageFileUploadResponse;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+
+import static ecsimsw.picup.config.CacheType.USER_ALBUMS;
 
 @RequiredArgsConstructor
 @Service
@@ -40,10 +39,7 @@ public class AlbumService {
         return AlbumInfoResponse.of(album);
     }
 
-    @Caching(evict = {
-        @CacheEvict(value = USER_ALBUMS, key = "#userId"),
-        @CacheEvict(value = ALBUM, key = "{#userId, #albumId}")
-    })
+    @CacheEvict(value = USER_ALBUMS, key = "#userId")
     @Transactional
     public void delete(Long userId, Long albumId) {
         var album = getUserAlbum(userId, albumId);
@@ -52,7 +48,6 @@ public class AlbumService {
         albumRepository.delete(album);
     }
 
-    @CacheEvict(value = ALBUM, key = "{#userId, #albumId}")
     public Album getUserAlbum(Long userId, Long albumId) {
         return albumRepository.findByIdAndUserId(albumId, userId)
             .orElseThrow(() -> new AlbumException("Invalid album"));

@@ -2,7 +2,6 @@ package ecsimsw.picup.album.service;
 
 import ecsimsw.picup.album.domain.AlbumRepository;
 import ecsimsw.picup.album.exception.AlbumException;
-import ecsimsw.picup.auth.UnauthorizedException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -13,19 +12,22 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
-import java.util.List;
-
 import static ecsimsw.picup.env.AlbumFixture.ALBUM_NAME;
 import static ecsimsw.picup.env.AlbumFixture.IMAGE_FILE;
 import static ecsimsw.picup.env.MemberFixture.USER_ID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.verify;
 
 
 @ExtendWith(MockitoExtension.class)
 @DataJpaTest
 class AlbumServiceTest {
+
+    @Mock
+    private PictureService pictureService;
 
     private AlbumService albumService;
 
@@ -33,7 +35,6 @@ class AlbumServiceTest {
     public void init(
         @Autowired AlbumRepository albumRepository
     ) {
-        var pictureService = Mockito.mock(PictureService.class);
         var fileService = Mockito.mock(FileService.class);
         albumService = new AlbumService(pictureService, albumRepository, fileService);
     }
@@ -68,12 +69,21 @@ class AlbumServiceTest {
         assertThat(albumService.findAll(USER_ID)).isEmpty();
     }
 
+    @DisplayName("앨범에 포함된 Picture 정보가 모두 제거된다.")
+    @Test
+    void deleteAllPictures() {
+        var saved = albumService.create(USER_ID, ALBUM_NAME, IMAGE_FILE);
+        albumService.delete(USER_ID, saved.id());
+        verify(pictureService, atLeastOnce())
+            .deleteAllInAlbum(USER_ID, saved.id());
+    }
+
     @DisplayName("앨범 주인이 아닌 사용자는 앨범을 제거할 수 없다.")
     @Test
     void deleteWithInvalidUser() {
         var saved = albumService.create(USER_ID, ALBUM_NAME, IMAGE_FILE);
         assertThatThrownBy(
-            () -> albumService.delete(USER_ID+1, saved.id())
+            () -> albumService.delete(USER_ID + 1, saved.id())
         ).isInstanceOf(AlbumException.class);
     }
 
@@ -95,7 +105,7 @@ class AlbumServiceTest {
     void getUserAlbumWithInvalidUser() {
         var saved = albumService.create(USER_ID, ALBUM_NAME, IMAGE_FILE);
         assertThatThrownBy(
-            () -> albumService.getUserAlbum(USER_ID+1, saved.id())
+            () -> albumService.getUserAlbum(USER_ID + 1, saved.id())
         );
     }
 }
