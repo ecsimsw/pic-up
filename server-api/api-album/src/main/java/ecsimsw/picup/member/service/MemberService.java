@@ -16,8 +16,10 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class MemberService {
 
+    private static final Long DEFAULT_STORAGE_LIMIT_BYTE = Long.MAX_VALUE;
+
     private final MemberRepository memberRepository;
-    private final StorageUsageRepository storageUsageRepository;
+    private final StorageUsageService storageUsageService;
 
     @Transactional
     public MemberInfoResponse signIn(SignInRequest request) {
@@ -25,7 +27,7 @@ public class MemberService {
             var member = getMember(request.username());
             var requestPassword = encryptPassword(request.password(), member.getPassword().getSalt());
 //            member.authenticate(requestPassword);
-            var usage = getUsageByMember(member);
+            var usage = storageUsageService.getUsage(member.getId());
             return MemberInfoResponse.of(member, usage);
         } catch (Exception e) {
             throw new UnauthorizedException("Invalid login info");
@@ -40,14 +42,14 @@ public class MemberService {
         var password = encryptPassword(request.password());
         var member = new Member(request.username(), password);
         memberRepository.save(member);
-        var usage = storageUsageRepository.save(StorageUsage.init(member));
+        var usage = storageUsageService.init(member.getId(), DEFAULT_STORAGE_LIMIT_BYTE);
         return MemberInfoResponse.of(member, usage);
     }
 
     @Transactional(readOnly = true)
     public MemberInfoResponse me(String username) {
         var member = getMember(username);
-        var usage = getUsageByMember(member);
+        var usage = storageUsageService.getUsage(member.getId());
         return MemberInfoResponse.of(member, usage);
     }
 
@@ -68,10 +70,6 @@ public class MemberService {
 
     private Member getMember(String username) {
         return memberRepository.findByUsername(username)
-            .orElseThrow(() -> new LoginFailedException("Invalid login info"));
-    }
-
-    private StorageUsage getUsageByMember(Member member) {
-        return storageUsageRepository.findByUserId(member.getId()).orElseThrow(() -> new MemberException("Not exists member"));
+            .orElseThrow(() -> new MemberException("Invalid login info"));
     }
 }

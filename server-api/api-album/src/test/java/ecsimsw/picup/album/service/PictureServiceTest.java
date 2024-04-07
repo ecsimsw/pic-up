@@ -6,6 +6,7 @@ import ecsimsw.picup.album.domain.Picture;
 import ecsimsw.picup.album.domain.PictureRepository;
 import ecsimsw.picup.album.dto.PictureInfoResponse;
 import ecsimsw.picup.album.dto.PictureSearchCursor;
+import ecsimsw.picup.album.exception.AlbumException;
 import ecsimsw.picup.auth.UnauthorizedException;
 import ecsimsw.picup.member.service.StorageUsageService;
 import org.junit.jupiter.api.BeforeEach;
@@ -24,8 +25,7 @@ import static ecsimsw.picup.env.MemberFixture.USER_ID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
-import static org.mockito.Mockito.atLeastOnce;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 @DataJpaTest
@@ -78,6 +78,18 @@ class PictureServiceTest {
         );
     }
 
+    @DisplayName("사용자의 사용량 제한을 넘어 Picture 를 업로드 할 수 없다.")
+    @Test
+    void createOverTheStorageLimit() {
+        var album = albumRepository.save(new Album(USER_ID, ALBUM_NAME, RESOURCE_KEY, SIZE));
+        var uploadFileSize = IMAGE_FILE.size();
+        doThrow(AlbumException.class)
+            .when(storageUsageService).addUsage(USER_ID, uploadFileSize);
+        assertThatThrownBy(
+            () -> pictureService.createImage(USER_ID, album.getId(), IMAGE_FILE, THUMBNAIL_FILE)
+        ).isInstanceOf(AlbumException.class);
+    }
+
     @DisplayName("다른 유저의 앨범에 Picture 를 생성할 수 없다.")
     @Test
     void createInNonExistsAlbum() {
@@ -94,7 +106,7 @@ class PictureServiceTest {
         var pictureInfo = pictureService.createImage(USER_ID, album.getId(), IMAGE_FILE, THUMBNAIL_FILE);
         var picture = pictureRepository.findById(pictureInfo.id()).orElseThrow();
         verify(storageUsageService, atLeastOnce())
-            .addUsage(USER_ID, picture);
+            .addUsage(USER_ID, picture.getFileSize());
     }
 
     @DisplayName("다중 제거한다.")

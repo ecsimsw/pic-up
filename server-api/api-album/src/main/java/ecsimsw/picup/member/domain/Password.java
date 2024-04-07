@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.Embeddable;
+import javax.validation.constraints.NotBlank;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -12,6 +13,7 @@ import javax.persistence.Embeddable;
 @Embeddable
 public class Password {
 
+    @NotBlank
     private String encrypted;
     private String salt;
 

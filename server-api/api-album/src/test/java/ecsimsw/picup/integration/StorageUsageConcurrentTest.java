@@ -7,10 +7,8 @@ import ecsimsw.picup.member.service.StorageUsageService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.condition.EnabledIf;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.annotation.IfProfileValue;
 
 import static ecsimsw.picup.env.AlbumFixture.ALBUM_NAME;
 import static ecsimsw.picup.env.AlbumFixture.IMAGE_FILE;

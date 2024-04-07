@@ -9,6 +9,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -23,12 +24,12 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 class FileServiceTest {
 
+    @Mock
     private StorageHttpClient storageHttpClient;
     private FileService fileService;
 
     @BeforeEach
     public void init() {
-        storageHttpClient = Mockito.mock(StorageHttpClient.class);
         var fileDeletionEventOutbox = Mockito.mock(FileDeletionEventOutbox.class);
         var imageFileMessageQueue = Mockito.mock(ImageFileMessageQueue.class);
         fileService = new FileService(storageHttpClient, fileDeletionEventOutbox, imageFileMessageQueue);

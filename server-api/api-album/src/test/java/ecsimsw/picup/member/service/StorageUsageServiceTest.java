@@ -17,17 +17,16 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 @DataJpaTest
 public class StorageUsageServiceTest {
 
-    private final Long userId = 1L;
-
     @Autowired
     private StorageUsageRepository storageUsageRepository;
 
     private StorageUsageService storageUsageService;
+    private final Long userId = 1L;
 
     @BeforeEach
     public void init() {
         storageUsageService = new StorageUsageService(storageUsageRepository);
-        storageUsageRepository.save(StorageUsage.init(new Member(1L, "", new Password())));
+        storageUsageRepository.save(new StorageUsage(userId, Long.MAX_VALUE));
     }
 
     @DisplayName("유저별 스토리지 사용량을 저장한다.")

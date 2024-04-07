@@ -15,15 +15,16 @@ public class StorageUsageService {
 
     private final StorageUsageRepository storageUsageRepository;
 
+    @Transactional
+    public StorageUsage init(Long userId, long limit) {
+        var usage = new StorageUsage(userId, limit);
+        return storageUsageRepository.save(usage);
+    }
+
     @Transactional(readOnly = true)
     public StorageUsage getUsage(Long userId) {
         return storageUsageRepository.findByUserId(userId)
             .orElseThrow(() -> new AlbumException("Invalid memberId"));
-    }
-
-    @Transactional
-    public void addUsage(Long userId, Picture picture) {
-        addUsage(userId, picture.getFileSize());
     }
 
     @Transactional

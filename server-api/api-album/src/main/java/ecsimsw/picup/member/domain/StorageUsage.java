@@ -20,10 +20,6 @@ public class StorageUsage {
     private long limitAsByte;
     private long usageAsByte;
 
-    public static StorageUsage init(Member member) {
-        return new StorageUsage(member.getId(), Long.MAX_VALUE);
-    }
-
     public StorageUsage(Long userId, long limitAsByte) {
         this.userId = userId;
         this.limitAsByte = limitAsByte;
