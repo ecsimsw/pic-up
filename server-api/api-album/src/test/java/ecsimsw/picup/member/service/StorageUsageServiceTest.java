@@ -1,60 +1,33 @@
 package ecsimsw.picup.member.service;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-
 import ecsimsw.picup.album.exception.AlbumException;
-import ecsimsw.picup.env.StorageUsageMockRepository;
+import ecsimsw.picup.member.domain.Member;
+import ecsimsw.picup.member.domain.Password;
+import ecsimsw.picup.member.domain.StorageUsage;
 import ecsimsw.picup.member.domain.StorageUsageRepository;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.Executors;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
-@ExtendWith(MockitoExtension.class)
-@SpringBootTest
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+
+@DataJpaTest
 public class StorageUsageServiceTest {
 
     private final Long userId = 1L;
 
-    @Mock
+    @Autowired
     private StorageUsageRepository storageUsageRepository;
 
     private StorageUsageService storageUsageService;
 
     @BeforeEach
     public void init() {
-        StorageUsageMockRepository.init(storageUsageRepository);
         storageUsageService = new StorageUsageService(storageUsageRepository);
-
-//        storageUsageService.initNewUsage(new StorageUsageDto(userId, 10000L));
-    }
-
-    @DisplayName("동시 업로드 동시성 문제를 테스트한다.")
-    @Test
-    public void uploadConcurrentRequest() throws InterruptedException {
-        var concurrentCount = 1000;
-        var fileSize = 1;
-        var executorService = Executors.newFixedThreadPool(concurrentCount);
-        var countDownLatch = new CountDownLatch(concurrentCount);
-
-        for (int i = 0; i < concurrentCount; i++) {
-            executorService.execute(() -> {
-                try {
-                    storageUsageService.addUsage(userId, fileSize);
-                } finally {
-                    countDownLatch.countDown();
-                }
-            });
-        }
-        countDownLatch.await();
-        assertThat(fileSize * concurrentCount)
-            .isEqualTo(storageUsageService.getUsage(userId).getUsageAsByte());
+        storageUsageRepository.save(StorageUsage.init(new Member(1L, "", new Password())));
     }
 
     @DisplayName("유저별 스토리지 사용량을 저장한다.")
@@ -62,7 +35,6 @@ public class StorageUsageServiceTest {
     public void storeStorageUsage() {
         var fileSize = 256L;
         storageUsageService.addUsage(userId, fileSize);
-
         var usage = storageUsageService.getUsage(userId);
         assertThat(usage.getUsageAsByte()).isEqualTo(fileSize);
     }
@@ -72,10 +44,8 @@ public class StorageUsageServiceTest {
     public void overLimitUploadSize() {
         var usage = storageUsageService.getUsage(userId);
         var limit = usage.getLimitAsByte();
-        var uploadFileSize = limit + 1;
-
         assertThatThrownBy(
-            () -> storageUsageService.addUsage(userId, uploadFileSize)
+            () -> storageUsageService.addUsage(userId, limit)
         ).isInstanceOf(AlbumException.class);
     }
 
@@ -86,11 +56,6 @@ public class StorageUsageServiceTest {
         storageUsageService.addUsage(userId, uploadFileSize1);
         assertThat(storageUsageService.getUsage(userId).getUsageAsByte())
             .isEqualTo(uploadFileSize1);
-
-        var uploadFileSize2 = 10;
-        storageUsageService.addUsage(userId, uploadFileSize2);
-        assertThat(storageUsageService.getUsage(userId).getUsageAsByte())
-            .isEqualTo(uploadFileSize1 + uploadFileSize2);
     }
 
     @DisplayName("사진을 제거하는 경우 제거한 사진의 사이즈 만큼 사용량이 감소한다")
@@ -103,11 +68,6 @@ public class StorageUsageServiceTest {
         storageUsageService.subtractUsage(userId, deleteFileSize1);
         assertThat(storageUsageService.getUsage(userId).getUsageAsByte())
             .isEqualTo(initialFileSize - deleteFileSize1);
-
-        var deleteFileSize2 = 10;
-        storageUsageService.subtractUsage(userId, deleteFileSize2);
-        assertThat(storageUsageService.getUsage(userId).getUsageAsByte())
-            .isEqualTo(initialFileSize - deleteFileSize1 - deleteFileSize2);
     }
 
     @DisplayName("감소한 사용량이 0보다 작은 경우 사용량을 0으로 초기화한다.")

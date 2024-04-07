@@ -30,11 +30,11 @@ public class StorageUsage {
         this.usageAsByte = 0L;
     }
 
-    public boolean isAbleToStore(Long addedSize) {
+    public boolean isAbleToStore(long addedSize) {
         return limitAsByte > usageAsByte + addedSize;
     }
 
-    public void add(Long addedSize) {
+    public void add(long addedSize) {
         if (!isAbleToStore(addedSize)) {
             throw new AlbumException("Not available to store");
         }

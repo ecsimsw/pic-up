@@ -1,14 +1,10 @@
 package ecsimsw.picup.env;
 
 
-import ecsimsw.picup.member.domain.Member;
+import ecsimsw.picup.member.dto.SignUpRequest;
 
 public class MemberFixture {
 
     public static final Long MEMBER_ID = 1L;
-
-    public static Member MEMBER() {
-        return new Member();
-    };
-
+    public static SignUpRequest SIGN_UP_REQUEST = new SignUpRequest("USERNAME", "PASSWORD");
 }
