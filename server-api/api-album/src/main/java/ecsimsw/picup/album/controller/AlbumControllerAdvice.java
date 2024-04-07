@@ -1,10 +1,10 @@
 package ecsimsw.picup.album.controller;
 
 import ecsimsw.picup.album.exception.AlbumException;
-import ecsimsw.picup.member.exception.InvalidStorageServerResponseException;
+import ecsimsw.picup.album.exception.FileStorageConnectionDownException;
 import ecsimsw.picup.album.exception.UnsupportedFileTypeException;
 import ecsimsw.picup.auth.UnauthorizedException;
-import ecsimsw.picup.album.exception.FileStorageConnectionDownException;
+import ecsimsw.picup.member.exception.InvalidStorageServerResponseException;
 import ecsimsw.picup.mq.exception.MessageBrokerDownException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,7 +18,9 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import org.springframework.web.multipart.support.MissingServletRequestPartException;
 
-@ControllerAdvice
+@ControllerAdvice(
+    assignableTypes = {AlbumController.class, PictureController.class}
+)
 public class AlbumControllerAdvice {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AlbumControllerAdvice.class);
