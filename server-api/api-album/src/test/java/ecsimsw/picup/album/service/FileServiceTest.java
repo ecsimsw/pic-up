@@ -9,7 +9,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import static ecsimsw.picup.env.AlbumFixture.MULTIPART_FILE;
@@ -21,22 +21,17 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class FileStorageServiceTest {
+class FileServiceTest {
 
-    @Mock
     private StorageHttpClient storageHttpClient;
-
-    @Mock
-    private FileDeletionEventOutbox fileDeletionEventOutbox;
-
-    @Mock
-    private ImageFileMessageQueue imageFileMessageQueue;
-
-    private FileService fileStorageService;
+    private FileService fileService;
 
     @BeforeEach
     public void init() {
-        fileStorageService = new FileService(storageHttpClient, fileDeletionEventOutbox, imageFileMessageQueue);
+        storageHttpClient = Mockito.mock(StorageHttpClient.class);
+        var fileDeletionEventOutbox = Mockito.mock(FileDeletionEventOutbox.class);
+        var imageFileMessageQueue = Mockito.mock(ImageFileMessageQueue.class);
+        fileService = new FileService(storageHttpClient, fileDeletionEventOutbox, imageFileMessageQueue);
     }
 
     @DisplayName("파일을 업로드하고 업로드한 파일 정보를 반환한다.")
@@ -44,8 +39,7 @@ class FileStorageServiceTest {
     void upload() {
         when(storageHttpClient.requestUploadImage(any()))
             .thenReturn(new ImageFileUploadResponse(RESOURCE_KEY, MULTIPART_FILE.getSize()));
-
-        var fileInfo = fileStorageService.uploadImage(PictureFile.of(MULTIPART_FILE, RESOURCE_KEY));
+        var fileInfo = fileService.uploadImage(PictureFile.of(MULTIPART_FILE, RESOURCE_KEY));
         assertAll(
             () -> assertThat(fileInfo.resourceKey()).isEqualTo(RESOURCE_KEY),
             () -> assertThat(fileInfo.size()).isEqualTo(MULTIPART_FILE.getSize())
@@ -57,7 +51,7 @@ class FileStorageServiceTest {
     void uploadWithInvalidResourceName() {
         var invalidFileName = "invalidFileName";
         assertThatThrownBy(
-            () -> fileStorageService.uploadImage(PictureFile.of(MULTIPART_FILE(invalidFileName)))
+            () -> fileService.uploadImage(PictureFile.of(MULTIPART_FILE(invalidFileName)))
         ).isInstanceOf(UnsupportedFileTypeException.class);
     }
 
@@ -66,7 +60,7 @@ class FileStorageServiceTest {
     void uploadWithInvalidResource() {
         var invalidFileExtension = "unsupportedFileExtension.MP3";
         assertThatThrownBy(
-            () -> fileStorageService.uploadImage(PictureFile.of(MULTIPART_FILE(invalidFileExtension)))
+            () -> fileService.uploadImage(PictureFile.of(MULTIPART_FILE(invalidFileExtension)))
         ).isInstanceOf(UnsupportedFileTypeException.class);
     }
 }

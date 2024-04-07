@@ -7,10 +7,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort.Direction;
-import org.springframework.test.context.TestPropertySource;
 
 import static ecsimsw.picup.env.AlbumFixture.*;
-import static ecsimsw.picup.env.MemberFixture.MEMBER_ID;
+import static ecsimsw.picup.env.MemberFixture.USER_ID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
@@ -28,7 +27,7 @@ public class PictureRepositoryTest {
 
     @BeforeEach
     public void init() {
-        savedAlbum = albumRepository.save(new Album(MEMBER_ID, ALBUM_NAME, RESOURCE_KEY, 0L));
+        savedAlbum = albumRepository.save(new Album(USER_ID, ALBUM_NAME, RESOURCE_KEY, 0L));
     }
 
     @DisplayName("Picture 정보를 저장한다.")

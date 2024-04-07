@@ -4,12 +4,11 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.test.context.TestPropertySource;
 
 import java.util.List;
 
 import static ecsimsw.picup.env.AlbumFixture.*;
-import static ecsimsw.picup.env.MemberFixture.MEMBER_ID;
+import static ecsimsw.picup.env.MemberFixture.USER_ID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
@@ -23,7 +22,7 @@ public class AlbumRepositoryTest {
     @DisplayName("Album 정보를 저장한다.")
     @Test
     public void save() {
-        var album = albumRepository.save(new Album(MEMBER_ID, ALBUM_NAME, RESOURCE_KEY, 0L));
+        var album = albumRepository.save(new Album(USER_ID, ALBUM_NAME, RESOURCE_KEY, 0L));
         assertAll(
             () -> assertThat(album.getId()).isNotNull(),
             () -> assertThat(album.getName()).isEqualTo(ALBUM_NAME),
@@ -39,10 +38,10 @@ public class AlbumRepositoryTest {
             () -> albumRepository.save(new Album(null, ALBUM_NAME, RESOURCE_KEY, 0L))
         );
         assertThatThrownBy(
-            () -> albumRepository.save(new Album(MEMBER_ID, ALBUM_NAME, RESOURCE_KEY, -1L))
+            () -> albumRepository.save(new Album(USER_ID, ALBUM_NAME, RESOURCE_KEY, -1L))
         );
         assertThatThrownBy(
-            () -> albumRepository.save(new Album(MEMBER_ID, ALBUM_NAME, null, 0L))
+            () -> albumRepository.save(new Album(USER_ID, ALBUM_NAME, null, 0L))
         );
     }
 
@@ -53,7 +52,7 @@ public class AlbumRepositoryTest {
         var picture2 = albumRepository.save(ALBUM());
         var picture3 = albumRepository.save(ALBUM());
         var others = albumRepository.save(ALBUM(Long.MAX_VALUE));
-        var result = albumRepository.findAllByUserIdOrderByCreatedAtDesc(MEMBER_ID);
+        var result = albumRepository.findAllByUserIdOrderByCreatedAtDesc(USER_ID);
         assertThat(result).isEqualTo(List.of(picture3, picture2, picture1));
         assertThat(result).doesNotContain(others);
     }

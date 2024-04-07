@@ -1,6 +1,6 @@
 package ecsimsw.picup.env;
 
-import static ecsimsw.picup.env.MemberFixture.MEMBER_ID;
+import static ecsimsw.picup.env.MemberFixture.USER_ID;
 
 import ecsimsw.picup.album.domain.Album;
 import ecsimsw.picup.album.domain.Picture;
@@ -25,7 +25,7 @@ public class AlbumFixture {
     }
 
     public static Album ALBUM() {
-        return new Album(MEMBER_ID, ALBUM_NAME, RESOURCE_KEY, SIZE);
+        return new Album(USER_ID, ALBUM_NAME, RESOURCE_KEY, SIZE);
     }
 
     public static Album ALBUM(Long userId) {
