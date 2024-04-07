@@ -1,29 +1,29 @@
 package ecsimsw.picup.config;
 
+import static ecsimsw.picup.config.DataSourceType.MASTER;
+import static ecsimsw.picup.config.DataSourceType.SLAVE;
+
 import ecsimsw.picup.album.exception.DataSourceConnectionDownException;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
+import javax.sql.DataSource;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.actuate.health.Status;
 import org.springframework.boot.actuate.jdbc.DataSourceHealthIndicator;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
-import javax.sql.DataSource;
-import java.util.Arrays;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
-
 @Component
 public class DataSourceHealth {
 
-    private static final ConcurrentMap<DataSourceType, Status> STATUS_MAP = new ConcurrentHashMap<>();
+    private static final ConcurrentMap<DataSourceType, Status> STATUS_MAP = new ConcurrentHashMap<>(Map.of(
+        MASTER, Status.UNKNOWN,
+        SLAVE, Status.UNKNOWN
+    ));
 
-    static {
-        Arrays.stream(DataSourceType.values())
-            .forEach(it -> STATUS_MAP.put(it, Status.UNKNOWN));
-    }
-
-    private final DataSourceHealthIndicator indicatorMaster = new DataSourceHealthIndicator();
-    private final DataSourceHealthIndicator indicatorSlave = new DataSourceHealthIndicator();
+    private final DataSourceHealthIndicator indicatorMaster;
+    private final DataSourceHealthIndicator indicatorSlave;
 
     public DataSourceHealth(
         @Qualifier(value = DataSourceConfig.DB_SOURCE_BEAN_ALIAS_MASTER)
@@ -31,31 +31,24 @@ public class DataSourceHealth {
         @Qualifier(value = DataSourceConfig.DB_SOURCE_BEAN_ALIAS_SLAVE)
         DataSource dataSourceSlave
     ) {
-        indicatorMaster.setDataSource(dataSourceMaster);
-        indicatorSlave.setDataSource(dataSourceSlave);
+        indicatorMaster = new DataSourceHealthIndicator(dataSourceMaster);
+        indicatorSlave = new DataSourceHealthIndicator(dataSourceSlave);
     }
 
     @Scheduled(fixedDelay = 30000)
     public void healthCheck() {
-        healthCheck(DataSourceType.MASTER, indicatorMaster);
-        healthCheck(DataSourceType.SLAVE, indicatorSlave);
-        alertDisaster();
+        DataSourceTargetContextHolder.setContext(MASTER);
+        STATUS_MAP.put(MASTER, indicatorMaster.getHealth(false).getStatus());
+
+        DataSourceTargetContextHolder.setContext(SLAVE);
+        STATUS_MAP.put(SLAVE, indicatorSlave.getHealth(false).getStatus());
+
+        STATUS_MAP.keySet().stream()
+            .filter(key -> STATUS_MAP.get(key) == Status.DOWN)
+            .forEach(key -> {
+                throw new DataSourceConnectionDownException(key + " is down");
+            });
         DataSourceTargetContextHolder.clearContext();
-    }
-
-    private void healthCheck(DataSourceType directTargetSource, DataSourceHealthIndicator indicator) {
-        DataSourceTargetContextHolder.setContext(directTargetSource);
-        var health = indicator.getHealth(false);
-        STATUS_MAP.put(directTargetSource, health.getStatus());
-    }
-
-    private static void alertDisaster() {
-        for (var sourceType : DataSourceType.values()) {
-            var status = STATUS_MAP.get(sourceType);
-            if (status != Status.UP) {
-                throw new DataSourceConnectionDownException(sourceType + " is down, " + status);
-            }
-        }
     }
 
     public static boolean isDown(DataSourceType dataSourceType) {

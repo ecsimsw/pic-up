@@ -1,6 +1,8 @@
 package ecsimsw.picup.member.controller;
 
+import ecsimsw.picup.auth.AuthTokenPayload;
 import ecsimsw.picup.auth.AuthTokenService;
+import ecsimsw.picup.auth.TokenPayload;
 import ecsimsw.picup.member.dto.MemberInfoResponse;
 import ecsimsw.picup.member.dto.SignInRequest;
 import ecsimsw.picup.member.dto.SignUpRequest;
@@ -48,10 +50,9 @@ public class MemberController {
 
     @GetMapping("/api/member/me")
     public ResponseEntity<MemberInfoResponse> me(
-//        @TokenPayload AuthTokenPayload userInfo
+        @TokenPayload AuthTokenPayload userInfo
     ) {
-        var username = "ecsimsw";
-        var memberInfo = memberService.me(username);
+        var memberInfo = memberService.me(userInfo.username());
         return ResponseEntity.ok(memberInfo);
     }
 }
