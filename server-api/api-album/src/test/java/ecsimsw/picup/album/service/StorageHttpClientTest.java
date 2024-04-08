@@ -2,7 +2,7 @@ package ecsimsw.picup.album.service;
 
 import ecsimsw.picup.dto.ImageFileUploadRequest;
 import ecsimsw.picup.dto.ImageFileUploadResponse;
-import ecsimsw.picup.member.exception.InvalidStorageServerResponseException;
+import ecsimsw.picup.album.exception.InvalidStorageServerResponseException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

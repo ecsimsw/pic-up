@@ -20,10 +20,11 @@ public class AlbumUploadService {
     public AlbumInfoResponse initAlbum(Long userId, String name, MultipartFile file) {
         var thumbnail = PictureFile.resizedOf(file, ALBUM_THUMBNAIL_SCALE);
         var uploadedImage = fileService.uploadImage(thumbnail);
-        return createAlbum(userId, name, uploadedImage);
-    }
-
-    private AlbumInfoResponse createAlbum(Long userId, String name, ImageFileUploadResponse uploadedImage) {
-        return albumService.create(userId, name, uploadedImage);
+        try {
+            return albumService.create(userId, name, uploadedImage);
+        } catch (Exception e) {
+            fileService.deleteAsync(thumbnail.resourceKey());
+            throw e;
+        }
     }
 }

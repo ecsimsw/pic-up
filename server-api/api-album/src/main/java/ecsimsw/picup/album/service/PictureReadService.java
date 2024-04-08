@@ -15,8 +15,8 @@ public class PictureReadService {
     private final FileService fileService;
     private final PictureService pictureService;
 
-    public FileReadResponse pictureImage(Long userId, Long pictureId) {
-        var picture = pictureService.read(userId, pictureId);
+    public FileReadResponse pictureImage(Long userId, Long albumId, Long pictureId) {
+        var picture = pictureService.read(userId, albumId, pictureId);
         return fileService.read(picture.resourceKey());
     }
 
@@ -24,8 +24,8 @@ public class PictureReadService {
         return pictureService.fetchOrderByCursor(userId, albumId, cursor);
     }
 
-    public FileReadResponse pictureThumbnail(Long userId, Long pictureId) {
-        var picture = pictureService.read(userId, pictureId);
+    public FileReadResponse pictureThumbnail(Long userId, Long albumId, Long pictureId) {
+        var picture = pictureService.read(userId, albumId, pictureId);
         return fileService.read(picture.thumbnailResourceKey());
     }
 }

@@ -2,13 +2,10 @@ package ecsimsw.picup.album.service;
 
 import ecsimsw.picup.album.domain.Album;
 import ecsimsw.picup.album.domain.AlbumRepository;
-import ecsimsw.picup.album.domain.Picture;
 import ecsimsw.picup.album.domain.PictureRepository;
-import ecsimsw.picup.album.dto.PictureInfoResponse;
 import ecsimsw.picup.album.dto.PictureSearchCursor;
 import ecsimsw.picup.album.exception.AlbumException;
 import ecsimsw.picup.auth.UnauthorizedException;
-import ecsimsw.picup.member.service.StorageUsageService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -167,7 +164,7 @@ class PictureServiceTest {
     void read() {
         var album = albumRepository.save(new Album(USER_ID, ALBUM_NAME, RESOURCE_KEY, SIZE));
         var saved = pictureService.createImage(USER_ID, album.getId(), IMAGE_FILE, THUMBNAIL_FILE);
-        var result = pictureService.read(USER_ID, saved.id());
+        var result = pictureService.read(USER_ID, album.getId(), saved.id());
         assertThat(result).isEqualTo(saved);
     }
 
@@ -177,7 +174,7 @@ class PictureServiceTest {
         var album = albumRepository.save(new Album(USER_ID, ALBUM_NAME, RESOURCE_KEY, SIZE));
         var saved = pictureService.createImage(USER_ID, album.getId(), IMAGE_FILE, THUMBNAIL_FILE);
         assertThatThrownBy(
-            () -> pictureService.read(USER_ID+1, saved.id())
+            () -> pictureService.read(USER_ID+1, album.getId(), saved.id())
         ).isInstanceOf(UnauthorizedException.class);
         assertThatThrownBy(
             () -> pictureService.fetchOrderByCursor(USER_ID+1, album.getId(), PictureSearchCursor.from(2, saved.createdAt()))

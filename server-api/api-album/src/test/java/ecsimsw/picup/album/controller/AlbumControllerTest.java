@@ -103,10 +103,11 @@ class AlbumControllerTest {
     @DisplayName("앨범 정보를 조회한다.")
     @Test
     void getAlbum() throws Exception {
+        var albumId = 1L;
         var expectedAlbumInfo = AlbumInfoResponse.of(ALBUM());
-        when(albumReadService.album(loginUserId, expectedAlbumInfo.id()))
+        when(albumReadService.album(loginUserId, albumId))
             .thenReturn(expectedAlbumInfo);
-        mockMvc.perform(get("/api/album/" + expectedAlbumInfo.id()))
+        mockMvc.perform(get("/api/album/" + albumId))
             .andExpect(status().isOk())
             .andExpect(content().string(OBJECT_MAPPER.writeValueAsString(expectedAlbumInfo)));
     }

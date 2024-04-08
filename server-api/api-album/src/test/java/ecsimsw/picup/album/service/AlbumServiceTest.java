@@ -2,6 +2,7 @@ package ecsimsw.picup.album.service;
 
 import ecsimsw.picup.album.domain.AlbumRepository;
 import ecsimsw.picup.album.exception.AlbumException;
+import ecsimsw.picup.auth.UnauthorizedException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -84,7 +85,7 @@ class AlbumServiceTest {
         var saved = albumService.create(USER_ID, ALBUM_NAME, IMAGE_FILE);
         assertThatThrownBy(
             () -> albumService.delete(USER_ID + 1, saved.id())
-        ).isInstanceOf(AlbumException.class);
+        ).isInstanceOf(UnauthorizedException.class);
     }
 
     @DisplayName("단일 앨범 정보를 조회한다.")

@@ -1,6 +1,6 @@
 package ecsimsw.picup.album.service;
 
-import static ecsimsw.picup.config.CacheType.FIRST_10_PIC_IN_ALBUM;
+import static ecsimsw.picup.album.config.CacheType.FIRST_10_PIC_IN_ALBUM;
 
 import ecsimsw.picup.album.domain.Album;
 import ecsimsw.picup.album.domain.AlbumRepository;
@@ -14,7 +14,7 @@ import ecsimsw.picup.album.exception.AlbumException;
 import ecsimsw.picup.auth.UnauthorizedException;
 import ecsimsw.picup.dto.ImageFileUploadResponse;
 import ecsimsw.picup.dto.VideoFileUploadResponse;
-import ecsimsw.picup.member.service.StorageUsageService;
+
 import java.time.LocalDateTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -94,8 +94,8 @@ public class PictureService {
     }
 
     @Transactional(readOnly = true)
-    public PictureInfoResponse read(Long userId, Long pictureId) {
-        var picture = pictureRepository.findById(pictureId).orElseThrow(() -> new AlbumException("Invalid picture request"));
+    public PictureInfoResponse read(Long userId, Long albumId, Long pictureId) {
+        var picture = pictureRepository.findByIdAndAlbumId(pictureId, albumId).orElseThrow(() -> new AlbumException("Invalid picture request"));
         picture.checkSameUser(userId);
         return PictureInfoResponse.of(picture);
     }

@@ -1,7 +1,7 @@
 package ecsimsw.picup.album.service;
 
 import ecsimsw.picup.dto.*;
-import ecsimsw.picup.member.exception.InvalidStorageServerResponseException;
+import ecsimsw.picup.album.exception.InvalidStorageServerResponseException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;

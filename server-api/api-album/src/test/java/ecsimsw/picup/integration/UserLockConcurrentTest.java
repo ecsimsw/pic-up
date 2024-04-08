@@ -1,9 +1,9 @@
 package ecsimsw.picup.integration;
 
 import ecsimsw.picup.album.service.AlbumService;
+import ecsimsw.picup.album.service.MemberService;
 import ecsimsw.picup.album.service.PictureUploadService;
-import ecsimsw.picup.member.service.MemberService;
-import ecsimsw.picup.member.service.StorageUsageService;
+import ecsimsw.picup.album.service.StorageUsageService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
