@@ -1,26 +1,24 @@
 package ecsimsw.picup.utils;
 
 import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.model.AccessControlList;
-import com.amazonaws.services.s3.model.AmazonS3Exception;
-import com.amazonaws.services.s3.model.GetObjectRequest;
-import com.amazonaws.services.s3.model.GroupGrantee;
-import com.amazonaws.services.s3.model.ObjectMetadata;
-import com.amazonaws.services.s3.model.Permission;
-import com.amazonaws.services.s3.model.PutObjectRequest;
+import com.amazonaws.services.s3.model.*;
 import com.amazonaws.util.IOUtils;
 import ecsimsw.picup.domain.StoredFile;
 import ecsimsw.picup.exception.InvalidResourceException;
-import ecsimsw.picup.exception.StorageException;
+
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.util.List;
 
 public class AwsS3Utils {
 
+    public static List<String> bucketNames(AmazonS3 s3Client) {
+        return s3Client.listBuckets().stream()
+            .map(Bucket::getName)
+            .toList();
+    }
+
     public static void upload(AmazonS3 s3Client, String bucketName, String resourceKey, StoredFile storedFile) {
-        if (s3Client.doesObjectExist(bucketName, resourceKey)) {
-            throw new StorageException("resource already exists");
-        }
         var metadata = new ObjectMetadata();
         metadata.setContentType(storedFile.fileType().name());
         metadata.setContentLength(storedFile.size());
