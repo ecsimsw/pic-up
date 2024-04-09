@@ -1,5 +1,6 @@
 plugins {
     id 'java'
+    id 'eclipse'
     id 'org.springframework.boot' version '2.7.9'
     id 'io.spring.dependency-management' version '1.0.15.RELEASE'
 }
@@ -13,54 +14,74 @@ repositories {
     maven { url 'https://jitpack.io' }
 }
 
-subprojects {
-    apply plugin: 'java'
-    apply plugin: 'eclipse'
-    apply plugin: 'org.springframework.boot'
-    apply plugin: 'io.spring.dependency-management'
+dependencies {
+    // Spring
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springframework.boot:spring-boot-starter-test'
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+    implementation 'org.springframework.retry:spring-retry'
+    implementation 'org.springframework.boot:spring-boot-starter-aop'
 
-    repositories {
-        mavenCentral()
-        maven { url 'https://jitpack.io' }
-    }
+    // Mysql, H2
+    runtimeOnly 'com.mysql:mysql-connector-j'
+    implementation 'com.h2database:h2:1.4.199'
+    testRuntimeOnly 'com.h2database:h2:1.4.199'
 
-    dependencies {
-        // Spring
-        implementation 'org.springframework.boot:spring-boot-starter-validation'
-        implementation 'org.springframework.boot:spring-boot-starter-web'
-        implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-        implementation 'org.springframework.boot:spring-boot-starter-test'
-        implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+    // Model metadata
+    implementation 'org.hibernate:hibernate-jpamodelgen'
+    annotationProcessor 'org.hibernate:hibernate-jpamodelgen'
 
-        // jjwt
-        implementation "io.jsonwebtoken:jjwt-api:0.12.3"
-        implementation "io.jsonwebtoken:jjwt-impl:0.12.3"
-        implementation "io.jsonwebtoken:jjwt-jackson:0.12.3"
+    // redis. redisson
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+    implementation 'org.redisson:redisson-spring-boot-starter:3.17.0'
 
-        // H2
-        implementation 'com.h2database:h2:1.4.199'
-        testRuntimeOnly 'com.h2database:h2:1.4.199'
+    // monitoring
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+    implementation 'io.micrometer:micrometer-registry-prometheus'
 
-        // Mysql
-        runtimeOnly 'com.mysql:mysql-connector-j'
+    // jackson
+    implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.8.8'
 
-        // Google Guava
-        implementation 'com.google.guava:guava:11.0.2'
+    // jjwt
+    implementation "io.jsonwebtoken:jjwt-api:0.12.3"
+    implementation "io.jsonwebtoken:jjwt-impl:0.12.3"
+    implementation "io.jsonwebtoken:jjwt-jackson:0.12.3"
 
-        // rabbitMQ
-        implementation 'org.springframework.boot:spring-boot-starter-amqp'
+    // log4j2
+    implementation 'org.springframework.boot:spring-boot-starter-log4j2'
 
-        // slack alert
-        implementation 'com.slack.api:slack-api-client:1.6.2'
+    // encrypt
+    implementation 'com.github.ecsimsw:utils-encrypt:1.0.7'
 
-        // test
-        testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.0'
-        testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.7.0'
+    // s3, mock s3
+    implementation 'com.amazonaws:aws-java-sdk-s3:1.11.343'
+    implementation "io.findify:s3mock_2.13:0.2.6"
 
-        // lombok
-        compileOnly 'org.projectlombok:lombok'
-        annotationProcessor 'org.projectlombok:lombok'
-        testCompileOnly 'org.projectlombok:lombok'
-        testAnnotationProcessor 'org.projectlombok:lombok'
+    // thumbnailator, jcodec
+    implementation 'net.coobird:thumbnailator:0.4.20'
+    implementation 'org.jcodec:jcodec-javase:0.2.5'
+
+    // rabbitMQ
+    implementation 'org.springframework.boot:spring-boot-starter-amqp'
+
+    // test
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.0'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.7.0'
+
+    // lombok
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
+    testCompileOnly 'org.projectlombok:lombok'
+    testAnnotationProcessor 'org.projectlombok:lombok'
+
+    // Google Guava
+    implementation 'com.google.guava:guava:11.0.2'
+}
+
+configurations {
+    all {
+        exclude group: 'org.springframework.boot', module: 'spring-boot-starter-logging'
     }
 }
