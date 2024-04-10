@@ -8,7 +8,7 @@ document.addEventListener("DOMContentLoaded", function () {
         fetchUserInfo();
         fetchData(serverUrl+"/api/album", function (albums) {
             albums.forEach(async (album) => {
-                createAlbumArticle(album.id, album.name, album.thumbnailImage)
+                createAlbumArticle(album.id, album.name)
             });
         })
     })
@@ -56,7 +56,7 @@ function fetchUserInfo() {
     }
 }
 
-function createAlbumArticle(albumId, titleText, thumbImageResource) {
+function createAlbumArticle(albumId, titleText) {
     const article = document.createElement('article');
     article.id = `album-${albumId}`
     article.className = 'thumb'

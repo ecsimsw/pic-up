@@ -15,12 +15,12 @@ public class AlbumUploadService {
     private final FileService fileService;
     private final AlbumService albumService;
 
-    public AlbumInfoResponse initAlbum(Long userId, String name, MultipartFile file) {
+    public Long initAlbum(Long userId, String name, MultipartFile file) {
         var thumbnail = FileUploadRequest.resizedOf(file, ALBUM_THUMBNAIL_SCALE);
         var uploadedImage = fileService.uploadImage(thumbnail);
         try {
             var album = albumService.create(userId, name, uploadedImage);
-            return AlbumInfoResponse.of(album);
+            return album.getId();
         } catch (Exception e) {
             fileService.deleteAsync(thumbnail.resourceKey());
             throw e;

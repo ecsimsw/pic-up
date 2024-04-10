@@ -20,14 +20,16 @@ public class PictureUploadService {
     private final FileService fileService;
     private final PictureService pictureService;
 
-    public PictureInfoResponse upload(Long userId, Long albumId, MultipartFile file) {
+    public Long upload(Long userId, Long albumId, MultipartFile file) {
         if (PictureFileExtension.of(file).isVideo) {
             var videoFile = fileService.uploadVideo(FileUploadRequest.of(file));
-            return uploadVideo(userId, albumId, videoFile);
+            var pictureInfo = uploadVideo(userId, albumId, videoFile);
+            return pictureInfo.id();
         }
         var imageFile = fileService.uploadImage(FileUploadRequest.of(file));
         var thumbnailFile = fileService.uploadImage(FileUploadRequest.resizedOf(file, PICTURE_THUMBNAIL_SCALE));
-        return uploadImage(userId, albumId, imageFile, thumbnailFile);
+        var pictureInfo = uploadImage(userId, albumId, imageFile, thumbnailFile);
+        return pictureInfo.id();
     }
 
     public PictureInfoResponse uploadVideo(Long userId, Long albumId, VideoFileUploadResponse videoFile) {

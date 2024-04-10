@@ -6,6 +6,7 @@ import ecsimsw.picup.album.dto.PicturesDeleteRequest;
 import ecsimsw.picup.album.service.PictureDeleteService;
 import ecsimsw.picup.album.service.PictureReadService;
 import ecsimsw.picup.album.service.PictureUploadService;
+import ecsimsw.picup.album.service.ResourceSignService;
 import ecsimsw.picup.auth.AuthTokenPayload;
 import ecsimsw.picup.auth.TokenPayload;
 import lombok.RequiredArgsConstructor;
@@ -27,15 +28,16 @@ public class PictureController {
     private final PictureUploadService pictureUploadService;
     private final PictureDeleteService pictureDeleteService;
     private final PictureReadService pictureReadService;
+    private final ResourceSignService signService;
 
     @PostMapping("/api/album/{albumId}/picture")
-    public ResponseEntity<PictureInfoResponse> createPicture(
+    public ResponseEntity<Long> createPicture(
         @TokenPayload AuthTokenPayload loginUser,
         @PathVariable Long albumId,
         @RequestPart MultipartFile file
     ) {
-        var response = pictureUploadService.upload(loginUser.userId(), albumId, file);
-        return ResponseEntity.ok(response);
+        var pictureId = pictureUploadService.upload(loginUser.userId(), albumId, file);
+        return ResponseEntity.ok(pictureId);
     }
 
     @GetMapping("/api/album/{albumId}/picture")
@@ -48,7 +50,8 @@ public class PictureController {
     ) {
         var cursor = PictureSearchCursor.from(limit, cursorCreatedAt);
         var pictureInfos = pictureReadService.pictures(loginUser.userId(), albumId, cursor);
-        return ResponseEntity.ok(pictureInfos);
+        var signedPictureInfos = signService.signPictures(pictureInfos);
+        return ResponseEntity.ok(signedPictureInfos);
     }
 
     @DeleteMapping("/api/album/{albumId}/picture")
@@ -60,28 +63,4 @@ public class PictureController {
         pictureDeleteService.deletePictures(loginUser.userId(), albumId, pictures.pictureIds());
         return ResponseEntity.ok().build();
     }
-
-//    @GetMapping("/api/album/{albumId}/picture/{pictureId}/image")
-//    public ResponseEntity<byte[]> file(
-//        @TokenPayload AuthTokenPayload loginUser,
-//        @PathVariable Long albumId,
-//        @PathVariable Long pictureId
-//    ) {
-//        var imageFile = pictureReadService.pictureImage(loginUser.userId(), albumId, pictureId);
-//        return ResponseEntity.ok()
-//            .cacheControl(CacheControl.maxAge(2, TimeUnit.HOURS))
-//            .body(imageFile.file());
-//    }
-//
-//    @GetMapping("/api/album/{albumId}/picture/{pictureId}/thumbnail")
-//    public ResponseEntity<byte[]> thumbnailFile(
-//        @TokenPayload AuthTokenPayload loginUser,
-//        @PathVariable Long albumId,
-//        @PathVariable Long pictureId
-//    ) {
-//        var thumbnailFile = pictureReadService.pictureThumbnail(loginUser.userId(), albumId, pictureId);
-//        return ResponseEntity.ok()
-//            .cacheControl(CacheControl.maxAge(2, TimeUnit.HOURS))
-//            .body(thumbnailFile.file());
-//    }
 }

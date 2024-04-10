@@ -11,20 +11,11 @@ import java.util.List;
 @Service
 public class PictureReadService {
 
+    private final ResourceSignService resourceSignService;
     private final PictureService pictureService;
 
     public List<PictureInfoResponse> pictures(Long userId, Long albumId, PictureSearchCursor cursor) {
         var pictures = pictureService.fetchOrderByCursor(userId, albumId, cursor);
-        return PictureInfoResponse.listOf(pictures);
+        return resourceSignService.signPictures(pictures);
     }
-
-//    public FileReadResponse pictureImage(Long userId, Long albumId, Long pictureId) {
-//        var picture = pictureService.read(userId, albumId, pictureId);
-//        return fileService.read(picture.resourceKey());
-//    }
-
-//    public FileReadResponse pictureThumbnail(Long userId, Long albumId, Long pictureId) {
-//        var picture = pictureService.read(userId, albumId, pictureId);
-//        return fileService.read(picture.thumbnailResourceKey());
-//    }
 }

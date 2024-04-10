@@ -19,9 +19,7 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import org.springframework.web.multipart.support.MissingServletRequestPartException;
 
-@ControllerAdvice(
-    assignableTypes = {AlbumController.class, PictureController.class}
-)
+@ControllerAdvice
 public class GlobalControllerAdvice {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(GlobalControllerAdvice.class);
