@@ -1,6 +1,6 @@
-package ecsimsw.picup.album.service;
+package ecsimsw.picup.storage.service;
 
-import ecsimsw.picup.album.domain.StoredFile;
+import ecsimsw.picup.album.dto.FileUploadResponse;
 import ecsimsw.picup.album.utils.FileUtils;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.AsyncResult;
@@ -19,16 +19,16 @@ public class FileStorage implements ImageStorage {
 
     @Async
     @Override
-    public CompletableFuture<String> storeAsync(String resourceKey, StoredFile storedFile) {
-        FileUtils.writeFile(storagePath(resourceKey), storedFile.file());
+    public CompletableFuture<String> storeAsync(String resourceKey, FileUploadResponse fileUploadResponse) {
+        FileUtils.writeFile(storagePath(resourceKey), fileUploadResponse.file());
         return new AsyncResult<>(resourceKey).completable();
     }
 
     @Override
-    public StoredFile read(String resourceKey) {
+    public FileUploadResponse read(String resourceKey) {
         var storagePath = storagePath(resourceKey);
         var file = FileUtils.read(storagePath);
-        return StoredFile.of(resourceKey, file);
+        return FileUploadResponse.of(resourceKey, file);
     }
 
     @Override

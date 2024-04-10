@@ -1,4 +1,4 @@
-package ecsimsw.picup.album.exception;
+package ecsimsw.picup.storage.exception;
 
 public class InvalidResourceException extends IllegalArgumentException {
 

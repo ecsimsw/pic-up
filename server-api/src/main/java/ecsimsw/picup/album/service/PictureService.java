@@ -8,10 +8,10 @@ import ecsimsw.picup.album.domain.FileDeletionEvent;
 import ecsimsw.picup.album.domain.Picture;
 import ecsimsw.picup.album.domain.PictureRepository;
 import ecsimsw.picup.album.domain.Picture_;
-import ecsimsw.picup.album.dto.ImageFileUploadResponse;
+import ecsimsw.picup.storage.dto.ImageFileUploadResponse;
 import ecsimsw.picup.album.dto.PictureInfoResponse;
 import ecsimsw.picup.album.dto.PictureSearchCursor;
-import ecsimsw.picup.album.dto.VideoFileUploadResponse;
+import ecsimsw.picup.storage.dto.VideoFileUploadResponse;
 import ecsimsw.picup.album.exception.AlbumException;
 import ecsimsw.picup.auth.UnauthorizedException;
 

@@ -3,30 +3,23 @@ package ecsimsw.picup.album.utils;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.*;
 import com.amazonaws.util.IOUtils;
-import ecsimsw.picup.album.domain.StoredFile;
-import ecsimsw.picup.album.exception.InvalidResourceException;
+import ecsimsw.picup.album.dto.FileUploadResponse;
+import ecsimsw.picup.storage.exception.InvalidResourceException;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.util.List;
 
 public class AwsS3Utils {
 
-    public static List<String> bucketNames(AmazonS3 s3Client) {
-        return s3Client.listBuckets().stream()
-            .map(Bucket::getName)
-            .toList();
-    }
-
-    public static void upload(AmazonS3 s3Client, String bucketName, String resourceKey, StoredFile storedFile) {
+    public static void upload(AmazonS3 s3Client, String bucketName, String resourceKey, FileUploadResponse fileUploadResponse) {
         var metadata = new ObjectMetadata();
-        metadata.setContentType(storedFile.fileType().name());
-        metadata.setContentLength(storedFile.size());
+        metadata.setContentType(fileUploadResponse.fileType().name());
+        metadata.setContentLength(fileUploadResponse.size());
 
         var accessControlList = new AccessControlList();
         accessControlList.grantPermission(GroupGrantee.AuthenticatedUsers, Permission.Read);
 
-        var putObjectRequest = new PutObjectRequest(bucketName, resourceKey, new ByteArrayInputStream(storedFile.file()),
+        var putObjectRequest = new PutObjectRequest(bucketName, resourceKey, new ByteArrayInputStream(fileUploadResponse.file()),
             metadata);
         putObjectRequest.setAccessControlList(accessControlList);
         s3Client.putObject(putObjectRequest);

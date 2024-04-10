@@ -1,7 +1,7 @@
 package ecsimsw.picup.album.config;
 
-import ecsimsw.picup.album.service.FileStorage;
-import ecsimsw.picup.album.service.ImageStorage;
+import ecsimsw.picup.storage.service.FileStorage;
+import ecsimsw.picup.storage.service.ImageStorage;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 

@@ -4,7 +4,7 @@ import ecsimsw.picup.album.domain.Album;
 import ecsimsw.picup.album.domain.AlbumRepository;
 import ecsimsw.picup.album.domain.FileDeletionEvent;
 import ecsimsw.picup.album.dto.AlbumInfoResponse;
-import ecsimsw.picup.album.dto.ImageFileUploadResponse;
+import ecsimsw.picup.storage.dto.ImageFileUploadResponse;
 import ecsimsw.picup.auth.UnauthorizedException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;

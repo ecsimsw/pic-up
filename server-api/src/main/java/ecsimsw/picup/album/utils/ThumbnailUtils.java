@@ -1,14 +1,16 @@
 package ecsimsw.picup.album.utils;
 
-import java.awt.Color;
-import java.awt.Graphics;
-import java.awt.image.BufferedImage;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import javax.imageio.ImageIO;
+import ecsimsw.picup.album.utils.VideoUtils;
 import net.coobird.thumbnailator.Thumbnails;
 import net.coobird.thumbnailator.filters.ImageFilter;
+
+import javax.imageio.ImageIO;
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 
 public class ThumbnailUtils {
 
@@ -44,4 +46,5 @@ public class ThumbnailUtils {
             }
         };
     }
+
 }

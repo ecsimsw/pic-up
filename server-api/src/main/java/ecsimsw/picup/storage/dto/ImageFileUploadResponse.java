@@ -1,4 +1,4 @@
-package ecsimsw.picup.album.dto;
+package ecsimsw.picup.storage.dto;
 
 public record ImageFileUploadResponse(
     String resourceKey,

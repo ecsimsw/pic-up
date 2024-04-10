@@ -70,13 +70,6 @@ public class GlobalControllerAdvice {
         return ResponseEntity.internalServerError().body("unhandled server exception");
     }
 
-    @ExceptionHandler({FileStorageConnectionDownException.class, InvalidStorageServerResponseException.class})
-    public ResponseEntity<String> storageUploadFailedException(IllegalArgumentException e) {
-        var alertMessage = "[STORAGE_SERVER_CONNECTION] : " + e.getMessage();
-        LOGGER.error(alertMessage + "\n" + e.getCause());
-        return ResponseEntity.internalServerError().body("unhandled server exception");
-    }
-
     @ExceptionHandler(Throwable.class)
     public ResponseEntity<String> unhandledException(Throwable e) {
         e.printStackTrace();

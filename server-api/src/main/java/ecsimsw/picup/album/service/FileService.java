@@ -1,11 +1,11 @@
 package ecsimsw.picup.album.service;
 
-import ecsimsw.picup.album.domain.FileDeletionEvent;
-import ecsimsw.picup.album.domain.FileDeletionEventOutbox;
-import ecsimsw.picup.album.domain.FileDeletionEvent_;
-import ecsimsw.picup.album.domain.PictureFile;
-import ecsimsw.picup.album.dto.*;
+import ecsimsw.picup.album.domain.*;
+import ecsimsw.picup.album.dto.FileReadResponse;
+import ecsimsw.picup.album.dto.FileUploadRequest;
 import ecsimsw.picup.mq.ImageFileMessageQueue;
+import ecsimsw.picup.storage.dto.ImageFileUploadResponse;
+import ecsimsw.picup.storage.dto.VideoFileUploadResponse;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,22 +22,28 @@ public class FileService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(FileService.class);
 
-    private final StorageHttpClient storageHttpClient;
+    private final FileStorageService storageService;
+    private final VideoThumbnailService thumbnailService;
     private final FileDeletionEventOutbox fileDeletionEventOutbox;
     private final ImageFileMessageQueue imageFileMessageQueue;
 
-    public ImageFileUploadResponse uploadImage(PictureFile file) {
-        var request = new ImageFileUploadRequest(file.toMultipartFile(), file.resourceKey());
-        return storageHttpClient.requestUploadImage(request);
+    public ImageFileUploadResponse uploadImage(FileUploadRequest file) {
+        return storageService.upload(file.toMultipartFile(), file.resourceKey());
     }
 
-    public VideoFileUploadResponse uploadVideo(PictureFile file) {
-        var request = new VideoFileUploadRequest(file.toMultipartFile(), file.resourceKey());
-        return storageHttpClient.requestUploadVideo(request);
+    public VideoFileUploadResponse uploadVideo(FileUploadRequest file) {
+        var videoInfo = storageService.upload(file.toMultipartFile(), file.resourceKey());
+        var thumbnailInfo = thumbnailService.videoThumbnail(videoInfo.resourceKey());
+        storageService.upload(thumbnailInfo.toMultipartFile(), thumbnailInfo.resourceKey());
+        return new VideoFileUploadResponse(
+            videoInfo.resourceKey(),
+            thumbnailInfo.resourceKey(),
+            videoInfo.size()
+        );
     }
 
     public FileReadResponse read(String resourceKey) {
-        return storageHttpClient.requestReadFile(resourceKey);
+        return storageService.read(resourceKey);
     }
 
     public void deleteAsync(String resourceKey) {

@@ -1,6 +1,6 @@
 package ecsimsw.picup.album.service;
 
-import ecsimsw.picup.album.domain.PictureFile;
+import ecsimsw.picup.album.dto.FileUploadRequest;
 import ecsimsw.picup.album.dto.AlbumInfoResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -16,7 +16,7 @@ public class AlbumUploadService {
     private final AlbumService albumService;
 
     public AlbumInfoResponse initAlbum(Long userId, String name, MultipartFile file) {
-        var thumbnail = PictureFile.resizedOf(file, ALBUM_THUMBNAIL_SCALE);
+        var thumbnail = FileUploadRequest.resizedOf(file, ALBUM_THUMBNAIL_SCALE);
         var uploadedImage = fileService.uploadImage(thumbnail);
         try {
             return albumService.create(userId, name, uploadedImage);

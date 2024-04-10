@@ -4,8 +4,8 @@ import static ecsimsw.picup.env.MemberFixture.USER_ID;
 
 import ecsimsw.picup.album.domain.Album;
 import ecsimsw.picup.album.domain.Picture;
-import ecsimsw.picup.album.dto.ImageFileUploadResponse;
-import ecsimsw.picup.album.dto.VideoFileUploadResponse;
+import ecsimsw.picup.storage.dto.ImageFileUploadResponse;
+import ecsimsw.picup.storage.dto.VideoFileUploadResponse;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
 

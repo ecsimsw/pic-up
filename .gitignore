@@ -1,6 +1,6 @@
 # server
-storage
-storage-backup
+/storage
+/storage-backup
 properties.sh
 
 server-api/api-album/src/main/java/ecsimsw/picup/PicUpAlbumApplication.java

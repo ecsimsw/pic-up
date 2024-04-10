@@ -1,4 +1,4 @@
-package ecsimsw.picup.album.domain;
+package ecsimsw.picup.album.utils;
 
 import ecsimsw.picup.album.exception.AlbumException;
 import org.springframework.web.multipart.MultipartFile;
@@ -9,6 +9,10 @@ public class ResourceKeyStrategy {
 
     public static String generate(MultipartFile file) {
         var fileName = file.getOriginalFilename();
+        return generate(fileName);
+    }
+
+    public static String generate(String fileName) {
         if (fileName == null || fileName.trim().isEmpty()) {
             throw new AlbumException("Invalid file name resource");
         }

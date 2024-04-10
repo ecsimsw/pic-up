@@ -1,9 +1,11 @@
 package ecsimsw.picup.album.service;
 
-import ecsimsw.picup.album.domain.StoredFile;
 import ecsimsw.picup.album.dto.FileReadResponse;
-import ecsimsw.picup.album.exception.InvalidResourceException;
+import ecsimsw.picup.album.dto.FileUploadResponse;
+import ecsimsw.picup.storage.dto.ImageFileUploadResponse;
+import ecsimsw.picup.storage.exception.InvalidResourceException;
 import ecsimsw.picup.album.exception.StorageException;
+import ecsimsw.picup.storage.service.ImageStorage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -17,29 +19,25 @@ import java.util.concurrent.TimeUnit;
 
 import static ecsimsw.picup.album.config.FileStorageConfig.UPLOAD_TIME_OUT_SEC;
 
-
 @Service
-public class StorageService {
+public class FileStorageService {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(StorageService.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(FileStorageService.class);
 
     private final ImageStorage mainStorage;
     private final ImageStorage backUpStorage;
-    private final VideoThumbnailService thumbnailService;
 
-    public StorageService(
+    public FileStorageService(
         @Qualifier(value = "mainStorage") ImageStorage mainStorage,
-        @Qualifier(value = "backUpStorage") ImageStorage backUpStorage,
-        VideoThumbnailService thumbnailService
+        @Qualifier(value = "backUpStorage") ImageStorage backUpStorage
     ) {
         this.mainStorage = mainStorage;
         this.backUpStorage = backUpStorage;
-        this.thumbnailService = thumbnailService;
     }
 
-    public StoredFile upload(MultipartFile file, String resourceKey) {
+    public ImageFileUploadResponse upload(MultipartFile file, String resourceKey) {
         LOGGER.info("upload file : " + resourceKey);
-        var storedFile = StoredFile.of(file);
+        var storedFile = FileUploadResponse.of(resourceKey, file);
         var futures = List.of(
             mainStorage.storeAsync(resourceKey, storedFile),
             backUpStorage.storeAsync(resourceKey, storedFile)
@@ -48,7 +46,7 @@ public class StorageService {
             CompletableFuture.allOf(futures.toArray(new CompletableFuture[0]))
                 .orTimeout(UPLOAD_TIME_OUT_SEC, TimeUnit.SECONDS)
                 .join();
-            return storedFile;
+            return new ImageFileUploadResponse(resourceKey, file.getSize());
         } catch (CompletionException e) {
             futures.forEach(uploadFuture -> uploadFuture.thenAccept(
                 uploadResponse -> {

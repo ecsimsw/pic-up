@@ -1,7 +1,7 @@
-package ecsimsw.picup.album.service;
+package ecsimsw.picup.storage.service;
 
 import com.amazonaws.services.s3.AmazonS3;
-import ecsimsw.picup.album.domain.StoredFile;
+import ecsimsw.picup.album.dto.FileUploadResponse;
 import ecsimsw.picup.album.exception.StorageException;
 import ecsimsw.picup.album.utils.AwsS3Utils;
 import lombok.RequiredArgsConstructor;
@@ -20,9 +20,9 @@ public class ObjectStorage implements ImageStorage {
 
     //    @Async
     @Override
-    public CompletableFuture<String> storeAsync(String resourceKey, StoredFile storedFile) {
+    public CompletableFuture<String> storeAsync(String resourceKey, FileUploadResponse fileUploadResponse) {
         try {
-            AwsS3Utils.upload(s3Client, BUCKET_NAME, resourceKey, storedFile);
+            AwsS3Utils.upload(s3Client, BUCKET_NAME, resourceKey, fileUploadResponse);
             return new AsyncResult<>(resourceKey).completable();
         } catch (Exception e) {
             throw new StorageException("Object storage server exception while uploading", e);
@@ -30,9 +30,9 @@ public class ObjectStorage implements ImageStorage {
     }
 
     @Override
-    public StoredFile read(String resourceKey) {
+    public FileUploadResponse read(String resourceKey) {
         var file = AwsS3Utils.read(s3Client, BUCKET_NAME, resourceKey);
-        return StoredFile.of(resourceKey, file);
+        return FileUploadResponse.of(resourceKey, file);
     }
 
     @Override

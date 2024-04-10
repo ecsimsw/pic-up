@@ -26,7 +26,7 @@ import static org.mockito.Mockito.*;
 @EnableRetry
 @ExtendWith(MockitoExtension.class)
 @SpringBootTest(classes = ImageFileMessageQueue.class)
-class PictureFileMessageQueueTest {
+class FileUploadRequestMessageQueueTest {
 
     @MockBean
     private RabbitTemplate rabbitTemplate;
