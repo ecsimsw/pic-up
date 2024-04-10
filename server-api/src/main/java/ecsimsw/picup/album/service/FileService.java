@@ -1,6 +1,8 @@
 package ecsimsw.picup.album.service;
 
-import ecsimsw.picup.album.domain.*;
+import ecsimsw.picup.album.domain.FileDeletionEvent;
+import ecsimsw.picup.album.domain.FileDeletionEventOutbox;
+import ecsimsw.picup.album.domain.FileDeletionEvent_;
 import ecsimsw.picup.album.dto.FileReadResponse;
 import ecsimsw.picup.album.dto.FileUploadRequest;
 import ecsimsw.picup.mq.ImageFileMessageQueue;
