@@ -33,7 +33,7 @@ public class PicUpAlbumApplication {
 //        FileStorageService bean = ctx.getBean(FileStorageService.class);
 //        FileUtils.read("./storage-backup/");
 
-        ObjectStorage bean = ctx.getBean(ObjectStorage.class);
+        ObjectStorage bean = (ObjectStorage) ctx.getBean("mainStorage");
 
         File dir = new File("./storage-backup/");
         for(File f : dir.listFiles()) {
