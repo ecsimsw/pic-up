@@ -21,6 +21,6 @@ export PICUP_TOKEN_SECRET="ecsimswtemptokensecretqwertyqwerty123123123"
 export PICUP_AES_KEY="aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
 export PICUP_AES_IV="0123456789012345"
 
-export PICUP_AWS_ACCESS_KEY=true
+export PICUP_AWS_ACCESS_KEY=""
 export PICUP_AWS_SECRET_KEY=""
 export PICUP_CLOUDFRONT_PUBLIC_KEY_ID=""

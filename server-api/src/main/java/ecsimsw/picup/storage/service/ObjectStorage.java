@@ -3,7 +3,7 @@ package ecsimsw.picup.storage.service;
 import com.amazonaws.services.s3.AmazonS3;
 import ecsimsw.picup.album.dto.FileUploadResponse;
 import ecsimsw.picup.album.exception.StorageException;
-import ecsimsw.picup.album.utils.AwsS3Utils;
+import ecsimsw.picup.storage.utils.AwsS3Utils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.stereotype.Component;

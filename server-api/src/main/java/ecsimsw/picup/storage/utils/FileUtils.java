@@ -1,4 +1,4 @@
-package ecsimsw.picup.album.utils;
+package ecsimsw.picup.storage.utils;
 
 import ecsimsw.picup.album.exception.StorageException;
 

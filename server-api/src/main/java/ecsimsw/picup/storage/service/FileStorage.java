@@ -1,7 +1,7 @@
 package ecsimsw.picup.storage.service;
 
 import ecsimsw.picup.album.dto.FileUploadResponse;
-import ecsimsw.picup.album.utils.FileUtils;
+import ecsimsw.picup.storage.utils.FileUtils;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.AsyncResult;
 
