@@ -2,12 +2,7 @@ package ecsimsw.picup;
 
 import ecsimsw.picup.album.domain.PictureFileExtension;
 import ecsimsw.picup.album.dto.FileUploadResponse;
-import ecsimsw.picup.album.dto.SignUpRequest;
-import ecsimsw.picup.album.service.FileDeletionScheduler;
-import ecsimsw.picup.album.service.FileStorageService;
-import ecsimsw.picup.album.service.MemberService;
 import ecsimsw.picup.storage.service.ObjectStorage;
-import ecsimsw.picup.storage.utils.FileUtils;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.retry.annotation.EnableRetry;
@@ -15,7 +10,6 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
 
 @EnableScheduling
 @EnableRetry
@@ -34,11 +28,10 @@ public class PicUpAlbumApplication {
 //        FileUtils.read("./storage-backup/");
 
         ObjectStorage bean = (ObjectStorage) ctx.getBean("mainStorage");
-
+        byte[] byteFile = new byte[0];
         File dir = new File("./storage-backup/");
-        for(File f : dir.listFiles()) {
-            System.out.println("upload : "+ f.getName());
-            byte[] byteFile = Files.readAllBytes(f.toPath());
+        for (File f : dir.listFiles()) {
+            System.out.println("upload : " + f.getName());
             bean.storeAsync(
                 f.getName(),
                 new FileUploadResponse(
@@ -48,7 +41,6 @@ public class PicUpAlbumApplication {
                     byteFile
                     )
             );
-            System.out.println(f);
         }
     }
 }
