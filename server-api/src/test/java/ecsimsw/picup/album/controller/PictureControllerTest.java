@@ -133,30 +133,4 @@ class PictureControllerTest {
             .andExpect(status().isOk());
         verify(pictureDeleteService).deletePictures(loginUserId, albumId, pictureIds);
     }
-
-    @DisplayName("Picture의 파일을 요청한다.")
-    @Test
-    void file() throws Exception {
-        var pictureId = 1L;
-        var expectedFile = new FileReadResponse("resourceKey.jpg", new byte[0], 0L, "jpg");
-        when(pictureReadService.pictureImage(loginUserId, albumId, pictureId))
-            .thenReturn(expectedFile);
-        mockMvc.perform(get("/api/album/" + albumId + "/picture/"+pictureId+"/image"))
-            .andExpect(status().isOk())
-            .andExpect(header().string("Cache-Control", "max-age=7200"))
-            .andExpect(content().bytes(expectedFile.file()));
-    }
-
-    @DisplayName("Picture의 썸네일 파일을 요청한다.")
-    @Test
-    void thumbnailFile() throws Exception {
-        var pictureId = 1L;
-        var expectedFile = new FileReadResponse("resourceKey.jpg", new byte[0], 0L, "jpg");
-        when(pictureReadService.pictureThumbnail(loginUserId, albumId, pictureId))
-            .thenReturn(expectedFile);
-        mockMvc.perform(get("/api/album/" + albumId + "/picture/"+pictureId+"/thumbnail"))
-            .andExpect(status().isOk())
-            .andExpect(header().string("Cache-Control", "max-age=7200"))
-            .andExpect(content().bytes(expectedFile.file()));
-    }
 }

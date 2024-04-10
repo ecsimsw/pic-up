@@ -53,11 +53,11 @@ class PictureServiceTest {
         var album = albumRepository.save(new Album(USER_ID, ALBUM_NAME, RESOURCE_KEY, SIZE));
         var picture = pictureService.createImage(USER_ID, album.getId(), IMAGE_FILE, THUMBNAIL_FILE);
         assertAll(
-            () -> assertThat(picture.id()).isNotNull(),
-            () -> assertThat(picture.albumId()).isEqualTo(album.getId()),
-            () -> assertThat(picture.resourceKey()).isEqualTo(IMAGE_FILE.resourceKey()),
-            () -> assertThat(picture.thumbnailResourceKey()).isEqualTo(THUMBNAIL_FILE.resourceKey()),
-            () -> assertThat(picture.createdAt()).isNotNull()
+            () -> assertThat(picture.getId()).isNotNull(),
+            () -> assertThat(picture.getAlbum().getId()).isEqualTo(album.getId()),
+            () -> assertThat(picture.getResourceKey()).isEqualTo(IMAGE_FILE.resourceKey()),
+            () -> assertThat(picture.getThumbnailResourceKey()).isEqualTo(THUMBNAIL_FILE.resourceKey()),
+            () -> assertThat(picture.getCreatedAt()).isNotNull()
         );
     }
 
@@ -67,11 +67,11 @@ class PictureServiceTest {
         var album = albumRepository.save(new Album(USER_ID, ALBUM_NAME, RESOURCE_KEY, SIZE));
         var picture = pictureService.createVideo(USER_ID, album.getId(), VIDEO_FILE);
         assertAll(
-            () -> assertThat(picture.id()).isNotNull(),
-            () -> assertThat(picture.albumId()).isEqualTo(album.getId()),
-            () -> assertThat(picture.resourceKey()).isEqualTo(VIDEO_FILE.resourceKey()),
-            () -> assertThat(picture.thumbnailResourceKey()).isEqualTo(VIDEO_FILE.thumbnailResourceKey()),
-            () -> assertThat(picture.createdAt()).isNotNull()
+            () -> assertThat(picture.getId()).isNotNull(),
+            () -> assertThat(picture.getAlbum().getId()).isEqualTo(album.getId()),
+            () -> assertThat(picture.getResourceKey()).isEqualTo(VIDEO_FILE.resourceKey()),
+            () -> assertThat(picture.getThumbnailResourceKey()).isEqualTo(VIDEO_FILE.thumbnailResourceKey()),
+            () -> assertThat(picture.getCreatedAt()).isNotNull()
         );
     }
 
@@ -101,7 +101,7 @@ class PictureServiceTest {
     void updateUsageByUpload() {
         var album = albumRepository.save(new Album(USER_ID, ALBUM_NAME, RESOURCE_KEY, SIZE));
         var pictureInfo = pictureService.createImage(USER_ID, album.getId(), IMAGE_FILE, THUMBNAIL_FILE);
-        var picture = pictureRepository.findById(pictureInfo.id()).orElseThrow();
+        var picture = pictureRepository.findById(pictureInfo.getId()).orElseThrow();
         verify(storageUsageService, atLeastOnce())
             .addUsage(USER_ID, picture.getFileSize());
     }
@@ -112,7 +112,7 @@ class PictureServiceTest {
         var album = albumRepository.save(new Album(USER_ID, ALBUM_NAME, RESOURCE_KEY, SIZE));
         var picture1 = pictureService.createImage(USER_ID, album.getId(), IMAGE_FILE, THUMBNAIL_FILE);
         var picture2 = pictureService.createImage(USER_ID, album.getId(), IMAGE_FILE, THUMBNAIL_FILE);
-        pictureService.deleteAllByIds(USER_ID, album.getId(), List.of(picture1.id(), picture2.id()));
+        pictureService.deleteAllByIds(USER_ID, album.getId(), List.of(picture1.getId(), picture2.getId()));
         assertThat(pictureRepository.findAllByAlbumId(album.getId())).isEmpty();
     }
 
@@ -154,7 +154,7 @@ class PictureServiceTest {
         var picture2 = pictureService.createImage(USER_ID, album.getId(), IMAGE_FILE, THUMBNAIL_FILE);
         var picture3 = pictureService.createImage(USER_ID, album.getId(), IMAGE_FILE, THUMBNAIL_FILE);
         var picture4 = pictureService.createImage(USER_ID, album.getId(), IMAGE_FILE, THUMBNAIL_FILE);
-        var result = pictureService.fetchOrderByCursor(USER_ID, album.getId(), PictureSearchCursor.from(2, picture3.createdAt()));
+        var result = pictureService.fetchOrderByCursor(USER_ID, album.getId(), PictureSearchCursor.from(2, picture3.getCreatedAt()));
         assertThat(result).isEqualTo(List.of(picture2, picture1));
         assertThat(result).doesNotContain(picture4);
     }
@@ -164,7 +164,7 @@ class PictureServiceTest {
     void read() {
         var album = albumRepository.save(new Album(USER_ID, ALBUM_NAME, RESOURCE_KEY, SIZE));
         var saved = pictureService.createImage(USER_ID, album.getId(), IMAGE_FILE, THUMBNAIL_FILE);
-        var result = pictureService.read(USER_ID, album.getId(), saved.id());
+        var result = pictureService.read(USER_ID, album.getId(), saved.getId());
         assertThat(result).isEqualTo(saved);
     }
 
@@ -174,10 +174,10 @@ class PictureServiceTest {
         var album = albumRepository.save(new Album(USER_ID, ALBUM_NAME, RESOURCE_KEY, SIZE));
         var saved = pictureService.createImage(USER_ID, album.getId(), IMAGE_FILE, THUMBNAIL_FILE);
         assertThatThrownBy(
-            () -> pictureService.read(USER_ID+1, album.getId(), saved.id())
+            () -> pictureService.read(USER_ID+1, album.getId(), saved.getId())
         ).isInstanceOf(UnauthorizedException.class);
         assertThatThrownBy(
-            () -> pictureService.fetchOrderByCursor(USER_ID+1, album.getId(), PictureSearchCursor.from(2, saved.createdAt()))
+            () -> pictureService.fetchOrderByCursor(USER_ID+1, album.getId(), PictureSearchCursor.from(2, saved.getCreatedAt()))
         ).isInstanceOf(UnauthorizedException.class);
     }
 }

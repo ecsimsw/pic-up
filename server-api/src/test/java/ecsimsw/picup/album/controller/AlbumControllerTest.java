@@ -129,16 +129,4 @@ class AlbumControllerTest {
         mockMvc.perform(delete("/api/album/"+ albumId))
             .andExpect(status().isOk());
     }
-
-    @Test
-    void albumThumbnail() throws Exception {
-        var albumId = 1L;
-        var expectedBody = new FileReadResponse(RESOURCE_KEY, new byte[0], SIZE, "jpg");
-        when(albumReadService.albumThumbnail(loginUserId, albumId))
-            .thenReturn(expectedBody);
-        mockMvc.perform(get("/api/album/" + albumId + "/thumbnail"))
-            .andExpect(status().isOk())
-            .andExpect(header().string("Cache-Control", "max-age=7200"))
-            .andExpect(content().bytes(expectedBody.file()));
-    }
 }

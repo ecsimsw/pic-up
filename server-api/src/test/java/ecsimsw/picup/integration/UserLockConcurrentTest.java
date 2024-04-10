@@ -37,7 +37,7 @@ public class UserLockConcurrentTest {
     @BeforeEach
     public void init() {
         memberId = memberService.signUp(SIGN_UP_REQUEST).getId();
-        albumId = albumService.create(memberId, ALBUM_NAME, IMAGE_FILE).id();
+        albumId = albumService.create(memberId, ALBUM_NAME, IMAGE_FILE).getId();
     }
 
     @DisplayName("이미지 동시 업로드, 스토리지 사용량 정상 업데이트를 확인한다.")

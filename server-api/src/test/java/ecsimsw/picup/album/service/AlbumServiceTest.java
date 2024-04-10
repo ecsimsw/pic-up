@@ -55,10 +55,10 @@ class AlbumServiceTest {
     void create() {
         var result = albumService.create(USER_ID, ALBUM_NAME, IMAGE_FILE);
         assertAll(
-            () -> assertThat(result.id()).isNotNull(),
-            () -> assertThat(result.name()).isEqualTo(ALBUM_NAME),
-            () -> assertThat(result.thumbnailImage()).isEqualTo(IMAGE_FILE.resourceKey()),
-            () -> assertThat(result.createdAt()).isNotNull()
+            () -> assertThat(result.getId()).isNotNull(),
+            () -> assertThat(result.getName()).isEqualTo(ALBUM_NAME),
+            () -> assertThat(result.getResourceKey()).isEqualTo(IMAGE_FILE.resourceKey()),
+            () -> assertThat(result.getCreatedAt()).isNotNull()
         );
     }
 
@@ -66,7 +66,7 @@ class AlbumServiceTest {
     @Test
     void delete() {
         var saved = albumService.create(USER_ID, ALBUM_NAME, IMAGE_FILE);
-        albumService.delete(USER_ID, saved.id());
+        albumService.delete(USER_ID, saved.getId());
         assertThat(albumService.findAll(USER_ID)).isEmpty();
     }
 
@@ -74,9 +74,9 @@ class AlbumServiceTest {
     @Test
     void deleteAllPictures() {
         var saved = albumService.create(USER_ID, ALBUM_NAME, IMAGE_FILE);
-        albumService.delete(USER_ID, saved.id());
+        albumService.delete(USER_ID, saved.getId());
         verify(pictureService, atLeastOnce())
-            .deleteAllInAlbum(USER_ID, saved.id());
+            .deleteAllInAlbum(USER_ID, saved.getId());
     }
 
     @DisplayName("앨범 주인이 아닌 사용자는 앨범을 제거할 수 없다.")
@@ -84,7 +84,7 @@ class AlbumServiceTest {
     void deleteWithInvalidUser() {
         var saved = albumService.create(USER_ID, ALBUM_NAME, IMAGE_FILE);
         assertThatThrownBy(
-            () -> albumService.delete(USER_ID + 1, saved.id())
+            () -> albumService.delete(USER_ID + 1, saved.getId())
         ).isInstanceOf(UnauthorizedException.class);
     }
 
@@ -92,7 +92,7 @@ class AlbumServiceTest {
     @Test
     void getUserAlbum() {
         var saved = albumService.create(USER_ID, ALBUM_NAME, IMAGE_FILE);
-        var result = albumService.getUserAlbum(USER_ID, saved.id());
+        var result = albumService.getUserAlbum(USER_ID, saved.getId());
         assertAll(
             () -> assertThat(result.getId()).isNotNull(),
             () -> assertThat(result.getName()).isEqualTo(ALBUM_NAME),
@@ -106,7 +106,7 @@ class AlbumServiceTest {
     void getUserAlbumWithInvalidUser() {
         var saved = albumService.create(USER_ID, ALBUM_NAME, IMAGE_FILE);
         assertThatThrownBy(
-            () -> albumService.getUserAlbum(USER_ID + 1, saved.id())
+            () -> albumService.getUserAlbum(USER_ID + 1, saved.getId())
         );
     }
 }
