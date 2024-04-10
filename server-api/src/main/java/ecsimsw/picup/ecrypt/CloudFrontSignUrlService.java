@@ -20,9 +20,9 @@ public class CloudFrontSignUrlService implements ResourceSignUrlService {
     private final String privateKeyPath;
 
     @Override
-    public String signedUrl(String fileName) {
+    public String signedUrl(String remoteIp, String fileName) {
         try {
-            var sign = cannedSign(fileName);
+            var sign = cannedSign(remoteIp, fileName);
             var signedUrl = cloudFrontUtilities.getSignedUrlWithCustomPolicy(sign);
             return signedUrl.url();
         } catch (Exception e) {
@@ -30,9 +30,10 @@ public class CloudFrontSignUrlService implements ResourceSignUrlService {
         }
     }
 
-    private CustomSignerRequest cannedSign(String fileName) throws Exception {
+    private CustomSignerRequest cannedSign(String remoteIp, String fileName) throws Exception {
         return CustomSignerRequest.builder()
             .privateKey(Path.of(privateKeyPath))
+            .ipRange(remoteIp)
             .resourceUrl(new URL(CDN_PROTOCOL, domainName, "/" + fileName).toString())
             .keyPairId(publicKeyId)
             .expirationDate(Instant.now().plus(EXPIRATION_AFTER_DAYS, ChronoUnit.DAYS))

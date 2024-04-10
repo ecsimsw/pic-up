@@ -16,29 +16,29 @@ public class ResourceSignService {
         this.signUrlService = signUrlService;
     }
 
-    public AlbumInfoResponse signAlbum(AlbumInfoResponse album) {
+    public AlbumInfoResponse signAlbum(String remoteIp, AlbumInfoResponse album) {
         return new AlbumInfoResponse(
             album.id(),
             album.name(),
-            signUrlService.signedUrl(album.thumbnailImage()),
+            signUrlService.signedUrl(remoteIp, album.thumbnailImage()),
             album.createdAt()
         );
     }
 
-    public List<AlbumInfoResponse> signAlbum(List<AlbumInfoResponse> albums) {
+    public List<AlbumInfoResponse> signAlbum(String remoteIp, List<AlbumInfoResponse> albums) {
         return albums.stream()
-            .map(this::signAlbum)
+            .map(album -> signAlbum(remoteIp, album))
             .toList();
     }
 
-    public List<PictureInfoResponse> signPictures(List<PictureInfoResponse> pictureInfos) {
+    public List<PictureInfoResponse> signPictures(String remoteIp, List<PictureInfoResponse> pictureInfos) {
         return pictureInfos.stream()
             .map(picture -> new PictureInfoResponse(
                 picture.id(),
                 picture.albumId(),
                 picture.isVideo(),
-                signUrlService.signedUrl(picture.resourceKey()),
-                signUrlService.signedUrl(picture.thumbnailResourceKey()),
+                signUrlService.signedUrl(remoteIp, picture.resourceKey()),
+                signUrlService.signedUrl(remoteIp, picture.thumbnailResourceKey()),
                 picture.createdAt()
             ))
             .toList();

@@ -8,9 +8,9 @@ import ecsimsw.picup.album.service.ResourceSignService;
 import ecsimsw.picup.auth.AuthTokenPayload;
 import ecsimsw.picup.auth.TokenPayload;
 import java.util.List;
-import javax.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -40,25 +40,22 @@ public class AlbumController {
 
     @GetMapping("/api/album/{albumId}")
     public ResponseEntity<AlbumInfoResponse> getAlbum(
-        HttpServletRequest httpServletRequest,
+        @Header("X-Forwarded-For") String remoteIp,
         @TokenPayload AuthTokenPayload loginUser,
         @PathVariable Long albumId
     ) {
-
-        System.out.println(httpServletRequest.getHeader("X-Forwarded-For"));
-        System.out.println(httpServletRequest.getHeader("X-Real-IP"));
-
         var albumInfo = albumReadService.album(loginUser.userId(), albumId);
-        var signedAlbumInfo = signService.signAlbum(albumInfo);
+        var signedAlbumInfo = signService.signAlbum(remoteIp, albumInfo);
         return ResponseEntity.ok(signedAlbumInfo);
     }
 
     @GetMapping("/api/album")
     public ResponseEntity<List<AlbumInfoResponse>> getAlbums(
+        @Header("X-Forwarded-For") String remoteIp,
         @TokenPayload AuthTokenPayload loginUser
     ) {
         var albumInfos = albumReadService.albums(loginUser.userId());
-        var signedAlbumInfos = signService.signAlbum(albumInfos);
+        var signedAlbumInfos = signService.signAlbum(remoteIp, albumInfos);
         return ResponseEntity.ok(signedAlbumInfos);
     }
 

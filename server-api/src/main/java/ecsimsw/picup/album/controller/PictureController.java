@@ -13,6 +13,7 @@ import ecsimsw.picup.auth.TokenPayload;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -41,6 +42,7 @@ public class PictureController {
 
     @GetMapping("/api/album/{albumId}/picture")
     public ResponseEntity<List<PictureInfoResponse>> getPictures(
+        @Header("X-Forwarded-For") String remoteIp,
         @TokenPayload AuthTokenPayload loginUser,
         @PathVariable Long albumId,
         @RequestParam(defaultValue = "10") int limit,
@@ -49,7 +51,7 @@ public class PictureController {
     ) {
         var cursor = PictureSearchCursor.from(limit, cursorCreatedAt);
         var pictureInfos = pictureReadService.pictures(loginUser.userId(), albumId, cursor);
-        var signedPictureInfos = signService.signPictures(pictureInfos);
+        var signedPictureInfos = signService.signPictures(remoteIp, pictureInfos);
         return ResponseEntity.ok(signedPictureInfos);
     }
 
