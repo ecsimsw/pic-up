@@ -1,4 +1,4 @@
-package ecsimsw.picup.album.config;
+package ecsimsw.picup.config;
 
 import ecsimsw.picup.album.exception.DataSourceConnectionDownException;
 import org.springframework.jdbc.datasource.lookup.AbstractRoutingDataSource;

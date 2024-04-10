@@ -1,4 +1,4 @@
-package ecsimsw.picup.album.config;
+package ecsimsw.picup.config;
 
 public enum DataSourceType {
     MASTER,

@@ -1,4 +1,4 @@
-package ecsimsw.picup.album.config;
+package ecsimsw.picup.config;
 
 import java.time.Duration;
 import org.springframework.boot.web.client.RestTemplateBuilder;

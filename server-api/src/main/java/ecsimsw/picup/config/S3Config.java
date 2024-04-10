@@ -1,4 +1,4 @@
-package ecsimsw.picup.album.config;
+package ecsimsw.picup.config;
 
 import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.auth.AWSStaticCredentialsProvider;

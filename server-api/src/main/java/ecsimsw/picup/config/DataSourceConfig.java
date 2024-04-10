@@ -1,4 +1,4 @@
-package ecsimsw.picup.album.config;
+package ecsimsw.picup.config;
 
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.context.properties.ConfigurationProperties;

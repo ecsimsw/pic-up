@@ -13,7 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-import static ecsimsw.picup.album.config.CacheType.USER_ALBUMS;
+import static ecsimsw.picup.config.CacheType.USER_ALBUMS;
 
 @RequiredArgsConstructor
 @Service

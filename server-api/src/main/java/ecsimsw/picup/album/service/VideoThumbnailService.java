@@ -1,6 +1,6 @@
 package ecsimsw.picup.album.service;
 
-import ecsimsw.picup.album.config.FileStorageConfig;
+import ecsimsw.picup.config.FileStorageConfig;
 import ecsimsw.picup.album.domain.PictureFileExtension;
 import ecsimsw.picup.album.dto.FileUploadRequest;
 import ecsimsw.picup.album.utils.VideoUtils;

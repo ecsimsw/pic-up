@@ -1,7 +1,4 @@
-package ecsimsw.picup.album.config;
-
-import static ecsimsw.picup.album.config.DataSourceType.MASTER;
-import static ecsimsw.picup.album.config.DataSourceType.SLAVE;
+package ecsimsw.picup.config;
 
 import ecsimsw.picup.album.exception.DataSourceConnectionDownException;
 import java.util.Map;
@@ -18,8 +15,8 @@ import org.springframework.stereotype.Component;
 public class DataSourceHealth {
 
     private static final ConcurrentMap<DataSourceType, Status> STATUS_MAP = new ConcurrentHashMap<>(Map.of(
-        MASTER, Status.UNKNOWN,
-        SLAVE, Status.UNKNOWN
+        DataSourceType.MASTER, Status.UNKNOWN,
+        DataSourceType.SLAVE, Status.UNKNOWN
     ));
 
     private final DataSourceHealthIndicator indicatorMaster;
@@ -37,11 +34,11 @@ public class DataSourceHealth {
 
     @Scheduled(fixedDelay = 30000)
     public void healthCheck() {
-        DataSourceTargetContextHolder.setContext(MASTER);
-        STATUS_MAP.put(MASTER, indicatorMaster.getHealth(false).getStatus());
+        DataSourceTargetContextHolder.setContext(DataSourceType.MASTER);
+        STATUS_MAP.put(DataSourceType.MASTER, indicatorMaster.getHealth(false).getStatus());
 
-        DataSourceTargetContextHolder.setContext(SLAVE);
-        STATUS_MAP.put(SLAVE, indicatorSlave.getHealth(false).getStatus());
+        DataSourceTargetContextHolder.setContext(DataSourceType.SLAVE);
+        STATUS_MAP.put(DataSourceType.SLAVE, indicatorSlave.getHealth(false).getStatus());
 
         STATUS_MAP.keySet().stream()
             .filter(key -> STATUS_MAP.get(key) == Status.DOWN)

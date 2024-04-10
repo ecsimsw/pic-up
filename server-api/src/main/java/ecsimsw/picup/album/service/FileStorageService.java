@@ -15,7 +15,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 import java.util.concurrent.TimeUnit;
 
-import static ecsimsw.picup.album.config.FileStorageConfig.UPLOAD_TIME_OUT_SEC;
+import static ecsimsw.picup.config.FileStorageConfig.UPLOAD_TIME_OUT_SEC;
 
 @Service
 public class FileStorageService {
