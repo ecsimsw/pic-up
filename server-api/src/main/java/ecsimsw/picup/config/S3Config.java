@@ -21,6 +21,46 @@ import org.springframework.context.annotation.Primary;
 @Configuration
 public class S3Config {
 
+    public static final String BUCKET_NAME = "picup-ecsimsw";
+
+    @Primary
+    @ConditionalOnProperty(value = "mock.object.storage.enable", havingValue = "false", matchIfMissing = true)
+    @Bean
+    public AmazonS3 objectStorageClient(
+        @Value("${object.storage.credential.accessKey}") String accessKey,
+        @Value("${object.storage.credential.secretKey}") String secretKey
+    ) {
+        AWSCredentials awsCredentials = new BasicAWSCredentials(
+            accessKey,
+            secretKey
+        );
+        return AmazonS3ClientBuilder
+            .standard()
+            .withCredentials(new AWSStaticCredentialsProvider(awsCredentials))
+            .withRegion(Regions.AP_NORTHEAST_2)
+            .build();
+    }
+
+    @ConditionalOnProperty(value = "mock.object.storage.enable", havingValue = "true")
+    @Bean
+    public AmazonS3 mockObjectStorageClient(
+        @Value("${mock.object.storage.host.url}") String hostUrl,
+        @Value("${mock.object.storage.host.port}") int port
+    ) {
+        var api = new S3Mock.Builder().withPort(port).withInMemoryBackend().build();
+        api.start();
+
+        var endpoint = new AwsClientBuilder.EndpointConfiguration(hostUrl + ":" + port, Regions.AP_NORTHEAST_2.getName());
+        var amazonS3 = AmazonS3ClientBuilder
+            .standard()
+            .withPathStyleAccessEnabled(true)
+            .withEndpointConfiguration(endpoint)
+            .withCredentials(new AWSStaticCredentialsProvider(new AnonymousAWSCredentials()))
+            .build();
+        amazonS3.createBucket(BUCKET_NAME);
+        return amazonS3;
+    }
+
     @Primary
     @ConditionalOnProperty(value = "aws.cloudfront.sign", havingValue = "false", matchIfMissing = true)
     @Bean

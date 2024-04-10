@@ -21,8 +21,7 @@ public class AlbumService {
     //    @Cacheable(value = USER_ALBUMS, key = "#userId")
     @Transactional(readOnly = true)
     public List<Album> findAll(Long userId) {
-        List<Album> allByUserIdOrderByCreatedAtDesc = albumRepository.findAllByUserIdOrderByCreatedAtDesc(userId);
-        return allByUserIdOrderByCreatedAtDesc;
+        return albumRepository.findAllByUserIdOrderByCreatedAtDesc(userId);
     }
 
     //    @CacheEvict(value = USER_ALBUMS, key = "#userId")

@@ -7,6 +7,7 @@ document.addEventListener("DOMContentLoaded", function () {
         initCreationPanel()
         fetchUserInfo();
         fetchData(serverUrl + "/api/album", function (albums) {
+            albums.reverse()
             albums.forEach(async (album) => {
                 createAlbumArticle(album.id, album.name, album.thumbnailImage)
             });
@@ -68,7 +69,7 @@ function createAlbumArticle(albumId, titleText, thumbnailUrl) {
 
     article.addEventListener('click', function () {
         if (!createMode) {
-            location.href = "/static/html/album-detail.html?albumId=" + albumId
+            location.href = "/static-picup/html/album-detail.html?albumId=" + albumId
         }
     })
 

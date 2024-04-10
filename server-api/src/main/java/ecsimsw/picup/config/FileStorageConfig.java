@@ -1,8 +1,6 @@
 package ecsimsw.picup.config;
 
-import com.amazonaws.regions.Regions;
 import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import ecsimsw.picup.storage.service.FileStorage;
 import ecsimsw.picup.storage.service.ImageStorage;
 import ecsimsw.picup.storage.service.ObjectStorage;
@@ -16,8 +14,8 @@ public class FileStorageConfig {
     public static final String FILE_STORAGE_PATH = "./storage-backup/";
 
     @Bean
-    public ImageStorage mainStorage(ObjectStorage objectStorage) {
-        return objectStorage;
+    public ImageStorage mainStorage(AmazonS3 amazonS3) {
+        return new ObjectStorage(amazonS3);
     }
 
     @Bean
