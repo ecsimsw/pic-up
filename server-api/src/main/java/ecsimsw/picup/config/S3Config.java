@@ -33,9 +33,9 @@ public class S3Config {
     public ResourceSignUrlService signUrlService(
         @Value("${aws.cloudfront.domain}")
         String domainName,
-        @Value("${aws.cloudfront.domain}")
+        @Value("${aws.cloudfront.publicKeyId}")
         String publicKeyId,
-        @Value("${aws.cloudfront.domain}")
+        @Value("${aws.cloudfront.privateKeyPath}")
         String privateKeyPath
     ) {
         return new CloudFrontSignUrlService(

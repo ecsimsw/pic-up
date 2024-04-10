@@ -8,7 +8,7 @@ document.addEventListener("DOMContentLoaded", function () {
         fetchUserInfo();
         fetchData(serverUrl+"/api/album", function (albums) {
             albums.forEach(async (album) => {
-                createAlbumArticle(album.id, album.name)
+                createAlbumArticle(album.id, album.name, album.thumbnailImage)
             });
         })
     })
@@ -56,7 +56,7 @@ function fetchUserInfo() {
     }
 }
 
-function createAlbumArticle(albumId, titleText) {
+function createAlbumArticle(albumId, titleText, thumbnailUrl) {
     const article = document.createElement('article');
     article.id = `album-${albumId}`
     article.className = 'thumb'
@@ -65,7 +65,7 @@ function createAlbumArticle(albumId, titleText) {
     thumbImage.className = "album-main-image"
     thumbImage.id = `album-${albumId}-thumb`
 
-    thumbImage.style.backgroundImage = "url('"+serverUrl+"/api/album/"+ albumId + "/thumbnail" +"')"
+    thumbImage.style.backgroundImage = "url('" + thumbnailUrl + "')"
     thumbImage.style.cursor = "pointer"
     thumbImage.style.outline = "0px"
     article.appendChild(thumbImage);
