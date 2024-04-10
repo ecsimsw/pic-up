@@ -55,7 +55,7 @@ public class AlbumController {
         @TokenPayload AuthTokenPayload loginUser
     ) {
         var albumInfos = albumReadService.albums(loginUser.userId());
-        var signedAlbumInfos = signService.signAlbum(remoteIp, albumInfos);
+        var signedAlbumInfos = signService.signAlbums(remoteIp, albumInfos);
         return ResponseEntity.ok(signedAlbumInfos);
     }
 

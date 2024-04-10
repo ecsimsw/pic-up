@@ -10,6 +10,7 @@ import ecsimsw.picup.album.dto.PicturesDeleteRequest;
 import ecsimsw.picup.album.service.PictureDeleteService;
 import ecsimsw.picup.album.service.PictureReadService;
 import ecsimsw.picup.album.service.PictureUploadService;
+import ecsimsw.picup.album.service.ResourceSignService;
 import ecsimsw.picup.auth.AuthTokenPayload;
 import ecsimsw.picup.auth.AuthTokenService;
 import org.junit.jupiter.api.BeforeEach;
@@ -49,6 +50,9 @@ class PictureControllerTest {
     private PictureUploadService pictureUploadService;
 
     @MockBean
+    private ResourceSignService resourceSignService;
+
+    @MockBean
     private PictureDeleteService pictureDeleteService;
 
     @MockBean
@@ -64,6 +68,9 @@ class PictureControllerTest {
     void init() {
         when(authTokenService.tokenPayload(any()))
             .thenReturn(new AuthTokenPayload(loginUserId, USER_NAME));
+
+        when(resourceSignService.signPictures(any(), any()))
+            .thenAnswer(input -> input.getArguments()[1]);
     }
 
     @DisplayName("앨범에 Picture 를 생성한다.")
@@ -72,13 +79,13 @@ class PictureControllerTest {
         var uploadFile = new MockMultipartFile("file", "pic.jpg", "jpg", new byte[0]);
         var expectedPictureInfo = new PictureInfoResponse(1L, albumId, false, "resource.png", "thumbnail.png", LocalDateTime.now());
         when(pictureUploadService.upload(loginUserId, expectedPictureInfo.id(), uploadFile))
-            .thenReturn(expectedPictureInfo);
+            .thenReturn(expectedPictureInfo.id());
         mockMvc.perform(
                 multipart("/api/album/" + albumId + "/picture")
                     .file(uploadFile)
             )
             .andExpect(status().isOk())
-            .andExpect(content().string(OBJECT_MAPPER.writeValueAsString(expectedPictureInfo)));
+            .andExpect(content().string(OBJECT_MAPPER.writeValueAsString(expectedPictureInfo.id())));
     }
 
     @DisplayName("앨범내 Picture 정보 중 첫 페이지 n 개를 조회한다.")

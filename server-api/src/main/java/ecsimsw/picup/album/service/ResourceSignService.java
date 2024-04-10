@@ -25,7 +25,7 @@ public class ResourceSignService {
         );
     }
 
-    public List<AlbumInfoResponse> signAlbum(String remoteIp, List<AlbumInfoResponse> albums) {
+    public List<AlbumInfoResponse> signAlbums(String remoteIp, List<AlbumInfoResponse> albums) {
         return albums.stream()
             .map(album -> signAlbum(remoteIp, album))
             .toList();
