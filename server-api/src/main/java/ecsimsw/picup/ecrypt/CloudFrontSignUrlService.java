@@ -1,13 +1,12 @@
 package ecsimsw.picup.ecrypt;
 
-import lombok.RequiredArgsConstructor;
-import software.amazon.awssdk.services.cloudfront.CloudFrontUtilities;
-import software.amazon.awssdk.services.cloudfront.model.CannedSignerRequest;
-
 import java.net.URL;
 import java.nio.file.Path;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+import lombok.RequiredArgsConstructor;
+import software.amazon.awssdk.services.cloudfront.CloudFrontUtilities;
+import software.amazon.awssdk.services.cloudfront.model.CustomSignerRequest;
 
 @RequiredArgsConstructor
 public class CloudFrontSignUrlService implements ResourceSignUrlService {
@@ -24,15 +23,15 @@ public class CloudFrontSignUrlService implements ResourceSignUrlService {
     public String signedUrl(String fileName) {
         try {
             var sign = cannedSign(fileName);
-            var signedUrl = cloudFrontUtilities.getSignedUrlWithCannedPolicy(sign);
+            var signedUrl = cloudFrontUtilities.getSignedUrlWithCustomPolicy(sign);
             return signedUrl.url();
         } catch (Exception e) {
             throw new IllegalArgumentException("Failed to create cloudfront sign url from : " + fileName);
         }
     }
 
-    private CannedSignerRequest cannedSign(String fileName) throws Exception {
-        return CannedSignerRequest.builder()
+    private CustomSignerRequest cannedSign(String fileName) throws Exception {
+        return CustomSignerRequest.builder()
             .privateKey(Path.of(privateKeyPath))
             .resourceUrl(new URL(CDN_PROTOCOL, domainName, "/" + fileName).toString())
             .keyPairId(publicKeyId)

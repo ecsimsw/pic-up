@@ -5,15 +5,19 @@ import ecsimsw.picup.album.service.AlbumDeleteService;
 import ecsimsw.picup.album.service.AlbumReadService;
 import ecsimsw.picup.album.service.AlbumUploadService;
 import ecsimsw.picup.album.service.ResourceSignService;
-import ecsimsw.picup.ecrypt.CloudFrontSignUrlService;
 import ecsimsw.picup.auth.AuthTokenPayload;
 import ecsimsw.picup.auth.TokenPayload;
+import java.util.List;
+import javax.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.util.List;
 
 @RequiredArgsConstructor
 @RestController
@@ -36,9 +40,13 @@ public class AlbumController {
 
     @GetMapping("/api/album/{albumId}")
     public ResponseEntity<AlbumInfoResponse> getAlbum(
+        HttpServletRequest httpServletRequest,
         @TokenPayload AuthTokenPayload loginUser,
         @PathVariable Long albumId
     ) {
+
+        System.out.println(httpServletRequest.getHeader("X-Forwarded-For"));
+
         var albumInfo = albumReadService.album(loginUser.userId(), albumId);
         var signedAlbumInfo = signService.signAlbum(albumInfo);
         return ResponseEntity.ok(signedAlbumInfo);
