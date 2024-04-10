@@ -1,7 +1,6 @@
 package ecsimsw.picup.album.service;
 
 import ecsimsw.picup.album.dto.AlbumInfoResponse;
-import ecsimsw.picup.album.dto.FileReadResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -11,7 +10,6 @@ import java.util.List;
 @Service
 public class AlbumReadService {
 
-    private final FileService fileService;
     private final AlbumService albumService;
 
     public AlbumInfoResponse album(Long userId, Long albumId) {
@@ -20,11 +18,12 @@ public class AlbumReadService {
     }
 
     public List<AlbumInfoResponse> albums(Long userId) {
-        return albumService.findAll(userId);
+        var albums = albumService.findAll(userId);
+        return AlbumInfoResponse.listOf(albums);
     }
 
-    public FileReadResponse albumThumbnail(Long userId, Long albumId) {
-        var album = albumService.getUserAlbum(userId, albumId);
-        return fileService.read(album.getResourceKey());
-    }
+//    public FileReadResponse albumThumbnail(Long userId, Long albumId) {
+//        var album = albumService.getUserAlbum(userId, albumId);
+//        return fileService.read(album.getResourceKey());
+//    }
 }

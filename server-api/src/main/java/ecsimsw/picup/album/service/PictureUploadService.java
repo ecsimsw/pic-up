@@ -33,7 +33,8 @@ public class PictureUploadService {
     public PictureInfoResponse uploadVideo(Long userId, Long albumId, VideoFileUploadResponse videoFile) {
         try {
             userLock.acquire(userId);
-            return pictureService.createVideo(userId, albumId, videoFile);
+            var picture = pictureService.createVideo(userId, albumId, videoFile);
+            return PictureInfoResponse.of(picture);
         } catch (Exception e) {
             fileService.deleteAsync(videoFile.resourceKey());
             fileService.deleteAsync(videoFile.thumbnailResourceKey());
@@ -46,7 +47,8 @@ public class PictureUploadService {
     public PictureInfoResponse uploadImage(Long userId, Long albumId, ImageFileUploadResponse imageFile, ImageFileUploadResponse thumbnailFile) {
         try {
             userLock.acquire(userId);
-            return pictureService.createImage(userId, albumId, imageFile, thumbnailFile);
+            var picture = pictureService.createImage(userId, albumId, imageFile, thumbnailFile);
+            return PictureInfoResponse.of(picture);
         } catch (Exception e) {
             fileService.deleteAsync(imageFile.resourceKey());
             fileService.deleteAsync(thumbnailFile.resourceKey());

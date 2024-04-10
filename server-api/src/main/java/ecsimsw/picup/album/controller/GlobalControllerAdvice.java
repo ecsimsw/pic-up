@@ -1,6 +1,9 @@
 package ecsimsw.picup.album.controller;
 
-import ecsimsw.picup.album.exception.*;
+import ecsimsw.picup.album.exception.AlbumException;
+import ecsimsw.picup.album.exception.LoginFailedException;
+import ecsimsw.picup.album.exception.MemberException;
+import ecsimsw.picup.album.exception.UnsupportedFileTypeException;
 import ecsimsw.picup.auth.UnauthorizedException;
 import ecsimsw.picup.mq.MessageBrokerDownException;
 import org.slf4j.Logger;

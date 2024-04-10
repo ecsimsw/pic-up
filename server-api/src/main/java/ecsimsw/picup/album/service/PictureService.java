@@ -36,22 +36,22 @@ public class PictureService {
 
     @CacheEvict(value = FIRST_10_PIC_IN_ALBUM, key = "{#userId, #albumId}")
     @Transactional
-    public PictureInfoResponse createImage(Long userId, Long albumId, ImageFileUploadResponse imageFile, ImageFileUploadResponse thumbnailFile) {
+    public Picture createImage(Long userId, Long albumId, ImageFileUploadResponse imageFile, ImageFileUploadResponse thumbnailFile) {
         var album = getUserAlbum(userId, albumId);
         var picture = new Picture(album, imageFile.resourceKey(), thumbnailFile.resourceKey(), imageFile.size());
         pictureRepository.save(picture);
         storageUsageService.addUsage(userId, picture.getFileSize());
-        return PictureInfoResponse.of(picture);
+        return picture;
     }
 
     @CacheEvict(value = FIRST_10_PIC_IN_ALBUM, key = "{#userId, #albumId}")
     @Transactional
-    public PictureInfoResponse createVideo(Long userId, Long albumId, VideoFileUploadResponse videoFile) {
+    public Picture createVideo(Long userId, Long albumId, VideoFileUploadResponse videoFile) {
         var album = getUserAlbum(userId, albumId);
         var picture = new Picture(album, videoFile.resourceKey(), videoFile.thumbnailResourceKey(), videoFile.size());
         pictureRepository.save(picture);
         storageUsageService.addUsage(userId, picture.getFileSize());
-        return PictureInfoResponse.of(picture);
+        return picture;
     }
 
     @CacheEvict(value = FIRST_10_PIC_IN_ALBUM, key = "{#userId, #albumId}")
@@ -83,21 +83,20 @@ public class PictureService {
 
     @Cacheable(value = FIRST_10_PIC_IN_ALBUM, key = "{#userId, #albumId}", condition = "#cursor.createdAt().isEmpty() && #cursor.limit()==10")
     @Transactional(readOnly = true)
-    public List<PictureInfoResponse> fetchOrderByCursor(Long userId, Long albumId, PictureSearchCursor cursor) {
+    public List<Picture> fetchOrderByCursor(Long userId, Long albumId, PictureSearchCursor cursor) {
         var album = getUserAlbum(userId, albumId);
-        var pictures = pictureRepository.findAllByAlbumOrderThan(
+        return pictureRepository.findAllByAlbumOrderThan(
             album.getId(),
             cursor.createdAt().orElse(LocalDateTime.now()),
             PageRequest.of(0, cursor.limit(), Direction.DESC, Picture_.CREATED_AT)
         );
-        return PictureInfoResponse.listOf(pictures);
     }
 
     @Transactional(readOnly = true)
-    public PictureInfoResponse read(Long userId, Long albumId, Long pictureId) {
+    public Picture read(Long userId, Long albumId, Long pictureId) {
         var picture = pictureRepository.findByIdAndAlbumId(pictureId, albumId).orElseThrow(() -> new AlbumException("Invalid picture request"));
         picture.checkSameUser(userId);
-        return PictureInfoResponse.of(picture);
+        return picture;
     }
 
     private Album getUserAlbum(Long userId, Long albumId) {

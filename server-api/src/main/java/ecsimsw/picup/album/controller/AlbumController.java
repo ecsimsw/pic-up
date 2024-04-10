@@ -63,14 +63,14 @@ public class AlbumController {
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping("/api/album/{albumId}/thumbnail")
-    public ResponseEntity<byte[]> albumThumbnail(
-      @TokenPayload AuthTokenPayload loginUser,
-      @PathVariable Long albumId
-    ) {
-        var thumbnailFile = albumReadService.albumThumbnail(loginUser.userId(), albumId);
-        return ResponseEntity.ok()
-            .cacheControl(CacheControl.maxAge(2, TimeUnit.HOURS))
-            .body(thumbnailFile.file());
-    }
+//    @GetMapping("/api/album/{albumId}/thumbnail")
+//    public ResponseEntity<byte[]> albumThumbnail(
+//      @TokenPayload AuthTokenPayload loginUser,
+//      @PathVariable Long albumId
+//    ) {
+//        var thumbnailFile = albumReadService.albumThumbnail(loginUser.userId(), albumId);
+//        return ResponseEntity.ok()
+//            .cacheControl(CacheControl.maxAge(2, TimeUnit.HOURS))
+//            .body(thumbnailFile.file());
+//    }
 }

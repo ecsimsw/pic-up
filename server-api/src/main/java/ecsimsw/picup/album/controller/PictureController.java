@@ -61,27 +61,27 @@ public class PictureController {
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping("/api/album/{albumId}/picture/{pictureId}/image")
-    public ResponseEntity<byte[]> file(
-        @TokenPayload AuthTokenPayload loginUser,
-        @PathVariable Long albumId,
-        @PathVariable Long pictureId
-    ) {
-        var imageFile = pictureReadService.pictureImage(loginUser.userId(), albumId, pictureId);
-        return ResponseEntity.ok()
-            .cacheControl(CacheControl.maxAge(2, TimeUnit.HOURS))
-            .body(imageFile.file());
-    }
-
-    @GetMapping("/api/album/{albumId}/picture/{pictureId}/thumbnail")
-    public ResponseEntity<byte[]> thumbnailFile(
-        @TokenPayload AuthTokenPayload loginUser,
-        @PathVariable Long albumId,
-        @PathVariable Long pictureId
-    ) {
-        var thumbnailFile = pictureReadService.pictureThumbnail(loginUser.userId(), albumId, pictureId);
-        return ResponseEntity.ok()
-            .cacheControl(CacheControl.maxAge(2, TimeUnit.HOURS))
-            .body(thumbnailFile.file());
-    }
+//    @GetMapping("/api/album/{albumId}/picture/{pictureId}/image")
+//    public ResponseEntity<byte[]> file(
+//        @TokenPayload AuthTokenPayload loginUser,
+//        @PathVariable Long albumId,
+//        @PathVariable Long pictureId
+//    ) {
+//        var imageFile = pictureReadService.pictureImage(loginUser.userId(), albumId, pictureId);
+//        return ResponseEntity.ok()
+//            .cacheControl(CacheControl.maxAge(2, TimeUnit.HOURS))
+//            .body(imageFile.file());
+//    }
+//
+//    @GetMapping("/api/album/{albumId}/picture/{pictureId}/thumbnail")
+//    public ResponseEntity<byte[]> thumbnailFile(
+//        @TokenPayload AuthTokenPayload loginUser,
+//        @PathVariable Long albumId,
+//        @PathVariable Long pictureId
+//    ) {
+//        var thumbnailFile = pictureReadService.pictureThumbnail(loginUser.userId(), albumId, pictureId);
+//        return ResponseEntity.ok()
+//            .cacheControl(CacheControl.maxAge(2, TimeUnit.HOURS))
+//            .body(thumbnailFile.file());
+//    }
 }

@@ -3,9 +3,8 @@ package ecsimsw.picup.album.service;
 import ecsimsw.picup.album.domain.Album;
 import ecsimsw.picup.album.domain.AlbumRepository;
 import ecsimsw.picup.album.domain.FileDeletionEvent;
-import ecsimsw.picup.album.dto.AlbumInfoResponse;
-import ecsimsw.picup.storage.dto.ImageFileUploadResponse;
 import ecsimsw.picup.auth.UnauthorizedException;
+import ecsimsw.picup.storage.dto.ImageFileUploadResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
@@ -26,17 +25,16 @@ public class AlbumService {
 
     @Cacheable(value = USER_ALBUMS, key = "#userId")
     @Transactional(readOnly = true)
-    public List<AlbumInfoResponse> findAll(Long userId) {
-        var albums = albumRepository.findAllByUserIdOrderByCreatedAtDesc(userId);
-        return AlbumInfoResponse.listOf(albums);
+    public List<Album> findAll(Long userId) {
+        return albumRepository.findAllByUserIdOrderByCreatedAtDesc(userId);
     }
 
     @CacheEvict(value = USER_ALBUMS, key = "#userId")
     @Transactional
-    public AlbumInfoResponse create(Long userId, String name, ImageFileUploadResponse thumbnailFile) {
+    public Album create(Long userId, String name, ImageFileUploadResponse thumbnailFile) {
         var album = new Album(userId, name, thumbnailFile.resourceKey(), thumbnailFile.size());
         albumRepository.save(album);
-        return AlbumInfoResponse.of(album);
+        return album;
     }
 
     @CacheEvict(value = USER_ALBUMS, key = "#userId")
