@@ -5,6 +5,7 @@ import ecsimsw.picup.album.service.AlbumDeleteService;
 import ecsimsw.picup.album.service.AlbumReadService;
 import ecsimsw.picup.album.service.AlbumUploadService;
 import ecsimsw.picup.album.service.ResourceSignService;
+import ecsimsw.picup.ecrypt.CloudFrontSignUrlService;
 import ecsimsw.picup.auth.AuthTokenPayload;
 import ecsimsw.picup.auth.TokenPayload;
 import lombok.RequiredArgsConstructor;

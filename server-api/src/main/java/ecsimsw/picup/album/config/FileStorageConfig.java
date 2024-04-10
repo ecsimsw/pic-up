@@ -1,7 +1,11 @@
 package ecsimsw.picup.album.config;
 
+import com.amazonaws.regions.Regions;
+import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import ecsimsw.picup.storage.service.FileStorage;
 import ecsimsw.picup.storage.service.ImageStorage;
+import ecsimsw.picup.storage.service.ObjectStorage;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -9,18 +13,18 @@ import org.springframework.context.annotation.Configuration;
 public class FileStorageConfig {
 
     public static final int UPLOAD_TIME_OUT_SEC = 5;
-    public static final String MAIN_STORAGE_PATH = "./storage/";
-    public static final String BACKUP_STORAGE_PATH = "./storage-backup/";
-    private static final String MAIN_STORAGE_KEY = "MAIN_STORAGE";
-    private static final String BACKUP_STORAGE_KEY = "BACKUP_STORAGE";
+    public static final String FILE_STORAGE_PATH = "./storage-backup/";
 
     @Bean
     public ImageStorage mainStorage() {
-        return new FileStorage(MAIN_STORAGE_KEY, MAIN_STORAGE_PATH);
+        AmazonS3 s3 = AmazonS3ClientBuilder.standard()
+            .withRegion(Regions.AP_NORTHEAST_2)
+            .build();
+        return new ObjectStorage(s3);
     }
 
     @Bean
     public ImageStorage backUpStorage() {
-        return new FileStorage(BACKUP_STORAGE_KEY, BACKUP_STORAGE_PATH);
+        return new FileStorage(FILE_STORAGE_PATH);
     }
 }

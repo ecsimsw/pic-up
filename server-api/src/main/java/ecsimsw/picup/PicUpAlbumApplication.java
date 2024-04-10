@@ -15,7 +15,7 @@ public class PicUpAlbumApplication {
 
     public static void main(String[] args) {
         var app = new SpringApplication(PicUpAlbumApplication.class);
-        app.setAdditionalProfiles("prod");
+        app.setAdditionalProfiles("dev");
 
         var ctx = app.run(args);
         var outboxService = ctx.getBean(FileDeletionScheduler.class);

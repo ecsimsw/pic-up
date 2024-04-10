@@ -1,10 +1,8 @@
 package ecsimsw.picup.album.service;
 
-import ecsimsw.picup.album.dto.FileReadResponse;
 import ecsimsw.picup.album.dto.FileUploadResponse;
-import ecsimsw.picup.storage.dto.ImageFileUploadResponse;
-import ecsimsw.picup.storage.exception.InvalidResourceException;
 import ecsimsw.picup.album.exception.StorageException;
+import ecsimsw.picup.storage.dto.ImageFileUploadResponse;
 import ecsimsw.picup.storage.service.ImageStorage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -55,20 +53,6 @@ public class FileStorageService {
                 })
             );
             throw new StorageException("exception while uploading : " + e.getMessage());
-        }
-    }
-
-    public FileReadResponse read(String resourceKey) {
-        try {
-            var file = mainStorage.read(resourceKey);
-            return new FileReadResponse(resourceKey, file.byteArray(), file.size(), file.extension());
-        } catch (StorageException notInMainStorage) {
-            try {
-                var file = backUpStorage.read(resourceKey);
-                return new FileReadResponse(resourceKey, file.byteArray(), file.size(), file.extension());
-            } catch (StorageException notInBackUpStorage) {
-                throw new InvalidResourceException("Not exists resources : " + resourceKey);
-            }
         }
     }
 

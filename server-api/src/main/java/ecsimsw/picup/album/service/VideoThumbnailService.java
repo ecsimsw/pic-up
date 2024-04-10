@@ -11,7 +11,7 @@ import java.util.UUID;
 @Service
 public class VideoThumbnailService {
 
-    private static final String VIDEO_FILE_ROOT_PATH = FileStorageConfig.MAIN_STORAGE_PATH;
+    private static final String VIDEO_FILE_ROOT_PATH = FileStorageConfig.FILE_STORAGE_PATH;
     private static final PictureFileExtension DEFAULT_FORMAT = PictureFileExtension.JPG;
     private static final int CAPTURE_FRAME_NUMBER = 1;
 

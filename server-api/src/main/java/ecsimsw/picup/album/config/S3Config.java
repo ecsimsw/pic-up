@@ -8,6 +8,9 @@ import com.amazonaws.client.builder.AwsClientBuilder;
 import com.amazonaws.regions.Regions;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
+import ecsimsw.picup.ecrypt.CloudFrontSignUrlService;
+import ecsimsw.picup.ecrypt.MockCloudFrontSignUrlService;
+import ecsimsw.picup.ecrypt.ResourceSignUrlService;
 import io.findify.s3mock.S3Mock;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -56,5 +59,29 @@ public class S3Config {
             .build();
         amazonS3.createBucket(bucketName);
         return amazonS3;
+    }
+
+    @Primary
+    @ConditionalOnProperty(value = "aws.cloudfront.sign", havingValue = "false", matchIfMissing = true)
+    @Bean
+    public ResourceSignUrlService mockSignUrlService() {
+        return new MockCloudFrontSignUrlService();
+    }
+
+    @ConditionalOnProperty(value = "aws.cloudfront.sign", havingValue = "true")
+    @Bean
+    public ResourceSignUrlService signUrlService(
+        @Value("${aws.cloudfront.domain}")
+        String domainName,
+        @Value("${aws.cloudfront.domain}")
+        String publicKeyId,
+        @Value("${aws.cloudfront.domain}")
+        String privateKeyPath
+    ) {
+        return new CloudFrontSignUrlService(
+            domainName,
+            publicKeyId,
+            privateKeyPath
+        );
     }
 }

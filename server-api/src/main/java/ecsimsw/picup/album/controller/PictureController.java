@@ -7,11 +7,11 @@ import ecsimsw.picup.album.service.PictureDeleteService;
 import ecsimsw.picup.album.service.PictureReadService;
 import ecsimsw.picup.album.service.PictureUploadService;
 import ecsimsw.picup.album.service.ResourceSignService;
+import ecsimsw.picup.ecrypt.CloudFrontSignUrlService;
 import ecsimsw.picup.auth.AuthTokenPayload;
 import ecsimsw.picup.auth.TokenPayload;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.http.CacheControl;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -19,7 +19,6 @@ import org.springframework.web.multipart.MultipartFile;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.TimeUnit;
 
 @RequiredArgsConstructor
 @RestController

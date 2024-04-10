@@ -44,10 +44,6 @@ public class FileService {
         );
     }
 
-    public FileReadResponse read(String resourceKey) {
-        return storageService.read(resourceKey);
-    }
-
     public void deleteAsync(String resourceKey) {
         imageFileMessageQueue.offerDeleteAllRequest(List.of(resourceKey));
     }

@@ -9,11 +9,9 @@ import java.util.concurrent.CompletableFuture;
 
 public class FileStorage implements ImageStorage {
 
-    public final String storageKey;
     private final String rootPath;
 
-    public FileStorage(String storageKey, String rootPath) {
-        this.storageKey = storageKey;
+    public FileStorage(String rootPath) {
         this.rootPath = rootPath;
     }
 
