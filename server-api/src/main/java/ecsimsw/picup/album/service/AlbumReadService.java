@@ -10,16 +10,15 @@ import java.util.List;
 @Service
 public class AlbumReadService {
 
-    private final ResourceSignService resourceSignService;
     private final AlbumService albumService;
 
     public AlbumInfoResponse album(Long userId, Long albumId) {
         var album = albumService.getUserAlbum(userId, albumId);
-        return resourceSignService.signAlbums(album);
+        return AlbumInfoResponse.of(album);
     }
 
     public List<AlbumInfoResponse> albums(Long userId) {
         var albums = albumService.findAll(userId);
-        return resourceSignService.signAlbum(albums);
+        return AlbumInfoResponse.listOf(albums);
     }
 }

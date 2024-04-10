@@ -11,11 +11,10 @@ import java.util.List;
 @Service
 public class PictureReadService {
 
-    private final ResourceSignService resourceSignService;
     private final PictureService pictureService;
 
     public List<PictureInfoResponse> pictures(Long userId, Long albumId, PictureSearchCursor cursor) {
         var pictures = pictureService.fetchOrderByCursor(userId, albumId, cursor);
-        return resourceSignService.signPictures(pictures);
+        return PictureInfoResponse.listOf(pictures);
     }
 }
