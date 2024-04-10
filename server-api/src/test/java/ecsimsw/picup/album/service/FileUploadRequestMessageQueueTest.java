@@ -2,7 +2,7 @@ package ecsimsw.picup.album.service;
 
 import ecsimsw.picup.mq.ImageFileMessageQueue;
 import ecsimsw.picup.mq.RabbitMQConfig;
-import ecsimsw.picup.mq.exception.MessageBrokerDownException;
+import ecsimsw.picup.mq.MessageBrokerDownException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -12,11 +12,9 @@ import org.springframework.amqp.AmqpConnectException;
 import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.retry.annotation.EnableRetry;
-import org.springframework.test.context.TestPropertySource;
 
 import static ecsimsw.picup.env.AlbumFixture.RESOURCES;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;

@@ -1,11 +1,9 @@
 package ecsimsw.picup.mq;
 
-import ecsimsw.picup.mq.exception.MessageBrokerDownException;
 import org.assertj.core.util.Strings;
 import org.springframework.amqp.AmqpConnectException;
 import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
-import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Recover;
 import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;

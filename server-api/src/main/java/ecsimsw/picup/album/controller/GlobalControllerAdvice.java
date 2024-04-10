@@ -2,7 +2,7 @@ package ecsimsw.picup.album.controller;
 
 import ecsimsw.picup.album.exception.*;
 import ecsimsw.picup.auth.UnauthorizedException;
-import ecsimsw.picup.mq.exception.MessageBrokerDownException;
+import ecsimsw.picup.mq.MessageBrokerDownException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
