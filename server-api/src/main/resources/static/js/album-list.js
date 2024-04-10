@@ -3,10 +3,10 @@ const serverUrl = ""
 let createMode = false;
 
 document.addEventListener("DOMContentLoaded", function () {
-    callLoginApi(function(login) {
+    callLoginApi(function (login) {
         initCreationPanel()
         fetchUserInfo();
-        fetchData(serverUrl+"/api/album", function (albums) {
+        fetchData(serverUrl + "/api/album", function (albums) {
             albums.forEach(async (album) => {
                 createAlbumArticle(album.id, album.name, album.thumbnailImage)
             });
@@ -29,7 +29,7 @@ document.getElementById('createAlbumForm').onsubmit = function (event) {
     const url = serverUrl + "/api/album";
     const formData = new FormData(form);
     event.preventDefault();
-    fetch(url,  {
+    fetch(url, {
         credentials: 'include',
         method: form.method,
         body: formData,
@@ -42,18 +42,10 @@ document.getElementById('createAlbumForm').onsubmit = function (event) {
 
 function fetchUserInfo() {
     const urlParams = new URLSearchParams(window.location.search);
-    const isPublicUser = urlParams.get('isPublicUser');
-    if (isPublicUser) {
-        fetchData(serverUrl + "/api/member/public", function (member) {
-            const logo = document.getElementById('logo')
-            logo.innerText = member.username + " / " + bytesToSize(member.usageAsByte)
-        })
-    } else {
-        fetchData(serverUrl + "/api/member/me", function (member) {
-            const logo = document.getElementById('logo')
-            logo.innerText = member.username + " / " + bytesToSize(member.usageAsByte)
-        })
-    }
+    fetchData(serverUrl + "/api/member/me", function (member) {
+        const logo = document.getElementById('logo')
+        logo.innerText = member.username + " / " + bytesToSize(member.usageAsByte)
+    })
 }
 
 function createAlbumArticle(albumId, titleText, thumbnailUrl) {
@@ -75,8 +67,8 @@ function createAlbumArticle(albumId, titleText, thumbnailUrl) {
     article.appendChild(title);
 
     article.addEventListener('click', function () {
-        if(!createMode) {
-            location.href = "/static/html/album-detail.html?albumId="+albumId
+        if (!createMode) {
+            location.href = "/static/html/album-detail.html?albumId=" + albumId
         }
     })
 
@@ -144,12 +136,12 @@ function initCreationPanel() {
 
         // Toggles.
         $toggles.removeAttr('href')
-        .css('cursor', 'pointer')
-        .on('click', function (event) {
-            event.preventDefault();
-            event.stopPropagation();
-            $this.trigger('---toggle');
-        });
+            .css('cursor', 'pointer')
+            .on('click', function (event) {
+                event.preventDefault();
+                event.stopPropagation();
+                $this.trigger('---toggle');
+            });
     });
 }
 
@@ -185,10 +177,10 @@ function fetchData(url, callback) {
         }
         return response.json();
     })
-    .then(data => callback(data))
-    .catch(error => {
-        console.log(error)
-    });
+        .then(data => callback(data))
+        .catch(error => {
+            console.log(error)
+        });
 }
 
 function bytesToSize(bytes) {

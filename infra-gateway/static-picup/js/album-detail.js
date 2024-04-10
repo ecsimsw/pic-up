@@ -33,13 +33,13 @@ document.addEventListener("DOMContentLoaded", function () {
                 if(!picture.isVideo) {
                     if(mobileMode) {
                         addGalleryImage(
-                            serverUrl + "/api/album/" + albumId + "/picture/" + picture.id + "/thumbnail",
-                            serverUrl + "/api/album/" + albumId + "/picture/" + picture.id + "/thumbnail",
+                            picture.thumbnailResourceKey,
+                            picture.thumbnailResourceKey,
                         )
                     } else {
                         addGalleryImage(
-                            serverUrl + "/api/album/" + albumId + "/picture/" + picture.id + "/image",
-                            serverUrl + "/api/album/" + albumId + "/picture/" + picture.id + "/thumbnail",
+                            picture.resourceKey,
+                            picture.thumbnailResourceKey,
                         )
                     }
                     addImageViewer(`album-${albumId}-picture-${picture.id}`, galleryOrderNumber);
@@ -74,13 +74,13 @@ function handleScroll() {
                 if(!picture.isVideo) {
                     if(mobileMode) {
                         addGalleryImage(
-                            serverUrl + "/api/album/" + albumId + "/picture/" + picture.id + "/thumbnail",
-                            serverUrl + "/api/album/" + albumId + "/picture/" + picture.id + "/thumbnail",
+                            picture.thumbnailResourceKey,
+                            picture.thumbnailResourceKey,
                         )
                     } else {
                         addGalleryImage(
-                            serverUrl + "/api/album/" + albumId + "/picture/" + picture.id + "/image",
-                            serverUrl + "/api/album/" + albumId + "/picture/" + picture.id + "/thumbnail",
+                            picture.resourceKey,
+                            picture.thumbnailResourceKey,
                         )
                     }
                     addImageViewer(`album-${albumId}-picture-${picture.id}`, galleryOrderNumber);
@@ -153,7 +153,7 @@ function addGalleryImage(src, thumb) {
 }
 
 function addVideo(itemId, picture) {
-    document.getElementById(itemId).addEventListener("click", function(event) {
+    const pictureItem = document.getElementById(itemId).addEventListener("click", function(event) {
         document.getElementById("video-popup").style.display = "flex";
         var div = document.createElement("div");
         div.id = "my-video-content"
@@ -166,17 +166,17 @@ function addVideo(itemId, picture) {
             '         preload="auto"\n' +
             '         width="80%"\n' +
             '         height="80%"\n' +
-            '         poster=\"' + serverUrl + "/api/album/" + albumId + "/picture/" + picture.id+ "/thumbnail"+ '\"\n' +
+            '         poster=\"' + picture.thumbnailResourceKey + '\"\n' +
             '         data-setup="{}"\n' +
             '         \n' +
-            '        <source src=\"' + serverUrl + "/api/album/" + albumId + "/picture/" + picture.id+ "/image\"" + ' type="video/mp4"/>\n' +
+            '        <source src=\"' + picture.resourceKey + "\"" +' type="video/mp4"/>\n' +
             '     </video>'
         let elementById = document.getElementById("video-content");
         while (elementById.firstChild) {
             elementById.removeChild(elementById.lastChild);
         }
         elementById.append(div)
-    });
+    })
 }
 
 function initEditButton() {
@@ -247,7 +247,7 @@ function createNewPictureItem(albumId, pictureId, thumbImageResource) {
     const thumbImage = document.createElement('a');
     thumbImage.className = "album-main-image"
     thumbImage.id = `album-${albumId}-picture-${pictureId}`
-    thumbImage.style.backgroundImage = "url('" + serverUrl + "/api/album/" + albumId + "/picture/" + pictureId + "/thumbnail" + "')"
+    thumbImage.style.backgroundImage = "url('" + thumbImageResource + "')"
     thumbImage.style.cursor = "pointer"
     thumbImage.style.outline = "0px"
     article.appendChild(thumbImage);
