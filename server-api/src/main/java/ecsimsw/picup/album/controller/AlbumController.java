@@ -46,6 +46,7 @@ public class AlbumController {
     ) {
 
         System.out.println(httpServletRequest.getHeader("X-Forwarded-For"));
+        System.out.println(httpServletRequest.getHeader("X-Real-IP"));
 
         var albumInfo = albumReadService.album(loginUser.userId(), albumId);
         var signedAlbumInfo = signService.signAlbum(albumInfo);
