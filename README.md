@@ -3,54 +3,57 @@
 아직도 어렸을 때 인화해 둔 아날로그 식 앨범을 더 좋아하세요.        
 부모님께서 쉽게 사용하실 수 있는 사진 스토리지를 만들고 있습니다.     
 
-## Docs
+## 기능
 
-#### 분산 환경에서 안전한 데이터 처리
-- Transactional outbox pattern, 메시지와 DB 원자성 보장 : [docs](https://ecsimsw.tistory.com/entry/%ED%8C%8C%EC%9D%BC-%EC%82%AD%EC%A0%9C-%EC%A4%91-%EC%98%88%EC%99%B8%EC%8B%9C-%EB%A1%A4%EB%B0%B1-%EB%B6%88%EA%B0%80-%EB%AC%B8%EC%A0%9C%EB%A5%BC-%ED%92%80%EC%9D%B4%ED%95%98%EB%8A%94-%EA%B3%BC%EC%A0%95%EB%93%A4), [code](https://github.com/ecsimsw/pic-up/blob/main/server-api/api-album/src/main/java/ecsimsw/picup/album/service/ImageEventOutboxService.java)
-- ShedLock 없이 분산 환경에서 스케줄러 단일 실행 보장 : [docs](https://ecsimsw.tistory.com/entry/Redis-%EB%A5%BC-%EC%82%AC%EC%9A%A9%ED%95%B4%EC%84%9C-%EB%B6%84%EC%82%B0%ED%99%98%EA%B2%BD%EC%97%90%EC%84%9C-%EC%8A%A4%EC%BC%80%EC%A4%84%EB%9F%AC%EC%9D%98)
-- 이미지 다중 소스 동시 업로드와 결과 조합 : [docs](https://ecsimsw.tistory.com/entry/%EC%9D%B4%EB%AF%B8%EC%A7%80-%EC%97%85%EB%A1%9C%EB%93%9C-%EB%B9%84%EB%8F%99%EA%B8%B0-%EC%B2%98%EB%A6%AC-%ED%9B%84-%EA%B2%B0%EA%B3%BC-%EC%A1%B0%ED%95%A9), [code](https://github.com/ecsimsw/pic-up/blob/main/server-api/api-storage/src/main/java/ecsimsw/picup/service/StorageService.java#L49)
-- RabbitMQ, 서버간 비동기 통신, 재시도 정책과 복구 처리 : [docs](https://ecsimsw.tistory.com/entry/%EB%A9%94%EC%8B%9C%EC%A7%80-%ED%81%90-%EC%82%AC%EC%9A%A9-%EC%9D%B4%EC%9C%A0%EC%99%80-RabbitMQ-%EC%A3%BC%EC%9A%94%E2%80%93%EC%98%B5%EC%85%98-%EC%9E%AC%EC%95%99-%EC%8B%9C%EB%82%98%EB%A6%AC%EC%98%A4-%EC%86%8C%EA%B0%9C)
+#### 1. 동시성 문제 처리를 위한 분산락
+- 사용자마다 스토리지 사용량을 기록하고, 사용량 제한
+- 동시 업로드 요청시, 스토리지 사용량의 최종 수정 사항만 기록되는 두번의 갱실 분실 문제 발생
+- 비관적 락을 사용하여 트랜잭션 간 고립을 처리했으나 충돌 시 DB 커넥션 점유를 문제로 생각했고, 레디스의 원자적 연산을 사용하여 락을 처리하는 것으로 커넥션 점유 시간과 DB 액세스 횟수 개선
+- 트랜잭션과 락 범위를 고민하고, 썸네일 생성 등 임계구역과 상관없는 로직을 락 범위에서 분리하여 격리 구간을 최소화, 동시성 고려
 
-#### 동시성 문제 해결과 락
-- 비관적 락의 DB 커넥션 점유 문제를 해결했던 과정들 : [docs](https://ecsimsw.tistory.com/entry/%EB%8F%99%EC%8B%9C%EC%84%B1-%EB%AC%B8%EC%A0%9C-%ED%95%B4%EA%B2%B0-DB-%EC%BB%A4%EB%84%A5%EC%85%98-%EC%A0%90%EC%9C%A0-%ED%99%95%EC%9D%B8%EA%B3%BC-%EC%84%B1%EB%8A%A5-%EA%B0%9C%EC%84%A0), [code](https://github.com/ecsimsw/pic-up/blob/main/server-api/api-album/src/main/java/ecsimsw/picup/album/service/AlbumService.java#L108)
-- 동시성 문제 해결을 위한 락 : [docs](https://ecsimsw.tistory.com/entry/%EB%8F%99%EC%8B%9C%EC%84%B1-%ED%85%8C%EC%8A%A4%ED%8A%B8%EC%99%80-%ED%95%B4%EA%B2%B0-%EB%B0%A9%EC%95%88)
+#### 2. 인증된 유저에게만 허용한 CDN 자원 
+- 사용자 사진, 영상 파일을 WAS에서 처리하지 않고 CDN의 캐시를 사용하는 것으로, WAS의 요청 부하를 분산하고 Disk I/O를 피함
+- 사용자의 CDN URL을 다른 외부인이 사용하는 경우를 막기 위해, Signed url을 사용하여 파일 URL 에 유효 시간, 허용 IP와 자원을 기록
+- 유효 시간을 벗어난 요청과 자원, 외부 IP 에는 403으로 응답
+
+#### 3. 인덱스 튜닝과 커서 기반 페이지네이션
+- 천만개 더미 데이터를 추가하고 자주 사용되는 쿼리 조회 성능 확인, 인덱스 튜닝
+- OFFSET 쿼리에서 페이지가 커지는 경우 조회 성능 문제 확인
+- 커서 기반의 페이지네이션으로 조회 커리를 바꿔 페이지에 상관없이 동일한 조회 시간 확보하고 마지막 페이지의 경우 5분 36초의 조회 시간을 11ms으로 단축
   
-#### 데이터 백업
-- DataSource 헬스 체크와 동적 라우팅으로 DB 서버 다운 대비 : [docs](https://ecsimsw.tistory.com/entry/Dynamic-DataSource-%EB%9D%BC%EC%9A%B0%ED%8C%85%EC%9C%BC%EB%A1%9C-DB-%EC%84%9C%EB%B2%84-%EB%8B%A4%EC%9A%B4%EC%8B%9C-%EC%B2%98%EB%A6%AC), [code](https://github.com/ecsimsw/pic-up/blob/main/server-api/api-album/src/main/java/ecsimsw/picup/config/DataSourceHealth.java#L39)
-- DB 레플리케이션으로 백업과 부하분산 : [docs](https://ecsimsw.tistory.com/entry/Mysql-DB-Replication-%EC%9C%BC%EB%A1%9C-%EB%8D%B0%EC%9D%B4%ED%84%B0-%EB%B0%B1%EC%97%85-%EC%BF%BC%EB%A6%AC-%EB%B6%84%EC%82%B0)
-- MSR 으로 백업 DB 중앙화 : [docs](https://ecsimsw.tistory.com/entry/Mysql-DB-Multi-source-replication-%EC%9C%BC%EB%A1%9C-%EB%B0%B1%EC%97%85-%EB%A1%9C%EA%B7%B8-%EB%8D%B0%EC%9D%B4%ED%84%B0-%EC%A4%91%EC%95%99%ED%99%94)
-- ThreadLocal 을 사용한 TargetDataSource 처리 : [code](https://github.com/ecsimsw/pic-up/blob/main/server-api/api-album/src/main/java/ecsimsw/picup/config/DataSourceTargetContextHolder.java#L5)
-- NFS, 다중 서버에서 디스크 파일 중앙화 : [docs](https://github.com/ecsimsw/pic-up/blob/main/infra-docs/11_nfs.md)
+#### 4. 페이지 로딩 시간 개선을 위한 노력
+- 큰 파일 크기로 앨범 내 사진, 영상을 로드하는데 큰 로딩 시간이 필요, 모바일의 경우 파일 일부만 표시
+- 업로드된 사진을 일정 비율로 축소하고, 동영상의 일부 프레임을 캡쳐하여 썸네일 만들어 표시하는 것으로 로딩 시간 개선
+- 모바일 환경과 데스크탑 환경에 사용하는 사진을 달리하여 모바일 환경에서 불필요한 크기의 이미지 로딩 제거
+- LCP를 5초에서 1.5로, 페이지 로딩 시간을 6초에서 0.5 ~ 1초로 개선
 
-#### DB 성능 개선
-- 커서 기반 페이지 네이션 전환으로 조회 성능 개선 : [docs](https://ecsimsw.tistory.com/entry/%EC%BB%A4%EC%84%9C-%EA%B8%B0%EB%B0%98-%ED%8E%98%EC%9D%B4%EC%A7%80%EB%84%A4%EC%9D%B4%EC%85%98-%EB%8D%94%EB%AF%B8-%EB%8D%B0%EC%9D%B4%ED%84%B0-%EC%A4%80%EB%B9%84%EC%99%80-%EC%BF%BC%EB%A6%AC-%ED%85%8C%EC%8A%A4%ED%8A%B8), [code](https://github.com/ecsimsw/pic-up/blob/main/server-api/api-album/src/main/java/ecsimsw/picup/album/service/PictureService.java#L124)
-- 캐시를 이용한 조회 성능 개선 : [docs](https://ecsimsw.tistory.com/entry/%EC%BA%90%EC%8B%9C%EB%A1%9C-%EC%A1%B0%ED%9A%8C-%EC%84%B1%EB%8A%A5-%EA%B0%9C%EC%84%A0-%EB%A0%88%EB%94%94%EC%8A%A4-%EC%BA%90%EC%8B%9C-%EC%82%AC%EC%9A%A9-%EC%9D%B4%EC%9C%A0%EC%99%80-%EC%A0%84%EB%9E%B5), [code](https://github.com/ecsimsw/pic-up/blob/main/server-api/api-album/src/main/java/ecsimsw/picup/album/service/PictureService.java#L115)
-- 커스텀 Repository 구현으로 JPA 메서드 재정의 : [code](https://github.com/ecsimsw/pic-up/blob/main/server-api/api-album/src/main/java/ecsimsw/picup/album/domain/AlbumSpecRepositoryImpl.java)
+#### 5. 파일과 DB 삭제 로직 원자성을 위한 고민
+- 삭제 처리 중 예외 발생시, DB 작업은 쉽게 롤백되지만 파일 자체를 삭제한 경우 롤백이 불가능하여, 사진 정보는 조회가 가능하나 파일이 없는 경우가 발생 
+- 삭제할 파일 정보를 DB에 우선 기록하여 사용자 요청 처리 주기 안에서 예외가 발생하는 경우 모두 롤백 처리하는 것으로 사진 파일 제거 지연
+- 정상 커밋되는 경우 제거될 사진 정보가 DB에 기록되고, 사용자 요청과 별도의 스레드에서 제거할 파일 목록을 조회하여 일괄 삭제 처리
+- DB에 우선 기록으로 파일/DB 간 원자성을 보장하고, 요청 처리에서 파일 삭제를 제외하여 응답 속도 개선
 
-#### 배포와 모니터링
-- 리버스 프록시, 요청 호출 수 제한과 접근 가능 IP 제한 : [docs](https://ecsimsw.tistory.com/entry/Nginx-%EC%9A%94%EC%B2%AD-%ED%98%B8%EC%B6%9C-%EC%88%98-%EC%A0%9C%ED%95%9C%EA%B3%BC-%EC%A0%91%EA%B7%BC-%EA%B0%80%EB%8A%A5-IP-%EC%A0%9C%ED%95%9C), [code](https://github.com/ecsimsw/pic-up/tree/main/infra-gateway/config)
-- k8s, JVM, 도커 컨테이너 모니터링과 부하 테스트 : [docs](https://ecsimsw.tistory.com/entry/JVM-%EB%AA%A8%EB%8B%88%ED%84%B0%EB%A7%81-%ED%94%84%EB%A1%9C%EB%A9%94%ED%85%8C%EC%9A%B0%EC%8A%A4%EC%99%80-JVM-%EB%A9%94%EB%AA%A8%EB%A6%AC-%ED%8A%9C%EB%8B%9D), [code](https://github.com/ecsimsw/pic-up/tree/main/utils-monitoring)
-- Kubernetes 배포와 HPA, 유연한 스케일 아웃
- : [code](https://github.com/ecsimsw/pic-up/tree/main/infra-kubernetes)
-- 테라폼, AWS resource IaC : [code](https://github.com/ecsimsw/pic-up/tree/main/infra-terraform)
+#### 6. DB 부하분산과 백업 
+- Mysql 레플리케이션으로 DB 를 백업하고, Transactional readOnly 여부에 따라 쿼리 부하분산
+- 각 DB 소스에 의존되어 각각의 DB 장애가 서비스 전체의 재난으로 확산되는 현상을 문제로 인식
+- 일정 주기로 커넥션을 확인하고, 헬스 체크 결과에 따라 라우팅 규칙을 동적으로 수정하여 DB 서버 재난에도 사용할 수 있는 DB 자원은 최대한 활용할 수 있는 구조로 개선   
 
+#### 7. Nginx 액세스 로그로 응답 시간 모니터링
+- WAS 전면에 Nginx 로 TLS, HTTP2.0, RateLimit, 정적 자원 호스팅 처리
+- Nginx의 응답 시간, 요청 수, 리다이렉트 수가 궁금했고, Nginx 공식 prometheus exporter 에서 제공하는 메트릭에는 제한이 존재
+- Nginx의 액세스 로그에 요청 처리 시간을 기록했고, 액세스 로그를 파싱하여 prometheus metric 으로 사용할 수 있도록 하는 오픈 소스 exporter를 사용하는 것으로 응답 속도 지표 추가
+- K6 로 부하테스트를 진행하고 WAS의 응답 속도 지표와 비교 (10m, 500vus, avg=138ms, med=125mx, p(95)=160ms)
+
+## 구조 
+![image](https://github.com/ecsimsw/pic-up/assets/46060746/9c68924f-eacb-4a7d-9a86-7bcff9eb45aa)
+  
 </br>
 
-## Scenario
-
-![1](https://github.com/ecsimsw/pic-up/assets/46060746/c5216572-cd4b-468f-93fd-fca64422cf94)
-
-![image](https://github.com/ecsimsw/pic-up/assets/46060746/d53416f8-a4da-4173-b5ff-f87b3456b2a1)
-
-
-![3](https://github.com/ecsimsw/pic-up/assets/46060746/405afd2d-e811-4913-8cb1-770d5ae6ad03)
-
-
 ## Stacks
-- Java, Spring boot, JPA, CriteriaAPI
-- RabbitMQ, RestTemplate, FutureAPI
-- Mysql, Redis, MongoDB, S3
-- JUnit5, Mockito, H2, Embedded mongo, S3mock
-- Kubernetes, Terraform, Nginx, NFS, Docker, Vagrant
+- Java 17, Spring boot 2.7, Hibernate
+- Mysql, Redis, RabbitMQ, S3
+- JUnit5, Mockito, H2, S3mock
+- Nginx, NFS, Docker
+- S3, Cloudfront, Route53(GSLB)
 - Prometheus, Grafana, K6
 - JIB, Github actions, GHCR
