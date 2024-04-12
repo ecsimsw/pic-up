@@ -5,6 +5,7 @@ import java.nio.file.Path;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import lombok.RequiredArgsConstructor;
+import org.jcodec.common.logging.Logger;
 import software.amazon.awssdk.services.cloudfront.CloudFrontUtilities;
 import software.amazon.awssdk.services.cloudfront.model.CustomSignerRequest;
 
@@ -22,8 +23,10 @@ public class CloudFrontSignUrlService implements ResourceSignUrlService {
     @Override
     public String signedUrl(String remoteIp, String fileName) {
         try {
+            var start = System.currentTimeMillis();
             var sign = cannedSign(remoteIp, fileName);
             var signedUrl = cloudFrontUtilities.getSignedUrlWithCustomPolicy(sign);
+            Logger.info("signed url : " + (System.currentTimeMillis() - start));
             return signedUrl.url();
         } catch (Exception e) {
             throw new IllegalArgumentException("Failed to create cloudfront sign url from : " + fileName);
