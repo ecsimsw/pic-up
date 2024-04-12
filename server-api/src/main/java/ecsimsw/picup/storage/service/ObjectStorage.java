@@ -27,7 +27,7 @@ public class ObjectStorage implements ImageStorage {
         try {
             var start = System.currentTimeMillis();
             AwsS3Utils.upload(s3Client, BUCKET_NAME, resourceKey, fileUploadResponse);
-            LOGGER.info("S3 upload time " + start + "ms, for " + fileUploadResponse.size());
+            LOGGER.info("S3 upload time " + (System.currentTimeMillis() - start) + "ms, for " + fileUploadResponse.size());
             return new AsyncResult<>(resourceKey).completable();
         } catch (Exception e) {
             e.printStackTrace();
