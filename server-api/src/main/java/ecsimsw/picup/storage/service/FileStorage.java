@@ -2,12 +2,16 @@ package ecsimsw.picup.storage.service;
 
 import ecsimsw.picup.album.dto.FileUploadResponse;
 import ecsimsw.picup.storage.utils.FileUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.AsyncResult;
 
 import java.util.concurrent.CompletableFuture;
 
 public class FileStorage implements ImageStorage {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(FileStorage.class);
 
     private final String rootPath;
 
@@ -18,7 +22,9 @@ public class FileStorage implements ImageStorage {
     @Async
     @Override
     public CompletableFuture<String> storeAsync(String resourceKey, FileUploadResponse fileUploadResponse) {
+        var start = System.currentTimeMillis();
         FileUtils.writeFile(storagePath(resourceKey), fileUploadResponse.file());
+        LOGGER.info("FS upload time " + start + "ms, for " + fileUploadResponse.size());
         return new AsyncResult<>(resourceKey).completable();
     }
 

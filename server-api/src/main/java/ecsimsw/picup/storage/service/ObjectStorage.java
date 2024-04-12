@@ -7,9 +7,13 @@ import ecsimsw.picup.album.dto.FileUploadResponse;
 import ecsimsw.picup.album.exception.StorageException;
 import ecsimsw.picup.storage.utils.AwsS3Utils;
 import java.util.concurrent.CompletableFuture;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.AsyncResult;
 
 public class ObjectStorage implements ImageStorage {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(ObjectStorage.class);
 
     private final AmazonS3 s3Client;
 
@@ -21,7 +25,9 @@ public class ObjectStorage implements ImageStorage {
     @Override
     public CompletableFuture<String> storeAsync(String resourceKey, FileUploadResponse fileUploadResponse) {
         try {
+            var start = System.currentTimeMillis();
             AwsS3Utils.upload(s3Client, BUCKET_NAME, resourceKey, fileUploadResponse);
+            LOGGER.info("FS upload time " + start + "ms, for " + fileUploadResponse.size());
             return new AsyncResult<>(resourceKey).completable();
         } catch (Exception e) {
             e.printStackTrace();
