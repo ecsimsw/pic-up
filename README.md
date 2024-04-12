@@ -58,7 +58,8 @@
 
 ## 미리보기
 
-![화면 기록 2024-04-12 오후 5 53 56](https://github.com/ecsimsw/pic-up/assets/46060746/79ac5b6c-e89b-46ec-aed6-f0de3d533851)
+![ㅎㅎㅎ](https://github.com/ecsimsw/pic-up/assets/46060746/a99d129c-cb66-433d-b680-3960b3fa002f)
+
 
 
 
