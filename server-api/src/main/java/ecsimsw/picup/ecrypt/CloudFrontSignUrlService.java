@@ -5,7 +5,8 @@ import java.nio.file.Path;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import lombok.RequiredArgsConstructor;
-import org.jcodec.common.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import software.amazon.awssdk.services.cloudfront.CloudFrontUtilities;
 import software.amazon.awssdk.services.cloudfront.model.CustomSignerRequest;
 
@@ -14,6 +15,8 @@ public class CloudFrontSignUrlService implements ResourceSignUrlService {
 
     private static final String CDN_PROTOCOL = "https";
     private static final int EXPIRATION_AFTER_DAYS = 7;
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(CloudFrontSignUrlService.class);
 
     private final CloudFrontUtilities cloudFrontUtilities = CloudFrontUtilities.create();
     private final String domainName;
@@ -26,8 +29,7 @@ public class CloudFrontSignUrlService implements ResourceSignUrlService {
             var start = System.currentTimeMillis();
             var sign = cannedSign(remoteIp, fileName);
             var signedUrl = cloudFrontUtilities.getSignedUrlWithCustomPolicy(sign);
-            Logger.info("signed url : " + (System.currentTimeMillis() - start));
-            System.out.println("signed url : " + (System.currentTimeMillis() - start));
+            LOGGER.info("signed url duration : " + (System.currentTimeMillis() - start) + "ms");
             return signedUrl.url();
         } catch (Exception e) {
             throw new IllegalArgumentException("Failed to create cloudfront sign url from : " + fileName);
