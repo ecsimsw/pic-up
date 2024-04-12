@@ -27,6 +27,7 @@ public class CloudFrontSignUrlService implements ResourceSignUrlService {
             var sign = cannedSign(remoteIp, fileName);
             var signedUrl = cloudFrontUtilities.getSignedUrlWithCustomPolicy(sign);
             Logger.info("signed url : " + (System.currentTimeMillis() - start));
+            System.out.println("signed url : " + (System.currentTimeMillis() - start));
             return signedUrl.url();
         } catch (Exception e) {
             throw new IllegalArgumentException("Failed to create cloudfront sign url from : " + fileName);
