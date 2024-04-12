@@ -45,6 +45,22 @@
 ## 구조 
 <img width="800" alt="image" src="https://github.com/ecsimsw/pic-up/assets/46060746/76c19d9b-8a6b-4e97-99b3-ace0228edf34">
 
+## 비용
+
+- 달에 3.3USD 예상
+
+1. Route53
+- Hosted zone : 1개 -> 0.5USD (개당 0.5USD)
+- Query 수 : 30,000 질의 -> 0.01USD (백만 쿼리당 0.4USD)
+- 헬스 체크 : 0.75USD (부가 옵션 X, Non aws endpoint, 0.75USD/Mon)
+2. CloudFront
+- 요청 수 : 24,440 -> 0USD (프리티어, 백만 요청까지)
+- 데이터 전송 크기 : 5.01GB -> 0USD (프리티어, 1024GB까지)
+3. S3
+- 버킷 크기 : 80GB -> 1.84USD (프리티어 5GB까지, 스탠다드 GB 당 0.023 USD)
+- CloudFront 로 데이터 전송 : 0USD (비용 청구 x)
+- S3에서 데이터 송신 : 0GB -> 0USD (GB 당 0.126USD)
+  
 </br>
 
 ## Stacks
