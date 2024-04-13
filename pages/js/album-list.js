@@ -1,4 +1,4 @@
-const serverUrl = "https://www.ecsimsw.com:8082"
+const serverUrl = "http://localhost:8084"
 
 let createMode = false;
 
