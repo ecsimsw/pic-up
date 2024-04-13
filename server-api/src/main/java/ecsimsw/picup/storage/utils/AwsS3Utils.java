@@ -1,5 +1,7 @@
 package ecsimsw.picup.storage.utils;
 
+import static ecsimsw.picup.config.S3Config.ROOT_PATH;
+
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.*;
 import com.amazonaws.util.IOUtils;
@@ -15,8 +17,7 @@ public class AwsS3Utils {
     public static void upload(
         AmazonS3 s3Client,
         String bucketName,
-        String resourceKey,
-        byte[] file,
+        FileUploadResponse fileUploadResponse
     ) {
         var metadata = new ObjectMetadata();
         metadata.setContentType(fileUploadResponse.fileType().name());
@@ -25,9 +26,12 @@ public class AwsS3Utils {
         var accessControlList = new AccessControlList();
         accessControlList.grantPermission(GroupGrantee.AuthenticatedUsers, Permission.Read);
 
-        var file = new File();
-
-        var putObjectRequest = new PutObjectRequest(bucketName, resourceKey, new ByteArrayInputStream(file));
+        // TODO :: refactor
+        var putObjectRequest = new PutObjectRequest(
+            bucketName,
+            ROOT_PATH + fileUploadResponse.resourceKey(),
+            new ByteArrayInputStream(fileUploadResponse.file()), metadata
+        );
         putObjectRequest.setAccessControlList(accessControlList);
         s3Client.putObject(putObjectRequest);
     }
