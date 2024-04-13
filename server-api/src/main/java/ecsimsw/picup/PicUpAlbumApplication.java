@@ -12,7 +12,7 @@ public class PicUpAlbumApplication {
 
     public static void main(String[] args) {
         var app = new SpringApplication(PicUpAlbumApplication.class);
-        app.setAdditionalProfiles("dev");
+        app.setAdditionalProfiles("prod");
         app.run(args);
     }
 }
