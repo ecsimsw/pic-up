@@ -31,6 +31,7 @@ public class MemberService {
             var usage = storageUsageService.getUsage(member.getId());
             return MemberInfoResponse.of(member, usage);
         } catch (Exception e) {
+            e.printStackTrace();
             throw new UnauthorizedException("Invalid login info");
         }
     }
