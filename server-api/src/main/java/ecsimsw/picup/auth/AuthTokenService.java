@@ -51,6 +51,7 @@ public class AuthTokenService {
     public ResponseCookie accessTokenCookie(AuthTokens tokens) {
         return ResponseCookie.from(ACCESS_TOKEN_COOKIE_NAME, tokens.getAccessToken())
             .path("")
+            .domain("")
             .sameSite("None")
             .httpOnly(true)
             .secure(true)
@@ -61,6 +62,7 @@ public class AuthTokenService {
     public ResponseCookie refreshTokenCookie(AuthTokens tokens) {
         return ResponseCookie.from(REFRESH_TOKEN_COOKIE_NAME, tokens.getRefreshToken())
             .path("")
+            .domain("")
             .sameSite("None")
             .httpOnly(true)
             .secure(true)
