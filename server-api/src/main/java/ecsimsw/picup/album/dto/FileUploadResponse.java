@@ -32,11 +32,4 @@ public record FileUploadResponse(
         }
     }
 
-    public String extension() {
-        return fileType.name();
-    }
-
-    public byte[] byteArray() {
-        return file;
-    }
 }

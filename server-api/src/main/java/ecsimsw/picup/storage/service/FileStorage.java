@@ -29,13 +29,6 @@ public class FileStorage implements ImageStorage {
     }
 
     @Override
-    public FileUploadResponse read(String resourceKey) {
-        var storagePath = storagePath(resourceKey);
-        var file = FileUtils.read(storagePath);
-        return FileUploadResponse.of(resourceKey, file);
-    }
-
-    @Override
     public void deleteIfExists(String resourceKey) {
         FileUtils.deleteIfExists(storagePath(resourceKey));
     }

@@ -1,14 +1,13 @@
 package ecsimsw.picup.ecrypt;
 
+import lombok.RequiredArgsConstructor;
+import software.amazon.awssdk.services.cloudfront.CloudFrontUtilities;
+import software.amazon.awssdk.services.cloudfront.model.CustomSignerRequest;
+
 import java.net.URL;
 import java.nio.file.Path;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
-import lombok.RequiredArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import software.amazon.awssdk.services.cloudfront.CloudFrontUtilities;
-import software.amazon.awssdk.services.cloudfront.model.CustomSignerRequest;
 
 @RequiredArgsConstructor
 public class CloudFrontSignUrlService implements ResourceSignUrlService {
@@ -16,29 +15,27 @@ public class CloudFrontSignUrlService implements ResourceSignUrlService {
     private static final String CDN_PROTOCOL = "https";
     private static final int EXPIRATION_AFTER_DAYS = 7;
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(CloudFrontSignUrlService.class);
-
     private final CloudFrontUtilities cloudFrontUtilities = CloudFrontUtilities.create();
     private final String domainName;
     private final String publicKeyId;
     private final String privateKeyPath;
 
     @Override
-    public String signedUrl(String remoteIp, String fileName) {
+    public String signedUrl(String remoteIp, String resourcePath) {
         try {
-            var sign = cannedSign(remoteIp, fileName);
+            var sign = cannedSign(remoteIp, "/storage/" + resourcePath);
             var signedUrl = cloudFrontUtilities.getSignedUrlWithCustomPolicy(sign);
             return signedUrl.url();
         } catch (Exception e) {
-            throw new IllegalArgumentException("Failed to create cloudfront sign url from : " + fileName);
+            throw new IllegalArgumentException("Failed to create cloudfront sign url from : " + resourcePath);
         }
     }
 
-    private CustomSignerRequest cannedSign(String remoteIp, String fileName) throws Exception {
+    private CustomSignerRequest cannedSign(String remoteIp, String resourcePath) throws Exception {
         return CustomSignerRequest.builder()
             .privateKey(Path.of(privateKeyPath))
             .ipRange(remoteIp)
-            .resourceUrl(new URL(CDN_PROTOCOL, domainName, "/" + fileName).toString())
+            .resourceUrl(new URL(CDN_PROTOCOL, domainName, "/" + resourcePath).toString())
             .keyPairId(publicKeyId)
             .expirationDate(Instant.now().plus(EXPIRATION_AFTER_DAYS, ChronoUnit.DAYS))
             .build();

@@ -37,12 +37,6 @@ public class ObjectStorage implements ImageStorage {
     }
 
     @Override
-    public FileUploadResponse read(String resourceKey) {
-        var file = AwsS3Utils.read(s3Client, BUCKET_NAME, ROOT_PATH + resourceKey);
-        return FileUploadResponse.of(resourceKey, file);
-    }
-
-    @Override
     public void deleteIfExists(String resourceKey) {
         AwsS3Utils.deleteIfExists(s3Client, BUCKET_NAME, ROOT_PATH + resourceKey);
     }
