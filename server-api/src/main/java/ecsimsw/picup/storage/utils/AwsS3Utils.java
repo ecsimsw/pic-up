@@ -7,11 +7,17 @@ import ecsimsw.picup.album.dto.FileUploadResponse;
 import ecsimsw.picup.storage.exception.InvalidResourceException;
 
 import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.io.IOException;
 
 public class AwsS3Utils {
 
-    public static void upload(AmazonS3 s3Client, String bucketName, String resourceKey, FileUploadResponse fileUploadResponse) {
+    public static void upload(
+        AmazonS3 s3Client,
+        String bucketName,
+        String resourceKey,
+        byte[] file,
+    ) {
         var metadata = new ObjectMetadata();
         metadata.setContentType(fileUploadResponse.fileType().name());
         metadata.setContentLength(fileUploadResponse.size());
@@ -19,8 +25,9 @@ public class AwsS3Utils {
         var accessControlList = new AccessControlList();
         accessControlList.grantPermission(GroupGrantee.AuthenticatedUsers, Permission.Read);
 
-        var putObjectRequest = new PutObjectRequest(bucketName, resourceKey, new ByteArrayInputStream(fileUploadResponse.file()),
-            metadata);
+        var file = new File();
+
+        var putObjectRequest = new PutObjectRequest(bucketName, resourceKey, new ByteArrayInputStream(file));
         putObjectRequest.setAccessControlList(accessControlList);
         s3Client.putObject(putObjectRequest);
     }
