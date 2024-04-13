@@ -1,6 +1,7 @@
 package ecsimsw.picup.storage.service;
 
 import static ecsimsw.picup.config.S3Config.BUCKET_NAME;
+import static ecsimsw.picup.config.S3Config.ROOT_PATH;
 
 import com.amazonaws.services.s3.AmazonS3;
 import ecsimsw.picup.album.dto.FileUploadResponse;
@@ -13,7 +14,6 @@ import org.springframework.scheduling.annotation.AsyncResult;
 
 public class ObjectStorage implements ImageStorage {
 
-    private static final String ROOT_PATH = "/storage/";
     private static final Logger LOGGER = LoggerFactory.getLogger(ObjectStorage.class);
 
     private final AmazonS3 s3Client;

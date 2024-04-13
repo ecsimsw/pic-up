@@ -9,6 +9,8 @@ import java.nio.file.Path;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 
+import static ecsimsw.picup.config.S3Config.ROOT_PATH;
+
 @RequiredArgsConstructor
 public class CloudFrontSignUrlService implements ResourceSignUrlService {
 
@@ -23,7 +25,7 @@ public class CloudFrontSignUrlService implements ResourceSignUrlService {
     @Override
     public String signedUrl(String remoteIp, String resourcePath) {
         try {
-            var sign = cannedSign(remoteIp, "storage/" + resourcePath);
+            var sign = cannedSign(remoteIp, ROOT_PATH + resourcePath);
             var signedUrl = cloudFrontUtilities.getSignedUrlWithCustomPolicy(sign);
             return signedUrl.url();
         } catch (Exception e) {
