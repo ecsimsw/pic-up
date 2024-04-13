@@ -149,6 +149,7 @@ function initCreationPanel() {
 function callLoginApi(callback) {
     fetch(serverUrl + "/api/member/signin", {
         method: "POST",
+        credentials: 'include',
         headers: {
             "Content-Type": "application/json",
             "Access-control-allow-methods": "*"

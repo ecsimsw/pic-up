@@ -299,6 +299,7 @@ function initLightGallery(articleElement, orderNumber) {
 function callLoginApi(callback) {
     fetch(serverUrl + "/api/member/signin", {
         method: "POST",
+        credentials: 'include',
         headers: {
             "Content-Type": "application/json",
             "Access-control-allow-methods": "*"
@@ -318,6 +319,7 @@ function callLoginApi(callback) {
 function callDeleteApi(callback) {
     fetch(serverUrl + "/api/album/" + albumId + "/picture", {
         method: "DELETE",
+        credentials: 'include',
         headers: {
             "Content-Type": "application/json",
             "Access-control-allow-methods": "*"
@@ -332,6 +334,7 @@ function callDeleteApi(callback) {
 
 function fetchData(url, callback) {
     fetch(url, {
+        credentials: 'include',
         "Access-Control-Allow-Origin" : "*"
     }).then(response => {
         if (!response.ok) {

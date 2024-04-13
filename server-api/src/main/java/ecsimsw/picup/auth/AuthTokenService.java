@@ -51,7 +51,8 @@ public class AuthTokenService {
         var cookie = new Cookie(ACCESS_TOKEN_COOKIE_NAME, tokens.getAccessToken());
         cookie.setMaxAge(ACCESS_TOKEN_JWT_EXPIRE_TIME);
         cookie.setHttpOnly(true);
-        cookie.setPath("/");
+        cookie.setPath("");
+        cookie.setDomain("");
         return cookie;
     }
 
@@ -59,6 +60,8 @@ public class AuthTokenService {
         var cookie = new Cookie(REFRESH_TOKEN_COOKIE_NAME, tokens.getRefreshToken());
         cookie.setMaxAge(REFRESH_TOKEN_JWT_EXPIRE_TIME);
         cookie.setHttpOnly(true);
+        cookie.setPath("");
+        cookie.setDomain("");
         return cookie;
     }
 
