@@ -1,4 +1,4 @@
-const serverUrl = "http://localhost:8084"
+const serverUrl = "https://www.ecsimsw.com:8082"
 
 let createMode = false;
 
@@ -168,12 +168,13 @@ function callLoginApi(callback) {
 }
 
 function fetchData(url, callback) {
-    fetch(
-        url, {
-            credentials: 'include',
+    fetch(url, {
+        credentials: 'include',
+        headers: {
+            "Content-Type": "application/json",
             "Access-control-allow-methods": "*"
-        }
-    ).then(response => {
+        },
+    }).then(response => {
         if (!response.ok) {
             throw new Error('Network response was not ok');
         }
