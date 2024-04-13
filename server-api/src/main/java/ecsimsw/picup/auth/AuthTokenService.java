@@ -5,6 +5,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.Arrays;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseCookie;
 import org.springframework.stereotype.Component;
 
 import static ecsimsw.picup.auth.AuthConfig.*;
@@ -47,22 +48,24 @@ public class AuthTokenService {
         return JwtUtils.tokenValue(JWT_SECRET_KEY, token, TOKEN_PAYLOAD_NAME);
     }
 
-    public Cookie accessTokenCookie(AuthTokens tokens) {
-        var cookie = new Cookie(ACCESS_TOKEN_COOKIE_NAME, tokens.getAccessToken());
-        cookie.setMaxAge(ACCESS_TOKEN_JWT_EXPIRE_TIME);
-        cookie.setHttpOnly(true);
-        cookie.setPath("");
-        cookie.setDomain("");
-        return cookie;
+    public ResponseCookie accessTokenCookie(AuthTokens tokens) {
+        return ResponseCookie.from(ACCESS_TOKEN_COOKIE_NAME, tokens.getAccessToken())
+            .path("")
+            .sameSite("None")
+            .httpOnly(true)
+            .secure(false)
+            .maxAge(ACCESS_TOKEN_JWT_EXPIRE_TIME)
+            .build();
     }
 
-    public Cookie refreshTokenCookie(AuthTokens tokens) {
-        var cookie = new Cookie(REFRESH_TOKEN_COOKIE_NAME, tokens.getRefreshToken());
-        cookie.setMaxAge(REFRESH_TOKEN_JWT_EXPIRE_TIME);
-        cookie.setHttpOnly(true);
-        cookie.setPath("");
-        cookie.setDomain("");
-        return cookie;
+    public ResponseCookie refreshTokenCookie(AuthTokens tokens) {
+        return ResponseCookie.from(REFRESH_TOKEN_COOKIE_NAME, tokens.getAccessToken())
+            .path("")
+            .sameSite("None")
+            .httpOnly(true)
+            .secure(false)
+            .maxAge(REFRESH_TOKEN_JWT_EXPIRE_TIME)
+            .build();
     }
 
     public String getAccessToken(HttpServletRequest request) {

@@ -8,6 +8,7 @@ import ecsimsw.picup.album.dto.SignInRequest;
 import ecsimsw.picup.album.dto.SignUpRequest;
 import ecsimsw.picup.album.service.MemberService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -31,8 +32,8 @@ public class MemberController {
     ) {
         var memberInfo = memberService.signIn(request);
         var tokens = authTokenService.issue(memberInfo.toTokenPayload());
-        response.addCookie(authTokenService.accessTokenCookie(tokens));
-        response.addCookie(authTokenService.refreshTokenCookie(tokens));
+        response.addHeader(HttpHeaders.SET_COOKIE, authTokenService.accessTokenCookie(tokens).toString());
+        response.addHeader(HttpHeaders.SET_COOKIE, authTokenService.refreshTokenCookie(tokens).toString());
         return ResponseEntity.ok(memberInfo);
     }
 
@@ -43,8 +44,8 @@ public class MemberController {
     ) {
         var memberInfo = memberService.signUp(request);
         var tokens = authTokenService.issue(memberInfo.toTokenPayload());
-        response.addCookie(authTokenService.accessTokenCookie(tokens));
-        response.addCookie(authTokenService.refreshTokenCookie(tokens));
+        response.addHeader(HttpHeaders.SET_COOKIE, authTokenService.accessTokenCookie(tokens).toString());
+        response.addHeader(HttpHeaders.SET_COOKIE, authTokenService.refreshTokenCookie(tokens).toString());
         return ResponseEntity.ok(memberInfo);
     }
 
