@@ -105,6 +105,7 @@ function addDropZone(albumId) {
         dictDefaultMessage: 'Drop Here!',
         url: serverUrl + "/api/album/" + albumId + "/picture",
         acceptedFiles: ".jpeg,.jpg,.png,.gif,.mp4",
+        withCredentials: true,
         paramName: "file",
         maxFilesize: 30000, // MB
         init: function () {
@@ -335,7 +336,10 @@ function callDeleteApi(callback) {
 function fetchData(url, callback) {
     fetch(url, {
         credentials: 'include',
-        "Access-Control-Allow-Origin" : "*"
+        headers: {
+            "Content-Type": "application/json",
+            "Access-control-allow-methods": "*"
+        },
     }).then(response => {
         if (!response.ok) {
             throw new Error('Network response was not ok');
