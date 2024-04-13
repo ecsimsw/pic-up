@@ -13,6 +13,7 @@ import org.springframework.scheduling.annotation.AsyncResult;
 
 public class ObjectStorage implements ImageStorage {
 
+    private static final String ROOT_PATH = "/storage/";
     private static final Logger LOGGER = LoggerFactory.getLogger(ObjectStorage.class);
 
     private final AmazonS3 s3Client;
@@ -26,7 +27,7 @@ public class ObjectStorage implements ImageStorage {
     public CompletableFuture<String> storeAsync(String resourceKey, FileUploadResponse fileUploadResponse) {
         try {
             var start = System.currentTimeMillis();
-            AwsS3Utils.upload(s3Client, BUCKET_NAME, resourceKey, fileUploadResponse);
+            AwsS3Utils.upload(s3Client, BUCKET_NAME, ROOT_PATH + resourceKey, fileUploadResponse);
             LOGGER.info("S3 upload time " + (System.currentTimeMillis() - start) + "ms, for " + fileUploadResponse.size());
             return new AsyncResult<>(resourceKey).completable();
         } catch (Exception e) {
@@ -37,13 +38,13 @@ public class ObjectStorage implements ImageStorage {
 
     @Override
     public FileUploadResponse read(String resourceKey) {
-        var file = AwsS3Utils.read(s3Client, BUCKET_NAME, resourceKey);
+        var file = AwsS3Utils.read(s3Client, BUCKET_NAME, ROOT_PATH + resourceKey);
         return FileUploadResponse.of(resourceKey, file);
     }
 
     @Override
     public void deleteIfExists(String resourceKey) {
-        AwsS3Utils.deleteIfExists(s3Client, BUCKET_NAME, resourceKey);
+        AwsS3Utils.deleteIfExists(s3Client, BUCKET_NAME, ROOT_PATH + resourceKey);
     }
 }
 
