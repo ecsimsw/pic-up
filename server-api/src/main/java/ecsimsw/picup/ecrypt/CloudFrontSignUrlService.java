@@ -23,7 +23,7 @@ public class CloudFrontSignUrlService implements ResourceSignUrlService {
     @Override
     public String signedUrl(String remoteIp, String resourcePath) {
         try {
-            var sign = cannedSign(remoteIp, "/storage/" + resourcePath);
+            var sign = cannedSign(remoteIp, "storage/" + resourcePath);
             var signedUrl = cloudFrontUtilities.getSignedUrlWithCustomPolicy(sign);
             return signedUrl.url();
         } catch (Exception e) {
