@@ -53,17 +53,17 @@ public class AuthTokenService {
             .path("")
             .sameSite("None")
             .httpOnly(true)
-            .secure(false)
+            .secure(true)
             .maxAge(ACCESS_TOKEN_JWT_EXPIRE_TIME)
             .build();
     }
 
     public ResponseCookie refreshTokenCookie(AuthTokens tokens) {
-        return ResponseCookie.from(REFRESH_TOKEN_COOKIE_NAME, tokens.getAccessToken())
+        return ResponseCookie.from(REFRESH_TOKEN_COOKIE_NAME, tokens.getRefreshToken())
             .path("")
             .sameSite("None")
             .httpOnly(true)
-            .secure(false)
+            .secure(true)
             .maxAge(REFRESH_TOKEN_JWT_EXPIRE_TIME)
             .build();
     }
