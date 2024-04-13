@@ -22,7 +22,6 @@ public class AlbumUploadService {
             var album = albumService.create(userId, name, uploadedImage);
             return album.getId();
         } catch (Exception e) {
-            e.printStackTrace();
             fileService.deleteAsync(thumbnail.resourceKey());
             throw e;
         }

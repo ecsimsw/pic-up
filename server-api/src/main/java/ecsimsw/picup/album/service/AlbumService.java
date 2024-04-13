@@ -28,7 +28,7 @@ public class AlbumService {
         return albumRepository.findAllByUserIdOrderByCreatedAtDesc(userId);
     }
 
-    //    @CacheEvict(value = USER_ALBUMS, key = "#userId")
+    @CacheEvict(value = USER_ALBUMS, key = "#userId")
     @Transactional
     public Album create(Long userId, String name, ImageFileUploadResponse thumbnailFile) {
         var album = new Album(userId, name, thumbnailFile.resourceKey(), thumbnailFile.size());
