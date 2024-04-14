@@ -48,26 +48,20 @@ public class AuthTokenService {
         return JwtUtils.tokenValue(JWT_SECRET_KEY, token, TOKEN_PAYLOAD_NAME);
     }
 
-    public ResponseCookie accessTokenCookie(AuthTokens tokens) {
-        return ResponseCookie.from(ACCESS_TOKEN_COOKIE_NAME, tokens.getAccessToken())
-            .path("/")
-            .domain("")
-            .sameSite("None")
-            .httpOnly(true)
-            .secure(true)
-            .maxAge(ACCESS_TOKEN_JWT_EXPIRE_TIME)
-            .build();
+    public Cookie accessTokenCookie(AuthTokens tokens) {
+        var cookie = new Cookie(ACCESS_TOKEN_COOKIE_NAME, tokens.getAccessToken());
+        cookie.setMaxAge(ACCESS_TOKEN_JWT_EXPIRE_TIME);
+        cookie.setHttpOnly(true);
+        cookie.setPath("/");
+        return cookie;
     }
 
-    public ResponseCookie refreshTokenCookie(AuthTokens tokens) {
-        return ResponseCookie.from(REFRESH_TOKEN_COOKIE_NAME, tokens.getRefreshToken())
-            .path("/")
-            .domain("")
-            .sameSite("None")
-            .httpOnly(true)
-            .secure(true)
-            .maxAge(REFRESH_TOKEN_JWT_EXPIRE_TIME)
-            .build();
+    public Cookie refreshTokenCookie(AuthTokens tokens) {
+        var cookie = new Cookie(REFRESH_TOKEN_COOKIE_NAME, tokens.getAccessToken());
+        cookie.setMaxAge(REFRESH_TOKEN_JWT_EXPIRE_TIME);
+        cookie.setHttpOnly(true);
+        cookie.setPath("/");
+        return cookie;
     }
 
     public String getAccessToken(HttpServletRequest request) {

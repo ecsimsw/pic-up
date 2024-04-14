@@ -32,8 +32,8 @@ public class MemberController {
     ) {
         var memberInfo = memberService.signIn(request);
         var tokens = authTokenService.issue(memberInfo.toTokenPayload());
-        response.addHeader(HttpHeaders.SET_COOKIE, authTokenService.accessTokenCookie(tokens).toString());
-        response.addHeader(HttpHeaders.SET_COOKIE, authTokenService.refreshTokenCookie(tokens).toString());
+        response.addCookie(authTokenService.accessTokenCookie(tokens));
+        response.addCookie(authTokenService.refreshTokenCookie(tokens));
         return ResponseEntity.ok(memberInfo);
     }
 
@@ -44,8 +44,8 @@ public class MemberController {
     ) {
         var memberInfo = memberService.signUp(request);
         var tokens = authTokenService.issue(memberInfo.toTokenPayload());
-        response.addHeader(HttpHeaders.SET_COOKIE, authTokenService.accessTokenCookie(tokens).toString());
-        response.addHeader(HttpHeaders.SET_COOKIE, authTokenService.refreshTokenCookie(tokens).toString());
+        response.addCookie(authTokenService.accessTokenCookie(tokens));
+        response.addCookie(authTokenService.refreshTokenCookie(tokens));
         return ResponseEntity.ok(memberInfo);
     }
 
