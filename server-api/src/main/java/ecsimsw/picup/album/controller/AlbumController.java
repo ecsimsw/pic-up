@@ -47,6 +47,7 @@ public class AlbumController {
         @PathVariable Long albumId
     ) {
         System.out.println(httpServletRequest.getRemoteAddr());
+        System.out.println(httpServletRequest.getHeader("X-Forwarded-For"));
         var albumInfo = albumReadService.album(loginUser.userId(), albumId);
         var signedAlbumInfo = signService.signAlbum(remoteIp, albumInfo);
         return ResponseEntity.ok(signedAlbumInfo);
