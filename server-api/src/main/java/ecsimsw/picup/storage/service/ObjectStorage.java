@@ -15,7 +15,7 @@ import org.springframework.web.multipart.MultipartFile;
 @Component
 public class ObjectStorage {
 
-    private static final String ROOT_PATH = "/storage/";
+    private static final String ROOT_PATH = "storage/";
     private static final Logger LOGGER = LoggerFactory.getLogger(ObjectStorage.class);
 
     private final AmazonS3 s3Client;
