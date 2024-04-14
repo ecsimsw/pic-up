@@ -48,7 +48,7 @@ public class AlbumController {
         System.out.println(request.getRemoteHost());
         System.out.println(request.getHeader("X-FORWARDED-FOR"));
         var albumInfo = albumReadService.album(loginUser.userId(), albumId);
-        var signedAlbumInfo = signService.signAlbum(remoteAddr, albumInfo);
+        var signedAlbumInfo = signService.signAlbum(request.getRemoteHost(), albumInfo);
         return ResponseEntity.ok(signedAlbumInfo);
     }
 
