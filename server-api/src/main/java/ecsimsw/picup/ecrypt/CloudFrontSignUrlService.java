@@ -26,7 +26,7 @@ public class CloudFrontSignUrlService implements ResourceSignUrlService {
     public String signedUrl(String remoteIp, String resourcePath) {
         try {
             System.out.println("remote Ip : " + remoteIp);
-            var sign = cannedSign(remoteIp, ROOT_PATH + resourcePath);
+            var sign = cannedSign("121.185.9.18", ROOT_PATH + resourcePath);
             var signedUrl = cloudFrontUtilities.getSignedUrlWithCustomPolicy(sign);
             return signedUrl.url();
         } catch (Exception e) {
