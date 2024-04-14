@@ -42,18 +42,10 @@ public class AlbumController {
 
     @GetMapping("/api/album/{albumId}")
     public ResponseEntity<AlbumInfoResponse> getAlbum(
-        HttpServletRequest httpServletRequest,
         @RequestHeader("X-Forwarded-For") String remoteIp,
         @TokenPayload AuthTokenPayload loginUser,
         @PathVariable Long albumId
     ) {
-        System.out.println(httpServletRequest.getRemoteAddr());
-        System.out.println(remoteIp);
-
-        System.out.println(httpServletRequest.getHeader("X-Forwarded-For"));
-        System.out.println(httpServletRequest.getHeader("X-Real-IP"));
-
-
         var albumInfo = albumReadService.album(loginUser.userId(), albumId);
         var signedAlbumInfo = signService.signAlbum(remoteIp, albumInfo);
         return ResponseEntity.ok(signedAlbumInfo);
