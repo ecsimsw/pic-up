@@ -8,7 +8,6 @@ import ecsimsw.picup.album.service.ResourceSignService;
 import ecsimsw.picup.auth.AuthTokenPayload;
 import ecsimsw.picup.auth.TokenPayload;
 import java.util.List;
-import javax.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.Header;
@@ -41,14 +40,12 @@ public class AlbumController {
 
     @GetMapping("/api/album/{albumId}")
     public ResponseEntity<AlbumInfoResponse> getAlbum(
-        HttpServletRequest request,
+        @Header("X-Forwarded-For") String remoteIp,
         @TokenPayload AuthTokenPayload loginUser,
         @PathVariable Long albumId
     ) {
-        System.out.println(request.getRemoteHost());
-        System.out.println(request.getHeader("X-FORWARDED-FOR"));
         var albumInfo = albumReadService.album(loginUser.userId(), albumId);
-        var signedAlbumInfo = signService.signAlbum(request.getRemoteHost(), albumInfo);
+        var signedAlbumInfo = signService.signAlbum(remoteIp, albumInfo);
         return ResponseEntity.ok(signedAlbumInfo);
     }
 
