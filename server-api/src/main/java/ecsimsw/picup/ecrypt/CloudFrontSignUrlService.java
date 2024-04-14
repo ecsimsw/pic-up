@@ -26,7 +26,7 @@ public class CloudFrontSignUrlService implements ResourceSignUrlService {
     public String signedUrl(String remoteIp, String resourcePath) {
         try {
             System.out.println("remote Ip : " + remoteIp);
-            var sign = cannedSign("121.185.9.18", ROOT_PATH + resourcePath);
+            var sign = cannedSign(remoteIp, ROOT_PATH + resourcePath);
             var signedUrl = cloudFrontUtilities.getSignedUrlWithCustomPolicy(sign);
             return signedUrl.url();
         } catch (Exception e) {
@@ -37,7 +37,7 @@ public class CloudFrontSignUrlService implements ResourceSignUrlService {
     private CustomSignerRequest cannedSign(String remoteIp, String resourcePath) throws Exception {
         return CustomSignerRequest.builder()
             .privateKey(Path.of(privateKeyPath))
-            .ipRange(remoteIp)
+            .ipRange(remoteIp + "/32")
             .resourceUrl(new URL(CDN_PROTOCOL, domainName, "/" + resourcePath).toString())
             .keyPairId(publicKeyId)
             .expirationDate(Instant.now().plus(EXPIRATION_AFTER_DAYS, ChronoUnit.DAYS))
