@@ -2,7 +2,7 @@ package ecsimsw.picup.album.service;
 
 import ecsimsw.picup.album.dto.FileUploadRequest;
 import ecsimsw.picup.album.domain.PictureFileExtension;
-import ecsimsw.picup.storage.dto.ImageFileUploadResponse;
+import ecsimsw.picup.storage.dto.FileUploadResponse;
 import ecsimsw.picup.album.dto.PictureInfoResponse;
 import ecsimsw.picup.storage.dto.VideoFileUploadResponse;
 import ecsimsw.picup.album.utils.UserLock;
@@ -46,7 +46,7 @@ public class PictureUploadService {
         }
     }
 
-    public PictureInfoResponse uploadImage(Long userId, Long albumId, ImageFileUploadResponse imageFile, ImageFileUploadResponse thumbnailFile) {
+    public PictureInfoResponse uploadImage(Long userId, Long albumId, FileUploadResponse imageFile, FileUploadResponse thumbnailFile) {
         try {
             userLock.acquire(userId);
             var picture = pictureService.createImage(userId, albumId, imageFile, thumbnailFile);

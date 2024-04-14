@@ -3,10 +3,9 @@ package ecsimsw.picup.album.service;
 import ecsimsw.picup.album.domain.FileDeletionEvent;
 import ecsimsw.picup.album.domain.FileDeletionEventOutbox;
 import ecsimsw.picup.album.domain.FileDeletionEvent_;
-import ecsimsw.picup.album.dto.FileReadResponse;
 import ecsimsw.picup.album.dto.FileUploadRequest;
 import ecsimsw.picup.mq.ImageFileMessageQueue;
-import ecsimsw.picup.storage.dto.ImageFileUploadResponse;
+import ecsimsw.picup.storage.dto.FileUploadResponse;
 import ecsimsw.picup.storage.dto.VideoFileUploadResponse;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -29,7 +28,7 @@ public class FileService {
     private final FileDeletionEventOutbox fileDeletionEventOutbox;
     private final ImageFileMessageQueue imageFileMessageQueue;
 
-    public ImageFileUploadResponse uploadImage(FileUploadRequest file) {
+    public FileUploadResponse uploadImage(FileUploadRequest file) {
         return storageService.upload(file.toMultipartFile(), file.resourceKey());
     }
 

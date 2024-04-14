@@ -1,55 +1,49 @@
 package ecsimsw.picup.album.service;
 
-import ecsimsw.picup.album.dto.FileUploadResponse;
-import ecsimsw.picup.album.exception.StorageException;
-import ecsimsw.picup.storage.dto.ImageFileUploadResponse;
-import ecsimsw.picup.storage.service.ImageStorage;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
+import static ecsimsw.picup.storage.service.FileStorage.FILE_STORAGE_PATH;
 
+import ecsimsw.picup.album.exception.StorageException;
+import ecsimsw.picup.album.utils.VideoUtils;
+import ecsimsw.picup.storage.dto.FileUploadResponse;
+import ecsimsw.picup.storage.service.FileStorage;
+import ecsimsw.picup.storage.service.ObjectStorage;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 import java.util.concurrent.TimeUnit;
+import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
-import static ecsimsw.picup.config.FileStorageConfig.UPLOAD_TIME_OUT_SEC;
-
+@RequiredArgsConstructor
 @Service
 public class FileStorageService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(FileStorageService.class);
 
-    private final ImageStorage mainStorage;
-    private final ImageStorage backUpStorage;
+    public static final int UPLOAD_TIME_OUT_SEC = 5;
 
-    public FileStorageService(
-        @Qualifier(value = "mainStorage") ImageStorage mainStorage,
-        @Qualifier(value = "backUpStorage") ImageStorage backUpStorage
-    ) {
-        this.mainStorage = mainStorage;
-        this.backUpStorage = backUpStorage;
-    }
+    private final ObjectStorage s3Storage;
+    private final FileStorage fileStorage;
 
-    public ImageFileUploadResponse upload(MultipartFile file, String resourceKey) {
+    public FileUploadResponse upload(MultipartFile file, String resourceKey) {
         LOGGER.info("upload file : " + resourceKey);
-        var storedFile = FileUploadResponse.of(resourceKey, file);
         var futures = List.of(
-            mainStorage.storeAsync(resourceKey, storedFile),
-            backUpStorage.storeAsync(resourceKey, storedFile)
+            s3Storage.storeAsync(resourceKey, file),
+            fileStorage.storeAsync(resourceKey, file)
         );
         try {
             CompletableFuture.allOf(futures.toArray(new CompletableFuture[0]))
                 .orTimeout(UPLOAD_TIME_OUT_SEC, TimeUnit.SECONDS)
                 .join();
-            return new ImageFileUploadResponse(resourceKey, file.getSize());
+            return new FileUploadResponse(resourceKey, file.getSize());
         } catch (CompletionException e) {
             futures.forEach(uploadFuture -> uploadFuture.thenAccept(
                 uploadResponse -> {
-                    mainStorage.deleteIfExists(resourceKey);
-                    backUpStorage.deleteIfExists(resourceKey);
+                    s3Storage.deleteIfExists(resourceKey);
+                    fileStorage.deleteIfExists(resourceKey);
                 })
             );
             throw new StorageException("exception while uploading : " + e.getMessage());
@@ -58,12 +52,12 @@ public class FileStorageService {
 
     public void delete(String resourceKey) {
         try {
-            mainStorage.deleteIfExists(resourceKey);
+            s3Storage.deleteIfExists(resourceKey);
         } catch (Exception ignored) {
             LOGGER.error("Failed to delete resource from main storage: " + resourceKey);
         }
         try {
-            backUpStorage.deleteIfExists(resourceKey);
+            fileStorage.deleteIfExists(resourceKey);
         } catch (Exception ignored) {
             LOGGER.error("Failed to delete resource from backUp storage: " + resourceKey);
         }

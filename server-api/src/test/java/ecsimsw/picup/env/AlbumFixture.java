@@ -4,7 +4,7 @@ import static ecsimsw.picup.env.MemberFixture.USER_ID;
 
 import ecsimsw.picup.album.domain.Album;
 import ecsimsw.picup.album.domain.Picture;
-import ecsimsw.picup.storage.dto.ImageFileUploadResponse;
+import ecsimsw.picup.storage.dto.FileUploadResponse;
 import ecsimsw.picup.storage.dto.VideoFileUploadResponse;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
@@ -35,9 +35,9 @@ public class AlbumFixture {
 
     public static VideoFileUploadResponse VIDEO_FILE = new VideoFileUploadResponse("name.png", "thumbnail.png", 1L);
 
-    public static ImageFileUploadResponse IMAGE_FILE = new ImageFileUploadResponse("name.png", 1L);
+    public static FileUploadResponse IMAGE_FILE = new FileUploadResponse("name.png", 1L);
 
-    public static ImageFileUploadResponse THUMBNAIL_FILE = new ImageFileUploadResponse("name.png", 1L);
+    public static FileUploadResponse THUMBNAIL_FILE = new FileUploadResponse("name.png", 1L);
 
     public static final MultipartFile MULTIPART_FILE = new MockMultipartFile("name", "name.png", "png", "Image binary file for test".getBytes());
 
