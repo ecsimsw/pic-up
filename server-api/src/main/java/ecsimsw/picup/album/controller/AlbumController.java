@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
@@ -42,12 +43,12 @@ public class AlbumController {
     @GetMapping("/api/album/{albumId}")
     public ResponseEntity<AlbumInfoResponse> getAlbum(
         HttpServletRequest httpServletRequest,
-        @Header("X-Forwarded-For") String remoteIp,
+        @RequestHeader("X-Forwarded-For") String remoteIp,
         @TokenPayload AuthTokenPayload loginUser,
         @PathVariable Long albumId
     ) {
         System.out.println(httpServletRequest.getRemoteAddr());
-        System.out.println(httpServletRequest.getHeader("X-Forwarded-For"));
+        System.out.println(remoteIp);
         var albumInfo = albumReadService.album(loginUser.userId(), albumId);
         var signedAlbumInfo = signService.signAlbum(remoteIp, albumInfo);
         return ResponseEntity.ok(signedAlbumInfo);
@@ -55,7 +56,7 @@ public class AlbumController {
 
     @GetMapping("/api/album")
     public ResponseEntity<List<AlbumInfoResponse>> getAlbums(
-        @Header("X-Forwarded-For") String remoteIp,
+        @RequestHeader("X-Forwarded-For") String remoteIp,
         @TokenPayload AuthTokenPayload loginUser
     ) {
         var albumInfos = albumReadService.albums(loginUser.userId());
