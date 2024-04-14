@@ -42,7 +42,7 @@ public class PictureController {
 
     @GetMapping("/api/album/{albumId}/picture")
     public ResponseEntity<List<PictureInfoResponse>> getPictures(
-        @Header("X-Forwarded-For") String remoteIp,
+        @RequestHeader("X-Forwarded-For") String remoteIp,
         @TokenPayload AuthTokenPayload loginUser,
         @PathVariable Long albumId,
         @RequestParam(defaultValue = "10") int limit,
