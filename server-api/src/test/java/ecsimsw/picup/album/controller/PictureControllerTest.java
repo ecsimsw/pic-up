@@ -1,9 +1,18 @@
 package ecsimsw.picup.album.controller;
 
+import static ecsimsw.picup.env.MemberFixture.USER_NAME;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import ecsimsw.picup.album.dto.FileReadResponse;
 import ecsimsw.picup.album.dto.PictureInfoResponse;
 import ecsimsw.picup.album.dto.PictureSearchCursor;
 import ecsimsw.picup.album.dto.PicturesDeleteRequest;
@@ -13,6 +22,9 @@ import ecsimsw.picup.album.service.PictureUploadService;
 import ecsimsw.picup.album.service.ResourceSignService;
 import ecsimsw.picup.auth.AuthTokenPayload;
 import ecsimsw.picup.auth.AuthTokenService;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -22,16 +34,6 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MockMvc;
-
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Optional;
-
-import static ecsimsw.picup.env.MemberFixture.USER_NAME;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(controllers = PictureController.class)
 class PictureControllerTest {
@@ -77,7 +79,8 @@ class PictureControllerTest {
     @Test
     void createPicture() throws Exception {
         var uploadFile = new MockMultipartFile("file", "pic.jpg", "jpg", new byte[0]);
-        var expectedPictureInfo = new PictureInfoResponse(1L, albumId, false, "resource.png", "thumbnail.png", LocalDateTime.now());
+        var expectedPictureInfo = new PictureInfoResponse(1L, albumId, false, "resource.png", "thumbnail.png",
+            LocalDateTime.now());
         when(pictureUploadService.upload(loginUserId, expectedPictureInfo.id(), uploadFile))
             .thenReturn(expectedPictureInfo.id());
         mockMvc.perform(
@@ -95,7 +98,9 @@ class PictureControllerTest {
         var expectedPictureInfos = List.of(new PictureInfoResponse(1L, albumId, false, "resource.png", "thumbnail.png", LocalDateTime.now()));
         when(pictureReadService.pictures(loginUserId, albumId, PictureSearchCursor.from(expectedPageSize, Optional.empty())))
             .thenReturn(expectedPictureInfos);
-        mockMvc.perform(get("/api/album/" + albumId + "/picture"))
+        mockMvc.perform(get("/api/album/" + albumId + "/picture")
+                .header("X-Forwarded-For", "192.168.0.1")
+            )
             .andExpect(status().isOk())
             .andExpect(content().string(OBJECT_MAPPER.writeValueAsString(expectedPictureInfos)));
     }
@@ -105,10 +110,13 @@ class PictureControllerTest {
     void getPicturesByCursor() throws Exception {
         var expectedPageSize = 10;
         var expectedCursorCreatedAt = LocalDateTime.of(2024, 4, 8, 10, 45, 12, 728721232);
-        var expectedPictureInfos = List.of(new PictureInfoResponse(1L, albumId, false, "resource.png", "thumbnail.png", LocalDateTime.now()));
-        when(pictureReadService.pictures(loginUserId, albumId, PictureSearchCursor.from(expectedPageSize, Optional.of(expectedCursorCreatedAt))))
+        var expectedPictureInfos = List.of(
+            new PictureInfoResponse(1L, albumId, false, "resource.png", "thumbnail.png", LocalDateTime.now()));
+        when(pictureReadService.pictures(loginUserId, albumId,
+            PictureSearchCursor.from(expectedPageSize, Optional.of(expectedCursorCreatedAt))))
             .thenReturn(expectedPictureInfos);
         mockMvc.perform(get("/api/album/" + albumId + "/picture")
+                .header("X-Forwarded-For", "192.168.0.1")
                 .param("cursorCreatedAt", "2024-04-08T10:45:12.728721232Z")
             )
             .andExpect(status().isOk())
@@ -119,10 +127,12 @@ class PictureControllerTest {
     @Test
     void getPicturesWithLimit() throws Exception {
         var limit = 20;
-        var expectedPictureInfos = List.of(new PictureInfoResponse(1L, albumId, false, "resource.png", "thumbnail.png", LocalDateTime.now()));
+        var expectedPictureInfos = List.of(
+            new PictureInfoResponse(1L, albumId, false, "resource.png", "thumbnail.png", LocalDateTime.now()));
         when(pictureReadService.pictures(loginUserId, albumId, PictureSearchCursor.from(limit, Optional.empty())))
             .thenReturn(expectedPictureInfos);
         mockMvc.perform(get("/api/album/" + albumId + "/picture")
+                .header("X-Forwarded-For", "192.168.0.1")
                 .param("limit", String.valueOf(limit))
             )
             .andExpect(status().isOk())
@@ -134,6 +144,7 @@ class PictureControllerTest {
     void deletePictures() throws Exception {
         var pictureIds = List.of(1L, 2L, 3L);
         mockMvc.perform(delete("/api/album/" + albumId + "/picture")
+                .header("X-Forwarded-For", "192.168.0.1")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(OBJECT_MAPPER.writeValueAsString(new PicturesDeleteRequest(pictureIds)))
             )

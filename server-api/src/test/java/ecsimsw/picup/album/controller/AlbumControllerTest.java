@@ -2,28 +2,19 @@ package ecsimsw.picup.album.controller;
 
 import static ecsimsw.picup.env.AlbumFixture.ALBUM;
 import static ecsimsw.picup.env.AlbumFixture.ALBUM_NAME;
-import static ecsimsw.picup.env.AlbumFixture.MULTIPART_FILE;
-import static ecsimsw.picup.env.AlbumFixture.RESOURCE_KEY;
-import static ecsimsw.picup.env.AlbumFixture.SIZE;
-import static ecsimsw.picup.env.MemberFixture.USER_ID;
 import static ecsimsw.picup.env.MemberFixture.USER_NAME;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import ecsimsw.picup.album.domain.Album;
 import ecsimsw.picup.album.dto.AlbumInfoResponse;
-import ecsimsw.picup.album.dto.FileReadResponse;
 import ecsimsw.picup.album.service.AlbumDeleteService;
 import ecsimsw.picup.album.service.AlbumReadService;
 import ecsimsw.picup.album.service.AlbumUploadService;
@@ -31,7 +22,6 @@ import ecsimsw.picup.album.service.ResourceSignService;
 import ecsimsw.picup.auth.AuthTokenPayload;
 import ecsimsw.picup.auth.AuthTokenService;
 import ecsimsw.picup.auth.UnauthorizedException;
-import java.time.LocalDateTime;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -92,9 +82,9 @@ class AlbumControllerTest {
         when(albumUploadService.initAlbum(loginUserId, ALBUM_NAME, uploadFile))
             .thenReturn(expectedAlbumInfo);
         mockMvc.perform(
-            multipart("/api/album/")
-                .file(uploadFile)
-                .param("name", ALBUM_NAME)
+                multipart("/api/album/")
+                    .file(uploadFile)
+                    .param("name", ALBUM_NAME)
             )
             .andExpect(status().isOk())
             .andExpect(content().string(OBJECT_MAPPER.writeValueAsString(expectedAlbumInfo)));
@@ -106,7 +96,10 @@ class AlbumControllerTest {
         var expectedAlbumInfos = List.of(AlbumInfoResponse.of(ALBUM()));
         when(albumReadService.albums(loginUserId))
             .thenReturn(expectedAlbumInfos);
-        mockMvc.perform(get("/api/album"))
+        mockMvc.perform(
+                get("/api/album")
+                    .header("X-Forwarded-For", "192.168.0.1")
+            )
             .andExpect(status().isOk())
             .andExpect(content().string(OBJECT_MAPPER.writeValueAsString(expectedAlbumInfos)));
     }
@@ -116,9 +109,11 @@ class AlbumControllerTest {
     void getAlbum() throws Exception {
         var albumId = 1L;
         var expectedAlbumInfo = AlbumInfoResponse.of(ALBUM());
-        when(albumReadService.album(loginUserId, albumId))
-            .thenReturn(expectedAlbumInfo);
-        mockMvc.perform(get("/api/album/" + albumId))
+        when(albumReadService.album(loginUserId, albumId)).thenReturn(expectedAlbumInfo);
+        mockMvc.perform(
+                get("/api/album/" + albumId)
+                    .header("X-Forwarded-For", "192.168.0.1")
+            )
             .andExpect(status().isOk())
             .andExpect(content().string(OBJECT_MAPPER.writeValueAsString(expectedAlbumInfo)));
     }
@@ -129,7 +124,10 @@ class AlbumControllerTest {
         var invalidAlbumId = 1L;
         when(albumReadService.album(loginUserId, invalidAlbumId))
             .thenThrow(UnauthorizedException.class);
-        mockMvc.perform(get("/api/album/" + invalidAlbumId))
+        mockMvc.perform(
+                get("/api/album/" + invalidAlbumId)
+                    .header("X-Forwarded-For", "192.168.0.1")
+            )
             .andExpect(status().isUnauthorized());
     }
 
@@ -137,7 +135,7 @@ class AlbumControllerTest {
     @Test
     void deleteAlbum() throws Exception {
         var albumId = 1L;
-        mockMvc.perform(delete("/api/album/"+ albumId))
+        mockMvc.perform(delete("/api/album/" + albumId))
             .andExpect(status().isOk());
     }
 }

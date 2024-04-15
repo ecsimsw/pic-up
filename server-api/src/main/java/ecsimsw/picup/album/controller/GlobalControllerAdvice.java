@@ -29,10 +29,10 @@ public class GlobalControllerAdvice {
         return ResponseEntity.badRequest().body(e.getMessage());
     }
 
-//    @ExceptionHandler({LoginFailedException.class, UnauthorizedException.class})
-//    public ResponseEntity<String> loginFailedException() {
-//        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized request");
-//    }
+    @ExceptionHandler({LoginFailedException.class, UnauthorizedException.class})
+    public ResponseEntity<String> loginFailedException() {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized request");
+    }
 
     @ExceptionHandler(MemberException.class)
     public ResponseEntity<String> memberException(MemberException e) {
