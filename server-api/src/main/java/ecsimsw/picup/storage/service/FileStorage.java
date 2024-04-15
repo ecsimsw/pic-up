@@ -21,7 +21,7 @@ public class FileStorage {
         try {
             var start = System.currentTimeMillis();
             file.transferTo(new File(FILE_STORAGE_PATH + resourceKey));
-            log.info("FS upload time " + (System.currentTimeMillis() - start) + "ms, for " + file.getSize());
+            log.info(resourceKey + " : FS upload time " + (System.currentTimeMillis() - start) + "ms, for " + file.getSize());
             return new AsyncResult<>(resourceKey).completable();
         } catch (IOException e) {
             throw new StorageException("Failed to upload to file storage");

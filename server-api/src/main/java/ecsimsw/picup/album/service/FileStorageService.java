@@ -26,7 +26,6 @@ public class FileStorageService {
     private final FileStorage fileStorage;
 
     public FileUploadResponse upload(MultipartFile file, String resourceKey) {
-        log.info("upload file : " + resourceKey);
         var futures = List.of(
             s3Storage.storeAsync(resourceKey, file),
             fileStorage.storeAsync(resourceKey, file)

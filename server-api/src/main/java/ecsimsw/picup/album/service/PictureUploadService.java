@@ -23,17 +23,22 @@ public class PictureUploadService {
     private final PictureService pictureService;
 
     public Long upload(Long userId, Long albumId, MultipartFile file) {
-        var start = System.currentTimeMillis();
         if (PictureFileExtension.of(file).isVideo) {
             var videoFile = fileService.uploadVideo(FileUploadRequest.of(file));
             var pictureInfo = uploadVideo(userId, albumId, videoFile);
-            log.info("upload end : " + (System.currentTimeMillis() - start) + "ms, " + videoFile.resourceKey());
             return pictureInfo.id();
         }
-        var imageFile = fileService.uploadImage(FileUploadRequest.of(file));
+
+        var req = FileUploadRequest.of(file);
+        log.info(req.resourceKey() + " : upload start");
+        var start = System.currentTimeMillis();
+
+        var imageFile = fileService.uploadImage(req);
         var thumbnailFile = fileService.uploadImage(FileUploadRequest.resizedOf(file, PICTURE_THUMBNAIL_SCALE));
         var pictureInfo = uploadImage(userId, albumId, imageFile, thumbnailFile);
-        log.info("upload end : " + (System.currentTimeMillis() - start) + "ms, " + imageFile.resourceKey());
+
+        log.info(req.resourceKey() + " : upload end : " + (System.currentTimeMillis() - start) + "ms");
+
         return pictureInfo.id();
     }
 
