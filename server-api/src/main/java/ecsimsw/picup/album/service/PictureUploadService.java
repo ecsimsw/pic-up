@@ -30,15 +30,13 @@ public class PictureUploadService {
         }
 
         var req = FileUploadRequest.of(file);
-        log.info(req.resourceKey() + " : upload start");
         var start = System.currentTimeMillis();
 
         var imageFile = fileService.uploadImage(req);
         var thumbnailFile = fileService.uploadImage(FileUploadRequest.resizedOf(file, PICTURE_THUMBNAIL_SCALE));
         var pictureInfo = uploadImage(userId, albumId, imageFile, thumbnailFile);
 
-        log.info(req.resourceKey() + " : upload end : " + (System.currentTimeMillis() - start) + "ms");
-
+        log.info("upload end : " + (System.currentTimeMillis() - start) + "ms");
         return pictureInfo.id();
     }
 
