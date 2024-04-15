@@ -21,7 +21,7 @@ import org.springframework.context.annotation.Primary;
 @Configuration
 public class S3Config {
 
-    public static final String ROOT_PATH = "storage/";
+    public static final String ROOT_PATH = "storage-test/";
     public static final String BUCKET_NAME = "picup-ecsimsw";
 
     @Primary
