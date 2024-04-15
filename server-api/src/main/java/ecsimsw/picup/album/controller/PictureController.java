@@ -10,6 +10,7 @@ import ecsimsw.picup.album.service.ResourceUrlService;
 import ecsimsw.picup.auth.AuthTokenPayload;
 import ecsimsw.picup.auth.TokenPayload;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -19,6 +20,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
+@Slf4j
 @RequiredArgsConstructor
 @RestController
 public class PictureController {
@@ -34,6 +36,7 @@ public class PictureController {
         @PathVariable Long albumId,
         @RequestPart MultipartFile file
     ) {
+        log.info("start : " + LocalDateTime.now());
         var pictureId = pictureUploadService.upload(loginUser.userId(), albumId, file);
         return ResponseEntity.ok(pictureId);
     }

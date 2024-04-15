@@ -1,9 +1,6 @@
 package ecsimsw.picup.album.service;
 
-import static ecsimsw.picup.storage.service.FileStorage.FILE_STORAGE_PATH;
-
 import ecsimsw.picup.album.exception.StorageException;
-import ecsimsw.picup.album.utils.VideoUtils;
 import ecsimsw.picup.storage.dto.FileUploadResponse;
 import ecsimsw.picup.storage.service.FileStorage;
 import ecsimsw.picup.storage.service.ObjectStorage;
@@ -12,16 +9,16 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 import java.util.concurrent.TimeUnit;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+@Slf4j
 @RequiredArgsConstructor
 @Service
 public class FileStorageService {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(FileStorageService.class);
 
     public static final int UPLOAD_TIME_OUT_SEC = 5;
 
@@ -29,7 +26,7 @@ public class FileStorageService {
     private final FileStorage fileStorage;
 
     public FileUploadResponse upload(MultipartFile file, String resourceKey) {
-        LOGGER.info("upload file : " + resourceKey);
+        log.info("upload file : " + resourceKey);
         var futures = List.of(
             s3Storage.storeAsync(resourceKey, file),
             fileStorage.storeAsync(resourceKey, file)
@@ -54,12 +51,12 @@ public class FileStorageService {
         try {
             s3Storage.deleteIfExists(resourceKey);
         } catch (Exception ignored) {
-            LOGGER.error("Failed to delete resource from main storage: " + resourceKey);
+            log.error("Failed to delete resource from main storage: " + resourceKey);
         }
         try {
             fileStorage.deleteIfExists(resourceKey);
         } catch (Exception ignored) {
-            LOGGER.error("Failed to delete resource from backUp storage: " + resourceKey);
+            log.error("Failed to delete resource from backUp storage: " + resourceKey);
         }
     }
 }
