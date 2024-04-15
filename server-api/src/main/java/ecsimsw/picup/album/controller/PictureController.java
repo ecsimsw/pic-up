@@ -46,9 +46,7 @@ public class PictureController {
         @PathVariable Long albumId,
         @RequestPart MultipartFile file
     ) {
-        var start = System.currentTimeMillis();
         var pictureId = pictureUploadService.upload(1l, albumId, file);
-        log.info("upload end : " + (System.currentTimeMillis() - start) + "ms");
         return ResponseEntity.ok(pictureId);
     }
 
