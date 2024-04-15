@@ -4,14 +4,12 @@ import ecsimsw.picup.album.dto.AlbumInfoResponse;
 import ecsimsw.picup.album.service.AlbumDeleteService;
 import ecsimsw.picup.album.service.AlbumReadService;
 import ecsimsw.picup.album.service.AlbumUploadService;
-import ecsimsw.picup.album.service.ResourceSignService;
+import ecsimsw.picup.album.service.ResourceUrlService;
 import ecsimsw.picup.auth.AuthTokenPayload;
 import ecsimsw.picup.auth.TokenPayload;
 import java.util.List;
-import javax.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -25,10 +23,10 @@ import org.springframework.web.multipart.MultipartFile;
 @RestController
 public class AlbumController {
 
-    private final AlbumUploadService albumUploadService;
-    private final AlbumReadService albumReadService;
-    private final AlbumDeleteService albumDeleteService;
-    private final ResourceSignService signService;
+    private final AlbumUploadService uploadService;
+    private final AlbumReadService readService;
+    private final AlbumDeleteService deleteService;
+    private final ResourceUrlService urlService;
 
     @PostMapping("/api/album")
     public ResponseEntity<Long> createAlbum(
@@ -36,7 +34,7 @@ public class AlbumController {
         @RequestParam MultipartFile thumbnail,
         @RequestParam String name
     ) {
-        var albumId = albumUploadService.initAlbum(loginUser.userId(), name, thumbnail);
+        var albumId = uploadService.initAlbum(loginUser.userId(), name, thumbnail);
         return ResponseEntity.ok(albumId);
     }
 
@@ -46,8 +44,8 @@ public class AlbumController {
         @TokenPayload AuthTokenPayload loginUser,
         @PathVariable Long albumId
     ) {
-        var albumInfo = albumReadService.album(loginUser.userId(), albumId);
-        var signedAlbumInfo = signService.signAlbum(remoteIp, albumInfo);
+        var albumInfo = readService.album(loginUser.userId(), albumId);
+        var signedAlbumInfo = signAlbum(remoteIp, albumInfo);
         return ResponseEntity.ok(signedAlbumInfo);
     }
 
@@ -56,8 +54,8 @@ public class AlbumController {
         @RequestHeader("X-Forwarded-For") String remoteIp,
         @TokenPayload AuthTokenPayload loginUser
     ) {
-        var albumInfos = albumReadService.albums(loginUser.userId());
-        var signedAlbumInfos = signService.signAlbums(remoteIp, albumInfos);
+        var albumInfos = readService.albums(loginUser.userId());
+        var signedAlbumInfos = signAlbums(remoteIp, albumInfos);
         return ResponseEntity.ok(signedAlbumInfos);
     }
 
@@ -66,7 +64,22 @@ public class AlbumController {
         @TokenPayload AuthTokenPayload loginUser,
         @PathVariable Long albumId
     ) {
-        albumDeleteService.deleteAlbum(loginUser.userId(), albumId);
+        deleteService.deleteAlbum(loginUser.userId(), albumId);
         return ResponseEntity.ok().build();
+    }
+
+    private List<AlbumInfoResponse> signAlbums(String remoteIp, List<AlbumInfoResponse> albums) {
+        return albums.stream()
+            .map(album -> signAlbum(remoteIp, album))
+            .toList();
+    }
+
+    private AlbumInfoResponse signAlbum(String remoteIp, AlbumInfoResponse album) {
+        return new AlbumInfoResponse(
+            album.id(),
+            album.name(),
+            urlService.sign(remoteIp, album.thumbnailUrl()),
+            album.createdAt()
+        );
     }
 }

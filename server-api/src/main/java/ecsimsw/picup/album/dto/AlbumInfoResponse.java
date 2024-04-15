@@ -1,18 +1,16 @@
 package ecsimsw.picup.album.dto;
 
+import static ecsimsw.picup.config.S3Config.ROOT_PATH;
+
 import ecsimsw.picup.album.domain.Album;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 public record AlbumInfoResponse(
     Long id,
     String name,
-    String thumbnailImage,
+    String thumbnailUrl,
     LocalDateTime createdAt
 ) {
 
@@ -20,7 +18,7 @@ public record AlbumInfoResponse(
         return new AlbumInfoResponse(
             album.getId(),
             album.getName(),
-            album.getResourceKey(),
+            ROOT_PATH + album.getResourceKey(),
             album.getCreatedAt()
         );
     }

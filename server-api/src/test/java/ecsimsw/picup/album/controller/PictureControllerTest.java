@@ -19,7 +19,7 @@ import ecsimsw.picup.album.dto.PicturesDeleteRequest;
 import ecsimsw.picup.album.service.PictureDeleteService;
 import ecsimsw.picup.album.service.PictureReadService;
 import ecsimsw.picup.album.service.PictureUploadService;
-import ecsimsw.picup.album.service.ResourceSignService;
+import ecsimsw.picup.album.service.ResourceUrlService;
 import ecsimsw.picup.auth.AuthTokenPayload;
 import ecsimsw.picup.auth.AuthTokenService;
 import java.time.LocalDateTime;
@@ -52,7 +52,7 @@ class PictureControllerTest {
     private PictureUploadService pictureUploadService;
 
     @MockBean
-    private ResourceSignService resourceSignService;
+    private ResourceUrlService resourceUrlService;
 
     @MockBean
     private PictureDeleteService pictureDeleteService;
@@ -71,7 +71,7 @@ class PictureControllerTest {
         when(authTokenService.tokenPayload(any()))
             .thenReturn(new AuthTokenPayload(loginUserId, USER_NAME));
 
-        when(resourceSignService.signPictures(any(), any()))
+        when(resourceUrlService.sign(any(), any()))
             .thenAnswer(input -> input.getArguments()[1]);
     }
 

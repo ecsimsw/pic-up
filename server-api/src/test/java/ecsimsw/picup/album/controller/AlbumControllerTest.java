@@ -18,7 +18,7 @@ import ecsimsw.picup.album.dto.AlbumInfoResponse;
 import ecsimsw.picup.album.service.AlbumDeleteService;
 import ecsimsw.picup.album.service.AlbumReadService;
 import ecsimsw.picup.album.service.AlbumUploadService;
-import ecsimsw.picup.album.service.ResourceSignService;
+import ecsimsw.picup.album.service.ResourceUrlService;
 import ecsimsw.picup.auth.AuthTokenPayload;
 import ecsimsw.picup.auth.AuthTokenService;
 import ecsimsw.picup.auth.UnauthorizedException;
@@ -49,7 +49,7 @@ class AlbumControllerTest {
     private AlbumUploadService albumUploadService;
 
     @MockBean
-    private ResourceSignService resourceSignService;
+    private ResourceUrlService resourceUrlService;
 
     @MockBean
     private AlbumReadService albumReadService;
@@ -67,10 +67,10 @@ class AlbumControllerTest {
         when(authTokenService.tokenPayload(any()))
             .thenReturn(new AuthTokenPayload(loginUserId, USER_NAME));
 
-        when(resourceSignService.signAlbum(any(), any()))
+        when(resourceUrlService.sign(any(), any()))
             .thenAnswer(input -> input.getArguments()[1]);
 
-        when(resourceSignService.signAlbums(any(), any()))
+        when(resourceUrlService.sign(any(), any()))
             .thenAnswer(input -> input.getArguments()[1]);
     }
 

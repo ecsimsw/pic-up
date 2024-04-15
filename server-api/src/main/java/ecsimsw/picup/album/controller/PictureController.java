@@ -6,14 +6,12 @@ import ecsimsw.picup.album.dto.PicturesDeleteRequest;
 import ecsimsw.picup.album.service.PictureDeleteService;
 import ecsimsw.picup.album.service.PictureReadService;
 import ecsimsw.picup.album.service.PictureUploadService;
-import ecsimsw.picup.album.service.ResourceSignService;
-import ecsimsw.picup.ecrypt.CloudFrontSignUrlService;
+import ecsimsw.picup.album.service.ResourceUrlService;
 import ecsimsw.picup.auth.AuthTokenPayload;
 import ecsimsw.picup.auth.TokenPayload;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
-import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -28,7 +26,7 @@ public class PictureController {
     private final PictureUploadService pictureUploadService;
     private final PictureDeleteService pictureDeleteService;
     private final PictureReadService pictureReadService;
-    private final ResourceSignService signService;
+    private final ResourceUrlService urlService;
 
     @PostMapping("/api/album/{albumId}/picture")
     public ResponseEntity<Long> createPicture(
@@ -51,7 +49,7 @@ public class PictureController {
     ) {
         var cursor = PictureSearchCursor.from(limit, cursorCreatedAt);
         var pictureInfos = pictureReadService.pictures(loginUser.userId(), albumId, cursor);
-        var signedPictureInfos = signService.signPictures(remoteIp, pictureInfos);
+        var signedPictureInfos = signPictures(remoteIp, pictureInfos);
         return ResponseEntity.ok(signedPictureInfos);
     }
 
@@ -63,5 +61,18 @@ public class PictureController {
     ) {
         pictureDeleteService.deletePictures(loginUser.userId(), albumId, pictures.pictureIds());
         return ResponseEntity.ok().build();
+    }
+
+    private List<PictureInfoResponse> signPictures(String remoteIp, List<PictureInfoResponse> pictureInfos) {
+        return pictureInfos.stream()
+            .map(picture -> new PictureInfoResponse(
+                picture.id(),
+                picture.albumId(),
+                picture.isVideo(),
+                urlService.sign(remoteIp, picture.resourceUrl()),
+                urlService.sign(remoteIp, picture.thumbnailUrl()),
+                picture.createdAt()
+            ))
+            .toList();
     }
 }

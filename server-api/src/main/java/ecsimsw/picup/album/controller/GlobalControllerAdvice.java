@@ -6,6 +6,7 @@ import ecsimsw.picup.album.exception.MemberException;
 import ecsimsw.picup.album.exception.UnsupportedFileTypeException;
 import ecsimsw.picup.auth.UnauthorizedException;
 import ecsimsw.picup.mq.MessageBrokerDownException;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -19,10 +20,9 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import org.springframework.web.multipart.support.MissingServletRequestPartException;
 
+@Slf4j
 @ControllerAdvice
 public class GlobalControllerAdvice {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(GlobalControllerAdvice.class);
 
     @ExceptionHandler({AlbumException.class, UnsupportedFileTypeException.class})
     public ResponseEntity<String> albumException(IllegalArgumentException e) {
@@ -46,7 +46,7 @@ public class GlobalControllerAdvice {
 
     @ExceptionHandler(MaxUploadSizeExceededException.class)
     public ResponseEntity<String> fileSizeException(MaxUploadSizeExceededException e) {
-        LOGGER.info(e.getMessage());
+        log.info(e.getMessage());
         return ResponseEntity.status(HttpStatus.PAYLOAD_TOO_LARGE).body(e.getMessage());
     }
 
@@ -67,7 +67,7 @@ public class GlobalControllerAdvice {
     @ExceptionHandler({MessageBrokerDownException.class})
     public ResponseEntity<String> messageBrokerDownException(IllegalArgumentException e) {
         var alertMessage = "[MESSAGE_BROKER_CONNECTION] : " + e.getMessage();
-        LOGGER.error(alertMessage + "\n" + e.getCause());
+        log.error(alertMessage + "\n" + e.getCause());
         return ResponseEntity.internalServerError().body("unhandled server exception");
     }
 
@@ -75,7 +75,7 @@ public class GlobalControllerAdvice {
     public ResponseEntity<String> unhandledException(Throwable e) {
         e.printStackTrace();
         var alertMessage = "[UNHANDLED] : " + e.getMessage();
-        LOGGER.error(alertMessage + "\n" + e.getCause());
+        log.error(alertMessage + "\n" + e.getCause());
         return ResponseEntity.internalServerError().body("unhandled server exception");
     }
 }

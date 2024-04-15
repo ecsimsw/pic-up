@@ -3,6 +3,7 @@ package ecsimsw.picup.album.service;
 import ecsimsw.picup.album.domain.Member;
 import ecsimsw.picup.album.domain.MemberRepository;
 import ecsimsw.picup.album.domain.Password;
+import ecsimsw.picup.album.exception.AlbumException;
 import ecsimsw.picup.auth.UnauthorizedException;
 import ecsimsw.picup.ecrypt.SHA256Utils;
 import ecsimsw.picup.album.dto.MemberInfoResponse;
@@ -31,7 +32,6 @@ public class MemberService {
             var usage = storageUsageService.getUsage(member.getId());
             return MemberInfoResponse.of(member, usage);
         } catch (Exception e) {
-            e.printStackTrace();
             throw new UnauthorizedException("Invalid login info");
         }
     }

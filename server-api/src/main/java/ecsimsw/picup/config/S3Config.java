@@ -8,9 +8,9 @@ import com.amazonaws.client.builder.AwsClientBuilder;
 import com.amazonaws.regions.Regions;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
-import ecsimsw.picup.ecrypt.CloudFrontSignUrlService;
-import ecsimsw.picup.ecrypt.MockCloudFrontSignUrlService;
-import ecsimsw.picup.ecrypt.ResourceSignUrlService;
+import ecsimsw.picup.storage.service.CloudFrontSignUrlSignService;
+import ecsimsw.picup.storage.service.MockCloudFrontSignUrlSignService;
+import ecsimsw.picup.storage.service.UrlSignService;
 import io.findify.s3mock.S3Mock;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -65,13 +65,13 @@ public class S3Config {
     @Primary
     @ConditionalOnProperty(value = "aws.cloudfront.sign", havingValue = "false", matchIfMissing = true)
     @Bean
-    public ResourceSignUrlService mockSignUrlService() {
-        return new MockCloudFrontSignUrlService();
+    public UrlSignService mockSignUrlService() {
+        return new MockCloudFrontSignUrlSignService();
     }
 
     @ConditionalOnProperty(value = "aws.cloudfront.sign", havingValue = "true")
     @Bean
-    public ResourceSignUrlService signUrlService(
+    public UrlSignService signUrlService(
         @Value("${aws.cloudfront.domain}")
         String domainName,
         @Value("${aws.cloudfront.publicKeyId}")
@@ -79,7 +79,7 @@ public class S3Config {
         @Value("${aws.cloudfront.privateKeyPath}")
         String privateKeyPath
     ) {
-        return new CloudFrontSignUrlService(
+        return new CloudFrontSignUrlSignService(
             domainName,
             publicKeyId,
             privateKeyPath

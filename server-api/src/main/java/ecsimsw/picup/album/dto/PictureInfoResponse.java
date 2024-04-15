@@ -1,5 +1,7 @@
 package ecsimsw.picup.album.dto;
 
+import static ecsimsw.picup.config.S3Config.ROOT_PATH;
+
 import ecsimsw.picup.album.domain.Picture;
 import ecsimsw.picup.album.domain.PictureFileExtension;
 import java.time.LocalDateTime;
@@ -10,8 +12,8 @@ public record PictureInfoResponse(
     Long id,
     Long albumId,
     boolean isVideo,
-    String resourceKey,
-    String thumbnailResourceKey,
+    String resourceUrl,
+    String thumbnailUrl,
     LocalDateTime createdAt
 ) {
 
@@ -20,8 +22,8 @@ public record PictureInfoResponse(
             picture.getId(),
             picture.getAlbum().getId(),
             PictureFileExtension.fromFileName(picture.getResourceKey()).isVideo,
-            picture.getResourceKey(),
-            picture.getThumbnailResourceKey(),
+            ROOT_PATH + picture.getResourceKey(),
+            ROOT_PATH + picture.getThumbnailResourceKey(),
             picture.getCreatedAt()
         );
     }

@@ -12,7 +12,7 @@ class AlbumTest {
     @Test
     void authorize() {
         var userId = 1L;
-        var album = new Album(userId, "album_name", "resourceKey.jpg", 1L);
+        var album = new Album(userId, "album_name", "resourceUrl.jpg", 1L);
         album.authorize(userId);
     }
 
@@ -20,7 +20,7 @@ class AlbumTest {
     @Test
     void authorizeInvalidUser() {
         var userId = 1L;
-        var album = new Album(userId, "album_name", "resourceKey.jpg", 1L);
+        var album = new Album(userId, "album_name", "resourceUrl.jpg", 1L);
         var invalidUserId = userId + 1;
         assertThatThrownBy(
             () -> album.authorize(invalidUserId)

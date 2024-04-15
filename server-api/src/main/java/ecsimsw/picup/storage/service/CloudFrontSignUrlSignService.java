@@ -1,4 +1,4 @@
-package ecsimsw.picup.ecrypt;
+package ecsimsw.picup.storage.service;
 
 import lombok.RequiredArgsConstructor;
 import software.amazon.awssdk.services.cloudfront.CloudFrontUtilities;
@@ -9,10 +9,8 @@ import java.nio.file.Path;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 
-import static ecsimsw.picup.config.S3Config.ROOT_PATH;
-
 @RequiredArgsConstructor
-public class CloudFrontSignUrlService implements ResourceSignUrlService {
+public class CloudFrontSignUrlSignService implements UrlSignService {
 
     private static final String CDN_PROTOCOL = "https";
     private static final int EXPIRATION_AFTER_DAYS = 7;
@@ -23,9 +21,9 @@ public class CloudFrontSignUrlService implements ResourceSignUrlService {
     private final String privateKeyPath;
 
     @Override
-    public String signedUrl(String remoteIp, String resourcePath) {
+    public String sign(String remoteIp, String resourcePath) {
         try {
-            var sign = cannedSign(remoteIp, ROOT_PATH + resourcePath);
+            var sign = cannedSign(remoteIp, resourcePath);
             var signedUrl = cloudFrontUtilities.getSignedUrlWithCustomPolicy(sign);
             return signedUrl.url();
         } catch (Exception e) {

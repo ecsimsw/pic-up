@@ -4,17 +4,15 @@ import ecsimsw.picup.album.exception.StorageException;
 import java.io.File;
 import java.io.IOException;
 import java.util.concurrent.CompletableFuture;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
+@Slf4j
 @Component
 public class FileStorage {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(FileStorage.class);
 
     public static final String FILE_STORAGE_PATH = "./storage-backup/";
 
@@ -23,10 +21,9 @@ public class FileStorage {
         try {
             var start = System.currentTimeMillis();
             file.transferTo(new File(FILE_STORAGE_PATH + resourceKey));
-            LOGGER.info("FS upload time " + (System.currentTimeMillis() - start) + "ms, for " + file.getSize());
+            log.info("FS upload time " + (System.currentTimeMillis() - start) + "ms, for " + file.getSize());
             return new AsyncResult<>(resourceKey).completable();
         } catch (IOException e) {
-            e.printStackTrace();
             throw new StorageException("Failed to upload to file storage");
         }
     }
