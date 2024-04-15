@@ -32,7 +32,7 @@ public class ObjectStorage {
             metadata.setContentType(file.getContentType());
             metadata.setContentLength(file.getSize());
             s3Client.putObject(BUCKET_NAME, ROOT_PATH + resourceKey, file.getInputStream(), metadata);
-            log.info("S3 upload time " + (System.currentTimeMillis() - start) + "ms, for " + file.getSize());
+//            log.info("S3 upload time " + (System.currentTimeMillis() - start) + "ms, for " + file.getSize());
             return new AsyncResult<>(resourceKey).completable();
         } catch (Exception e) {
             throw new StorageException("Object storage server exception while uploading", e);

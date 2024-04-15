@@ -31,7 +31,7 @@ public class UserLock {
             if (!locks.tryLock(LOCK_WAIT_TIME, LOCK_TTL, TimeUnit.MILLISECONDS)) {
                 throw new AlbumException("Failed to get lock");
             }
-            LOGGER.info("acquire lock : " + lockKeyName);
+//            LOGGER.info("acquire lock : " + lockKeyName);
         } catch (InterruptedException e) {
             throw new IllegalArgumentException("Thread interrupted");
         }
@@ -42,7 +42,7 @@ public class UserLock {
         var locks = redissonClient.getLock(lockKeyName);
         if (locks.isHeldByCurrentThread()) {
             locks.unlock();
-            LOGGER.info("release lock : " + lockKeyName);
+//            LOGGER.info("release lock : " + lockKeyName);
         }
     }
 
