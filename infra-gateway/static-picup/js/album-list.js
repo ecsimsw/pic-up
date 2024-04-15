@@ -9,7 +9,7 @@ document.addEventListener("DOMContentLoaded", function () {
         fetchData(serverUrl + "/api/album", function (albums) {
             albums.reverse()
             albums.forEach(async (album) => {
-                createAlbumArticle(album.id, album.name, album.thumbnailImage)
+                createAlbumArticle(album.id, album.name, album.thumbnailUrl)
             });
         })
     })

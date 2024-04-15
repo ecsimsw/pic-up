@@ -29,17 +29,17 @@ document.addEventListener("DOMContentLoaded", function () {
                 if (inPagePictures.has(picture.id)) {
                     return
                 }
-                const itemId = createNewPictureItem(albumId, picture.id, picture.thumbnailResourceKey)
+                const itemId = createNewPictureItem(albumId, picture.id, picture.thumbnailUrl)
                 if(!picture.isVideo) {
                     if(mobileMode) {
                         addGalleryImage(
-                            picture.thumbnailResourceKey,
-                            picture.thumbnailResourceKey,
+                            picture.thumbnailUrl,
+                            picture.thumbnailUrl,
                         )
                     } else {
                         addGalleryImage(
-                            picture.resourceKey,
-                            picture.thumbnailResourceKey,
+                            picture.resourceUrl,
+                            picture.thumbnailUrl,
                         )
                     }
                     addImageViewer(`album-${albumId}-picture-${picture.id}`, galleryOrderNumber);
@@ -70,17 +70,17 @@ function handleScroll() {
                 if(inPagePictures.has(picture.id)) {
                     return
                 }
-                const itemId = createNewPictureItem(albumId, picture.id, picture.thumbnailResourceKey)
+                const itemId = createNewPictureItem(albumId, picture.id, picture.thumbnailUrl)
                 if(!picture.isVideo) {
                     if(mobileMode) {
                         addGalleryImage(
-                            picture.thumbnailResourceKey,
-                            picture.thumbnailResourceKey,
+                            picture.thumbnailUrl,
+                            picture.thumbnailUrl,
                         )
                     } else {
                         addGalleryImage(
-                            picture.resourceKey,
-                            picture.thumbnailResourceKey,
+                            picture.resourceUrl,
+                            picture.thumbnailUrl,
                         )
                     }
                     addImageViewer(`album-${albumId}-picture-${picture.id}`, galleryOrderNumber);
@@ -166,10 +166,10 @@ function addVideo(itemId, picture) {
             '         preload="auto"\n' +
             '         width="80%"\n' +
             '         height="80%"\n' +
-            '         poster=\"' + picture.thumbnailResourceKey + '\"\n' +
+            '         poster=\"' + picture.thumbnailUrl + '\"\n' +
             '         data-setup="{}"\n' +
             '         \n' +
-            '        <source src=\"' + picture.resourceKey + "\"" +' type="video/mp4"/>\n' +
+            '        <source src=\"' + picture.resourceUrl + "\"" +' type="video/mp4"/>\n' +
             '     </video>'
         let elementById = document.getElementById("video-content");
         while (elementById.firstChild) {
