@@ -38,6 +38,15 @@ public class PictureController {
         return ResponseEntity.ok(pictureId);
     }
 
+    @PostMapping("/api/album/{albumId}/picture/test")
+    public ResponseEntity<Long> createPictureTest(
+        @PathVariable Long albumId,
+        @RequestPart MultipartFile file
+    ) {
+        var pictureId = pictureUploadService.upload(1l, albumId, file);
+        return ResponseEntity.ok(pictureId);
+    }
+
     @GetMapping("/api/album/{albumId}/picture")
     public ResponseEntity<List<PictureInfoResponse>> getPictures(
         @RequestHeader("X-Forwarded-For") String remoteIp,
