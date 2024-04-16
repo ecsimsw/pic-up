@@ -22,7 +22,6 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.verify;
 
-
 @ExtendWith(MockitoExtension.class)
 @DataJpaTest
 class AlbumServiceTest {
@@ -33,9 +32,7 @@ class AlbumServiceTest {
     private AlbumService albumService;
 
     @BeforeEach
-    public void init(
-        @Autowired AlbumRepository albumRepository
-    ) {
+    public void init(@Autowired AlbumRepository albumRepository) {
         var fileService = Mockito.mock(FileService.class);
         albumService = new AlbumService(pictureService, albumRepository, fileService);
     }

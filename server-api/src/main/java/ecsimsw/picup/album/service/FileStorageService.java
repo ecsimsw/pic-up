@@ -4,14 +4,8 @@ import ecsimsw.picup.album.exception.StorageException;
 import ecsimsw.picup.storage.dto.FileUploadResponse;
 import ecsimsw.picup.storage.service.FileStorage;
 import ecsimsw.picup.storage.service.ObjectStorage;
-import java.util.List;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CompletionException;
-import java.util.concurrent.TimeUnit;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
