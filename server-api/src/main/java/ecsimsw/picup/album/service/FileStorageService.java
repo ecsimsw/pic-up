@@ -20,28 +20,19 @@ import org.springframework.web.multipart.MultipartFile;
 @Service
 public class FileStorageService {
 
-    public static final int UPLOAD_TIME_OUT_SEC = 5;
-
     private final ObjectStorage s3Storage;
     private final FileStorage fileStorage;
 
     public FileUploadResponse upload(MultipartFile file, String resourceKey) {
-        var futures = List.of(
-            s3Storage.storeAsync(resourceKey, file),
-            fileStorage.storeAsync(resourceKey, file)
-        );
         try {
-            CompletableFuture.allOf(futures.toArray(new CompletableFuture[0]))
-                .orTimeout(UPLOAD_TIME_OUT_SEC, TimeUnit.SECONDS)
-                .join();
+            log.info("upload : " + resourceKey);
+            s3Storage.store(resourceKey, file);
+            fileStorage.store(resourceKey, file);
+            log.info("end : " + resourceKey);
             return new FileUploadResponse(resourceKey, file.getSize());
-        } catch (CompletionException e) {
-            futures.forEach(uploadFuture -> uploadFuture.thenAccept(
-                uploadResponse -> {
-                    s3Storage.deleteIfExists(resourceKey);
-                    fileStorage.deleteIfExists(resourceKey);
-                })
-            );
+        } catch (Exception e) {
+            s3Storage.deleteIfExists(resourceKey);
+            fileStorage.deleteIfExists(resourceKey);
             throw new StorageException("exception while uploading : " + e.getMessage());
         }
     }

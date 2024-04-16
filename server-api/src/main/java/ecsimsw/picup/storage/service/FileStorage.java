@@ -16,13 +16,10 @@ public class FileStorage {
 
     public static final String FILE_STORAGE_PATH = "./storage-backup/";
 
-    @Async
-    public CompletableFuture<String> storeAsync(String resourceKey, MultipartFile file) {
+    public String store(String resourceKey, MultipartFile file) {
         try {
-            var start = System.currentTimeMillis();
             file.transferTo(new File(FILE_STORAGE_PATH + resourceKey));
-//            log.info("fs upload time " + (System.currentTimeMillis() - start) + "ms");
-            return new AsyncResult<>(resourceKey).completable();
+            return resourceKey;
         } catch (IOException e) {
             throw new StorageException("Failed to upload to file storage");
         }

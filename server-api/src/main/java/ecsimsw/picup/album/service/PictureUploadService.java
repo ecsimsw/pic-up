@@ -1,11 +1,13 @@
 package ecsimsw.picup.album.service;
 
-import ecsimsw.picup.album.dto.FileUploadRequest;
 import ecsimsw.picup.album.domain.PictureFileExtension;
-import ecsimsw.picup.storage.dto.FileUploadResponse;
-import ecsimsw.picup.album.dto.PictureInfoResponse;
-import ecsimsw.picup.storage.dto.VideoFileUploadResponse;
+import ecsimsw.picup.album.dto.FileUploadRequest;
+import ecsimsw.picup.album.exception.AlbumException;
 import ecsimsw.picup.album.utils.UserLock;
+import ecsimsw.picup.storage.dto.FileUploadResponse;
+import ecsimsw.picup.storage.dto.VideoFileUploadResponse;
+import java.util.List;
+import java.util.concurrent.CompletionException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -23,28 +25,28 @@ public class PictureUploadService {
     private final PictureService pictureService;
 
     public Long upload(Long userId, Long albumId, MultipartFile file) {
+        var startTime = System.currentTimeMillis();
         if (PictureFileExtension.of(file).isVideo) {
             var videoFile = fileService.uploadVideo(FileUploadRequest.of(file));
-            var pictureInfo = uploadVideo(userId, albumId, videoFile);
-            return pictureInfo.id();
+            return uploadVideo(userId, albumId, videoFile);
         }
-
-        var req = FileUploadRequest.of(file);
-        var start = System.currentTimeMillis();
-
-        var imageFile = fileService.uploadImage(req);
-        var thumbnailFile = fileService.uploadImage(FileUploadRequest.resizedOf(file, PICTURE_THUMBNAIL_SCALE));
-        var pictureInfo = uploadImage(userId, albumId, imageFile, thumbnailFile);
-
-        log.info("upload end : " + (System.currentTimeMillis() - start) + "ms");
-        return pictureInfo.id();
+        var imageUploadFuture = fileService.uploadImageAsync(FileUploadRequest.of(file));
+        var thumbnailUploadFuture = fileService.uploadImageAsync(FileUploadRequest.resizedOf(file, PICTURE_THUMBNAIL_SCALE));
+        try {
+            long l = uploadImage(userId, albumId, imageUploadFuture.join(), thumbnailUploadFuture.join());
+            log.info("upload end : " + (System.currentTimeMillis() - startTime) + "ms");
+            return l;
+        } catch (CompletionException e) {
+            List.of(imageUploadFuture, thumbnailUploadFuture)
+                .forEach(it -> it.thenAccept(uploadResponse -> fileService.deleteAsync(uploadResponse.resourceKey())));
+            throw new AlbumException("Failed to upload picture");
+        }
     }
 
-    public PictureInfoResponse uploadVideo(Long userId, Long albumId, VideoFileUploadResponse videoFile) {
+    public long uploadVideo(Long userId, Long albumId, VideoFileUploadResponse videoFile) {
         try {
             userLock.acquire(userId);
-            var picture = pictureService.createVideo(userId, albumId, videoFile);
-            return PictureInfoResponse.of(picture);
+            return pictureService.createVideo(userId, albumId, videoFile).getId();
         } catch (Exception e) {
             fileService.deleteAsync(videoFile.resourceKey());
             fileService.deleteAsync(videoFile.thumbnailResourceKey());
@@ -54,14 +56,13 @@ public class PictureUploadService {
         }
     }
 
-    public PictureInfoResponse uploadImage(Long userId, Long albumId, FileUploadResponse imageFile, FileUploadResponse thumbnailFile) {
+    public long uploadImage(Long userId, Long albumId, FileUploadResponse image, FileUploadResponse thumbnail) {
         try {
             userLock.acquire(userId);
-            var picture = pictureService.createImage(userId, albumId, imageFile, thumbnailFile);
-            return PictureInfoResponse.of(picture);
+            return pictureService.createImage(userId, albumId, image, thumbnail).getId();
         } catch (Exception e) {
-            fileService.deleteAsync(imageFile.resourceKey());
-            fileService.deleteAsync(thumbnailFile.resourceKey());
+            fileService.deleteAsync(image.resourceKey());
+            fileService.deleteAsync(thumbnail.resourceKey());
             throw e;
         } finally {
             userLock.release(userId);
