@@ -25,10 +25,8 @@ public class FileStorageService {
 
     public FileUploadResponse upload(MultipartFile file, String resourceKey) {
         try {
-            log.info("upload : " + resourceKey);
             s3Storage.store(resourceKey, file);
             fileStorage.store(resourceKey, file);
-            log.info("end : " + resourceKey);
             return new FileUploadResponse(resourceKey, file.getSize());
         } catch (Exception e) {
             s3Storage.deleteIfExists(resourceKey);
