@@ -25,7 +25,6 @@ public class PictureUploadService {
     private final PictureService pictureService;
 
     public Long upload(Long userId, Long albumId, MultipartFile file) {
-        var startTime = System.currentTimeMillis();
         if (PictureFileExtension.of(file).isVideo) {
             var videoFile = fileService.uploadVideo(FileUploadRequest.of(file));
             return uploadVideo(userId, albumId, videoFile);
@@ -33,9 +32,7 @@ public class PictureUploadService {
         var imageUploadFuture = fileService.uploadImageAsync(FileUploadRequest.of(file));
         var thumbnailUploadFuture = fileService.uploadImageAsync(FileUploadRequest.resizedOf(file, PICTURE_THUMBNAIL_SCALE));
         try {
-            long l = uploadImage(userId, albumId, imageUploadFuture.join(), thumbnailUploadFuture.join());
-            log.info("upload end : " + (System.currentTimeMillis() - startTime) + "ms");
-            return l;
+            return uploadImage(userId, albumId, imageUploadFuture.join(), thumbnailUploadFuture.join());
         } catch (CompletionException e) {
             List.of(imageUploadFuture, thumbnailUploadFuture)
                 .forEach(it -> it.thenAccept(uploadResponse -> fileService.deleteAsync(uploadResponse.resourceKey())));

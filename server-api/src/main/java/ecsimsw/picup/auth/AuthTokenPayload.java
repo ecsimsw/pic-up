@@ -1,7 +1,7 @@
 package ecsimsw.picup.auth;
 
 public record AuthTokenPayload(
-    long userId,
+    Long userId,
     String username
 ) {
     public String tokenKey() {
