@@ -71,8 +71,6 @@ class AlbumControllerTest {
     void createAlbum() throws Exception {
         var uploadFile = new MockMultipartFile("thumbnail", "thumb.jpg", "jpg", new byte[0]);
         var expectedAlbumInfo = 1L;
-        when(authTokenService.tokenPayload(any()))
-            .thenReturn(new AuthTokenPayload(loginUserId, USER_NAME));
         when(albumUploadService.initAlbum(1L, ALBUM_NAME, uploadFile))
             .thenReturn(expectedAlbumInfo);
         mockMvc.perform(
