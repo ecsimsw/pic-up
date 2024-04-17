@@ -1,6 +1,8 @@
 package ecsimsw.picup.album.domain;
 
+import ecsimsw.picup.album.exception.AlbumException;
 import java.time.LocalDateTime;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -17,7 +19,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-@AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Table(indexes = {
@@ -30,24 +31,39 @@ public class Picture {
     @Id
     private Long id;
 
-    @NotNull
     @JoinColumn(name="albumId", nullable=false)
+    @NotNull
     @ManyToOne
     private Album album;
 
+    @Column(nullable = false)
     @NotBlank
     private String resourceKey;
 
+    @Column(nullable = false)
     @NotBlank
     private String thumbnailResourceKey;
 
+    @Column(nullable = false)
     @Min(0)
     private long fileSize;
 
-    @NotNull
+    @Column(nullable = false)
     private LocalDateTime createdAt;
 
-    public Picture(Album album, String resourceKey, String thumbnailResourceKey, Long fileSize) {
+    public Picture(Long id, Album album, String resourceKey, String thumbnailResourceKey, long fileSize, LocalDateTime createdAt) {
+        if(album == null || resourceKey.isBlank() || thumbnailResourceKey.isBlank() || fileSize < 0) {
+            throw new AlbumException("Invalid picture format");
+        }
+        this.id = id;
+        this.album = album;
+        this.resourceKey = resourceKey;
+        this.thumbnailResourceKey = thumbnailResourceKey;
+        this.fileSize = fileSize;
+        this.createdAt = createdAt;
+    }
+
+    public Picture(Album album, String resourceKey, String thumbnailResourceKey, long fileSize) {
         this(null, album, resourceKey, thumbnailResourceKey, fileSize, LocalDateTime.now());
     }
 

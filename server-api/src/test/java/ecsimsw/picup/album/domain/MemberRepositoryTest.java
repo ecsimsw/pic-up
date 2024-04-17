@@ -27,11 +27,19 @@ class MemberRepositoryTest {
         );
     }
 
-    @DisplayName("유효하지 않는 값으로 Member 를 생성할 수 없다.")
+    @DisplayName("빈 사용자 이름으로 Member 를 생성할 수 없다.")
     @Test
     void saveWithInvalidMember() {
         assertThatThrownBy(
-            () -> memberRepository.save(new Member("", new Password()))
+            () -> memberRepository.save(new Member("", new Password("password", "salt")))
+        );
+    }
+
+    @DisplayName("빈 패스워드 값으로 Member 를 생성할 수 없다.")
+    @Test
+    void saveWithEmptyPassword() {
+        assertThatThrownBy(
+            () -> memberRepository.save(new Member("username", new Password()))
         );
     }
 }
