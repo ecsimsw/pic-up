@@ -1,49 +1,49 @@
 package ecsimsw.picup.album.controller;
 
+import static ecsimsw.picup.auth.AuthConfig.ACCESS_TOKEN_COOKIE_NAME;
+import static ecsimsw.picup.auth.AuthConfig.REFRESH_TOKEN_COOKIE_NAME;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.cookie;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import ecsimsw.picup.album.dto.MemberInfoResponse;
 import ecsimsw.picup.album.dto.SignInRequest;
 import ecsimsw.picup.album.dto.SignUpRequest;
 import ecsimsw.picup.album.service.MemberService;
+import ecsimsw.picup.auth.AuthArgumentResolver;
+import ecsimsw.picup.auth.AuthInterceptor;
 import ecsimsw.picup.auth.AuthTokenService;
 import ecsimsw.picup.auth.UnauthorizedException;
+import javax.servlet.http.Cookie;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import javax.servlet.http.Cookie;
-
-import static ecsimsw.picup.auth.AuthConfig.ACCESS_TOKEN_COOKIE_NAME;
-import static ecsimsw.picup.auth.AuthConfig.REFRESH_TOKEN_COOKIE_NAME;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-
-@WebMvcTest(controllers = {MemberController.class})
 class MemberControllerTest {
 
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
     static {
         OBJECT_MAPPER.registerModule(new JavaTimeModule());
-        OBJECT_MAPPER.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
     }
 
-    @Autowired
-    private MockMvc mockMvc;
+    private final AuthTokenService authTokenService = mock(AuthTokenService.class);
+    private final MemberService memberService = mock(MemberService.class);
 
-    @MockBean
-    private AuthTokenService authTokenService;
-
-    @MockBean
-    private MemberService memberService;
+    private final MockMvc mockMvc = MockMvcBuilders
+        .standaloneSetup(new MemberController(memberService, authTokenService))
+        .addInterceptors(new AuthInterceptor(authTokenService))
+        .setCustomArgumentResolvers(new AuthArgumentResolver(authTokenService))
+        .setControllerAdvice(new GlobalControllerAdvice())
+        .build();
 
     @DisplayName("로그인시 토큰과 함께 사용자 정보를 응답한다.")
     @Test

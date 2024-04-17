@@ -14,7 +14,7 @@ public class AlbumUploadService {
     private final FileService fileService;
     private final AlbumService albumService;
 
-    public Long initAlbum(Long userId, String name, MultipartFile file) {
+    public long initAlbum(Long userId, String name, MultipartFile file) {
         var thumbnail = FileUploadRequest.resizedOf(file, ALBUM_THUMBNAIL_SCALE);
         var uploadedImage = fileService.uploadImageAsync(thumbnail);
         try {

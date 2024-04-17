@@ -2,6 +2,7 @@ package ecsimsw.picup.album.controller;
 
 import static ecsimsw.picup.env.MemberFixture.USER_NAME;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
@@ -11,7 +12,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import ecsimsw.picup.album.dto.PictureInfoResponse;
 import ecsimsw.picup.album.dto.PictureSearchCursor;
@@ -20,6 +20,8 @@ import ecsimsw.picup.album.service.PictureDeleteService;
 import ecsimsw.picup.album.service.PictureReadService;
 import ecsimsw.picup.album.service.PictureUploadService;
 import ecsimsw.picup.album.service.ResourceUrlService;
+import ecsimsw.picup.auth.AuthArgumentResolver;
+import ecsimsw.picup.auth.AuthInterceptor;
 import ecsimsw.picup.auth.AuthTokenPayload;
 import ecsimsw.picup.auth.AuthTokenService;
 import java.time.LocalDateTime;
@@ -28,40 +30,33 @@ import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-@WebMvcTest(controllers = PictureController.class)
 class PictureControllerTest {
 
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
     static {
         OBJECT_MAPPER.registerModule(new JavaTimeModule());
-        OBJECT_MAPPER.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
     }
 
-    @Autowired
-    private MockMvc mockMvc;
+    private final PictureUploadService pictureUploadService = mock(PictureUploadService.class);
+    private final ResourceUrlService resourceUrlService = mock(ResourceUrlService.class);
+    private final PictureDeleteService pictureDeleteService = mock(PictureDeleteService.class);
+    private final PictureReadService pictureReadService = mock(PictureReadService.class);
+    private final AuthTokenService authTokenService = mock(AuthTokenService.class);
 
-    @MockBean
-    private PictureUploadService pictureUploadService;
-
-    @MockBean
-    private ResourceUrlService resourceUrlService;
-
-    @MockBean
-    private PictureDeleteService pictureDeleteService;
-
-    @MockBean
-    private PictureReadService pictureReadService;
-
-    @MockBean
-    private AuthTokenService authTokenService;
+    private final MockMvc mockMvc = MockMvcBuilders
+        .standaloneSetup(new PictureController(
+            pictureUploadService, pictureDeleteService, pictureReadService, resourceUrlService
+        ))
+        .addInterceptors(new AuthInterceptor(authTokenService))
+        .setCustomArgumentResolvers(new AuthArgumentResolver(authTokenService))
+        .setControllerAdvice(new GlobalControllerAdvice())
+        .build();
 
     private final Long loginUserId = 1L;
     private final Long albumId = 1L;
@@ -95,8 +90,10 @@ class PictureControllerTest {
     @Test
     void getFirstPagePictures() throws Exception {
         var expectedPageSize = 10;
-        var expectedPictureInfos = List.of(new PictureInfoResponse(1L, albumId, false, "resource.png", "thumbnail.png", LocalDateTime.now()));
-        when(pictureReadService.pictures(loginUserId, albumId, PictureSearchCursor.from(expectedPageSize, Optional.empty())))
+        var expectedPictureInfos = List.of(
+            new PictureInfoResponse(1L, albumId, false, "resource.png", "thumbnail.png", LocalDateTime.now()));
+        when(pictureReadService.pictures(loginUserId, albumId,
+            PictureSearchCursor.from(expectedPageSize, Optional.empty())))
             .thenReturn(expectedPictureInfos);
         mockMvc.perform(get("/api/album/" + albumId + "/picture")
                 .header("X-Forwarded-For", "192.168.0.1")

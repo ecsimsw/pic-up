@@ -1,4 +1,4 @@
-package ecsimsw.picup.album.service;
+package ecsimsw.picup.integration;
 
 import ecsimsw.picup.mq.ImageFileMessageQueue;
 import ecsimsw.picup.mq.RabbitMQConfig;

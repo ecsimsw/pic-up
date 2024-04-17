@@ -22,7 +22,6 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.verify;
 
-@ExtendWith(MockitoExtension.class)
 @DataJpaTest
 class AlbumServiceTest {
 
