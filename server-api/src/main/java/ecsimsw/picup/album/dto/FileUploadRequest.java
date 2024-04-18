@@ -4,11 +4,10 @@ import ecsimsw.picup.album.domain.PictureFileExtension;
 import ecsimsw.picup.album.exception.AlbumException;
 import ecsimsw.picup.album.utils.ResourceKeyStrategy;
 import ecsimsw.picup.album.utils.ThumbnailUtils;
-import org.springframework.mock.web.MockMultipartFile;
-import org.springframework.web.multipart.MultipartFile;
-
 import java.io.IOException;
 import java.util.Objects;
+import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.web.multipart.MultipartFile;
 
 public record FileUploadRequest(
     String resourceKey,

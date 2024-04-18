@@ -4,7 +4,6 @@ import ecsimsw.picup.album.exception.AlbumException;
 import java.time.LocalDateTime;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -12,10 +11,6 @@ import javax.persistence.Index;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
-import javax.validation.constraints.Min;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -31,28 +26,24 @@ public class Picture {
     @Id
     private Long id;
 
-    @JoinColumn(name="albumId", nullable=false)
-    @NotNull
+    @JoinColumn(name = "albumId", nullable = false)
     @ManyToOne
     private Album album;
 
     @Column(nullable = false)
-    @NotBlank
     private String resourceKey;
 
     @Column(nullable = false)
-    @NotBlank
     private String thumbnailResourceKey;
 
     @Column(nullable = false)
-    @Min(0)
     private long fileSize;
 
     @Column(nullable = false)
     private LocalDateTime createdAt;
 
     public Picture(Long id, Album album, String resourceKey, String thumbnailResourceKey, long fileSize, LocalDateTime createdAt) {
-        if(album == null || resourceKey.isBlank() || thumbnailResourceKey.isBlank() || fileSize < 0) {
+        if (album == null || resourceKey.isBlank() || thumbnailResourceKey.isBlank() || fileSize < 0) {
             throw new AlbumException("Invalid picture format");
         }
         this.id = id;

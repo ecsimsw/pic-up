@@ -4,7 +4,6 @@ import ecsimsw.picup.album.exception.AlbumException;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
-import javax.validation.constraints.Min;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -19,11 +18,9 @@ public class StorageUsage {
     private Long userId;
 
     @Column(nullable = false)
-    @Min(0)
     private long limitAsByte;
 
     @Column(nullable = false)
-    @Min(0)
     private long usageAsByte;
 
     public StorageUsage(Long userId, long limitAsByte, long usageAsByte) {

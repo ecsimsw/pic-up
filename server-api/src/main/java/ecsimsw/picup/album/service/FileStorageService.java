@@ -1,5 +1,6 @@
 package ecsimsw.picup.album.service;
 
+import ecsimsw.picup.album.domain.ResourceKey;
 import ecsimsw.picup.album.exception.StorageException;
 import ecsimsw.picup.storage.dto.FileUploadResponse;
 import ecsimsw.picup.storage.service.FileStorage;

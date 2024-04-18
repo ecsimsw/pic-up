@@ -71,12 +71,13 @@ class AlbumControllerTest {
     void createAlbum() throws Exception {
         var uploadFile = new MockMultipartFile("thumbnail", "thumb.jpg", "jpg", new byte[0]);
         var expectedAlbumInfo = 1L;
+
         when(albumUploadService.initAlbum(1L, ALBUM_NAME, uploadFile))
             .thenReturn(expectedAlbumInfo);
-        mockMvc.perform(
-                multipart("/api/album/")
-                    .file(uploadFile)
-                    .param("name", ALBUM_NAME)
+
+        mockMvc.perform(multipart("/api/album/")
+                .file(uploadFile)
+                .param("name", ALBUM_NAME)
             )
             .andExpect(status().isOk())
             .andExpect(content().string(OBJECT_MAPPER.writeValueAsString(expectedAlbumInfo)));
@@ -86,10 +87,12 @@ class AlbumControllerTest {
     @Test
     void getAlbums() throws Exception {
         var expectedAlbumInfos = List.of(AlbumInfoResponse.of(ALBUM()));
+
         when(albumReadService.albums(loginUserId))
             .thenReturn(expectedAlbumInfos);
-        mockMvc.perform(
-                get("/api/album").header("X-Forwarded-For", "192.168.0.1")
+
+        mockMvc.perform(get("/api/album")
+                .header("X-Forwarded-For", "192.168.0.1")
             )
             .andExpect(status().isOk())
             .andExpect(content().string(OBJECT_MAPPER.writeValueAsString(expectedAlbumInfos)));
@@ -100,9 +103,12 @@ class AlbumControllerTest {
     void getAlbum() throws Exception {
         var albumId = 1L;
         var expectedAlbumInfo = AlbumInfoResponse.of(ALBUM());
-        when(albumReadService.album(loginUserId, albumId)).thenReturn(expectedAlbumInfo);
-        mockMvc.perform(
-                get("/api/album/" + albumId).header("X-Forwarded-For", "192.168.0.1")
+
+        when(albumReadService.album(loginUserId, albumId))
+            .thenReturn(expectedAlbumInfo);
+
+        mockMvc.perform(get("/api/album/" + albumId)
+                .header("X-Forwarded-For", "192.168.0.1")
             )
             .andExpect(status().isOk())
             .andExpect(content().string(OBJECT_MAPPER.writeValueAsString(expectedAlbumInfo)));
@@ -112,10 +118,12 @@ class AlbumControllerTest {
     @Test
     void getAlbumUnAuth() throws Exception {
         var invalidAlbumId = 1L;
+
         when(albumReadService.album(loginUserId, invalidAlbumId))
             .thenThrow(UnauthorizedException.class);
-        mockMvc.perform(
-                get("/api/album/" + invalidAlbumId).header("X-Forwarded-For", "192.168.0.1")
+
+        mockMvc.perform(get("/api/album/" + invalidAlbumId)
+                .header("X-Forwarded-For", "192.168.0.1")
             )
             .andExpect(status().isUnauthorized());
     }
@@ -124,6 +132,7 @@ class AlbumControllerTest {
     @Test
     void deleteAlbum() throws Exception {
         var albumId = 1L;
+
         mockMvc.perform(delete("/api/album/" + albumId))
             .andExpect(status().isOk());
     }

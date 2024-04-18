@@ -1,5 +1,6 @@
 package ecsimsw.picup.album.controller;
 
+import static ecsimsw.picup.env.AlbumFixture.PICTURE_INFO_RESPONSE;
 import static ecsimsw.picup.env.MemberFixture.USER_NAME;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
@@ -13,7 +14,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import ecsimsw.picup.album.dto.PictureInfoResponse;
 import ecsimsw.picup.album.dto.PictureSearchCursor;
 import ecsimsw.picup.album.dto.PicturesDeleteRequest;
 import ecsimsw.picup.album.service.PictureDeleteService;
@@ -74,14 +74,12 @@ class PictureControllerTest {
     @Test
     void createPicture() throws Exception {
         var uploadFile = new MockMultipartFile("file", "pic.jpg", "jpg", new byte[0]);
-        var expectedPictureInfo = new PictureInfoResponse(1L, albumId, false, "resource.png", "thumbnail.png",
-            LocalDateTime.now());
+        var expectedPictureInfo = PICTURE_INFO_RESPONSE;
+
         when(pictureUploadService.upload(loginUserId, expectedPictureInfo.id(), uploadFile))
             .thenReturn(expectedPictureInfo.id());
-        mockMvc.perform(
-                multipart("/api/album/" + albumId + "/picture")
-                    .file(uploadFile)
-            )
+
+        mockMvc.perform(multipart("/api/album/" + albumId + "/picture").file(uploadFile))
             .andExpect(status().isOk())
             .andExpect(content().string(OBJECT_MAPPER.writeValueAsString(expectedPictureInfo.id())));
     }
@@ -89,12 +87,12 @@ class PictureControllerTest {
     @DisplayName("앨범내 Picture 정보 중 첫 페이지 n 개를 조회한다.")
     @Test
     void getFirstPagePictures() throws Exception {
-        var expectedPageSize = 10;
-        var expectedPictureInfos = List.of(
-            new PictureInfoResponse(1L, albumId, false, "resource.png", "thumbnail.png", LocalDateTime.now()));
+        var expectedPictureInfos = List.of(PICTURE_INFO_RESPONSE);
+
         when(pictureReadService.pictures(loginUserId, albumId,
-            PictureSearchCursor.from(expectedPageSize, Optional.empty())))
+            PictureSearchCursor.from(10, Optional.empty())))
             .thenReturn(expectedPictureInfos);
+
         mockMvc.perform(get("/api/album/" + albumId + "/picture")
                 .header("X-Forwarded-For", "192.168.0.1")
             )
@@ -105,13 +103,13 @@ class PictureControllerTest {
     @DisplayName("앨범내 Cursor 의 생성일보다 오래된 n 개의 사진 정보를 조회한다.")
     @Test
     void getPicturesByCursor() throws Exception {
-        var expectedPageSize = 10;
         var expectedCursorCreatedAt = LocalDateTime.of(2024, 4, 8, 10, 45, 12, 728721232);
-        var expectedPictureInfos = List.of(
-            new PictureInfoResponse(1L, albumId, false, "resource.png", "thumbnail.png", LocalDateTime.now()));
+        var expectedPictureInfos = List.of(PICTURE_INFO_RESPONSE);
+
         when(pictureReadService.pictures(loginUserId, albumId,
-            PictureSearchCursor.from(expectedPageSize, Optional.of(expectedCursorCreatedAt))))
+            PictureSearchCursor.from(10, Optional.of(expectedCursorCreatedAt))))
             .thenReturn(expectedPictureInfos);
+
         mockMvc.perform(get("/api/album/" + albumId + "/picture")
                 .header("X-Forwarded-For", "192.168.0.1")
                 .param("cursorCreatedAt", "2024-04-08T10:45:12.728721232Z")
@@ -124,10 +122,11 @@ class PictureControllerTest {
     @Test
     void getPicturesWithLimit() throws Exception {
         var limit = 20;
-        var expectedPictureInfos = List.of(
-            new PictureInfoResponse(1L, albumId, false, "resource.png", "thumbnail.png", LocalDateTime.now()));
+        var expectedPictureInfos = List.of(PICTURE_INFO_RESPONSE);
+
         when(pictureReadService.pictures(loginUserId, albumId, PictureSearchCursor.from(limit, Optional.empty())))
             .thenReturn(expectedPictureInfos);
+
         mockMvc.perform(get("/api/album/" + albumId + "/picture")
                 .header("X-Forwarded-For", "192.168.0.1")
                 .param("limit", String.valueOf(limit))
@@ -140,12 +139,14 @@ class PictureControllerTest {
     @Test
     void deletePictures() throws Exception {
         var pictureIds = List.of(1L, 2L, 3L);
+
         mockMvc.perform(delete("/api/album/" + albumId + "/picture")
                 .header("X-Forwarded-For", "192.168.0.1")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(OBJECT_MAPPER.writeValueAsString(new PicturesDeleteRequest(pictureIds)))
             )
             .andExpect(status().isOk());
+
         verify(pictureDeleteService).deletePictures(loginUserId, albumId, pictureIds);
     }
 }

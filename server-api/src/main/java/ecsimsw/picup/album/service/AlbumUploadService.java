@@ -18,8 +18,7 @@ public class AlbumUploadService {
         var thumbnail = FileUploadRequest.resizedOf(file, ALBUM_THUMBNAIL_SCALE);
         var uploadedImage = fileService.uploadImageAsync(thumbnail);
         try {
-            var album = albumService.create(userId, name, uploadedImage.join());
-            return album.getId();
+            return albumService.create(userId, name, uploadedImage.join()).getId();
         } catch (Exception e) {
             fileService.deleteAsync(thumbnail.resourceKey());
             throw e;

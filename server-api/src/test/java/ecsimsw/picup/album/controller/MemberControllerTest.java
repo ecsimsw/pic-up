@@ -63,7 +63,8 @@ class MemberControllerTest {
         mockMvc.perform(post("/api/member/signin")
                 .content(OBJECT_MAPPER.writeValueAsString(signInRequest))
                 .contentType(MediaType.APPLICATION_JSON)
-            ).andExpect(status().isOk())
+            )
+            .andExpect(status().isOk())
             .andExpect(cookie().value(expectedAt.getName(), expectedAt.getValue()))
             .andExpect(cookie().value(expectedRt.getName(), expectedRt.getValue()))
             .andExpect(content().json(OBJECT_MAPPER.writeValueAsString(expectBody)));
@@ -73,12 +74,15 @@ class MemberControllerTest {
     @Test
     public void signInTestInvalidLoginInfo() throws Exception {
         var signInInfo = new SignInRequest("username", "password");
+
         when(memberService.signIn(signInInfo))
             .thenThrow(new UnauthorizedException("Invalid member info"));
+
         mockMvc.perform(post("/api/member/signin")
                 .content(OBJECT_MAPPER.writeValueAsString(signInInfo))
                 .contentType(MediaType.APPLICATION_JSON)
-            ).andExpect(status().isUnauthorized())
+            )
+            .andExpect(status().isUnauthorized())
             .andExpect(cookie().doesNotExist(ACCESS_TOKEN_COOKIE_NAME))
             .andExpect(cookie().doesNotExist(REFRESH_TOKEN_COOKIE_NAME));
     }
@@ -101,7 +105,8 @@ class MemberControllerTest {
         mockMvc.perform(post("/api/member/signup")
                 .content(OBJECT_MAPPER.writeValueAsString(signUpRequest))
                 .contentType(MediaType.APPLICATION_JSON)
-            ).andExpect(status().isOk())
+            )
+            .andExpect(status().isOk())
             .andExpect(cookie().value(expectedAt.getName(), expectedAt.getValue()))
             .andExpect(cookie().value(expectedRt.getName(), expectedRt.getValue()))
             .andExpect(content().json(OBJECT_MAPPER.writeValueAsString(expectBody)));
@@ -111,19 +116,23 @@ class MemberControllerTest {
     @Test
     public void signUpWithInvalidUsername() throws Exception {
         var signUpRequest = new SignUpRequest("", "password");
+
         mockMvc.perform(post("/api/member/signup")
-            .content(OBJECT_MAPPER.writeValueAsString(signUpRequest))
-            .contentType(MediaType.APPLICATION_JSON)
-        ).andExpect(status().isBadRequest());
+                .content(OBJECT_MAPPER.writeValueAsString(signUpRequest))
+                .contentType(MediaType.APPLICATION_JSON)
+            )
+            .andExpect(status().isBadRequest());
     }
 
     @DisplayName("사용자 비밀번호를 빈칸으로 회원정보로 가입할 수 없다.")
     @Test
     public void signUpWithInvalidPassword() throws Exception {
         var signUpRequest = new SignUpRequest("username", "");
+
         mockMvc.perform(post("/api/member/signup")
-            .content(OBJECT_MAPPER.writeValueAsString(signUpRequest))
-            .contentType(MediaType.APPLICATION_JSON)
-        ).andExpect(status().isBadRequest());
+                .content(OBJECT_MAPPER.writeValueAsString(signUpRequest))
+                .contentType(MediaType.APPLICATION_JSON)
+            )
+            .andExpect(status().isBadRequest());
     }
 }

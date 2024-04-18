@@ -12,9 +12,6 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Index;
 import javax.persistence.Table;
-import javax.validation.constraints.Min;
-import javax.validation.constraints.NotBlank;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -34,23 +31,19 @@ public class Album {
     private Long userId;
 
     @Convert(converter = AesStringConverter.class)
-    @Column(nullable = false)
-    @NotBlank
     private String name;
 
     @Column(nullable = false)
-    @NotBlank
     private String resourceKey;
 
     @Column(nullable = false)
-    @Min(0)
     private long resourceFileSize;
 
     @Column(nullable = false)
     private LocalDateTime createdAt;
 
     public Album(Long id, Long userId, String name, String resourceKey, long resourceFileSize, LocalDateTime createdAt) {
-        if(userId == null || name.isBlank() || resourceKey.isBlank() || resourceFileSize < 0) {
+        if (userId == null || name.isBlank() || resourceKey.isBlank() || resourceFileSize < 0) {
             throw new AlbumException("Invalid album format");
         }
         this.id = id;
