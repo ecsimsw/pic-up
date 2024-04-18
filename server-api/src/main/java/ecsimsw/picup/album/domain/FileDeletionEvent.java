@@ -1,10 +1,7 @@
 package ecsimsw.picup.album.domain;
 
 import java.time.LocalDateTime;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -24,13 +21,13 @@ public class FileDeletionEvent {
     @NotNull
     private Long userId;
 
-    @NotBlank
-    private String resourceKey;
+    @Embedded
+    private ResourceKey resourceKey;
 
     @NotNull
     private LocalDateTime creationTime = LocalDateTime.now();
 
-    public FileDeletionEvent(Long userId, String resourceKey) {
+    public FileDeletionEvent(Long userId, ResourceKey resourceKey) {
         this(null, userId, resourceKey, LocalDateTime.now());
     }
 }

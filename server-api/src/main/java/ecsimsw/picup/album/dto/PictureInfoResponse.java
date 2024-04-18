@@ -21,7 +21,7 @@ public record PictureInfoResponse(
         return new PictureInfoResponse(
             picture.getId(),
             picture.getAlbum().getId(),
-            PictureFileExtension.fromFileName(picture.getResourceKey()).isVideo,
+            picture.extension().isVideo,
             ROOT_PATH + picture.getResourceKey(),
             ROOT_PATH + picture.getThumbnailResourceKey(),
             picture.getCreatedAt()

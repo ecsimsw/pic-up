@@ -1,6 +1,7 @@
 package ecsimsw.picup.album.service;
 
 import ecsimsw.picup.album.domain.ResourceKey;
+import ecsimsw.picup.album.dto.VideoThumbnailFile;
 import ecsimsw.picup.album.exception.StorageException;
 import ecsimsw.picup.storage.dto.FileUploadResponse;
 import ecsimsw.picup.storage.service.FileStorage;
@@ -18,16 +19,22 @@ public class FileStorageService {
     private final ObjectStorage s3Storage;
     private final FileStorage fileStorage;
 
-    public FileUploadResponse upload(MultipartFile file, String resourceKey) {
+    public FileUploadResponse upload(MultipartFile file, ResourceKey resourceKey) {
+        var resourceName = resourceKey.getResourceKey();
         try {
-            s3Storage.store(resourceKey, file);
-            fileStorage.store(resourceKey, file);
+            s3Storage.store(resourceName, file);
+            fileStorage.store(resourceName, file);
             return new FileUploadResponse(resourceKey, file.getSize());
         } catch (Exception e) {
-            s3Storage.deleteIfExists(resourceKey);
-            fileStorage.deleteIfExists(resourceKey);
+            e.printStackTrace();
+            s3Storage.deleteIfExists(resourceName);
+            fileStorage.deleteIfExists(resourceName);
             throw new StorageException("exception while uploading : " + e.getMessage());
         }
+    }
+
+    public FileUploadResponse upload(VideoThumbnailFile thumbnailFile) {
+        return upload(thumbnailFile.file(), thumbnailFile.resourceKey());
     }
 
     public void delete(String resourceKey) {

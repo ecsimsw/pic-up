@@ -18,19 +18,22 @@ public enum PictureFileExtension {
         this.isVideo = isVideo;
     }
 
-    public static PictureFileExtension of(String value) {
+    public static PictureFileExtension fromFileName(String fileName) {
+        var indexOfExtension = fileName.lastIndexOf(".");
+        var extension = fileName.substring(indexOfExtension + 1);
+        return of(extension);
+    }
+
+    public static PictureFileExtension of(String extension) {
         return Arrays.stream(values())
-            .filter(it -> it.name().equalsIgnoreCase(value))
+            .filter(it -> it.name().equalsIgnoreCase(extension))
             .findAny()
             .orElseThrow(() -> new UnsupportedFileTypeException("Invalid file type"));
     }
 
     public static PictureFileExtension of(MultipartFile file) {
         var fileName = Objects.requireNonNull(file.getOriginalFilename());
-        return fromFileName(fileName);
-    }
-
-    public static PictureFileExtension fromFileName(String fileName) {
-        return of(fileName.substring(fileName.lastIndexOf(".") + 1));
+        var extension = fileName.substring(fileName.lastIndexOf(".") + 1);
+        return of(extension);
     }
 }

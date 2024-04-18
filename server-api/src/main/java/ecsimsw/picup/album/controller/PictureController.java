@@ -1,5 +1,6 @@
 package ecsimsw.picup.album.controller;
 
+import ecsimsw.picup.album.domain.PictureFileExtension;
 import ecsimsw.picup.album.dto.PictureInfoResponse;
 import ecsimsw.picup.album.dto.PictureSearchCursor;
 import ecsimsw.picup.album.dto.PicturesDeleteRequest;
@@ -44,7 +45,11 @@ public class PictureController {
         @PathVariable Long albumId,
         @RequestPart MultipartFile file
     ) {
-        var pictureId = pictureUploadService.upload(loginUser.userId(), albumId, file);
+        if(PictureFileExtension.of(file).isVideo) {
+            var pictureId = pictureUploadService.uploadVideo(loginUser.userId(), albumId, file);
+            return ResponseEntity.ok(pictureId);
+        }
+        var pictureId = pictureUploadService.uploadImage(loginUser.userId(), albumId, file);
         return ResponseEntity.ok(pictureId);
     }
 
@@ -53,13 +58,13 @@ public class PictureController {
         @PathVariable Long albumId,
         @RequestPart MultipartFile file
     ) {
-        var pictureId = pictureUploadService.upload(1l, albumId, file);
+        var pictureId = pictureUploadService.uploadImage(1l, albumId, file);
         return ResponseEntity.ok(pictureId);
     }
 
     @GetMapping("/api/album/{albumId}/picture")
     public ResponseEntity<List<PictureInfoResponse>> getPictures(
-        @RequestHeader("X-Forwarded-For") String remoteIp,
+        @RequestHeader(value = "X-Forwarded-For") String remoteIp,
         @TokenPayload AuthTokenPayload loginUser,
         @PathVariable Long albumId,
         @RequestParam(defaultValue = "10") int limit,

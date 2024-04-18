@@ -16,7 +16,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.retry.annotation.EnableRetry;
 
-import static ecsimsw.picup.env.AlbumFixture.RESOURCES;
+import java.util.List;
+
+import static ecsimsw.picup.env.AlbumFixture.RESOURCE_KEY;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.mockito.Mockito.*;
@@ -35,6 +37,8 @@ class FileUploadRequestMessageQueueTest {
     @Autowired
     private ImageFileMessageQueue imageFileMessageQueue;
 
+    private final List<String> deleteResources = List.of(RESOURCE_KEY.getResourceKey());
+
     @BeforeEach
     void init() {
         when(queue.getName()).thenReturn("queueName");
@@ -46,12 +50,14 @@ class FileUploadRequestMessageQueueTest {
         doThrow(AmqpConnectException.class)
             .when(rabbitTemplate).convertAndSend(anyString(), any(Object.class));
 
+        var deleteResources = List.of(RESOURCE_KEY.getResourceKey());
+
         assertThatThrownBy(
-            () -> imageFileMessageQueue.offerDeleteAllRequest(RESOURCES)
+            () -> imageFileMessageQueue.offerDeleteAllRequest(deleteResources)
         ).isInstanceOf(MessageBrokerDownException.class);
 
         verify(rabbitTemplate, times(RabbitMQConfig.CONNECTION_RETRY_COUNT))
-            .convertAndSend(queue.getName(), RESOURCES);
+            .convertAndSend(queue.getName(), deleteResources);
     }
 
     @DisplayName("재시도 도중 정상 응답 되는 경우를 예외없이 정상 응답한다.")
@@ -61,8 +67,8 @@ class FileUploadRequestMessageQueueTest {
             .doNothing()
             .when(rabbitTemplate).convertAndSend(anyString(), any(Object.class));
 
-        assertDoesNotThrow(() -> imageFileMessageQueue.offerDeleteAllRequest(RESOURCES));
+        assertDoesNotThrow(() -> imageFileMessageQueue.offerDeleteAllRequest(deleteResources));
         verify(rabbitTemplate, times(2))
-            .convertAndSend(queue.getName(), RESOURCES);
+            .convertAndSend(queue.getName(), deleteResources);
     }
 }

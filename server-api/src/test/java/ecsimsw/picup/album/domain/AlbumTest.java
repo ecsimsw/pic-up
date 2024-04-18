@@ -1,7 +1,9 @@
 package ecsimsw.picup.album.domain;
 
+import static ecsimsw.picup.env.AlbumFixture.*;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import ecsimsw.picup.album.service.AlbumService;
 import ecsimsw.picup.auth.UnauthorizedException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -12,7 +14,7 @@ class AlbumTest {
     @Test
     void authorize() {
         var userId = 1L;
-        var album = new Album(userId, "album_name", "resourceUrl.jpg", 1L);
+        var album = new Album(userId, ALBUM_NAME, RESOURCE_KEY, FILE_SIZE);
         album.authorize(userId);
     }
 
@@ -20,7 +22,7 @@ class AlbumTest {
     @Test
     void authorizeInvalidUser() {
         var userId = 1L;
-        var album = new Album(userId, "album_name", "resourceUrl.jpg", 1L);
+        var album = new Album(userId, ALBUM_NAME, RESOURCE_KEY, FILE_SIZE);
         var invalidUserId = userId + 1;
         assertThatThrownBy(
             () -> album.authorize(invalidUserId)

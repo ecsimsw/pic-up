@@ -47,7 +47,7 @@ public class PictureService {
     @Transactional
     public Picture createVideo(Long userId, Long albumId, VideoFileUploadResponse videoFile) {
         var album = getUserAlbum(userId, albumId);
-        var picture = new Picture(album, videoFile.resourceKey(), videoFile.thumbnailResourceKey(), videoFile.size());
+        var picture = new Picture(album, videoFile.videoResourceKey(), videoFile.thumbnailResourceKey(), videoFile.size());
         pictureRepository.save(picture);
         storageUsageService.addUsage(userId, picture.getFileSize());
         return picture;

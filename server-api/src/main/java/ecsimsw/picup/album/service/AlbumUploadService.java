@@ -1,6 +1,6 @@
 package ecsimsw.picup.album.service;
 
-import ecsimsw.picup.album.dto.FileUploadRequest;
+import ecsimsw.picup.storage.dto.FileUploadResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -13,14 +13,19 @@ public class AlbumUploadService {
 
     private final FileService fileService;
     private final AlbumService albumService;
+    private final ThumbnailService thumbnailService;
 
     public long initAlbum(Long userId, String name, MultipartFile file) {
-        var thumbnail = FileUploadRequest.resizedOf(file, ALBUM_THUMBNAIL_SCALE);
-        var uploadedImage = fileService.uploadImageAsync(thumbnail);
+        var thumbnailFile = thumbnailService.resizeImage(file, ALBUM_THUMBNAIL_SCALE);
+        var uploadedImageFuture = fileService.uploadImageAsync(thumbnailFile);
+        return createAlbum(userId, name, uploadedImageFuture.join());
+    }
+
+    public long createAlbum(Long userId, String name, FileUploadResponse thumbnailFile) {
         try {
-            return albumService.create(userId, name, uploadedImage.join()).getId();
+            return albumService.create(userId, name, thumbnailFile);
         } catch (Exception e) {
-            fileService.deleteAsync(thumbnail.resourceKey());
+            fileService.deleteAsync(thumbnailFile.resourceKey());
             throw e;
         }
     }

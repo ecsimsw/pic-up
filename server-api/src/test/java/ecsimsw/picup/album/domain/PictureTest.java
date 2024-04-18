@@ -22,7 +22,7 @@ class PictureTest {
     @Test
     void pictureWithoutResourceKey() {
         assertThatThrownBy(
-            () -> new Picture(ALBUM(), "", THUMBNAIL_RESOURCE_KEY, 1L)
+            () -> new Picture(ALBUM(), null, THUMBNAIL_RESOURCE_KEY, 1L)
         );
     }
 

@@ -51,7 +51,7 @@ public class AlbumController {
 
     @GetMapping("/api/album")
     public ResponseEntity<List<AlbumInfoResponse>> getAlbums(
-        @RequestHeader("X-Forwarded-For") String remoteIp,
+        @RequestHeader(value = "X-Forwarded-For") String remoteIp,
         @TokenPayload AuthTokenPayload loginUser
     ) {
         var albumInfos = readService.albums(loginUser.userId());

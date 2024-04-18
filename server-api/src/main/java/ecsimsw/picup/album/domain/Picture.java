@@ -2,15 +2,8 @@ package ecsimsw.picup.album.domain;
 
 import ecsimsw.picup.album.exception.AlbumException;
 import java.time.LocalDateTime;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Index;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
+import javax.persistence.*;
+
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -30,20 +23,22 @@ public class Picture {
     @ManyToOne
     private Album album;
 
-    @Column(nullable = false)
-    private String resourceKey;
+    @AttributeOverride(name = "resourceKey", column = @Column(name = "resourceKey"))
+    @Embedded
+    private ResourceKey resourceKey;
+
+    @AttributeOverride(name = "resourceKey", column = @Column(name = "thumbnailResourceKey"))
+    @Embedded
+    private ResourceKey thumbnailResourceKey;
 
     @Column(nullable = false)
-    private String thumbnailResourceKey;
-
-    @Column(nullable = false)
-    private long fileSize;
+    private Long fileSize;
 
     @Column(nullable = false)
     private LocalDateTime createdAt;
 
-    public Picture(Long id, Album album, String resourceKey, String thumbnailResourceKey, long fileSize, LocalDateTime createdAt) {
-        if (album == null || resourceKey.isBlank() || thumbnailResourceKey.isBlank() || fileSize < 0) {
+    public Picture(Long id, Album album, ResourceKey resourceKey, ResourceKey thumbnailResourceKey, long fileSize, LocalDateTime createdAt) {
+        if (album == null || resourceKey == null || thumbnailResourceKey == null || fileSize < 0) {
             throw new AlbumException("Invalid picture format");
         }
         this.id = id;
@@ -54,11 +49,15 @@ public class Picture {
         this.createdAt = createdAt;
     }
 
-    public Picture(Album album, String resourceKey, String thumbnailResourceKey, long fileSize) {
+    public Picture(Album album, ResourceKey resourceKey, ResourceKey thumbnailResourceKey, long fileSize) {
         this(null, album, resourceKey, thumbnailResourceKey, fileSize, LocalDateTime.now());
     }
 
     public void checkSameUser(Long userId) {
         album.authorize(userId);
+    }
+
+    public PictureFileExtension extension() {
+        return PictureFileExtension.of(resourceKey.extension());
     }
 }

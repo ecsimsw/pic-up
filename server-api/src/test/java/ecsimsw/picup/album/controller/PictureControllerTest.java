@@ -76,7 +76,7 @@ class PictureControllerTest {
         var uploadFile = new MockMultipartFile("file", "pic.jpg", "jpg", new byte[0]);
         var expectedPictureInfo = PICTURE_INFO_RESPONSE;
 
-        when(pictureUploadService.upload(loginUserId, expectedPictureInfo.id(), uploadFile))
+        when(pictureUploadService.uploadImage(loginUserId, expectedPictureInfo.id(), uploadFile))
             .thenReturn(expectedPictureInfo.id());
 
         mockMvc.perform(multipart("/api/album/" + albumId + "/picture").file(uploadFile))

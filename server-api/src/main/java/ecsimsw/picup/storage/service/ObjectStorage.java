@@ -23,7 +23,7 @@ public class ObjectStorage {
         this.s3Client = amazonS3;
     }
 
-    public String store(String resourceKey, MultipartFile file) {
+    public void store(String resourceKey, MultipartFile file) {
         try {
             var start = System.currentTimeMillis();
             var metadata = new ObjectMetadata();
@@ -31,7 +31,6 @@ public class ObjectStorage {
             metadata.setContentLength(file.getSize());
             s3Client.putObject(BUCKET_NAME, ROOT_PATH + resourceKey, file.getInputStream(), metadata);
             log.info("s3 upload time " + (System.currentTimeMillis() - start) + "ms");
-            return resourceKey;
         } catch (Exception e) {
             throw new StorageException("Object storage server exception while uploading", e);
         }

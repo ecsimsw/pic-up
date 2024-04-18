@@ -18,8 +18,8 @@ public class ThumbnailUtils {
     public static byte[] resize(InputStream input, String format, float scale) throws IOException {
         BufferedImage imageBuff = Thumbnails.of(input)
             .scale(1)
-            .useExifOrientation(true)
             .addFilter(getImageFilter(scale))
+            .useExifOrientation(true)
             .asBufferedImage();
         Graphics graphics = imageBuff.getGraphics();
         graphics.drawImage(imageBuff, 0, 0, COLOR, null);
@@ -44,5 +44,4 @@ public class ThumbnailUtils {
             }
         };
     }
-
 }

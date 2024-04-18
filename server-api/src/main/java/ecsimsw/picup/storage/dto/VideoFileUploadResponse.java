@@ -1,8 +1,10 @@
 package ecsimsw.picup.storage.dto;
 
+import ecsimsw.picup.album.domain.ResourceKey;
+
 public record VideoFileUploadResponse(
-    String resourceKey,
-    String thumbnailResourceKey,
+    ResourceKey videoResourceKey,
+    ResourceKey thumbnailResourceKey,
     long size
 ) {
 }

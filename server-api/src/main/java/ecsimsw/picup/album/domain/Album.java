@@ -4,14 +4,8 @@ import ecsimsw.picup.album.exception.AlbumException;
 import ecsimsw.picup.album.utils.AesStringConverter;
 import ecsimsw.picup.auth.UnauthorizedException;
 import java.time.LocalDateTime;
-import javax.persistence.Column;
-import javax.persistence.Convert;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Index;
-import javax.persistence.Table;
+import javax.persistence.*;
+
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -33,8 +27,8 @@ public class Album {
     @Convert(converter = AesStringConverter.class)
     private String name;
 
-    @Column(nullable = false)
-    private String resourceKey;
+    @Embedded
+    private ResourceKey resourceKey;
 
     @Column(nullable = false)
     private long resourceFileSize;
@@ -42,8 +36,8 @@ public class Album {
     @Column(nullable = false)
     private LocalDateTime createdAt;
 
-    public Album(Long id, Long userId, String name, String resourceKey, long resourceFileSize, LocalDateTime createdAt) {
-        if (userId == null || name.isBlank() || resourceKey.isBlank() || resourceFileSize < 0) {
+    public Album(Long id, Long userId, String name, ResourceKey resourceKey, long resourceFileSize, LocalDateTime createdAt) {
+        if (userId == null || name.isBlank()  || resourceFileSize < 0) {
             throw new AlbumException("Invalid album format");
         }
         this.id = id;
@@ -54,7 +48,7 @@ public class Album {
         this.createdAt = createdAt;
     }
 
-    public Album(Long userId, String name, String resourceKey, long resourceFileSize) {
+    public Album(Long userId, String name, ResourceKey resourceKey, long resourceFileSize) {
         this(null, userId, name, resourceKey, resourceFileSize, LocalDateTime.now());
     }
 

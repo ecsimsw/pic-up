@@ -30,10 +30,9 @@ public class AlbumService {
 
     @CacheEvict(value = USER_ALBUMS, key = "#userId")
     @Transactional
-    public Album create(Long userId, String name, FileUploadResponse thumbnailFile) {
-        var album = new Album(userId, name, thumbnailFile.resourceKey(), thumbnailFile.size());
-        albumRepository.save(album);
-        return album;
+    public Long create(Long userId, String name, FileUploadResponse thumbnailFile) {
+        var album = albumRepository.save(new Album(userId, name, thumbnailFile.resourceKey(), thumbnailFile.size()));
+        return album.getId();
     }
 
     @CacheEvict(value = USER_ALBUMS, key = "#userId")

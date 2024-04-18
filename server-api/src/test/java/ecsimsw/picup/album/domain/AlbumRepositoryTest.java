@@ -48,12 +48,21 @@ public class AlbumRepositoryTest {
     @DisplayName("유저의 앨범을 최신순으로 조회한다.")
     @Test
     public void findAllInUser() {
-        var picture1 = albumRepository.save(ALBUM());
-        var picture2 = albumRepository.save(ALBUM());
-        var picture3 = albumRepository.save(ALBUM());
+        var album1 = albumRepository.save(new Album(USER_ID, ALBUM_NAME, new ResourceKey("resourceKey1"), FILE_SIZE));
+        var album2 = albumRepository.save(new Album(USER_ID, ALBUM_NAME, new ResourceKey("resourceKey2"), FILE_SIZE));
+        var album3 = albumRepository.save(new Album(USER_ID, ALBUM_NAME, new ResourceKey("resourceKey3"), FILE_SIZE));
         var others = albumRepository.save(ALBUM(Long.MAX_VALUE));
         var result = albumRepository.findAllByUserIdOrderByCreatedAtDesc(USER_ID);
-        assertThat(result).isEqualTo(List.of(picture3, picture2, picture1));
+        assertThat(result).isEqualTo(List.of(album3, album2, album1));
         assertThat(result).doesNotContain(others);
+    }
+
+    @DisplayName("중복된 리소스 키를 갖는 앨범을 생성할 수 없다.")
+    @Test
+    public void createDuplicateResourceKey() {
+        var oldAlbum = albumRepository.save(new Album(USER_ID, ALBUM_NAME, new ResourceKey("duplicated"), FILE_SIZE));
+        assertThatThrownBy(
+            () -> albumRepository.save(new Album(USER_ID, ALBUM_NAME, oldAlbum.getResourceKey(), FILE_SIZE))
+        );
     }
 }
