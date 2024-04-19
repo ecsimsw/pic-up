@@ -17,6 +17,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
+import org.springframework.context.annotation.Profile;
 
 @Configuration
 public class S3Config {
@@ -24,8 +25,7 @@ public class S3Config {
     public static final String ROOT_PATH = "storage/";
     public static final String BUCKET_NAME = "picup-ecsimsw";
 
-    @Primary
-    @ConditionalOnProperty(value = "mock.object.storage.enable", havingValue = "false", matchIfMissing = true)
+    @Profile("prod")
     @Bean
     public AmazonS3 objectStorageClient(
         @Value("${object.storage.credential.accessKey}") String accessKey,
@@ -42,34 +42,7 @@ public class S3Config {
             .build();
     }
 
-    @ConditionalOnProperty(value = "mock.object.storage.enable", havingValue = "true")
-    @Bean
-    public AmazonS3 mockObjectStorageClient(
-        @Value("${mock.object.storage.host.url}") String hostUrl,
-        @Value("${mock.object.storage.host.port}") int port
-    ) {
-        var api = new S3Mock.Builder().withPort(port).withInMemoryBackend().build();
-        api.start();
-
-        var endpoint = new AwsClientBuilder.EndpointConfiguration(hostUrl + ":" + port, Regions.AP_NORTHEAST_2.getName());
-        var amazonS3 = AmazonS3ClientBuilder
-            .standard()
-            .withPathStyleAccessEnabled(true)
-            .withEndpointConfiguration(endpoint)
-            .withCredentials(new AWSStaticCredentialsProvider(new AnonymousAWSCredentials()))
-            .build();
-        amazonS3.createBucket(BUCKET_NAME);
-        return amazonS3;
-    }
-
-    @Primary
-    @ConditionalOnProperty(value = "aws.cloudfront.sign", havingValue = "false", matchIfMissing = true)
-    @Bean
-    public UrlSignService mockSignUrlService() {
-        return new MockCloudFrontSignUrlSignService();
-    }
-
-    @ConditionalOnProperty(value = "aws.cloudfront.sign", havingValue = "true")
+    @Profile("prod")
     @Bean
     public UrlSignService signUrlService(
         @Value("${aws.cloudfront.domain}")
@@ -84,5 +57,34 @@ public class S3Config {
             publicKeyId,
             privateKeyPath
         );
+    }
+
+    @Profile("!prod && !test")
+    @Bean
+    public AmazonS3 mockObjectStorageClient(
+        @Value("${mock.object.storage.host.url}") String hostUrl,
+        @Value("${mock.object.storage.host.port}") int port
+    ) {
+        var api = new S3Mock.Builder()
+            .withPort(port)
+            .withInMemoryBackend()
+            .build();
+        api.start();
+
+        var endpoint = new AwsClientBuilder.EndpointConfiguration(hostUrl + ":" + port, Regions.AP_NORTHEAST_2.getName());
+        var amazonS3 = AmazonS3ClientBuilder
+            .standard()
+            .withPathStyleAccessEnabled(true)
+            .withEndpointConfiguration(endpoint)
+            .withCredentials(new AWSStaticCredentialsProvider(new AnonymousAWSCredentials()))
+            .build();
+        amazonS3.createBucket(BUCKET_NAME);
+        return amazonS3;
+    }
+
+    @Profile("!prod")
+    @Bean
+    public UrlSignService mockSignUrlService() {
+        return new MockCloudFrontSignUrlSignService();
     }
 }

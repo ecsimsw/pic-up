@@ -14,7 +14,7 @@ import java.util.UUID;
 @Embeddable
 public class ResourceKey {
 
-    @Column(unique = true, nullable = false)
+    @Column(nullable = false)
     private String resourceKey;
 
     public ResourceKey(String resourceKey) {

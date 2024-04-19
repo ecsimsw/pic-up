@@ -56,13 +56,4 @@ public class AlbumRepositoryTest {
         assertThat(result).isEqualTo(List.of(album3, album2, album1));
         assertThat(result).doesNotContain(others);
     }
-
-    @DisplayName("중복된 리소스 키를 갖는 앨범을 생성할 수 없다.")
-    @Test
-    public void createDuplicateResourceKey() {
-        var oldAlbum = albumRepository.save(new Album(USER_ID, ALBUM_NAME, new ResourceKey("duplicated"), FILE_SIZE));
-        assertThatThrownBy(
-            () -> albumRepository.save(new Album(USER_ID, ALBUM_NAME, oldAlbum.getResourceKey(), FILE_SIZE))
-        );
-    }
 }

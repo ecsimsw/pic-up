@@ -4,6 +4,7 @@ import ecsimsw.picup.album.domain.FileDeletionEvent;
 import ecsimsw.picup.album.domain.FileDeletionEventOutbox;
 import ecsimsw.picup.album.domain.FileDeletionEvent_;
 import ecsimsw.picup.album.domain.ResourceKey;
+import ecsimsw.picup.album.exception.AlbumException;
 import ecsimsw.picup.mq.ImageFileMessageQueue;
 import ecsimsw.picup.storage.dto.FileUploadResponse;
 import ecsimsw.picup.storage.dto.VideoFileUploadResponse;
