@@ -8,7 +8,6 @@ import static ecsimsw.picup.env.MemberFixture.USER_PASSWORD;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.inOrder;
-import static org.mockito.Mockito.only;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -47,9 +46,7 @@ Test async method
  */
 
 @DisplayName("파일 업로드 비동기 예외처리를 테스트한다.")
-@ActiveProfiles("test")
-@Import(S3MockConfig.class)
-@SpringBootTest
+@SpringBootTest(classes = S3MockConfig.class)
 class PictureUploadAsyncTest {
 
     @Autowired

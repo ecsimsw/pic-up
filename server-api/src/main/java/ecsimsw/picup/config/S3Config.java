@@ -13,10 +13,8 @@ import ecsimsw.picup.storage.service.MockCloudFrontSignUrlSignService;
 import ecsimsw.picup.storage.service.UrlSignService;
 import io.findify.s3mock.S3Mock;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Profile;
 
 @Configuration
@@ -59,7 +57,7 @@ public class S3Config {
         );
     }
 
-    @Profile("!prod && !test")
+    @Profile("dev")
     @Bean
     public AmazonS3 mockObjectStorageClient(
         @Value("${mock.object.storage.host.url}") String hostUrl,
@@ -82,7 +80,7 @@ public class S3Config {
         return amazonS3;
     }
 
-    @Profile("!prod")
+    @Profile("dev")
     @Bean
     public UrlSignService mockSignUrlService() {
         return new MockCloudFrontSignUrlSignService();

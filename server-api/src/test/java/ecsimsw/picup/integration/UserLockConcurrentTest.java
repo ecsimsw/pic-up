@@ -5,18 +5,11 @@ import ecsimsw.picup.album.service.MemberService;
 import ecsimsw.picup.album.service.PictureUploadService;
 import ecsimsw.picup.album.service.StorageUsageService;
 import ecsimsw.picup.config.S3MockConfig;
-import io.findify.s3mock.S3Mock;
-import javax.annotation.PreDestroy;
-import org.aspectj.lang.annotation.After;
-import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Import;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.event.annotation.AfterTestClass;
 
 import static ecsimsw.picup.env.AlbumFixture.ALBUM_NAME;
 import static ecsimsw.picup.env.AlbumFixture.IMAGE_FILE;
@@ -25,9 +18,7 @@ import static ecsimsw.picup.utils.ConcurrentJobTestUtils.concurrentJob;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("사용자 락으로 동시 업로드시 공유 자원을 격리한다.")
-@ActiveProfiles("test")
-@Import(S3MockConfig.class)
-@SpringBootTest
+@SpringBootTest(classes = S3MockConfig.class)
 public class UserLockConcurrentTest {
 
     @Autowired
