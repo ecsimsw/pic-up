@@ -1,6 +1,6 @@
 package ecsimsw.picup.album.controller;
 
-import ecsimsw.picup.album.service.FileStorageService;
+import ecsimsw.picup.album.service.FileService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
@@ -18,16 +18,16 @@ public class FileDeleteMessageQueueListener {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(FileDeleteMessageQueueListener.class);
 
-    private final FileStorageService storageService;
+    private final FileService fileService;
 
-    public FileDeleteMessageQueueListener(FileStorageService storageService) {
-        this.storageService = storageService;
+    public FileDeleteMessageQueueListener(FileService fileService) {
+        this.fileService = fileService;
     }
 
     @RabbitListener(queues = FILE_DELETE_ALL_QUEUE_NAME, containerFactory = FILE_DELETION_QUEUE_CF)
     public void deleteAll(List<String> resources) {
         LOGGER.info("Delete file : " + String.join("\n ", resources));
-        resources.forEach(storageService::delete);
+        resources.forEach(fileService::delete);
     }
 
     @RabbitListener(queues = FILE_DELETION_RECOVER_QUEUE_NAME)

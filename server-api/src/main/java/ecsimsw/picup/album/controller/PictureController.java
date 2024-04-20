@@ -29,7 +29,6 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-@Slf4j
 @RequiredArgsConstructor
 @RestController
 public class PictureController {
@@ -97,7 +96,6 @@ public class PictureController {
                 urlService.sign(remoteIp, picture.resourceUrl()),
                 urlService.sign(remoteIp, picture.thumbnailUrl()),
                 picture.createdAt()
-            ))
-            .toList();
+            )).toList();
     }
 }

@@ -20,9 +20,9 @@ import ecsimsw.picup.album.service.FileService;
 import ecsimsw.picup.album.service.MemberService;
 import ecsimsw.picup.album.service.PictureUploadService;
 import ecsimsw.picup.album.service.ThumbnailService;
-import ecsimsw.picup.storage.dto.FileUploadResponse;
+import ecsimsw.picup.storage.FileUploadResponse;
 import ecsimsw.picup.config.S3MockConfig;
-import io.findify.s3mock.S3Mock;
+
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import org.junit.jupiter.api.BeforeEach;
@@ -32,9 +32,6 @@ import org.mockito.InOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.Import;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.event.annotation.AfterTestClass;
 import org.springframework.web.multipart.MultipartFile;
 
 /*

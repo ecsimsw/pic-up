@@ -2,8 +2,8 @@ package ecsimsw.picup.album.service;
 
 import ecsimsw.picup.album.exception.AlbumException;
 import ecsimsw.picup.album.utils.UserLock;
-import ecsimsw.picup.storage.dto.FileUploadResponse;
-import ecsimsw.picup.storage.dto.VideoFileUploadResponse;
+import ecsimsw.picup.storage.FileUploadResponse;
+import ecsimsw.picup.storage.VideoFileUploadResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -25,7 +25,7 @@ public class PictureUploadService {
     private final ThumbnailService thumbnailService;
 
     public long uploadVideo(Long userId, Long albumId, MultipartFile file) {
-        var videoFile = fileService.uploadVideo(file);
+        var videoFile = fileService.uploadVideoAsync(file).join();
         return createVideoPicture(userId, albumId, videoFile);
     }
 

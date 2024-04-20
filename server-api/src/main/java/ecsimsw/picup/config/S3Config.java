@@ -8,9 +8,9 @@ import com.amazonaws.client.builder.AwsClientBuilder;
 import com.amazonaws.regions.Regions;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
-import ecsimsw.picup.storage.service.CloudFrontSignUrlSignService;
-import ecsimsw.picup.storage.service.MockCloudFrontSignUrlSignService;
-import ecsimsw.picup.storage.service.UrlSignService;
+import ecsimsw.picup.cdn.CloudFrontSignUrlSignService;
+import ecsimsw.picup.cdn.MockCloudFrontSignUrlSignService;
+import ecsimsw.picup.cdn.UrlSignService;
 import io.findify.s3mock.S3Mock;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -40,23 +40,6 @@ public class S3Config {
             .build();
     }
 
-    @Profile("prod")
-    @Bean
-    public UrlSignService signUrlService(
-        @Value("${aws.cloudfront.domain}")
-        String domainName,
-        @Value("${aws.cloudfront.publicKeyId}")
-        String publicKeyId,
-        @Value("${aws.cloudfront.privateKeyPath}")
-        String privateKeyPath
-    ) {
-        return new CloudFrontSignUrlSignService(
-            domainName,
-            publicKeyId,
-            privateKeyPath
-        );
-    }
-
     @Profile("dev")
     @Bean
     public AmazonS3 mockObjectStorageClient(
@@ -78,11 +61,5 @@ public class S3Config {
             .build();
         amazonS3.createBucket(BUCKET_NAME);
         return amazonS3;
-    }
-
-    @Profile("dev")
-    @Bean
-    public UrlSignService mockSignUrlService() {
-        return new MockCloudFrontSignUrlSignService();
     }
 }

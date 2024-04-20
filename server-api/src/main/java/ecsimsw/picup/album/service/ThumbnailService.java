@@ -6,17 +6,20 @@ import ecsimsw.picup.album.dto.VideoThumbnailFile;
 import ecsimsw.picup.album.exception.AlbumException;
 import ecsimsw.picup.album.utils.ThumbnailUtils;
 import ecsimsw.picup.album.utils.VideoUtils;
+import ecsimsw.picup.storage.FileUtils;
+import lombok.RequiredArgsConstructor;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.UUID;
 
-import static ecsimsw.picup.config.FileStorageConfig.FILE_STORAGE_PATH;
-
+@RequiredArgsConstructor
 @Service
 public class ThumbnailService {
 
+    private static final String TEMP_FILE_STORAGE_PATH = "storage-temp/";
     private static final PictureFileExtension VIDEO_THUMBNAIL_DEFAULT_FORMAT = PictureFileExtension.JPG;
     private static final int CAPTURE_FRAME_NUMBER = 1;
 
@@ -34,19 +37,40 @@ public class ThumbnailService {
         }
     }
 
-    public VideoThumbnailFile videoThumbnail(ResourceKey videoResourceKey) {
+    public VideoThumbnailFile videoThumbnail(MultipartFile videoFile) {
+        var thumbnailFile = captureThumbnailFromVideoFile(videoFile);
         var thumbnailResourceKey = ResourceKey.withExtension(VIDEO_THUMBNAIL_DEFAULT_FORMAT.name());
-        var file = VideoUtils.capture(
-            FILE_STORAGE_PATH + videoResourceKey.getResourceKey(),
-            CAPTURE_FRAME_NUMBER,
-            VIDEO_THUMBNAIL_DEFAULT_FORMAT.name()
-        );
         var multipartFile = new MockMultipartFile(
             thumbnailResourceKey.getResourceKey(),
             thumbnailResourceKey.getResourceKey(),
             VIDEO_THUMBNAIL_DEFAULT_FORMAT.name(),
-            file
+            thumbnailFile
         );
         return new VideoThumbnailFile(multipartFile, thumbnailResourceKey);
+    }
+
+    private static byte[] captureThumbnailFromVideoFile(MultipartFile videoFile) {
+        var videoFilePath = storeVideoFile(videoFile);
+        var thumbnailFile = VideoUtils.capture(
+            videoFilePath,
+            CAPTURE_FRAME_NUMBER,
+            VIDEO_THUMBNAIL_DEFAULT_FORMAT.name()
+        );
+        deleteVideoFile(videoFilePath);
+        return thumbnailFile;
+    }
+
+    private static String storeVideoFile(MultipartFile videoFile) {
+        var videoExtension = PictureFileExtension.fromFileName(videoFile.getOriginalFilename());
+        if(!videoExtension.isVideo) {
+            throw new AlbumException("Not a video file");
+        }
+        var videoFilePath = TEMP_FILE_STORAGE_PATH + UUID.randomUUID() + videoExtension.name();
+        FileUtils.store(videoFilePath, videoFile);
+        return videoFilePath;
+    }
+
+    private static void deleteVideoFile(String videoFilePath) {
+        FileUtils.deleteIfExists(videoFilePath);
     }
 }

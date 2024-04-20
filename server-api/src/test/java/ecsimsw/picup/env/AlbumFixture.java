@@ -6,13 +6,11 @@ import ecsimsw.picup.album.domain.Album;
 import ecsimsw.picup.album.domain.Picture;
 import ecsimsw.picup.album.domain.ResourceKey;
 import ecsimsw.picup.album.dto.PictureInfoResponse;
-import ecsimsw.picup.storage.dto.FileUploadResponse;
-import ecsimsw.picup.storage.dto.VideoFileUploadResponse;
+import ecsimsw.picup.storage.FileUploadResponse;
+import ecsimsw.picup.storage.VideoFileUploadResponse;
 import java.time.LocalDateTime;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.util.List;
 
 public class AlbumFixture {
 

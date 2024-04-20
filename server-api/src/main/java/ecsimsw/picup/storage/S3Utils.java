@@ -1,4 +1,4 @@
-package ecsimsw.picup.storage.service;
+package ecsimsw.picup.storage;
 
 import static ecsimsw.picup.config.S3Config.BUCKET_NAME;
 import static ecsimsw.picup.config.S3Config.ROOT_PATH;
@@ -6,39 +6,30 @@ import static ecsimsw.picup.config.S3Config.ROOT_PATH;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import ecsimsw.picup.album.exception.StorageException;
-import java.util.concurrent.CompletableFuture;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.scheduling.annotation.Async;
-import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
 @Slf4j
 @Component
-public class ObjectStorage {
+public class S3Utils {
 
-    private final AmazonS3 s3Client;
-
-    public ObjectStorage(AmazonS3 amazonS3) {
-        this.s3Client = amazonS3;
-    }
-
-    public void store(String resourceKey, MultipartFile file) {
+    public static void store(AmazonS3 s3Client, String bucket, String path, MultipartFile file) {
         try {
             var start = System.currentTimeMillis();
             var metadata = new ObjectMetadata();
             metadata.setContentType(file.getContentType());
             metadata.setContentLength(file.getSize());
-            s3Client.putObject(BUCKET_NAME, ROOT_PATH + resourceKey, file.getInputStream(), metadata);
+            s3Client.putObject(bucket, path, file.getInputStream(), metadata);
             log.info("s3 upload time " + (System.currentTimeMillis() - start) + "ms");
         } catch (Exception e) {
             throw new StorageException("Object storage server exception while uploading", e);
         }
     }
 
-    public void deleteIfExists(String resourceKey) {
-        if (s3Client.doesObjectExist(BUCKET_NAME, ROOT_PATH + resourceKey)) {
-            s3Client.deleteObject(BUCKET_NAME, ROOT_PATH + resourceKey);
+    public static void deleteIfExists(AmazonS3 s3Client, String bucket, String path) {
+        if (s3Client.doesObjectExist(bucket, path)) {
+            s3Client.deleteObject(bucket, path);
         }
     }
 }

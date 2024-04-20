@@ -1,4 +1,4 @@
-package ecsimsw.picup.storage.service;
+package ecsimsw.picup.cdn;
 
 import lombok.RequiredArgsConstructor;
 import software.amazon.awssdk.services.cloudfront.CloudFrontUtilities;

@@ -1,4 +1,4 @@
-package ecsimsw.picup.storage.dto;
+package ecsimsw.picup.storage;
 
 import ecsimsw.picup.album.domain.ResourceKey;
 

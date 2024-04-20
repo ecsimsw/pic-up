@@ -1,4 +1,4 @@
-package ecsimsw.picup.storage.service;
+package ecsimsw.picup.cdn;
 
 public interface UrlSignService {
 

@@ -2,7 +2,7 @@ package ecsimsw.picup.album.service;
 
 import static ecsimsw.picup.config.CacheType.SIGNED_URL;
 
-import ecsimsw.picup.storage.service.UrlSignService;
+import ecsimsw.picup.cdn.UrlSignService;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
