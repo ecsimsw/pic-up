@@ -13,11 +13,13 @@ import ecsimsw.picup.cdn.UrlSignService;
 import io.findify.s3mock.S3Mock;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Primary;
 
+@Slf4j
 @TestConfiguration
 public class S3MockConfig {
 
@@ -36,6 +38,7 @@ public class S3MockConfig {
 
     @PostConstruct
     public void postConstruct() {
+        log.info("==== Embedded S3 start ====");
         s3Mock.start();
     }
 

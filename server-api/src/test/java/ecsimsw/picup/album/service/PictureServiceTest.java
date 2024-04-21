@@ -24,7 +24,6 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.mockito.Mockito.*;
 
-@ExtendWith(MockitoExtension.class)
 @DataJpaTest
 class PictureServiceTest {
 
