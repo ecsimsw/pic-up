@@ -1,24 +1,28 @@
 package ecsimsw.picup.integration;
 
-import ecsimsw.picup.album.service.AlbumService;
-import ecsimsw.picup.album.service.MemberService;
-import ecsimsw.picup.album.service.PictureUploadService;
-import ecsimsw.picup.album.service.StorageUsageService;
-import ecsimsw.picup.config.S3MockConfig;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-
 import static ecsimsw.picup.env.AlbumFixture.ALBUM_NAME;
 import static ecsimsw.picup.env.AlbumFixture.IMAGE_FILE;
 import static ecsimsw.picup.env.MemberFixture.SIGN_UP_REQUEST;
 import static ecsimsw.picup.utils.ConcurrentJobTestUtils.concurrentJob;
 import static org.assertj.core.api.Assertions.assertThat;
 
+import ecsimsw.picup.album.service.AlbumService;
+import ecsimsw.picup.album.service.FileService;
+import ecsimsw.picup.album.service.MemberService;
+import ecsimsw.picup.album.service.PictureUploadService;
+import ecsimsw.picup.album.service.StorageUsageService;
+import ecsimsw.picup.album.service.ThumbnailService;
+import ecsimsw.picup.config.RedisConfig;
+import ecsimsw.picup.config.S3MockConfig;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+
 @DisplayName("사용자 락으로 동시 업로드시 공유 자원을 격리한다.")
-@SpringBootTest(classes = S3MockConfig.class)
+@SpringBootTest(classes = {S3MockConfig.class, RedisConfig.class})
 public class UserLockConcurrentTest {
 
     @Autowired
@@ -32,6 +36,12 @@ public class UserLockConcurrentTest {
 
     @Autowired
     private StorageUsageService storageUsageService;
+
+    @MockBean
+    private FileService fileService;
+
+    @MockBean
+    private ThumbnailService thumbnailService;
 
     private Long userId;
     private Long albumId;

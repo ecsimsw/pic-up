@@ -20,9 +20,9 @@ import ecsimsw.picup.album.service.FileService;
 import ecsimsw.picup.album.service.MemberService;
 import ecsimsw.picup.album.service.PictureUploadService;
 import ecsimsw.picup.album.service.ThumbnailService;
-import ecsimsw.picup.storage.FileUploadResponse;
+import ecsimsw.picup.config.RedisConfig;
 import ecsimsw.picup.config.S3MockConfig;
-
+import ecsimsw.picup.storage.FileUploadResponse;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import org.junit.jupiter.api.BeforeEach;
@@ -43,7 +43,7 @@ Test async method
  */
 
 @DisplayName("파일 업로드 비동기 예외처리를 테스트한다.")
-@SpringBootTest(classes = S3MockConfig.class)
+@SpringBootTest(classes = {S3MockConfig.class, RedisConfig.class})
 class PictureUploadAsyncTest {
 
     @Autowired

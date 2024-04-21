@@ -1,5 +1,7 @@
 package ecsimsw.picup.config;
 
+import static ecsimsw.picup.config.S3Config.BUCKET_NAME;
+
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.auth.AnonymousAWSCredentials;
 import com.amazonaws.client.builder.AwsClientBuilder;
@@ -9,21 +11,38 @@ import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import ecsimsw.picup.cdn.MockCloudFrontSignUrlSignService;
 import ecsimsw.picup.cdn.UrlSignService;
 import io.findify.s3mock.S3Mock;
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Primary;
 
-import java.io.IOException;
-import java.net.DatagramSocket;
-import java.net.ServerSocket;
-
-import static ecsimsw.picup.config.S3Config.BUCKET_NAME;
-
 @TestConfiguration
 public class S3MockConfig {
 
-    private static final int PORT_MIN = 9000;
-    private static final int PORT_MAX = 9090;
+    private final int port;
+    private final S3Mock s3Mock;
+
+    public S3MockConfig(
+        @Value("${mock.object.storage.host.port}") int port
+    ) {
+        this.port = port;
+        this.s3Mock = new S3Mock.Builder()
+            .withPort(port)
+            .withInMemoryBackend()
+            .build();
+    }
+
+    @PostConstruct
+    public void postConstruct() {
+        s3Mock.start();
+    }
+
+    @PreDestroy
+    public void preDestroy() {
+        s3Mock.stop();
+    }
 
     @Primary
     @Bean
@@ -34,13 +53,8 @@ public class S3MockConfig {
     @Primary
     @Bean
     public AmazonS3 amazonS3() {
-        int port = findPort();
-        S3Mock s3Mock = new S3Mock.Builder()
-            .withPort(port)
-            .withInMemoryBackend()
-            .build();
-        s3Mock.start();
-        AwsClientBuilder.EndpointConfiguration endpoint = new AwsClientBuilder.EndpointConfiguration("http://localhost:" + port, Regions.AP_NORTHEAST_2.getName());
+        AwsClientBuilder.EndpointConfiguration endpoint = new AwsClientBuilder.EndpointConfiguration(
+            "http://localhost:" + port, Regions.AP_NORTHEAST_2.getName());
         AmazonS3 client = AmazonS3ClientBuilder
             .standard()
             .withPathStyleAccessEnabled(true)
@@ -49,27 +63,5 @@ public class S3MockConfig {
             .build();
         client.createBucket(BUCKET_NAME);
         return client;
-    }
-
-    public int findPort() {
-        for (int port = PORT_MIN; port < PORT_MAX; port++) {
-            if (checkPortAvailable(port)) {
-                return port;
-            }
-        }
-        throw new IllegalArgumentException("Failed to find port");
-    }
-
-    private boolean checkPortAvailable(int port) {
-        try (
-            ServerSocket ss = new ServerSocket(port);
-            DatagramSocket ds = new DatagramSocket(port);
-        ) {
-            ss.setReuseAddress(true);
-            ds.setReuseAddress(true);
-            return true;
-        } catch (IOException e) {
-            return false;
-        }
     }
 }

@@ -36,6 +36,7 @@ dependencies {
     // redis. redisson
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'
     implementation 'org.redisson:redisson-spring-boot-starter:3.17.0'
+    testImplementation 'com.github.codemonstur:embedded-redis:1.4.2'
 
     // monitoring
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
