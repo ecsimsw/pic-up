@@ -15,8 +15,9 @@ public class ResourceUrlService {
         this.urlSignService = urlSignService;
     }
 
-    @Cacheable(value = SIGNED_URL, key = "{#remoteIp, #originUrl}")
+//    @Cacheable(value = SIGNED_URL, key = "{#remoteIp, #originUrl}")
     public String sign(String remoteIp, String originUrl) {
+        System.out.println(remoteIp + " " + originUrl);
         return urlSignService.sign(remoteIp, originUrl);
     }
 }
