@@ -30,7 +30,7 @@ import static ecsimsw.picup.config.S3Config.ROOT_PATH;
 @Service
 public class FileService {
 
-    private final AmazonS3 s3Storage;
+    private final AmazonS3 s3Client;
     private final ThumbnailService thumbnailService;
     private final FileDeletionEventOutbox fileDeletionEventOutbox;
     private final ImageFileMessageQueue imageFileMessageQueue;
@@ -58,7 +58,8 @@ public class FileService {
 
     private FileUploadResponse upload(MultipartFile file, ResourceKey resourceKey) {
         var resourcePath = ROOT_PATH + resourceKey;
-        S3Utils.store(s3Storage, BUCKET_NAME, resourcePath, file);
+        S3Utils.store(s3Client, BUCKET_NAME, resourcePath, file);
+        log.info(BUCKET_NAME + " " + resourcePath);
         return new FileUploadResponse(resourceKey, file.getSize());
     }
 
@@ -67,7 +68,7 @@ public class FileService {
     }
 
     public void delete(String resourceKey) {
-        S3Utils.deleteIfExists(s3Storage, BUCKET_NAME, ROOT_PATH + resourceKey);
+        S3Utils.deleteIfExists(s3Client, BUCKET_NAME, ROOT_PATH + resourceKey);
     }
 
     @Transactional
