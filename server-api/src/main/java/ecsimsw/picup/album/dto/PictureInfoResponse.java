@@ -22,8 +22,8 @@ public record PictureInfoResponse(
             picture.getId(),
             picture.getAlbum().getId(),
             picture.extension().isVideo,
-            ROOT_PATH + picture.getResourceKey(),
-            ROOT_PATH + picture.getThumbnailResourceKey(),
+            ROOT_PATH + picture.getResourceKey().value(),
+            ROOT_PATH + picture.getThumbnailResourceKey().value(),
             picture.getCreatedAt()
         );
     }
