@@ -18,7 +18,7 @@ public record AlbumInfoResponse(
         return new AlbumInfoResponse(
             album.getId(),
             album.getName(),
-            ROOT_PATH + "album.getResourceKey().value()",
+            ROOT_PATH + album.getResourceKey().value(),
             album.getCreatedAt()
         );
     }
