@@ -18,7 +18,7 @@ public class ResourceKey {
     private String resourceKey;
 
     public ResourceKey(String resourceKey) {
-        if(resourceKey.isBlank()) {
+        if (resourceKey.isBlank()) {
             throw new AlbumException("Invalid resource key");
         }
         this.resourceKey = resourceKey;
@@ -38,5 +38,9 @@ public class ResourceKey {
     public String extension() {
         int indexOfExtension = resourceKey.lastIndexOf(".");
         return resourceKey.substring(indexOfExtension + 1);
+    }
+
+    public String value() {
+        return resourceKey;
     }
 }
