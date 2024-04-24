@@ -57,7 +57,7 @@ public class FileService {
     }
 
     private FileUploadResponse upload(MultipartFile file, ResourceKey resourceKey) {
-        var resourcePath = ROOT_PATH + resourceKey;
+        var resourcePath = ROOT_PATH + resourceKey.value();
         S3Utils.store(s3Client, BUCKET_NAME, resourcePath, file);
         log.info(BUCKET_NAME + " " + resourcePath);
         return new FileUploadResponse(resourceKey, file.getSize());
