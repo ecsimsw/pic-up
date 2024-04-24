@@ -39,7 +39,7 @@ public class AlbumService {
     @Transactional
     public void delete(Long userId, Long albumId) {
         var album = getUserAlbum(userId, albumId);
-        fileService.createDeletionEvent(new FileDeletionEvent(userId, album.getResourceKey()));
+        fileService.deleteAsync(album.getResourceKey());
         pictureService.deleteAllInAlbum(userId, albumId);
         albumRepository.delete(album);
     }

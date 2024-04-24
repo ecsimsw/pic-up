@@ -16,9 +16,9 @@ public class FileDeletionScheduler {
 
     @Scheduled(fixedDelay = FILE_DELETION_SCHED_DELAY)
     public void schedulePublishOut() {
-        var toBeDeleted = fileService.findAllDeletionOutBox();
+        var toBeDeleted = fileService.findAllDeletionEvents();
         for (var eventSegment : Iterables.partition(toBeDeleted, FILE_DELETION_SEGMENT_UNIT)) {
-            fileService.publishDeletionEvents(eventSegment);
+            fileService.deleteAll(eventSegment);
         }
     }
 }

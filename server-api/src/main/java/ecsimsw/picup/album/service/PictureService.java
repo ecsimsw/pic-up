@@ -59,8 +59,8 @@ public class PictureService {
         validateAlbumOwner(userId, albumId);
         pictures.forEach(picture -> {
             picture.checkSameUser(userId);
-            fileService.createDeletionEvent(new FileDeletionEvent(userId, picture.getResourceKey()));
-            fileService.createDeletionEvent(new FileDeletionEvent(userId, picture.getThumbnailResourceKey()));
+            fileService.deleteAsync(picture.getResourceKey());
+            fileService.deleteAsync(picture.getThumbnailResourceKey());
         });
         storageUsageService.subtractUsage(userId, pictures);
         pictureRepository.deleteAll(pictures);

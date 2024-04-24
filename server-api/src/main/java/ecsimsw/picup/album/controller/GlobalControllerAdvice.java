@@ -5,10 +5,7 @@ import ecsimsw.picup.album.exception.LoginFailedException;
 import ecsimsw.picup.album.exception.MemberException;
 import ecsimsw.picup.album.exception.UnsupportedFileTypeException;
 import ecsimsw.picup.auth.UnauthorizedException;
-import ecsimsw.picup.mq.MessageBrokerDownException;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -62,13 +59,6 @@ public class GlobalControllerAdvice {
     @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
     public ResponseEntity<String> wrongRequestMethod(HttpRequestMethodNotSupportedException e) {
         return ResponseEntity.badRequest().body(e.getMessage());
-    }
-
-    @ExceptionHandler({MessageBrokerDownException.class})
-    public ResponseEntity<String> messageBrokerDownException(IllegalArgumentException e) {
-        var alertMessage = "[MESSAGE_BROKER_CONNECTION] : " + e.getMessage();
-        log.error(alertMessage + "\n" + e.getCause());
-        return ResponseEntity.internalServerError().body("unhandled server exception");
     }
 
     @ExceptionHandler(Throwable.class)

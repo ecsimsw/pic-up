@@ -50,27 +50,18 @@ public class ThumbnailService {
     }
 
     private static byte[] captureThumbnailFromVideoFile(MultipartFile videoFile) {
-        var videoFilePath = storeVideoFile(videoFile);
-        var thumbnailFile = VideoUtils.capture(
-            videoFilePath,
-            CAPTURE_FRAME_NUMBER,
-            VIDEO_THUMBNAIL_DEFAULT_FORMAT.name()
-        );
-        deleteVideoFile(videoFilePath);
-        return thumbnailFile;
-    }
-
-    private static String storeVideoFile(MultipartFile videoFile) {
         var videoExtension = PictureFileExtension.fromFileName(videoFile.getOriginalFilename());
         if(!videoExtension.isVideo) {
             throw new AlbumException("Not a video file");
         }
         var videoFilePath = TEMP_FILE_STORAGE_PATH + UUID.randomUUID() + videoExtension.name();
         FileUtils.store(videoFilePath, videoFile);
-        return videoFilePath;
-    }
-
-    private static void deleteVideoFile(String videoFilePath) {
+        var thumbnailFile = VideoUtils.capture(
+            videoFilePath,
+            CAPTURE_FRAME_NUMBER,
+            VIDEO_THUMBNAIL_DEFAULT_FORMAT.name()
+        );
         FileUtils.deleteIfExists(videoFilePath);
+        return thumbnailFile;
     }
 }
