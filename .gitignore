@@ -1,6 +1,5 @@
 # server
-/storage
-/storage-backup
+/storage-temp
 private_key.pem
 
 server-api/api-album/src/main/java/ecsimsw/picup/PicUpAlbumApplication.java

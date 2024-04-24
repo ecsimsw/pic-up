@@ -1,8 +1,5 @@
 package ecsimsw.picup.storage;
 
-import static ecsimsw.picup.config.S3Config.BUCKET_NAME;
-import static ecsimsw.picup.config.S3Config.ROOT_PATH;
-
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import ecsimsw.picup.album.exception.StorageException;
