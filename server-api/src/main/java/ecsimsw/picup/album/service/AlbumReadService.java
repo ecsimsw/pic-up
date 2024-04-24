@@ -14,7 +14,10 @@ public class AlbumReadService {
 
     public AlbumInfoResponse album(Long userId, Long albumId) {
         var album = albumService.getUserAlbum(userId, albumId);
-        return AlbumInfoResponse.of(album);
+        System.out.println(album.getResourceKey().value());
+        AlbumInfoResponse albumInfoResponse = AlbumInfoResponse.of(album);
+        System.out.println(albumInfoResponse.thumbnailUrl());
+        return albumInfoResponse;
     }
 
     public List<AlbumInfoResponse> albums(Long userId) {
