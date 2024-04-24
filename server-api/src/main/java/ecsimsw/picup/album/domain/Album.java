@@ -1,7 +1,6 @@
 package ecsimsw.picup.album.domain;
 
 import ecsimsw.picup.album.exception.AlbumException;
-import ecsimsw.picup.album.utils.AesStringConverter;
 import ecsimsw.picup.auth.UnauthorizedException;
 import java.time.LocalDateTime;
 import javax.persistence.*;

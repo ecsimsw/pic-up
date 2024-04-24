@@ -1,51 +1,54 @@
 package ecsimsw.picup.album.service;
 
-import static ecsimsw.picup.config.CacheType.USER_ALBUMS;
-
-import ecsimsw.picup.album.domain.Album;
-import ecsimsw.picup.album.domain.AlbumRepository;
-import ecsimsw.picup.album.domain.FileDeletionEvent;
-import ecsimsw.picup.auth.UnauthorizedException;
-import ecsimsw.picup.storage.FileUploadResponse;
-import java.util.List;
+import ecsimsw.picup.album.dto.AlbumInfoResponse;
+import ecsimsw.picup.album.utils.UserLock;
+import ecsimsw.picup.album.dto.FileUploadResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 @RequiredArgsConstructor
 @Service
 public class AlbumService {
 
-    private final PictureService pictureService;
-    private final AlbumRepository albumRepository;
+    private static final float ALBUM_THUMBNAIL_SCALE = 0.5f;
+
+    private final UserLock userLock;
     private final FileService fileService;
+    private final AlbumCoreService albumCoreService;
 
-    @Cacheable(value = USER_ALBUMS, key = "#userId")
-    @Transactional(readOnly = true)
-    public List<Album> findAll(Long userId) {
-        return albumRepository.findAllByUserIdOrderByCreatedAtDesc(userId);
+    public long initAlbum(Long userId, String name, MultipartFile file) {
+        var uploadImage = fileService.uploadImageThumbnailAsync(file, ALBUM_THUMBNAIL_SCALE).join();
+        return createAlbum(userId, name, uploadImage);
     }
 
-    @CacheEvict(value = USER_ALBUMS, key = "#userId")
-    @Transactional
-    public Long create(Long userId, String name, FileUploadResponse thumbnailFile) {
-        var album = albumRepository.save(new Album(userId, name, thumbnailFile.resourceKey(), thumbnailFile.size()));
-        return album.getId();
+    public long createAlbum(Long userId, String name, FileUploadResponse thumbnailFile) {
+        try {
+            return albumCoreService.create(userId, name, thumbnailFile);
+        } catch (Exception e) {
+            fileService.deleteAsync(thumbnailFile.resourceKey());
+            throw e;
+        }
     }
 
-    @CacheEvict(value = USER_ALBUMS, key = "#userId")
-    @Transactional
-    public void delete(Long userId, Long albumId) {
-        var album = getUserAlbum(userId, albumId);
-        fileService.deleteAsync(album.getResourceKey());
-        pictureService.deleteAllInAlbum(userId, albumId);
-        albumRepository.delete(album);
+    public void deleteAlbum(Long userId, Long albumId) {
+        try {
+            userLock.acquire(userId);
+            albumCoreService.delete(userId, albumId);
+        } finally {
+            userLock.release(userId);
+        }
     }
 
-    public Album getUserAlbum(Long userId, Long albumId) {
-        return albumRepository.findByIdAndUserId(albumId, userId)
-            .orElseThrow(() -> new UnauthorizedException("Not an accessible album from user"));
+    public AlbumInfoResponse readAlbum(Long userId, Long albumId) {
+        var album = albumCoreService.getUserAlbum(userId, albumId);
+        return AlbumInfoResponse.of(album);
+    }
+
+    public List<AlbumInfoResponse> readAlbums(Long userId) {
+        var albums = albumCoreService.findAll(userId);
+        return AlbumInfoResponse.listOf(albums);
     }
 }

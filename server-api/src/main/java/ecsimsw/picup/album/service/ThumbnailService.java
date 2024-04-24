@@ -2,10 +2,8 @@ package ecsimsw.picup.album.service;
 
 import ecsimsw.picup.album.domain.PictureFileExtension;
 import ecsimsw.picup.album.domain.ResourceKey;
-import ecsimsw.picup.album.dto.VideoThumbnailFile;
 import ecsimsw.picup.album.exception.AlbumException;
 import ecsimsw.picup.album.utils.ThumbnailUtils;
-import ecsimsw.picup.album.utils.VideoUtils;
 import ecsimsw.picup.storage.FileUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.mock.web.MockMultipartFile;
@@ -37,16 +35,15 @@ public class ThumbnailService {
         }
     }
 
-    public VideoThumbnailFile videoThumbnail(MultipartFile videoFile) {
+    public MultipartFile captureVideo(MultipartFile videoFile) {
         var thumbnailFile = captureThumbnailFromVideoFile(videoFile);
         var thumbnailResourceKey = ResourceKey.withExtension(VIDEO_THUMBNAIL_DEFAULT_FORMAT.name());
-        var multipartFile = new MockMultipartFile(
-            thumbnailResourceKey.getResourceKey(),
-            thumbnailResourceKey.getResourceKey(),
+        return new MockMultipartFile(
+            thumbnailResourceKey.value(),
+            thumbnailResourceKey.value(),
             VIDEO_THUMBNAIL_DEFAULT_FORMAT.name(),
             thumbnailFile
         );
-        return new VideoThumbnailFile(multipartFile, thumbnailResourceKey);
     }
 
     private static byte[] captureThumbnailFromVideoFile(MultipartFile videoFile) {
@@ -56,7 +53,7 @@ public class ThumbnailService {
         }
         var videoFilePath = TEMP_FILE_STORAGE_PATH + UUID.randomUUID() + videoExtension.name();
         FileUtils.store(videoFilePath, videoFile);
-        var thumbnailFile = VideoUtils.capture(
+        var thumbnailFile = ThumbnailUtils.capture(
             videoFilePath,
             CAPTURE_FRAME_NUMBER,
             VIDEO_THUMBNAIL_DEFAULT_FORMAT.name()

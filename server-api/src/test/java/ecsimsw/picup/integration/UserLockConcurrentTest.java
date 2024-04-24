@@ -1,15 +1,15 @@
 package ecsimsw.picup.integration;
 
 import static ecsimsw.picup.env.AlbumFixture.ALBUM_NAME;
-import static ecsimsw.picup.env.AlbumFixture.IMAGE_FILE;
+import static ecsimsw.picup.env.AlbumFixture.ORIGIN_FILE;
 import static ecsimsw.picup.env.MemberFixture.SIGN_UP_REQUEST;
 import static ecsimsw.picup.utils.ConcurrentJobTestUtils.concurrentJob;
 import static org.assertj.core.api.Assertions.assertThat;
 
-import ecsimsw.picup.album.service.AlbumService;
+import ecsimsw.picup.album.service.AlbumCoreService;
 import ecsimsw.picup.album.service.FileService;
 import ecsimsw.picup.album.service.MemberService;
-import ecsimsw.picup.album.service.PictureUploadService;
+import ecsimsw.picup.album.service.PictureService;
 import ecsimsw.picup.album.service.StorageUsageService;
 import ecsimsw.picup.album.service.ThumbnailService;
 import ecsimsw.picup.config.RedisConfig;
@@ -26,13 +26,13 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 public class UserLockConcurrentTest {
 
     @Autowired
-    private PictureUploadService pictureUploadService;
+    private PictureService pictureService;
 
     @Autowired
     private MemberService memberService;
 
     @Autowired
-    private AlbumService albumService;
+    private AlbumCoreService albumCoreService;
 
     @Autowired
     private StorageUsageService storageUsageService;
@@ -49,17 +49,17 @@ public class UserLockConcurrentTest {
     @BeforeEach
     public void init() {
         userId = memberService.signUp(SIGN_UP_REQUEST).getId();
-        albumId = albumService.create(userId, ALBUM_NAME, IMAGE_FILE);
+        albumId = albumCoreService.create(userId, ALBUM_NAME, ORIGIN_FILE);
     }
 
     @DisplayName("이미지 동시 업로드, 스토리지 사용량 정상 업데이트를 확인한다.")
     @Test
     public void uploadPictures() {
         int number = 100;
-        var uploadFile = IMAGE_FILE;
+        var uploadFile = ORIGIN_FILE;
         concurrentJob(
             number,
-            () -> pictureUploadService.createImagePicture(userId, albumId, uploadFile, uploadFile)
+            () -> pictureService.createPicture(userId, albumId, uploadFile, uploadFile)
         );
         assertThat(uploadFile.size() * number)
             .isEqualTo(storageUsageService.getUsage(userId).getUsageAsByte());

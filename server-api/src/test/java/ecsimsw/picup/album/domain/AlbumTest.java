@@ -3,7 +3,6 @@ package ecsimsw.picup.album.domain;
 import static ecsimsw.picup.env.AlbumFixture.*;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import ecsimsw.picup.album.service.AlbumService;
 import ecsimsw.picup.auth.UnauthorizedException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

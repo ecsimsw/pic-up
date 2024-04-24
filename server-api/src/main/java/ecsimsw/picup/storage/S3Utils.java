@@ -1,6 +1,7 @@
 package ecsimsw.picup.storage;
 
 import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.model.DeleteObjectsRequest;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import ecsimsw.picup.album.exception.StorageException;
 import lombok.extern.slf4j.Slf4j;

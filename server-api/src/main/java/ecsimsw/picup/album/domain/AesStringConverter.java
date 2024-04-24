@@ -1,4 +1,4 @@
-package ecsimsw.picup.album.utils;
+package ecsimsw.picup.album.domain;
 
 import ecsimsw.picup.ecrypt.AES256Utils;
 import org.springframework.beans.factory.annotation.Value;

@@ -1,12 +1,9 @@
 package ecsimsw.picup.album.controller;
 
-import ecsimsw.picup.album.domain.PictureFileExtension;
 import ecsimsw.picup.album.dto.PictureInfoResponse;
 import ecsimsw.picup.album.dto.PictureSearchCursor;
 import ecsimsw.picup.album.dto.PicturesDeleteRequest;
-import ecsimsw.picup.album.service.PictureDeleteService;
-import ecsimsw.picup.album.service.PictureReadService;
-import ecsimsw.picup.album.service.PictureUploadService;
+import ecsimsw.picup.album.service.PictureService;
 import ecsimsw.picup.album.service.ResourceUrlService;
 import ecsimsw.picup.auth.AuthTokenPayload;
 import ecsimsw.picup.auth.TokenPayload;
@@ -15,7 +12,6 @@ import java.util.List;
 import java.util.Optional;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -33,9 +29,7 @@ import org.springframework.web.multipart.MultipartFile;
 @RestController
 public class PictureController {
 
-    private final PictureUploadService pictureUploadService;
-    private final PictureDeleteService pictureDeleteService;
-    private final PictureReadService pictureReadService;
+    private final PictureService pictureService;
     private final ResourceUrlService urlService;
 
     @PostMapping("/api/album/{albumId}/picture")
@@ -44,11 +38,7 @@ public class PictureController {
         @PathVariable Long albumId,
         @RequestPart MultipartFile file
     ) {
-        if(PictureFileExtension.of(file).isVideo) {
-            var pictureId = pictureUploadService.uploadVideo(loginUser.userId(), albumId, file);
-            return ResponseEntity.ok(pictureId);
-        }
-        var pictureId = pictureUploadService.uploadImage(loginUser.userId(), albumId, file);
+        var pictureId = pictureService.upload(loginUser.userId(), albumId, file);
         return ResponseEntity.ok(pictureId);
     }
 
@@ -62,7 +52,7 @@ public class PictureController {
         Optional<LocalDateTime> cursorCreatedAt
     ) {
         var cursor = PictureSearchCursor.from(limit, cursorCreatedAt);
-        var pictureInfos = pictureReadService.pictures(loginUser.userId(), albumId, cursor);
+        var pictureInfos = pictureService.readPictures(loginUser.userId(), albumId, cursor);
         var signedPictureInfos = signPictures(remoteIp, pictureInfos);
         return ResponseEntity.ok(signedPictureInfos);
     }
@@ -74,7 +64,7 @@ public class PictureController {
         @Valid @RequestBody(required = false)
         PicturesDeleteRequest pictures
     ) {
-        pictureDeleteService.deletePictures(loginUser.userId(), albumId, pictures.pictureIds());
+        pictureService.deletePictures(loginUser.userId(), albumId, pictures.pictureIds());
         return ResponseEntity.ok().build();
     }
 

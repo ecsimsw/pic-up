@@ -15,9 +15,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import ecsimsw.picup.album.dto.AlbumInfoResponse;
-import ecsimsw.picup.album.service.AlbumDeleteService;
-import ecsimsw.picup.album.service.AlbumReadService;
-import ecsimsw.picup.album.service.AlbumUploadService;
+import ecsimsw.picup.album.service.AlbumService;
 import ecsimsw.picup.album.service.ResourceUrlService;
 import ecsimsw.picup.auth.AuthArgumentResolver;
 import ecsimsw.picup.auth.AuthInterceptor;
@@ -40,15 +38,13 @@ class AlbumControllerTest {
         OBJECT_MAPPER.registerModule(new JavaTimeModule());
     }
 
-    private final AlbumUploadService albumUploadService = mock(AlbumUploadService.class);
+    private final AlbumService albumService = mock(AlbumService.class);
     private final ResourceUrlService resourceUrlService = mock(ResourceUrlService.class);
-    private final AlbumReadService albumReadService = mock(AlbumReadService.class);
-    private final AlbumDeleteService albumDeleteService = mock(AlbumDeleteService.class);
     private final AuthTokenService authTokenService = mock(AuthTokenService.class);
 
     private final MockMvc mockMvc = MockMvcBuilders
         .standaloneSetup(new AlbumController(
-            albumUploadService, albumReadService, albumDeleteService, resourceUrlService
+            albumService, resourceUrlService
         ))
         .addInterceptors(new AuthInterceptor(authTokenService))
         .setCustomArgumentResolvers(new AuthArgumentResolver(authTokenService))
@@ -72,7 +68,7 @@ class AlbumControllerTest {
         var uploadFile = new MockMultipartFile("thumbnail", "thumb.jpg", "jpg", new byte[0]);
         var expectedAlbumInfo = 1L;
 
-        when(albumUploadService.initAlbum(1L, ALBUM_NAME, uploadFile))
+        when(albumService.initAlbum(1L, ALBUM_NAME, uploadFile))
             .thenReturn(expectedAlbumInfo);
 
         mockMvc.perform(multipart("/api/album/")
@@ -88,7 +84,7 @@ class AlbumControllerTest {
     void getAlbums() throws Exception {
         var expectedAlbumInfos = List.of(AlbumInfoResponse.of(ALBUM()));
 
-        when(albumReadService.albums(loginUserId))
+        when(albumService.readAlbums(loginUserId))
             .thenReturn(expectedAlbumInfos);
 
         mockMvc.perform(get("/api/album")
@@ -104,7 +100,7 @@ class AlbumControllerTest {
         var albumId = 1L;
         var expectedAlbumInfo = AlbumInfoResponse.of(ALBUM());
 
-        when(albumReadService.album(loginUserId, albumId))
+        when(albumService.readAlbum(loginUserId, albumId))
             .thenReturn(expectedAlbumInfo);
 
         mockMvc.perform(get("/api/album/" + albumId)
@@ -119,7 +115,7 @@ class AlbumControllerTest {
     void getAlbumUnAuth() throws Exception {
         var invalidAlbumId = 1L;
 
-        when(albumReadService.album(loginUserId, invalidAlbumId))
+        when(albumService.readAlbum(loginUserId, invalidAlbumId))
             .thenThrow(UnauthorizedException.class);
 
         mockMvc.perform(get("/api/album/" + invalidAlbumId)

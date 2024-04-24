@@ -16,9 +16,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import ecsimsw.picup.album.dto.PictureSearchCursor;
 import ecsimsw.picup.album.dto.PicturesDeleteRequest;
-import ecsimsw.picup.album.service.PictureDeleteService;
-import ecsimsw.picup.album.service.PictureReadService;
-import ecsimsw.picup.album.service.PictureUploadService;
+import ecsimsw.picup.album.service.PictureService;
 import ecsimsw.picup.album.service.ResourceUrlService;
 import ecsimsw.picup.auth.AuthArgumentResolver;
 import ecsimsw.picup.auth.AuthInterceptor;
@@ -43,15 +41,13 @@ class PictureControllerTest {
         OBJECT_MAPPER.registerModule(new JavaTimeModule());
     }
 
-    private final PictureUploadService pictureUploadService = mock(PictureUploadService.class);
+    private final PictureService pictureService = mock(PictureService.class);
     private final ResourceUrlService resourceUrlService = mock(ResourceUrlService.class);
-    private final PictureDeleteService pictureDeleteService = mock(PictureDeleteService.class);
-    private final PictureReadService pictureReadService = mock(PictureReadService.class);
     private final AuthTokenService authTokenService = mock(AuthTokenService.class);
 
     private final MockMvc mockMvc = MockMvcBuilders
         .standaloneSetup(new PictureController(
-            pictureUploadService, pictureDeleteService, pictureReadService, resourceUrlService
+            pictureService, resourceUrlService
         ))
         .addInterceptors(new AuthInterceptor(authTokenService))
         .setCustomArgumentResolvers(new AuthArgumentResolver(authTokenService))
@@ -76,7 +72,7 @@ class PictureControllerTest {
         var uploadFile = new MockMultipartFile("file", "pic.jpg", "jpg", new byte[0]);
         var expectedPictureInfo = PICTURE_INFO_RESPONSE;
 
-        when(pictureUploadService.uploadImage(loginUserId, expectedPictureInfo.id(), uploadFile))
+        when(pictureService.upload(loginUserId, expectedPictureInfo.id(), uploadFile))
             .thenReturn(expectedPictureInfo.id());
 
         mockMvc.perform(multipart("/api/album/" + albumId + "/picture").file(uploadFile))
@@ -89,7 +85,7 @@ class PictureControllerTest {
     void getFirstPagePictures() throws Exception {
         var expectedPictureInfos = List.of(PICTURE_INFO_RESPONSE);
 
-        when(pictureReadService.pictures(loginUserId, albumId,
+        when(pictureService.readPictures(loginUserId, albumId,
             PictureSearchCursor.from(10, Optional.empty())))
             .thenReturn(expectedPictureInfos);
 
@@ -106,7 +102,7 @@ class PictureControllerTest {
         var expectedCursorCreatedAt = LocalDateTime.of(2024, 4, 8, 10, 45, 12, 728721232);
         var expectedPictureInfos = List.of(PICTURE_INFO_RESPONSE);
 
-        when(pictureReadService.pictures(loginUserId, albumId,
+        when(pictureService.readPictures(loginUserId, albumId,
             PictureSearchCursor.from(10, Optional.of(expectedCursorCreatedAt))))
             .thenReturn(expectedPictureInfos);
 
@@ -124,7 +120,7 @@ class PictureControllerTest {
         var limit = 20;
         var expectedPictureInfos = List.of(PICTURE_INFO_RESPONSE);
 
-        when(pictureReadService.pictures(loginUserId, albumId, PictureSearchCursor.from(limit, Optional.empty())))
+        when(pictureService.readPictures(loginUserId, albumId, PictureSearchCursor.from(limit, Optional.empty())))
             .thenReturn(expectedPictureInfos);
 
         mockMvc.perform(get("/api/album/" + albumId + "/picture")
@@ -147,6 +143,6 @@ class PictureControllerTest {
             )
             .andExpect(status().isOk());
 
-        verify(pictureDeleteService).deletePictures(loginUserId, albumId, pictureIds);
+        verify(pictureService).deletePictures(loginUserId, albumId, pictureIds);
     }
 }

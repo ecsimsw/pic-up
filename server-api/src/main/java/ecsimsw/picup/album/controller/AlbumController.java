@@ -1,9 +1,7 @@
 package ecsimsw.picup.album.controller;
 
 import ecsimsw.picup.album.dto.AlbumInfoResponse;
-import ecsimsw.picup.album.service.AlbumDeleteService;
-import ecsimsw.picup.album.service.AlbumReadService;
-import ecsimsw.picup.album.service.AlbumUploadService;
+import ecsimsw.picup.album.service.AlbumService;
 import ecsimsw.picup.album.service.ResourceUrlService;
 import ecsimsw.picup.auth.AuthTokenPayload;
 import ecsimsw.picup.auth.TokenPayload;
@@ -23,9 +21,7 @@ import org.springframework.web.multipart.MultipartFile;
 @RestController
 public class AlbumController {
 
-    private final AlbumUploadService uploadService;
-    private final AlbumReadService readService;
-    private final AlbumDeleteService deleteService;
+    private final AlbumService uploadService;
     private final ResourceUrlService urlService;
 
     @PostMapping("/api/album")
@@ -44,7 +40,7 @@ public class AlbumController {
         @TokenPayload AuthTokenPayload loginUser,
         @PathVariable Long albumId
     ) {
-        var albumInfo = readService.album(loginUser.userId(), albumId);
+        var albumInfo = uploadService.readAlbum(loginUser.userId(), albumId);
         var signedAlbumInfo = signAlbum(remoteIp, albumInfo);
         return ResponseEntity.ok(signedAlbumInfo);
     }
@@ -54,7 +50,7 @@ public class AlbumController {
         @RequestHeader(value = "X-Forwarded-For") String remoteIp,
         @TokenPayload AuthTokenPayload loginUser
     ) {
-        var albumInfos = readService.albums(loginUser.userId());
+        var albumInfos = uploadService.readAlbums(loginUser.userId());
         var signedAlbumInfos = signAlbums(remoteIp, albumInfos);
         return ResponseEntity.ok(signedAlbumInfos);
     }
@@ -64,7 +60,7 @@ public class AlbumController {
         @TokenPayload AuthTokenPayload loginUser,
         @PathVariable Long albumId
     ) {
-        deleteService.deleteAlbum(loginUser.userId(), albumId);
+        uploadService.deleteAlbum(loginUser.userId(), albumId);
         return ResponseEntity.ok().build();
     }
 

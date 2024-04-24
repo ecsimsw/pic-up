@@ -1,110 +1,69 @@
 package ecsimsw.picup.album.service;
 
-import static ecsimsw.picup.config.CacheType.FIRST_10_PIC_IN_ALBUM;
-
-import ecsimsw.picup.album.domain.Album;
-import ecsimsw.picup.album.domain.AlbumRepository;
-import ecsimsw.picup.album.domain.FileDeletionEvent;
-import ecsimsw.picup.album.domain.Picture;
-import ecsimsw.picup.album.domain.PictureRepository;
-import ecsimsw.picup.album.domain.Picture_;
-import ecsimsw.picup.storage.FileUploadResponse;
+import ecsimsw.picup.album.domain.PictureFileExtension;
+import ecsimsw.picup.album.dto.PictureInfoResponse;
 import ecsimsw.picup.album.dto.PictureSearchCursor;
-import ecsimsw.picup.storage.VideoFileUploadResponse;
 import ecsimsw.picup.album.exception.AlbumException;
-import ecsimsw.picup.auth.UnauthorizedException;
-
-import java.time.LocalDateTime;
-import java.util.List;
+import ecsimsw.picup.album.utils.UserLock;
+import ecsimsw.picup.album.dto.FileUploadResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.Cacheable;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort.Direction;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
+import java.util.concurrent.CompletionException;
+
+@Slf4j
 @RequiredArgsConstructor
 @Service
 public class PictureService {
 
-    private final AlbumRepository albumRepository;
-    private final PictureRepository pictureRepository;
+    private static final float PICTURE_THUMBNAIL_SCALE = 0.3f;
+
+    private final UserLock userLock;
     private final FileService fileService;
-    private final StorageUsageService storageUsageService;
+    private final PictureCoreService pictureCoreService;
 
-    @CacheEvict(value = FIRST_10_PIC_IN_ALBUM, key = "{#userId, #albumId}")
-    @Transactional
-    public Picture createImage(Long userId, Long albumId, FileUploadResponse imageFile, FileUploadResponse thumbnailFile) {
-        var album = getUserAlbum(userId, albumId);
-        var picture = new Picture(album, imageFile.resourceKey(), thumbnailFile.resourceKey(), imageFile.size());
-        pictureRepository.save(picture);
-        storageUsageService.addUsage(userId, picture.getFileSize());
-        return picture;
+    public long upload(Long userId, Long albumId, MultipartFile file) {
+        var originUploadFuture = fileService.uploadFileAsync(file);
+        var thumbnailUploadFuture = PictureFileExtension.of(file).isVideo ?
+            fileService.uploadVideoThumbnailAsync(file) :
+            fileService.uploadImageThumbnailAsync(file, PICTURE_THUMBNAIL_SCALE);
+        try {
+            return createPicture(userId, albumId, originUploadFuture.join(), thumbnailUploadFuture.join());
+        } catch (CompletionException e) {
+            List.of(originUploadFuture, thumbnailUploadFuture).forEach(
+                future -> future.thenAccept(result -> fileService.deleteAsync(result.resourceKey()))
+            );
+            throw new AlbumException("Failed to upload picture");
+        }
     }
 
-    @CacheEvict(value = FIRST_10_PIC_IN_ALBUM, key = "{#userId, #albumId}")
-    @Transactional
-    public Picture createVideo(Long userId, Long albumId, VideoFileUploadResponse videoFile) {
-        var album = getUserAlbum(userId, albumId);
-        var picture = new Picture(album, videoFile.videoResourceKey(), videoFile.thumbnailResourceKey(), videoFile.size());
-        pictureRepository.save(picture);
-        storageUsageService.addUsage(userId, picture.getFileSize());
-        return picture;
+    public long createPicture(Long userId, Long albumId, FileUploadResponse origin, FileUploadResponse thumbnail) {
+        try {
+            userLock.acquire(userId);
+            return pictureCoreService.create(userId, albumId, origin, thumbnail).getId();
+        } catch (Exception e) {
+            fileService.deleteAsync(origin.resourceKey());
+            fileService.deleteAsync(thumbnail.resourceKey());
+            throw e;
+        } finally {
+            userLock.release(userId);
+        }
     }
 
-    @CacheEvict(value = FIRST_10_PIC_IN_ALBUM, key = "{#userId, #albumId}")
-    @Transactional
-    public void deleteAll(Long userId, Long albumId, List<Picture> pictures) {
-        validateAlbumOwner(userId, albumId);
-        pictures.forEach(picture -> {
-            picture.checkSameUser(userId);
-            fileService.deleteAsync(picture.getResourceKey());
-            fileService.deleteAsync(picture.getThumbnailResourceKey());
-        });
-        storageUsageService.subtractUsage(userId, pictures);
-        pictureRepository.deleteAll(pictures);
+    public List<PictureInfoResponse> readPictures(Long userId, Long albumId, PictureSearchCursor cursor) {
+        var pictures = pictureCoreService.fetchOrderByCursor(userId, albumId, cursor);
+        return PictureInfoResponse.listOf(pictures);
     }
 
-    @CacheEvict(value = FIRST_10_PIC_IN_ALBUM, key = "{#userId, #albumId}")
-    @Transactional
-    public void deleteAllByIds(Long userId, Long albumId, List<Long> pictureIds) {
-        var pictures = pictureRepository.findAllById(pictureIds);
-        deleteAll(userId, albumId, pictures);
-    }
-
-    @CacheEvict(value = FIRST_10_PIC_IN_ALBUM, key = "{#userId, #albumId}")
-    @Transactional
-    public void deleteAllInAlbum(Long userId, Long albumId) {
-        var pictures = pictureRepository.findAllByAlbumId(albumId);
-        deleteAll(userId, albumId, pictures);
-    }
-
-    @Cacheable(value = FIRST_10_PIC_IN_ALBUM, key = "{#userId, #albumId}", condition = "#cursor.createdAt().isEmpty() && #cursor.limit()==10")
-    @Transactional(readOnly = true)
-    public List<Picture> fetchOrderByCursor(Long userId, Long albumId, PictureSearchCursor cursor) {
-        var album = getUserAlbum(userId, albumId);
-        return pictureRepository.findAllByAlbumOrderThan(
-            album.getId(),
-            cursor.createdAt().orElse(LocalDateTime.now()),
-            PageRequest.of(0, cursor.limit(), Direction.DESC, Picture_.CREATED_AT)
-        );
-    }
-
-    @Transactional(readOnly = true)
-    public Picture read(Long userId, Long albumId, Long pictureId) {
-        var picture = pictureRepository.findByIdAndAlbumId(pictureId, albumId).orElseThrow(() -> new AlbumException("Invalid picture request"));
-        picture.checkSameUser(userId);
-        return picture;
-    }
-
-    private Album getUserAlbum(Long userId, Long albumId) {
-        return albumRepository.findByIdAndUserId(albumId, userId)
-            .orElseThrow(() -> new UnauthorizedException("Invalid album"));
-    }
-
-    private void validateAlbumOwner(Long userId, Long albumId) {
-        var album = getUserAlbum(userId, albumId);
-        album.authorize(userId);
+    public void deletePictures(Long userId, Long albumId, List<Long> pictureIds) {
+        try {
+            userLock.acquire(userId);
+            pictureCoreService.deleteAllByIds(userId, albumId, pictureIds);
+        } finally {
+            userLock.release(userId);
+        }
     }
 }
