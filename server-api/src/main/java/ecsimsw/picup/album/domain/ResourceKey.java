@@ -3,14 +3,16 @@ package ecsimsw.picup.album.domain;
 import ecsimsw.picup.album.exception.AlbumException;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
 import java.util.UUID;
 
-@NoArgsConstructor
+@Setter
 @Getter
+@NoArgsConstructor
 @Embeddable
 public class ResourceKey {
 
@@ -44,3 +46,5 @@ public class ResourceKey {
         return resourceKey;
     }
 }
+
+
