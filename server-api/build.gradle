@@ -24,8 +24,10 @@ dependencies {
     implementation 'org.springframework.retry:spring-retry'
     implementation 'org.springframework.boot:spring-boot-starter-aop'
 
-    // Mysql, H2
+    // Mysql, H2, Flyway
     runtimeOnly 'com.mysql:mysql-connector-j'
+    implementation('org.flywaydb:flyway-core:6.4.2')
+
     implementation 'com.h2database:h2:1.4.199'
     testRuntimeOnly 'com.h2database:h2:1.4.199'
 

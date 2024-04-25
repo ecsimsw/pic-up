@@ -1,0 +1,1 @@
+ALTER TABLE file_deletion_event ADD COLUMN delete_failed_counts INT NOT NULL DEFAULT 0;
