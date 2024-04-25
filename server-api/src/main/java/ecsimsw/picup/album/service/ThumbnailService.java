@@ -3,7 +3,7 @@ package ecsimsw.picup.album.service;
 import ecsimsw.picup.album.domain.PictureFileExtension;
 import ecsimsw.picup.album.domain.ResourceKey;
 import ecsimsw.picup.album.exception.AlbumException;
-import ecsimsw.picup.album.utils.ThumbnailUtils;
+import ecsimsw.picup.utils.ThumbnailUtils;
 import ecsimsw.picup.storage.FileUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.mock.web.MockMultipartFile;

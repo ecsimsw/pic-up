@@ -1,4 +1,4 @@
-package ecsimsw.picup.album.utils;
+package ecsimsw.picup.album.service;
 
 import ecsimsw.picup.album.exception.AlbumException;
 import org.redisson.api.RedissonClient;

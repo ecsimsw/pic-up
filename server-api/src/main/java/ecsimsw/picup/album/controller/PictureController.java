@@ -1,5 +1,7 @@
 package ecsimsw.picup.album.controller;
 
+import ecsimsw.picup.album.annotation.RemoteIp;
+import ecsimsw.picup.album.annotation.SearchCursor;
 import ecsimsw.picup.album.dto.PictureInfoResponse;
 import ecsimsw.picup.album.dto.PictureSearchCursor;
 import ecsimsw.picup.album.dto.PicturesDeleteRequest;
@@ -44,14 +46,11 @@ public class PictureController {
 
     @GetMapping("/api/album/{albumId}/picture")
     public ResponseEntity<List<PictureInfoResponse>> getPictures(
-        @RequestHeader(value = "X-Forwarded-For") String remoteIp,
+        @RemoteIp String remoteIp,
         @TokenPayload AuthTokenPayload loginUser,
         @PathVariable Long albumId,
-        @RequestParam(defaultValue = "10") int limit,
-        @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
-        Optional<LocalDateTime> cursorCreatedAt
+        @SearchCursor PictureSearchCursor cursor
     ) {
-        var cursor = PictureSearchCursor.from(limit, cursorCreatedAt);
         var pictureInfos = pictureService.readPictures(loginUser.userId(), albumId, cursor);
         var signedPictureInfos = signPictures(remoteIp, pictureInfos);
         return ResponseEntity.ok(signedPictureInfos);

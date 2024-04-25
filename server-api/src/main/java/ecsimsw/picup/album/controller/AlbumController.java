@@ -1,5 +1,6 @@
 package ecsimsw.picup.album.controller;
 
+import ecsimsw.picup.album.annotation.RemoteIp;
 import ecsimsw.picup.album.dto.AlbumInfoResponse;
 import ecsimsw.picup.album.service.AlbumService;
 import ecsimsw.picup.album.service.ResourceUrlService;
@@ -16,6 +17,8 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+
+import javax.servlet.http.HttpServletRequest;
 
 @RequiredArgsConstructor
 @RestController
@@ -36,7 +39,7 @@ public class AlbumController {
 
     @GetMapping("/api/album/{albumId}")
     public ResponseEntity<AlbumInfoResponse> getAlbum(
-        @RequestHeader("X-Forwarded-For") String remoteIp,
+        @RemoteIp String remoteIp,
         @TokenPayload AuthTokenPayload loginUser,
         @PathVariable Long albumId
     ) {
@@ -47,7 +50,7 @@ public class AlbumController {
 
     @GetMapping("/api/album")
     public ResponseEntity<List<AlbumInfoResponse>> getAlbums(
-        @RequestHeader(value = "X-Forwarded-For") String remoteIp,
+        @RemoteIp String remoteIp,
         @TokenPayload AuthTokenPayload loginUser
     ) {
         var albumInfos = uploadService.readAlbums(loginUser.userId());

@@ -8,10 +8,10 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @EnableScheduling
 @EnableRetry
 @SpringBootApplication
-public class PicUpAlbumApplication {
+public class PicUpApplication {
 
     public static void main(String[] args) {
-        var app = new SpringApplication(PicUpAlbumApplication.class);
+        var app = new SpringApplication(PicUpApplication.class);
         app.setAdditionalProfiles("prod");
         app.run(args);
     }

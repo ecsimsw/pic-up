@@ -1,7 +1,6 @@
 package ecsimsw.picup.album.service;
 
 import ecsimsw.picup.album.dto.AlbumInfoResponse;
-import ecsimsw.picup.album.utils.UserLock;
 import ecsimsw.picup.album.dto.FileUploadResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

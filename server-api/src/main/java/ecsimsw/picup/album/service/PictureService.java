@@ -4,7 +4,6 @@ import ecsimsw.picup.album.domain.PictureFileExtension;
 import ecsimsw.picup.album.dto.PictureInfoResponse;
 import ecsimsw.picup.album.dto.PictureSearchCursor;
 import ecsimsw.picup.album.exception.AlbumException;
-import ecsimsw.picup.album.utils.UserLock;
 import ecsimsw.picup.album.dto.FileUploadResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
