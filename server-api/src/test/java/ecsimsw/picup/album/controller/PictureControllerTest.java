@@ -25,6 +25,8 @@ import ecsimsw.picup.auth.AuthTokenService;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+
+import ecsimsw.picup.utils.AddRequestHeaderFilter;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -49,8 +51,13 @@ class PictureControllerTest {
         .standaloneSetup(new PictureController(
             pictureService, resourceUrlService
         ))
+        .addFilter(new AddRequestHeaderFilter("X-Forwarded-For", "192.168.0.1"))
         .addInterceptors(new AuthInterceptor(authTokenService))
-        .setCustomArgumentResolvers(new AuthArgumentResolver(authTokenService))
+        .setCustomArgumentResolvers(
+            new AuthArgumentResolver(authTokenService),
+            new SearchCursorArgumentResolver(),
+            new UserIpArgumentResolver()
+        )
         .setControllerAdvice(new GlobalControllerAdvice())
         .build();
 
@@ -89,9 +96,7 @@ class PictureControllerTest {
             PictureSearchCursor.from(10, Optional.empty())))
             .thenReturn(expectedPictureInfos);
 
-        mockMvc.perform(get("/api/album/" + albumId + "/picture")
-                .header("X-Forwarded-For", "192.168.0.1")
-            )
+        mockMvc.perform(get("/api/album/" + albumId + "/picture"))
             .andExpect(status().isOk())
             .andExpect(content().string(OBJECT_MAPPER.writeValueAsString(expectedPictureInfos)));
     }
@@ -107,7 +112,6 @@ class PictureControllerTest {
             .thenReturn(expectedPictureInfos);
 
         mockMvc.perform(get("/api/album/" + albumId + "/picture")
-                .header("X-Forwarded-For", "192.168.0.1")
                 .param("cursorCreatedAt", "2024-04-08T10:45:12.728721232Z")
             )
             .andExpect(status().isOk())
@@ -124,7 +128,6 @@ class PictureControllerTest {
             .thenReturn(expectedPictureInfos);
 
         mockMvc.perform(get("/api/album/" + albumId + "/picture")
-                .header("X-Forwarded-For", "192.168.0.1")
                 .param("limit", String.valueOf(limit))
             )
             .andExpect(status().isOk())
@@ -137,7 +140,6 @@ class PictureControllerTest {
         var pictureIds = List.of(1L, 2L, 3L);
 
         mockMvc.perform(delete("/api/album/" + albumId + "/picture")
-                .header("X-Forwarded-For", "192.168.0.1")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(OBJECT_MAPPER.writeValueAsString(new PicturesDeleteRequest(pictureIds)))
             )
