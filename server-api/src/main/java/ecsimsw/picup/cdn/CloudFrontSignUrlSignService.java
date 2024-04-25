@@ -34,7 +34,7 @@ public class CloudFrontSignUrlSignService implements UrlSignService {
     private CustomSignerRequest cannedSign(String remoteIp, String resourcePath) throws Exception {
         return CustomSignerRequest.builder()
             .privateKey(Path.of(privateKeyPath))
-            .ipRange(remoteIp + "/32")
+//            .ipRange(remoteIp + "/32")
             .resourceUrl(new URL(CDN_PROTOCOL, domainName, "/" + resourcePath).toString())
             .keyPairId(publicKeyId)
             .expirationDate(Instant.now().plus(EXPIRATION_AFTER_DAYS, ChronoUnit.DAYS))

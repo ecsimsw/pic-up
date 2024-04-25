@@ -3,7 +3,7 @@ import { check, sleep } from 'k6';
 import { FormData } from 'https://jslib.k6.io/formdata/0.0.2/index.js';
 
 export const options = {
-    vus: 1,
+    vus: 30,
     // duration: '30s',
     iterations: 30
 };
