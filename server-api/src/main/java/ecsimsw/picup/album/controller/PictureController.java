@@ -42,7 +42,6 @@ public class PictureController {
         @PathVariable Long albumId,
         @RequestPart MultipartFile file
     ) {
-        log.info("upload requested");
         var pictureId = pictureService.upload(loginUser.userId(), albumId, file);
         return ResponseEntity.ok(pictureId);
     }
