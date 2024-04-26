@@ -18,7 +18,7 @@ public class S3Utils {
             metadata.setContentType(file.getContentType());
             metadata.setContentLength(file.getSize());
             s3Client.putObject(bucket, path, file.getInputStream(), metadata);
-            log.info("s3 upload time " + (System.currentTimeMillis() - start) + "ms");
+//            log.info("s3 upload time " + (System.currentTimeMillis() - start) + "ms");
         } catch (Exception e) {
             throw new StorageException("Object storage server exception while uploading", e);
         }

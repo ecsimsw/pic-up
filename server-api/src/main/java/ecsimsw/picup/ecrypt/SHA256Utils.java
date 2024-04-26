@@ -1,7 +1,6 @@
 package ecsimsw.picup.ecrypt;
 
 import ecrypt.exception.EncryptionException;
-
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.SecureRandom;

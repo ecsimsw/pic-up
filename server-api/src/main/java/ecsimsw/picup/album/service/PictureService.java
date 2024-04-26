@@ -25,12 +25,16 @@ public class PictureService {
     private final PictureCoreService pictureCoreService;
 
     public long upload(Long userId, Long albumId, MultipartFile file) {
+        var start = System.currentTimeMillis();
         var originUploadFuture = fileService.uploadFileAsync(file);
         var thumbnailUploadFuture = PictureFileExtension.of(file).isVideo ?
             fileService.uploadVideoThumbnailAsync(file) :
             fileService.uploadImageThumbnailAsync(file, PICTURE_THUMBNAIL_SCALE);
         try {
-            return createPicture(userId, albumId, originUploadFuture.join(), thumbnailUploadFuture.join());
+            FileUploadResponse originImage = originUploadFuture.join();
+            FileUploadResponse thumbnailImage = thumbnailUploadFuture.join();
+            log.info("File upload duration : " + (System.currentTimeMillis() - start) + "ms");
+            return createPicture(userId, albumId, originImage, thumbnailImage);
         } catch (CompletionException e) {
             List.of(originUploadFuture, thumbnailUploadFuture).forEach(
                 future -> future.thenAccept(result -> fileService.deleteAsync(result.resourceKey()))
