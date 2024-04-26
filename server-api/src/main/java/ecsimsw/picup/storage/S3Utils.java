@@ -8,8 +8,9 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
 @Slf4j
-@Component
 public class S3Utils {
+
+    private static final long SLOW_UPLOAD_THRESHOLD = 30_000;
 
     public static void store(AmazonS3 s3Client, String bucket, String path, MultipartFile file) {
         try {
@@ -18,19 +19,9 @@ public class S3Utils {
             metadata.setContentType(file.getContentType());
             metadata.setContentLength(file.getSize());
             s3Client.putObject(bucket, path, file.getInputStream(), metadata);
-        } catch (Exception e) {
-            throw new StorageException("Object storage server exception while uploading", e);
-        }
-    }
-
-    public static void storeWithLog(AmazonS3 s3Client, String bucket, String path, MultipartFile file) {
-        try {
-            var start = System.currentTimeMillis();
-            var metadata = new ObjectMetadata();
-            metadata.setContentType(file.getContentType());
-            metadata.setContentLength(file.getSize());
-            s3Client.putObject(bucket, path, file.getInputStream(), metadata);
-            log.info("s3 upload time " + (System.currentTimeMillis() - start) + "ms");
+            if(SLOW_UPLOAD_THRESHOLD < (System.currentTimeMillis() - start)) {
+                log.warn("Slow S3 upload time : " + (System.currentTimeMillis() - start));
+            }
         } catch (Exception e) {
             throw new StorageException("Object storage server exception while uploading", e);
         }

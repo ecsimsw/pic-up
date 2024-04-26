@@ -34,6 +34,7 @@ public class PictureCoreService {
     @CacheEvict(value = FIRST_10_PIC_IN_ALBUM, key = "{#userId, #albumId}")
     @Transactional
     public Picture create(Long userId, Long albumId, FileUploadResponse originFile, FileUploadResponse thumbnailFile) {
+        // TODO :: for test
 //        var album = getUserAlbum(userId, albumId);
         var album = albumRepository.findById(albumId).orElseThrow();
         var picture = new Picture(album, originFile.resourceKey(), thumbnailFile.resourceKey(), originFile.size());

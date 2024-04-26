@@ -1,7 +1,7 @@
 package ecsimsw.picup.album.controller;
 
-import static ecsimsw.picup.auth.AuthConfig.ACCESS_TOKEN_COOKIE_NAME;
-import static ecsimsw.picup.auth.AuthConfig.REFRESH_TOKEN_COOKIE_NAME;
+import static ecsimsw.picup.config.AuthConfig.ACCESS_TOKEN_COOKIE_NAME;
+import static ecsimsw.picup.config.AuthConfig.REFRESH_TOKEN_COOKIE_NAME;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;

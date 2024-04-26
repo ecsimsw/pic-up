@@ -1,40 +1,33 @@
 package ecsimsw.picup.logging;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
-
-import javax.servlet.*;
+import java.io.IOException;
+import javax.servlet.Filter;
+import javax.servlet.FilterChain;
+import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
 import javax.servlet.annotation.WebFilter;
 import javax.servlet.http.HttpServletRequest;
-import java.io.IOException;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 
-@WebFilter(urlPatterns = {"/api/*"})
+@Slf4j
+@RequiredArgsConstructor
 public class HttpResponseTimeAlarmFilter implements Filter {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(HttpResponseTimeAlarmFilter.class);
-
-    @Value("${picup.log.http.response-time.alarm.enable:true}")
-    private boolean enable;
-
-    @Value("${picup.log.http.response-time.alarm.threshold:5}")
-    private double threshold;
+    private final double threshold;
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
-        if (!enable) {
-            chain.doFilter(request, response);
-            return;
-        }
-
         var start = System.currentTimeMillis();
         chain.doFilter(request, response);
         var end = System.currentTimeMillis();
-
-        long spentTime = end - start;
+        var spentTime = end - start;
         if (spentTime > threshold) {
+            System.out.println(spentTime);
             var req = (HttpServletRequest) request;
-            LOGGER.info("[RES_TIME] {} - {}, {} ms", req.getMethod(), req.getRequestURI(), spentTime);
+            log.info("[RES_TIME] {} - {}, {} ms", req.getMethod(), req.getRequestURI(), spentTime);
         }
     }
 }

@@ -1,9 +1,9 @@
 package ecsimsw.picup.auth;
 
-import static ecsimsw.picup.auth.AuthConfig.ACCESS_TOKEN_COOKIE_NAME;
-import static ecsimsw.picup.auth.AuthConfig.ACCESS_TOKEN_JWT_EXPIRE_TIME;
-import static ecsimsw.picup.auth.AuthConfig.REFRESH_TOKEN_COOKIE_NAME;
-import static ecsimsw.picup.auth.AuthConfig.REFRESH_TOKEN_JWT_EXPIRE_TIME;
+import static ecsimsw.picup.config.AuthConfig.ACCESS_TOKEN_COOKIE_NAME;
+import static ecsimsw.picup.config.AuthConfig.ACCESS_TOKEN_JWT_EXPIRE_TIME;
+import static ecsimsw.picup.config.AuthConfig.REFRESH_TOKEN_COOKIE_NAME;
+import static ecsimsw.picup.config.AuthConfig.REFRESH_TOKEN_JWT_EXPIRE_TIME;
 
 import java.util.Arrays;
 import javax.servlet.http.Cookie;

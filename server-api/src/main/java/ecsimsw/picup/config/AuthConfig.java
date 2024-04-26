@@ -1,18 +1,18 @@
-package ecsimsw.picup.auth;
+package ecsimsw.picup.config;
 
+import ecsimsw.picup.auth.AuthArgumentResolver;
+import ecsimsw.picup.auth.AuthInterceptor;
+import ecsimsw.picup.auth.JwtUtils;
 import java.security.Key;
 import java.util.List;
-import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
-@RequiredArgsConstructor
 @Configuration
 public class AuthConfig implements WebMvcConfigurer {
-
-    public static final Key JWT_SECRET_KEY = JwtUtils.createSecretKey("thisissecretkeythisissecretkeythisis");
 
     public static final String ACCESS_TOKEN_COOKIE_NAME = "PICUP_AT";
     public static final String REFRESH_TOKEN_COOKIE_NAME = "PICUP_RT";
@@ -20,12 +20,25 @@ public class AuthConfig implements WebMvcConfigurer {
     public static final int REFRESH_TOKEN_JWT_EXPIRE_TIME = 2 * 60 * 60;
     public static final int ACCESS_TOKEN_JWT_EXPIRE_TIME = 30 * 60;
 
-    private final AuthInterceptor loginUserInfoAuthInterceptor;
+    public static Key JWT_SECRET_KEY;
+
+    private final AuthInterceptor authInterceptor;
     private final AuthArgumentResolver authArgumentResolver;
+
+    public AuthConfig(
+        AuthInterceptor authInterceptor,
+        AuthArgumentResolver authArgumentResolver,
+        @Value("${ecsimsw.token.secret.key}")
+        String tokenSecretKey
+    ) {
+        this.authInterceptor = authInterceptor;
+        this.authArgumentResolver = authArgumentResolver;
+        JWT_SECRET_KEY = JwtUtils.createSecretKey(tokenSecretKey);
+    }
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(loginUserInfoAuthInterceptor)
+        registry.addInterceptor(authInterceptor)
             .addPathPatterns("/**")
             .excludePathPatterns();
     }

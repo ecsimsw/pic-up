@@ -1,6 +1,7 @@
 package ecsimsw.picup.auth;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import ecsimsw.picup.auth.AuthTokenPayload;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Header;
 import io.jsonwebtoken.Jwts;

@@ -5,10 +5,9 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.Arrays;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseCookie;
 import org.springframework.stereotype.Component;
 
-import static ecsimsw.picup.auth.AuthConfig.*;
+import static ecsimsw.picup.config.AuthConfig.*;
 
 @RequiredArgsConstructor
 @Component

@@ -1,5 +1,14 @@
 package ecsimsw.picup.logging;
 
+import java.io.IOException;
+import javax.servlet.Filter;
+import javax.servlet.FilterChain;
+import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -7,16 +16,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.util.ContentCachingRequestWrapper;
 import org.springframework.web.util.ContentCachingResponseWrapper;
 
-import javax.servlet.*;
-import javax.servlet.annotation.WebFilter;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-
-@WebFilter(urlPatterns = {"/api/*", "/actuator/*"})
+@Slf4j
 public class HttpAccessLogFilter implements Filter {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(HttpAccessLogFilter.class);
 
     @Value("${picup.log.http.access.request.enable:true}")
     private boolean requestEnable;
@@ -34,38 +35,30 @@ public class HttpAccessLogFilter implements Filter {
     private boolean responseBodyEnable;
 
     @Override
-    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
+    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
+        throws IOException, ServletException {
         if (!requestEnable && !responseEnable) {
             chain.doFilter(request, response);
             return;
         }
-
         var requestWrapper = new ContentCachingRequestWrapper((HttpServletRequest) request);
         var responseWrapper = new ContentCachingResponseWrapper((HttpServletResponse) response);
-
         chain.doFilter(requestWrapper, responseWrapper);
-
         printLog(requestWrapper, responseWrapper);
     }
 
     private void printLog(ContentCachingRequestWrapper requestWrapper, ContentCachingResponseWrapper responseWrapper) {
-        final RequestLog request = new RequestLog(requestWrapper);
-        final ResponseLog response = new ResponseLog(responseWrapper);
-
+        var request = new RequestLog(requestWrapper);
+        var response = new ResponseLog(responseWrapper);
         if (requestEnable && responseEnable && !requestHeaderEnable && !requestBodyEnable && !responseBodyEnable) {
-            LOGGER.info(
-                    "[HTTP_ACC] {} - {}, {}",
-                    request.getMethod(), request.getUri(), HttpStatus.resolve(response.getStatus())
-            );
+            log.info("[HTTP_ACC] {} - {}, {}", request.getMethod(), request.getUri(), HttpStatus.resolve(response.getStatus()));
             return;
         }
-
         if (requestEnable) {
-            LOGGER.info(requestLog(request));
+            log.info(requestLog(request));
         }
-
         if (responseEnable) {
-            LOGGER.info(responseLog(response));
+            log.info(responseLog(response));
         }
     }
 

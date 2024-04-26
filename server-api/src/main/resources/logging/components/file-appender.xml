@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <RollingFile
   name="RollingFile"
-  fileName="${BASE_DIR}/spring.log"
+  fileName="${BASE_DIR}/application.log"
   filePattern="${BASE_DIR}/%d{yyyy-MM-dd}.log.zip"
   xmlns:xi="http://www.w3.org/2001/XInclude"
 >
