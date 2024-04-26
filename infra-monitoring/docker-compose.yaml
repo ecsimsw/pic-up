@@ -22,3 +22,22 @@ services:
     restart: always
     extra_hosts:
       - "host.docker.internal:host-gateway"
+  ecsimsw-loki:
+    image: grafana/loki:2.9.2
+    volumes:
+      - ~/dev/data/lok:/loki
+    ports:
+      - "3100:3100"
+    command:
+      -config.file=/etc/loki/local-config.yaml
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+  ecsimsw-promtail:
+    image: grafana/promtail:2.9.2
+    volumes:
+      - ./promtail/local-config.yaml:/etc/promtail/promtail-config.yaml
+      - ~/dev/temp-log:/logs
+    command:
+      -config.file=/etc/promtail/config.yml
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
