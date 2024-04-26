@@ -32,9 +32,12 @@ public class PictureService {
             fileService.uploadImageThumbnailAsync(file, PICTURE_THUMBNAIL_SCALE);
         try {
             FileUploadResponse originImage = originUploadFuture.join();
+            log.info("origin uploaded " + (System.currentTimeMillis() - start) + "ms");
             FileUploadResponse thumbnailImage = thumbnailUploadFuture.join();
-            log.info("File upload duration : " + (System.currentTimeMillis() - start) + "ms");
-            return createPicture(userId, albumId, originImage, thumbnailImage);
+            log.info("thumbnail uploaded " + (System.currentTimeMillis() - start) + "ms");
+            long picture = createPicture(userId, albumId, originImage, thumbnailImage);
+            log.info("db saved : " + (System.currentTimeMillis() - start) + "ms");
+            return picture;
         } catch (CompletionException e) {
             List.of(originUploadFuture, thumbnailUploadFuture).forEach(
                 future -> future.thenAccept(result -> fileService.deleteAsync(result.resourceKey()))
