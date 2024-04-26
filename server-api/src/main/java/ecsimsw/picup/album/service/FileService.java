@@ -33,14 +33,16 @@ public class FileService {
     @Async
     public CompletableFuture<FileUploadResponse> uploadFileAsync(MultipartFile file) {
         var resourceKey = ResourceKey.generate(file);
-        var uploadResponse = upload(file, resourceKey);
+        var uploadResponse = uploadWithLog(file, resourceKey);
         return new AsyncResult<>(uploadResponse).completable();
     }
 
     @Async
     public CompletableFuture<FileUploadResponse> uploadImageThumbnailAsync(MultipartFile file, float scale) {
+        var resourceKey = ResourceKey.generate(file);
         var thumbnailFile = thumbnailService.resizeImage(file, scale);
-        return uploadFileAsync(thumbnailFile);
+        var uploadResponse = upload(thumbnailFile, resourceKey);
+        return new AsyncResult<>(uploadResponse).completable();
     }
 
     @Async
@@ -52,6 +54,12 @@ public class FileService {
     private FileUploadResponse upload(MultipartFile file, ResourceKey resourceKey) {
         var resourcePath = ROOT_PATH + resourceKey.value();
         S3Utils.store(s3Client, BUCKET_NAME, resourcePath, file);
+        return new FileUploadResponse(resourceKey, file.getSize());
+    }
+
+    private FileUploadResponse uploadWithLog(MultipartFile file, ResourceKey resourceKey) {
+        var resourcePath = ROOT_PATH + resourceKey.value();
+        S3Utils.storeWithLog(s3Client, BUCKET_NAME, resourcePath, file);
         return new FileUploadResponse(resourceKey, file.getSize());
     }
 
