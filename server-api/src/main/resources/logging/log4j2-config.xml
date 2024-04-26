@@ -6,13 +6,17 @@
     <Property name="FILE_DELETE_DAY_INTERVAL">15</Property>
   </Properties>
   <Appenders>
-    <xi:include href="components/console-appender.xml"/>
-    <xi:include href="components/file-appender.xml"/>
+    <xi:include href="components/application-logs-console-appender.xml"/>
+    <xi:include href="components/application-logs-rolling-file.xml"/>
+    <xi:include href="components/custom-logs-rolling-file.xml"/>
   </Appenders>
   <Loggers>
     <Root level="info">'
       <AppenderRef ref="ConsoleAppender" level="info"/>
-      <AppenderRef ref="RollingFile" level="warn"/>
+      <AppenderRef ref="ApplicationLogsRollingFile" level="info"/>
     </Root>
+    <Logger name="egovLogger" level="DEBUG" additivity="false">
+      <AppenderRef ref="RollingFile" level="warn"/>
+    </Logger>
   </Loggers>
 </Configuration>

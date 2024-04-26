@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <RollingFile
-  name="RollingFile"
-  fileName="${BASE_DIR}/application.log"
-  filePattern="${BASE_DIR}/%d{yyyy-MM-dd}.log.zip"
+  name="ApplicationLogsRollingFile"
+  fileName="${BASE_DIR}/application/application.log"
+  filePattern="${BASE_DIR}/application/%d{yyyy-MM-dd}.log.zip"
   xmlns:xi="http://www.w3.org/2001/XInclude"
 >
   <xi:include href="pattern-layout.xml"/>
@@ -10,7 +10,7 @@
     <TimeBasedTriggeringPolicy interval="${FILE_LOG_DAY_INTERVAL}" modulate="true" />
   </Policies>
   <DefaultRolloverStrategy>
-    <Delete basePath="${BASE_DIR}" maxDepth="1">
+    <Delete basePath="${BASE_DIR}/application" maxDepth="1">
       <IfFileName glob="*.log.zip" />
       <IfLastModified age="${FILE_DELETE_DAY_INTERVAL}d" />
     </Delete>
