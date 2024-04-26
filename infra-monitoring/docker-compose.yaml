@@ -35,7 +35,7 @@ services:
   ecsimsw-promtail:
     image: grafana/promtail:2.9.2
     volumes:
-      - ./promtail/local-config.yaml:/etc/promtail/config.yaml
+      - ./promtail/config.yaml:/etc/promtail/config.yaml
       - ~/temp-log:/logs
     command:
       -config.file=/etc/promtail/config.yml
