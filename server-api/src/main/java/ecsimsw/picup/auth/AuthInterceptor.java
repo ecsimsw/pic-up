@@ -9,26 +9,24 @@ import java.util.Arrays;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
 
-@Component
+@RequiredArgsConstructor
 public class AuthInterceptor implements HandlerInterceptor {
 
     private final AuthTokenService authTokenService;
 
-    public AuthInterceptor(AuthTokenService authTokenService) {
-        this.authTokenService = authTokenService;
-    }
-
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
-        if (!(handler instanceof HandlerMethod) || !isLoginNeeded((HandlerMethod) handler)) {
-            return true;
-        }
         try {
+            if (!(handler instanceof HandlerMethod) || !isLoginNeeded((HandlerMethod) handler)) {
+                return true;
+            }
             authTokenService.authenticate(request);
             return true;
         } catch (UnauthorizedException invalidAccessToken) {

@@ -6,15 +6,13 @@ import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
-import javax.servlet.annotation.WebFilter;
 import javax.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 
 @Slf4j
 @RequiredArgsConstructor
-public class HttpResponseTimeAlarmFilter implements Filter {
+public class SlowResponseAlarmFilter implements Filter {
 
     private final double threshold;
 
@@ -25,9 +23,8 @@ public class HttpResponseTimeAlarmFilter implements Filter {
         var end = System.currentTimeMillis();
         var spentTime = end - start;
         if (spentTime > threshold) {
-            System.out.println(spentTime);
             var req = (HttpServletRequest) request;
-            log.info("[RES_TIME] {} - {}, {} ms", req.getMethod(), req.getRequestURI(), spentTime);
+            log.info("[slow] {} {}, {} ms", req.getMethod(), req.getRequestURI(), spentTime);
         }
     }
 }

@@ -2,6 +2,7 @@ package ecsimsw.picup.config;
 
 import ecsimsw.picup.auth.AuthArgumentResolver;
 import ecsimsw.picup.auth.AuthInterceptor;
+import ecsimsw.picup.auth.AuthTokenService;
 import ecsimsw.picup.auth.JwtUtils;
 import java.security.Key;
 import java.util.List;
@@ -22,29 +23,26 @@ public class AuthConfig implements WebMvcConfigurer {
 
     public static Key JWT_SECRET_KEY;
 
-    private final AuthInterceptor authInterceptor;
-    private final AuthArgumentResolver authArgumentResolver;
+    private final AuthTokenService authTokenService;
 
     public AuthConfig(
-        AuthInterceptor authInterceptor,
-        AuthArgumentResolver authArgumentResolver,
+        AuthTokenService authTokenService,
         @Value("${ecsimsw.token.secret.key}")
         String tokenSecretKey
     ) {
-        this.authInterceptor = authInterceptor;
-        this.authArgumentResolver = authArgumentResolver;
+        this.authTokenService = authTokenService;
         JWT_SECRET_KEY = JwtUtils.createSecretKey(tokenSecretKey);
     }
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(authInterceptor)
+        registry.addInterceptor(new AuthInterceptor(authTokenService))
             .addPathPatterns("/**")
             .excludePathPatterns();
     }
 
     @Override
     public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
-        resolvers.add(authArgumentResolver);
+        resolvers.add(new AuthArgumentResolver(authTokenService));
     }
 }
