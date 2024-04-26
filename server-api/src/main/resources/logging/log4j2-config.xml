@@ -10,11 +10,9 @@
     <xi:include href="components/file-appender.xml"/>
   </Appenders>
   <Loggers>
-    <Root level="info">
-      <AppenderRef ref="ConsoleAppender"/>
+    <Root level="info">'
+      <AppenderRef ref="ConsoleAppender" level="info"/>
+      <AppenderRef ref="RollingFile" level="warn"/>
     </Root>
-    <logger name="org.springframework" level="warn" additivity="false" >
-      <AppenderRef ref="RollingFile"/>
-    </logger>
   </Loggers>
 </Configuration>
