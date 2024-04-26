@@ -15,4 +15,4 @@ scrape_configs:
           - picup
         labels:
           job: application-warn
-          __path__: /logs/*log
+          __path__: /logs/*.log
