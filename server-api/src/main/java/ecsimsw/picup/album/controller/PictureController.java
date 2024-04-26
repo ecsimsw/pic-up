@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Optional;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -27,6 +28,7 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+@Slf4j
 @RequiredArgsConstructor
 @RestController
 public class PictureController {
@@ -40,6 +42,7 @@ public class PictureController {
         @PathVariable Long albumId,
         @RequestPart MultipartFile file
     ) {
+        log.info("upload requested");
         var pictureId = pictureService.upload(loginUser.userId(), albumId, file);
         return ResponseEntity.ok(pictureId);
     }
