@@ -9,7 +9,7 @@ clients:
   - url: http://host.docker.internal:3100/loki/api/v1/push
 
 scrape_configs:
-  - job_name: piup
+  - job_name: picup
     static_configs:
       - targets:
           - picup
