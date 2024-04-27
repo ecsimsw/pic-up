@@ -12,7 +12,12 @@ scrape_configs:
   - job_name: picup
     static_configs:
       - targets:
-          - picup
+          - picup-application
         labels:
-          job: application-warn
-          __path__: /logs/*.log
+          job: application
+          __path__: /logs/application/*.log
+      - targets:
+          - picup-s3
+        labels:
+          job: s3
+          __path__: /logs/s3/*.log
