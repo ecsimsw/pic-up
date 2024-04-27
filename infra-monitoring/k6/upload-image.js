@@ -4,23 +4,21 @@ import { FormData } from 'https://jslib.k6.io/formdata/0.0.2/index.js';
 import { randomIntBetween } from 'https://jslib.k6.io/k6-utils/1.2.0/index.js';
 
 export const options = {
-    vus: 10,
+    vus: 100,
     // duration: '30s',
-    iterations: 50
+    iterations: 500
 };
 
-const img = open('./assets/Sample_image_5Mb.jpg', 'b');
+const img = open('./assets/Sample_image_0.5Mb.jpg', 'b');
 
 export default function () {
     let loginData = {
-        username : "ecsimsw",
+        username : "ecsimsw" + randomIntBetween(1, 30),
         password : "publicUserForTest"
     };
-    const rs = http.post('http://www.ecsimsw.com:8084/api/member/signin', JSON.stringify(loginData), {
+    const rs = http.post('https://www.ecsimsw.com:8082/api/member/signin', JSON.stringify(loginData), {
         headers: { 'Content-Type': 'application/json' },
     });
-    console.log(rs.status + " " + rs.body)
-
     const fd = new FormData();
     fd.append('file', { data: new Uint8Array(img).buffer, filename: 'image_sample.jpg', content_type: 'image/jpg' });
     const res = http.post('https://www.ecsimsw.com:8082/api/album/36/picture', fd.body(), {
