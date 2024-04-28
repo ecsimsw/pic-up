@@ -24,7 +24,7 @@ public class PicUpApplication {
         ConfigurableApplicationContext run = app.run(args);
         MemberService bean = run.getBean(MemberService.class);
 
-        for(int i = 33; i<= 100; i++) {
+        for(int i = 101; i<= 2000; i++) {
             try {
                 bean.signUp(new SignUpRequest("ecsimsw" + i, "password"));
             } catch (Exception e) {
