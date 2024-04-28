@@ -4,9 +4,9 @@ import { FormData } from 'https://jslib.k6.io/formdata/0.0.2/index.js';
 import { randomIntBetween } from 'https://jslib.k6.io/k6-utils/1.2.0/index.js';
 
 export const options = {
-    vus: 300,
+    vus: 100,
     // duration: '30s',
-    iterations: 300
+    iterations: 100
 };
 
 const img = open('./assets/Sample_image_0.5Mb.jpg', 'b');
