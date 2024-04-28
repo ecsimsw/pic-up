@@ -41,14 +41,14 @@ public class PictureService {
 
     public long createPicture(Long userId, Long albumId, FileUploadResponse origin, FileUploadResponse thumbnail) {
         try {
-            userLock.acquire(userId);
+//            userLock.acquire(userId);
             return pictureCoreService.create(userId, albumId, origin, thumbnail).getId();
         } catch (Exception e) {
             fileService.deleteAsync(origin.resourceKey());
             fileService.deleteAsync(thumbnail.resourceKey());
             throw e;
         } finally {
-            userLock.release(userId);
+//            userLock.release(userId);
         }
     }
 
