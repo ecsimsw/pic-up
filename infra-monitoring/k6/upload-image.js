@@ -13,15 +13,15 @@ const img = open('./assets/Sample_image_0.5Mb.jpg', 'b');
 
 export default function () {
     let loginData = {
-        username : "ecsimsw"+randomIntBetween(1,100),
+        username : "ecsimsw"+randomIntBetween(1,2000),
         password : "publicUserForTest"
     };
-    const rs = http.post('http://www.ecsimsw.com:8084/api/member/signin', JSON.stringify(loginData), {
+    const rs = http.post('https://www.ecsimsw.com:8082/api/member/signin', JSON.stringify(loginData), {
         headers: { 'Content-Type': 'application/json' },
     });
     const fd = new FormData();
     fd.append('file', { data: new Uint8Array(img).buffer, filename: 'image_sample.jpg', content_type: 'image/jpg' });
-    const res = http.post('http://www.ecsimsw.com:8084/api/album/36/picture', fd.body(), {
+    const res = http.post('https://www.ecsimsw.com:8082/api/album/36/picture', fd.body(), {
         headers: { 'Content-Type': 'multipart/form-data; boundary=' + fd.boundary },
     });
 
