@@ -4,16 +4,16 @@ import { FormData } from 'https://jslib.k6.io/formdata/0.0.2/index.js';
 import { randomIntBetween } from 'https://jslib.k6.io/k6-utils/1.2.0/index.js';
 
 export const options = {
-    vus: 100,
+    vus: 300,
     // duration: '30s',
-    iterations: 500
+    iterations: 300
 };
 
 const img = open('./assets/Sample_image_0.5Mb.jpg', 'b');
 
 export default function () {
     let loginData = {
-        username : "ecsimsw" + randomIntBetween(1, 30),
+        username : "ecsimsw",
         password : "publicUserForTest"
     };
     const rs = http.post('https://www.ecsimsw.com:8082/api/member/signin', JSON.stringify(loginData), {
