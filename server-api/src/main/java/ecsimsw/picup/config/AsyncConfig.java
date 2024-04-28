@@ -17,7 +17,7 @@ public class AsyncConfig implements AsyncConfigurer {
     private static final Logger LOGGER = LoggerFactory.getLogger(AsyncConfig.class);
 
     private static final int CORE_POOL_SIZE = 10;
-    private static final int MAX_POOL_SIZE = 100;
+    private static final int MAX_POOL_SIZE = 200;
     private static final int QUEUE_CAPACITY_SIZE = 100;
     private static final String THREAD_NAME_PREFIX = "PICUP-ALBUM";
 
