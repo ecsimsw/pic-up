@@ -6,7 +6,7 @@ import { randomIntBetween } from 'https://jslib.k6.io/k6-utils/1.2.0/index.js';
 export const options = {
     vus: 100,
     // duration: '30s',
-    iterations: 100
+    iterations: 1000
 };
 
 const img = open('./assets/Sample_image_0.5Mb.jpg', 'b');

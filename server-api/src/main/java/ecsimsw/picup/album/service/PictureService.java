@@ -27,8 +27,8 @@ public class PictureService {
     public long upload(Long userId, Long albumId, MultipartFile file) {
         var originUploadFuture = fileService.uploadFileAsync(file);
         var thumbnailUploadFuture = PictureFileExtension.of(file).isVideo ?
-            fileService.uploadVideoThumbnailAsync(file) :
-            fileService.uploadImageThumbnailAsync(file, PICTURE_THUMBNAIL_SCALE);
+            fileService.uploadFileAsync(file) :
+            fileService.uploadFileAsync(file);
         try {
             return createPicture(userId, albumId, originUploadFuture.join(), thumbnailUploadFuture.join());
         } catch (CompletionException e) {
