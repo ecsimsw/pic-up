@@ -18,7 +18,7 @@ public class S3Utils {
 //            metadata.setContentLength(file.getSize());
 //            s3Client.putObject(bucket, path, file.getInputStream(), metadata);
 
-            Thread.sleep(200);
+            Thread.sleep(100);
 
             log.info("S3 upload time : " + (System.currentTimeMillis() - start) + " ms, " + fileStringSize(file.getSize()));
         } catch (Exception e) {
