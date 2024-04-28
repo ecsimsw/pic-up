@@ -21,6 +21,15 @@ public class PicUpApplication {
     public static void main(String[] args) {
         var app = new SpringApplication(PicUpApplication.class);
         app.setAdditionalProfiles("prod");
-        app.run(args);
+        ConfigurableApplicationContext run = app.run(args);
+        MemberService bean = run.getBean(MemberService.class);
+
+        for(int i = 33; i<= 100; i++) {
+            try {
+                bean.signUp(new SignUpRequest("ecsimsw" + i, "password"));
+            } catch (Exception e) {
+
+            }
+        }
     }
 }
