@@ -1,33 +1,22 @@
 package ecsimsw.picup.storage;
 
-import ecsimsw.picup.album.exception.StorageException;
-import java.io.File;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-
-import org.springframework.web.multipart.MultipartFile;
+import java.text.DecimalFormat;
 
 public class FileUtils {
 
-    public static Path store(String path, MultipartFile file) {
-        try {
-            Path filepath = Paths.get(path);
-            try (OutputStream os = Files.newOutputStream(filepath)) {
-                os.write(file.getBytes());
-            }
-            return filepath;
-        } catch (IOException e) {
-            throw new StorageException("Failed to upload to file storage");
+    public static String fileStringSize(long size) {
+        var df = new DecimalFormat("0.00");
+        var sizeKb = 1024.0f;
+        var sizeMb = sizeKb * sizeKb;
+        var sizeGb = sizeMb * sizeKb;
+        var sizeTerra = sizeGb * sizeKb;
+        if (size < sizeMb) {
+            return df.format(size / sizeKb) + " Kb";
+        } else if (size < sizeGb) {
+            return df.format(size / sizeMb) + " Mb";
+        } else if (size < sizeTerra) {
+            return df.format(size / sizeGb) + " Gb";
         }
-    }
-
-    public static void deleteIfExists(String path) {
-        var file = new File(path);
-        if (file.exists()) {
-            file.delete();
-        }
+        return size + "b";
     }
 }

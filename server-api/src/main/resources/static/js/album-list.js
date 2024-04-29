@@ -25,6 +25,15 @@ document.getElementById("imageBoxButton").addEventListener('change', function ()
     imageBoxName.readOnly = true;
 }, false);
 
+
+// return fetch(url, {
+//     body: formData,
+//     mode: "cors",
+//     method: "PUT",
+//     headers: { "Content-Type": "multipart/form-data" },
+// });
+
+
 document.getElementById('createAlbumForm').onsubmit = function (event) {
     const form = document.getElementById('createAlbumForm')
     const url = serverUrl + "/api/album";

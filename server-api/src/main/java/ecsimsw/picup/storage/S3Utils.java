@@ -1,11 +1,19 @@
 package ecsimsw.picup.storage;
 
+import com.amazonaws.HttpMethod;
 import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.Headers;
+import com.amazonaws.services.s3.model.CannedAccessControlList;
+import com.amazonaws.services.s3.model.GeneratePresignedUrlRequest;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import ecsimsw.picup.album.exception.StorageException;
-import java.text.DecimalFormat;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.net.URL;
+import java.util.Date;
+
+import static ecsimsw.picup.storage.FileUtils.fileStringSize;
 
 @Slf4j
 public class S3Utils {
@@ -29,20 +37,16 @@ public class S3Utils {
         }
     }
 
-    private static String fileStringSize(long size) {
-        var df = new DecimalFormat("0.00");
-        var sizeKb = 1024.0f;
-        var sizeMb = sizeKb * sizeKb;
-        var sizeGb = sizeMb * sizeKb;
-        var sizeTerra = sizeGb * sizeKb;
-        if (size < sizeMb) {
-            return df.format(size / sizeKb) + " Kb";
-        } else if (size < sizeGb) {
-            return df.format(size / sizeMb) + " Mb";
-        } else if (size < sizeTerra) {
-            return df.format(size / sizeGb) + " Gb";
-        }
-        return size + "b";
+    public static String getUploadPreSignedUrl(AmazonS3 s3Client, String bucket, String path, long expiration) {
+        GeneratePresignedUrlRequest generatePresignedUrlRequest = new GeneratePresignedUrlRequest(bucket, path)
+            .withMethod(HttpMethod.PUT)
+            .withExpiration(new Date(System.currentTimeMillis() + expiration));
+        generatePresignedUrlRequest.addRequestParameter(
+            Headers.S3_CANNED_ACL,
+            CannedAccessControlList.PublicRead.toString()
+        );
+        URL url = s3Client.generatePresignedUrl(generatePresignedUrlRequest);
+        return url.toString();
     }
 }
 

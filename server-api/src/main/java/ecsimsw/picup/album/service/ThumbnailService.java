@@ -4,7 +4,7 @@ import ecsimsw.picup.album.domain.PictureFileExtension;
 import ecsimsw.picup.album.domain.ResourceKey;
 import ecsimsw.picup.album.exception.AlbumException;
 import ecsimsw.picup.storage.ThumbnailUtils;
-import ecsimsw.picup.storage.FileUtils;
+import ecsimsw.picup.storage.FileStorageUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.stereotype.Service;
@@ -52,13 +52,13 @@ public class ThumbnailService {
             throw new AlbumException("Not a video file");
         }
         var videoFilePath = TEMP_FILE_STORAGE_PATH + UUID.randomUUID() + videoExtension.name();
-        FileUtils.store(videoFilePath, videoFile);
+        FileStorageUtils.store(videoFilePath, videoFile);
         var thumbnailFile = ThumbnailUtils.capture(
             videoFilePath,
             CAPTURE_FRAME_NUMBER,
             VIDEO_THUMBNAIL_DEFAULT_FORMAT.name()
         );
-        FileUtils.deleteIfExists(videoFilePath);
+        FileStorageUtils.deleteIfExists(videoFilePath);
         return thumbnailFile;
     }
 }
