@@ -1,10 +1,10 @@
 package ecsimsw.picup.album.service;
 
 import ecsimsw.picup.album.domain.PictureFileExtension;
+import ecsimsw.picup.album.dto.FileUploadResponse;
 import ecsimsw.picup.album.dto.PictureInfoResponse;
 import ecsimsw.picup.album.dto.PictureSearchCursor;
 import ecsimsw.picup.album.exception.AlbumException;
-import ecsimsw.picup.album.dto.FileUploadResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -27,8 +27,8 @@ public class PictureService {
     public long upload(Long userId, Long albumId, MultipartFile file) {
         var originUploadFuture = fileService.uploadFileAsync(file);
         var thumbnailUploadFuture = PictureFileExtension.of(file).isVideo ?
-            fileService.uploadFileAsync(file) :
-            fileService.uploadFileAsync(file);
+            fileService.uploadVideoThumbnailAsync(file) :
+            fileService.uploadImageThumbnailAsync(file, PICTURE_THUMBNAIL_SCALE);
         try {
             return createPicture(userId, albumId, originUploadFuture.join(), thumbnailUploadFuture.join());
         } catch (CompletionException e) {
@@ -41,14 +41,14 @@ public class PictureService {
 
     public long createPicture(Long userId, Long albumId, FileUploadResponse origin, FileUploadResponse thumbnail) {
         try {
-//            userLock.acquire(userId);
+            userLock.acquire(userId);
             return pictureCoreService.create(userId, albumId, origin, thumbnail).getId();
         } catch (Exception e) {
             fileService.deleteAsync(origin.resourceKey());
             fileService.deleteAsync(thumbnail.resourceKey());
             throw e;
         } finally {
-//            userLock.release(userId);
+            userLock.release(userId);
         }
     }
 

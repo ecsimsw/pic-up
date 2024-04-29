@@ -11,7 +11,7 @@
     <xi:include href="components/s3-logs-rolling-file.xml"/>
   </Appenders>
   <Loggers>
-    <Root level="info">'
+    <Root level="info">
       <AppenderRef ref="ApplicationLogsConsoleAppender" level="info"/>
       <AppenderRef ref="ApplicationLogsRollingFile" level="info"/>
     </Root>

@@ -1,8 +1,5 @@
 package ecsimsw.picup.config;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.aop.interceptor.AsyncUncaughtExceptionHandler;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.AsyncConfigurer;
 import org.springframework.scheduling.annotation.EnableAsync;
@@ -14,10 +11,8 @@ import java.util.concurrent.Executor;
 @Configuration
 public class AsyncConfig implements AsyncConfigurer {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(AsyncConfig.class);
-
-    private static final int CORE_POOL_SIZE = 500;
-    private static final int MAX_POOL_SIZE = 500;
+    private static final int CORE_POOL_SIZE = 100;
+    private static final int MAX_POOL_SIZE = 100;
     private static final int QUEUE_CAPACITY_SIZE = 10;
     private static final String THREAD_NAME_PREFIX = "PICUP-ALBUM";
 

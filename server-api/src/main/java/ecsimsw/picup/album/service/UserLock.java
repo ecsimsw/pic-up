@@ -1,11 +1,13 @@
 package ecsimsw.picup.album.service;
 
 import ecsimsw.picup.album.exception.AlbumException;
+import lombok.extern.slf4j.Slf4j;
 import org.redisson.api.RedissonClient;
 import org.springframework.stereotype.Component;
 
 import java.util.concurrent.TimeUnit;
 
+@Slf4j
 @Component
 public class UserLock {
 
