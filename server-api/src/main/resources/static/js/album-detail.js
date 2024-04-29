@@ -103,17 +103,35 @@ function handleScroll() {
 function addDropZone(albumId) {
     new Dropzone(document.querySelector('#myDropzone'), {
         dictDefaultMessage: 'Drop Here!',
-        url: serverUrl + "/api/album/" + albumId + "/picture",
+        // url: serverUrl + "/api/album/" + albumId + "/picture",
+        url: getMeSomeUrl,
+        accept: doStuffAsync,
         acceptedFiles: ".jpeg,.jpg,.png,.gif,.mp4",
         paramName: "file",
-        maxFilesize: 30000, // MB
+        maxFilesize: 200, // MB
         init: function () {
+            this.on("processing", function(file) {
+                console.log("hihi")
+            });
             this.on("success", function (file) {
                 console.log("upload success : " + file.name);
                 isUploaded = true
             });
         }
     });
+}
+
+const doStuffAsync = (file, done) => {
+    fetch(serverUrl + "/api/album/"+albumId + "/picture/presigned?fileSize="+file.size, {
+        method: "POST",
+    }).then((response) => {
+        file.dynamicUploadUrl = response.preSignedUrl
+        done();//call the dropzone done
+    })
+}
+
+const getMeSomeUrl = (files) => {
+    return `${files[0].dynamicUploadUrl}?sugar&spice`;
 }
 
 function setAlbumInfo() {

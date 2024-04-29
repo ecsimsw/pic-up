@@ -2,6 +2,7 @@ package ecsimsw.picup.album.controller;
 
 import ecsimsw.picup.album.annotation.RemoteIp;
 import ecsimsw.picup.album.annotation.SearchCursor;
+import ecsimsw.picup.album.dto.FileUploadPreSignedUrlResponse;
 import ecsimsw.picup.album.dto.PictureInfoResponse;
 import ecsimsw.picup.album.dto.PictureSearchCursor;
 import ecsimsw.picup.album.dto.PicturesDeleteRequest;
@@ -44,6 +45,16 @@ public class PictureController {
     ) {
         var pictureId = pictureService.upload(loginUser.userId(), albumId, file);
         return ResponseEntity.ok(pictureId);
+    }
+
+    @PostMapping("/api/album/{albumId}/picture/presigned")
+    public ResponseEntity<FileUploadPreSignedUrlResponse> preSigned(
+        @TokenPayload AuthTokenPayload loginUser,
+        @PathVariable Long albumId,
+        @RequestParam Long fileSize
+    ) {
+        var urlResponse = new FileUploadPreSignedUrlResponse("http://localhost:8084/api/album/1/picture");
+        return ResponseEntity.ok(urlResponse);
     }
 
     @GetMapping("/api/album/{albumId}/picture")
