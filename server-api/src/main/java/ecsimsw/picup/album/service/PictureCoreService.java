@@ -11,7 +11,6 @@ import ecsimsw.picup.album.dto.FileUploadResponse;
 import ecsimsw.picup.album.dto.PictureSearchCursor;
 import ecsimsw.picup.album.exception.AlbumException;
 import ecsimsw.picup.auth.UnauthorizedException;
-
 import java.time.LocalDateTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;

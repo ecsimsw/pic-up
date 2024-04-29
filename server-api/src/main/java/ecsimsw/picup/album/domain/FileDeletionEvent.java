@@ -4,7 +4,6 @@ import java.time.LocalDateTime;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 
-import ecsimsw.picup.album.exception.AlbumException;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -14,8 +13,6 @@ import lombok.NoArgsConstructor;
 @Getter
 @Entity
 public class FileDeletionEvent {
-
-    private static final int FILE_DELETION_RETRY_COUNTS = 3;
 
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
@@ -36,8 +33,5 @@ public class FileDeletionEvent {
 
     public void countFailed() {
         deleteFailedCounts++;
-        if(deleteFailedCounts > FILE_DELETION_RETRY_COUNTS) {
-            throw new AlbumException("Failed to delete resource");
-        }
     }
 }
