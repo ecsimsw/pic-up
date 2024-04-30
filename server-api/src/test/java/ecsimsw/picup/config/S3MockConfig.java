@@ -8,7 +8,7 @@ import com.amazonaws.client.builder.AwsClientBuilder;
 import com.amazonaws.regions.Regions;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
-import ecsimsw.picup.dev.MockResourceSignedUrlService;
+import ecsimsw.picup.config.dev.MockResourceSignedUrlService;
 import io.findify.s3mock.S3Mock;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -22,18 +22,11 @@ import org.springframework.context.annotation.Primary;
 @TestConfiguration
 public class S3MockConfig {
 
-    private final int port;
-    private final S3Mock s3Mock;
-
-    public S3MockConfig(
-        @Value("${mock.object.storage.host.port}") int port
-    ) {
-        this.port = port;
-        this.s3Mock = new S3Mock.Builder()
-            .withPort(port)
-            .withInMemoryBackend()
-            .build();
-    }
+    private final int port = 8002;
+    private final S3Mock s3Mock = new S3Mock.Builder()
+        .withPort(port)
+        .withInMemoryBackend()
+        .build();
 
     @PostConstruct
     public void postConstruct() {
@@ -48,8 +41,12 @@ public class S3MockConfig {
 
     @Primary
     @Bean
-    public UrlSignService mockSignUrlService() {
-        return new MockResourceSignedUrlService();
+    public MockResourceSignedUrlService mockSignUrlService() {
+        return new MockResourceSignedUrlService(
+            "http://localhost:8084",
+            "publicKeyId",
+            "privateKeyPath"
+        );
     }
 
     @Primary

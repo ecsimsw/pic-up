@@ -1,18 +1,17 @@
-package ecsimsw.picup.config;
+package ecsimsw.picup.config.dev;
 
 import ecsimsw.picup.album.service.ResourceSignedUrlService;
-import ecsimsw.picup.dev.MockResourceSignedUrlService;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Profile;
 
+@Primary
+@Profile("dev")
 @Configuration
-public class CdnConfig {
+public class MockResourceSignedUrlService extends ResourceSignedUrlService {
 
-    @Bean
-    public ResourceSignedUrlService signUrlService(
+    public MockResourceSignedUrlService(
         @Value("${aws.cloudfront.domain}")
         String domainName,
         @Value("${aws.cloudfront.publicKeyId}")
@@ -20,17 +19,11 @@ public class CdnConfig {
         @Value("${aws.cloudfront.privateKeyPath}")
         String privateKeyPath
     ) {
-        return new ResourceSignedUrlService(domainName, publicKeyId, privateKeyPath);
+        super(domainName, publicKeyId, privateKeyPath);
     }
 
-    @Primary
-    @Profile("dev")
-    @Bean
-    public ResourceSignedUrlService mockSignUrlService() {
-        return new MockResourceSignedUrlService(
-            "localhost:8084",
-            "publicKeyId",
-            "./privateKey"
-        );
+    @Override
+    public String sign(String remoteIp, String fileName) {
+        return "http://localhost:8084/" + fileName;
     }
 }

@@ -1,10 +1,5 @@
 package ecsimsw.picup;
 
-import ecsimsw.picup.album.domain.ResourceKey;
-import ecsimsw.picup.album.dto.FileUploadResponse;
-import ecsimsw.picup.album.dto.SignUpRequest;
-import ecsimsw.picup.album.service.AlbumCoreService;
-import ecsimsw.picup.album.service.MemberService;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

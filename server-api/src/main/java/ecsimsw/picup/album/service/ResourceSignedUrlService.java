@@ -1,6 +1,7 @@
 package ecsimsw.picup.album.service;
 
-import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 import software.amazon.awssdk.services.cloudfront.CloudFrontUtilities;
 import software.amazon.awssdk.services.cloudfront.model.CustomSignerRequest;
 
@@ -9,7 +10,7 @@ import java.nio.file.Path;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 
-@RequiredArgsConstructor
+@Component
 public class ResourceSignedUrlService {
 
     private static final String CDN_PROTOCOL = "https";
@@ -19,6 +20,19 @@ public class ResourceSignedUrlService {
     private final String domainName;
     private final String publicKeyId;
     private final String privateKeyPath;
+
+    public ResourceSignedUrlService(
+        @Value("${aws.cloudfront.domain}")
+        String domainName,
+        @Value("${aws.cloudfront.publicKeyId}")
+        String publicKeyId,
+        @Value("${aws.cloudfront.privateKeyPath}")
+        String privateKeyPath
+    ) {
+        this.domainName = domainName;
+        this.publicKeyId = publicKeyId;
+        this.privateKeyPath = privateKeyPath;
+    }
 
     public String sign(String remoteIp, String resourcePath) {
         try {

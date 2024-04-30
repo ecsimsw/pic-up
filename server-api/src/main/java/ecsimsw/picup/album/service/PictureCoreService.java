@@ -84,7 +84,7 @@ public class PictureCoreService {
         deleteAll(userId, albumId, pictures);
     }
 
-//    @Cacheable(value = FIRST_10_PIC_IN_ALBUM, key = "{#userId, #albumId}", condition = "#cursor.createdAt().isEmpty() && #cursor.limit()==10")
+    @Cacheable(value = FIRST_10_PIC_IN_ALBUM, key = "{#userId, #albumId}", condition = "#cursor.createdAt().isEmpty() && #cursor.limit()==10")
     @Transactional(readOnly = true)
     public List<Picture> fetchOrderByCursor(Long userId, Long albumId, PictureSearchCursor cursor) {
         var album = getUserAlbum(userId, albumId);

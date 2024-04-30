@@ -2,6 +2,7 @@ package ecsimsw.picup.album.controller;
 
 import ecsimsw.picup.album.annotation.RemoteIp;
 import org.springframework.core.MethodParameter;
+import org.springframework.stereotype.Component;
 import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
@@ -9,7 +10,8 @@ import org.springframework.web.method.support.ModelAndViewContainer;
 
 import javax.servlet.http.HttpServletRequest;
 
-public class UserIpArgumentResolver implements HandlerMethodArgumentResolver {
+@Component
+public class RemoteIpArgumentResolver implements HandlerMethodArgumentResolver {
 
     @Override
     public boolean supportsParameter(MethodParameter parameter) {

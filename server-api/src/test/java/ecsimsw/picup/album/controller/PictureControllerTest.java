@@ -56,7 +56,7 @@ class PictureControllerTest {
         .setCustomArgumentResolvers(
             new AuthArgumentResolver(authTokenService),
             new SearchCursorArgumentResolver(),
-            new UserIpArgumentResolver()
+            new RemoteIpArgumentResolver()
         )
         .setControllerAdvice(new GlobalControllerAdvice())
         .build();

@@ -96,7 +96,7 @@ public class FileService {
         var preUploadEvent = FilePreUploadEvent.init(resourceKey, fileSize);
         filePreUploadEventRepository.save(preUploadEvent);
         var resourcePath = resourcePath(resourceKey);
-        var preSignedUrl = S3Utils.getPreSignedUrl(s3Client, BUCKET_NAME, resourcePath, PRE_SIGNED_URL_EXPIRATION_SEC * 1000);
+        var preSignedUrl = preSignedUrl(resourcePath);
         return FilePreUploadResponse.of(preUploadEvent, preSignedUrl);
     }
 
@@ -106,7 +106,11 @@ public class FileService {
         return preUploadEvent;
     }
 
-    private static String resourcePath(ResourceKey resourceKey) {
+    public String preSignedUrl(String resourcePath) {
+        return S3Utils.getPreSignedUrl(s3Client, BUCKET_NAME, resourcePath, PRE_SIGNED_URL_EXPIRATION_SEC * 1000);
+    }
+
+    private String resourcePath(ResourceKey resourceKey) {
         return ROOT_PATH + resourceKey.value();
     }
 }
