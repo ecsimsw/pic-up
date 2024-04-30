@@ -7,6 +7,8 @@ import javax.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import static ecsimsw.picup.config.S3Config.ROOT_PATH;
+
 @NoArgsConstructor
 @Getter
 @Table(indexes = {

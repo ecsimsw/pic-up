@@ -44,14 +44,14 @@ class PictureControllerTest {
     }
 
     private final PictureService pictureService = mock(PictureService.class);
-    private final ResourceUrlService resourceUrlService = mock(ResourceUrlService.class);
     private final AuthTokenService authTokenService = mock(AuthTokenService.class);
+    private final String remoteIp = "192.168.0.1";
 
     private final MockMvc mockMvc = MockMvcBuilders
         .standaloneSetup(new PictureController(
-            pictureService, resourceUrlService
+            pictureService
         ))
-        .addFilter(new AddRequestHeaderFilter("X-Forwarded-For", "192.168.0.1"))
+        .addFilter(new AddRequestHeaderFilter("X-Forwarded-For", remoteIp))
         .addInterceptors(new AuthInterceptor(authTokenService))
         .setCustomArgumentResolvers(
             new AuthArgumentResolver(authTokenService),
@@ -68,9 +68,6 @@ class PictureControllerTest {
     void init() {
         when(authTokenService.tokenPayload(any()))
             .thenReturn(new AuthTokenPayload(loginUserId, USER_NAME));
-
-        when(resourceUrlService.sign(any(), any()))
-            .thenAnswer(input -> input.getArguments()[1]);
     }
 
     @DisplayName("앨범에 Picture 를 생성한다.")
@@ -92,7 +89,7 @@ class PictureControllerTest {
     void getFirstPagePictures() throws Exception {
         var expectedPictureInfos = List.of(PICTURE_INFO_RESPONSE);
 
-        when(pictureService.readPictures(loginUserId, albumId,
+        when(pictureService.pictures(loginUserId, remoteIp, albumId,
             PictureSearchCursor.from(10, Optional.empty())))
             .thenReturn(expectedPictureInfos);
 
@@ -107,7 +104,7 @@ class PictureControllerTest {
         var expectedCursorCreatedAt = LocalDateTime.of(2024, 4, 8, 10, 45, 12, 728721232);
         var expectedPictureInfos = List.of(PICTURE_INFO_RESPONSE);
 
-        when(pictureService.readPictures(loginUserId, albumId,
+        when(pictureService.pictures(loginUserId, remoteIp, albumId,
             PictureSearchCursor.from(10, Optional.of(expectedCursorCreatedAt))))
             .thenReturn(expectedPictureInfos);
 
@@ -124,7 +121,7 @@ class PictureControllerTest {
         var limit = 20;
         var expectedPictureInfos = List.of(PICTURE_INFO_RESPONSE);
 
-        when(pictureService.readPictures(loginUserId, albumId, PictureSearchCursor.from(limit, Optional.empty())))
+        when(pictureService.pictures(loginUserId, remoteIp, albumId, PictureSearchCursor.from(limit, Optional.empty())))
             .thenReturn(expectedPictureInfos);
 
         mockMvc.perform(get("/api/album/" + albumId + "/picture")

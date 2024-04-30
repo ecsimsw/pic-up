@@ -1,6 +1,6 @@
 package ecsimsw.picup.config.dev;
 
-import ecsimsw.picup.album.service.ResourceSignedUrlService;
+import ecsimsw.picup.album.service.ResourceUrlService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
@@ -9,7 +9,7 @@ import org.springframework.context.annotation.Profile;
 @Primary
 @Profile("dev")
 @Configuration
-public class MockResourceSignedUrlService extends ResourceSignedUrlService {
+public class MockResourceSignedUrlService extends ResourceUrlService {
 
     public MockResourceSignedUrlService(
         @Value("${aws.cloudfront.domain}")

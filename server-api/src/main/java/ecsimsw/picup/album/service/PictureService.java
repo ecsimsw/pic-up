@@ -1,7 +1,7 @@
 package ecsimsw.picup.album.service;
 
+import ecsimsw.picup.album.domain.Picture;
 import ecsimsw.picup.album.domain.PictureFileExtension;
-import ecsimsw.picup.album.domain.ResourceKey;
 import ecsimsw.picup.album.dto.FilePreUploadResponse;
 import ecsimsw.picup.album.dto.FileUploadResponse;
 import ecsimsw.picup.album.dto.PictureInfoResponse;
@@ -15,6 +15,8 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
 import java.util.concurrent.CompletionException;
 
+import static ecsimsw.picup.config.S3Config.ROOT_PATH;
+
 @Slf4j
 @RequiredArgsConstructor
 @Service
@@ -25,6 +27,7 @@ public class PictureService {
     private final UserLock userLock;
     private final FileService fileService;
     private final PictureCoreService pictureCoreService;
+    private final ResourceUrlService urlService;
 
     public long upload(Long userId, Long albumId, MultipartFile file) {
         var originUploadFuture = fileService.uploadFileAsync(file);
@@ -54,18 +57,9 @@ public class PictureService {
         }
     }
 
-    public List<PictureInfoResponse> readPictures(Long userId, Long albumId, PictureSearchCursor cursor) {
+    public List<PictureInfoResponse> pictures(Long userId, String remoteIp, Long albumId, PictureSearchCursor cursor) {
         var pictures = pictureCoreService.fetchOrderByCursor(userId, albumId, cursor);
-        return PictureInfoResponse.listOf(pictures);
-    }
-
-    public void deletePictures(Long userId, Long albumId, List<Long> pictureIds) {
-        try {
-            userLock.acquire(userId);
-            pictureCoreService.deleteAllByIds(userId, albumId, pictureIds);
-        } finally {
-            userLock.release(userId);
-        }
+        return signUrls(remoteIp, pictures);
     }
 
     public FilePreUploadResponse preUpload(Long userId, Long albumId, String fileName, Long fileSize) {
@@ -79,5 +73,25 @@ public class PictureService {
 
     public Long commit(Long userId, Long albumId, String resourceKey) {
         return pictureCoreService.commit(userId, albumId, resourceKey).getId();
+    }
+
+    public void deletePictures(Long userId, Long albumId, List<Long> pictureIds) {
+        try {
+            userLock.acquire(userId);
+            pictureCoreService.deleteAllByIds(userId, albumId, pictureIds);
+        } finally {
+            userLock.release(userId);
+        }
+    }
+
+    private List<PictureInfoResponse> signUrls(String remoteIp, List<Picture> pictures) {
+        return pictures.stream().map(picture -> new PictureInfoResponse(
+            picture.getId(),
+            picture.getAlbum().getId(),
+            picture.extension().isVideo,
+            urlService.sign(remoteIp, ROOT_PATH + picture.getResourceKey().value()),
+            urlService.sign(remoteIp, ROOT_PATH + picture.getThumbnailResourceKey().value()),
+            picture.getCreatedAt()
+        )).toList();
     }
 }

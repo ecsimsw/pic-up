@@ -7,7 +7,6 @@ import ecsimsw.picup.album.dto.PictureInfoResponse;
 import ecsimsw.picup.album.dto.PictureSearchCursor;
 import ecsimsw.picup.album.dto.PicturesDeleteRequest;
 import ecsimsw.picup.album.service.PictureService;
-import ecsimsw.picup.album.service.ResourceUrlService;
 import ecsimsw.picup.auth.AuthTokenPayload;
 import ecsimsw.picup.auth.TokenPayload;
 
@@ -32,7 +31,6 @@ import org.springframework.web.multipart.MultipartFile;
 public class PictureController {
 
     private final PictureService pictureService;
-    private final ResourceUrlService urlService;
 
     @PostMapping("/api/album/{albumId}/picture")
     public ResponseEntity<Long> createPicture(
@@ -72,9 +70,8 @@ public class PictureController {
         @PathVariable Long albumId,
         @SearchCursor PictureSearchCursor cursor
     ) {
-        var pictureInfos = pictureService.readPictures(loginUser.userId(), albumId, cursor);
-        var signedPictureInfos = signPictures(remoteIp, pictureInfos);
-        return ResponseEntity.ok(signedPictureInfos);
+        var pictureInfos = pictureService.pictures(loginUser.userId(), remoteIp, albumId, cursor);
+        return ResponseEntity.ok(pictureInfos);
     }
 
     @DeleteMapping("/api/album/{albumId}/picture")
@@ -86,18 +83,5 @@ public class PictureController {
     ) {
         pictureService.deletePictures(loginUser.userId(), albumId, pictures.pictureIds());
         return ResponseEntity.ok().build();
-    }
-
-    // TODO :: refactor
-    private List<PictureInfoResponse> signPictures(String remoteIp, List<PictureInfoResponse> pictureInfos) {
-        return pictureInfos.stream()
-            .map(picture -> new PictureInfoResponse(
-                picture.id(),
-                picture.albumId(),
-                picture.isVideo(),
-                urlService.sign(remoteIp, picture.resourceUrl()),
-                urlService.sign(remoteIp, picture.thumbnailUrl()),
-                picture.createdAt()
-            )).toList();
     }
 }
