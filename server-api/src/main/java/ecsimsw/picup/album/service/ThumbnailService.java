@@ -37,7 +37,7 @@ public class ThumbnailService {
 
     public MultipartFile captureVideo(MultipartFile videoFile) {
         var thumbnailFile = captureThumbnailFromVideoFile(videoFile);
-        var thumbnailResourceKey = ResourceKey.withExtension(VIDEO_THUMBNAIL_DEFAULT_FORMAT.name());
+        var thumbnailResourceKey = ResourceKey.fromExtension(VIDEO_THUMBNAIL_DEFAULT_FORMAT.name());
         return new MockMultipartFile(
             thumbnailResourceKey.value(),
             thumbnailResourceKey.value(),

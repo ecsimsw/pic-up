@@ -2,7 +2,7 @@ package ecsimsw.picup.album.controller;
 
 import ecsimsw.picup.album.annotation.RemoteIp;
 import ecsimsw.picup.album.annotation.SearchCursor;
-import ecsimsw.picup.album.dto.FileUploadPreSignedUrlResponse;
+import ecsimsw.picup.album.dto.FilePreUploadResponse;
 import ecsimsw.picup.album.dto.PictureInfoResponse;
 import ecsimsw.picup.album.dto.PictureSearchCursor;
 import ecsimsw.picup.album.dto.PicturesDeleteRequest;
@@ -10,20 +10,17 @@ import ecsimsw.picup.album.service.PictureService;
 import ecsimsw.picup.album.service.ResourceUrlService;
 import ecsimsw.picup.auth.AuthTokenPayload;
 import ecsimsw.picup.auth.TokenPayload;
-import java.time.LocalDateTime;
+
 import java.util.List;
-import java.util.Optional;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
@@ -48,13 +45,24 @@ public class PictureController {
     }
 
     @PostMapping("/api/album/{albumId}/picture/presigned")
-    public ResponseEntity<FileUploadPreSignedUrlResponse> preSigned(
+    public ResponseEntity<FilePreUploadResponse> preUpload(
         @TokenPayload AuthTokenPayload loginUser,
         @PathVariable Long albumId,
+        @RequestParam String fileName,
         @RequestParam Long fileSize
     ) {
-        var urlResponse = new FileUploadPreSignedUrlResponse("http://localhost:8084/api/album/1/picture");
-        return ResponseEntity.ok(urlResponse);
+        var preUploadResponse = pictureService.preUpload(loginUser.userId(), albumId, fileName, fileSize);
+        return ResponseEntity.ok(preUploadResponse);
+    }
+
+    @PostMapping("/api/album/{albumId}/picture/upload")
+    public ResponseEntity<Long> commit(
+        @TokenPayload AuthTokenPayload loginUser,
+        @PathVariable Long albumId,
+        @RequestParam String resourceKey
+    ) {
+        var pictureId = pictureService.commit(loginUser.userId(), albumId, resourceKey);
+        return ResponseEntity.ok(pictureId);
     }
 
     @GetMapping("/api/album/{albumId}/picture")
@@ -80,6 +88,7 @@ public class PictureController {
         return ResponseEntity.ok().build();
     }
 
+    // TODO :: refactor
     private List<PictureInfoResponse> signPictures(String remoteIp, List<PictureInfoResponse> pictureInfos) {
         return pictureInfos.stream()
             .map(picture -> new PictureInfoResponse(

@@ -15,31 +15,22 @@ import lombok.NoArgsConstructor;
 @Entity
 public class FilePreUploadEvent {
 
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
-    private Long id;
-
-    @Column(nullable = false)
-    private Long albumId;
+    private String resourceKey;
 
     @Column(nullable = false)
     private Long fileSize;
 
-    @Embedded
-    private ResourceKey resourceKey;
-
     @Column
     private LocalDateTime createdAt;
 
-    public FilePreUploadEvent(Long id, Long albumId, Long fileSize, ResourceKey resourceKey, LocalDateTime createdAt) {
-        this.id = id;
-        this.albumId = albumId;
-        this.fileSize = fileSize;
+    public FilePreUploadEvent(String resourceKey, Long fileSize, LocalDateTime createdAt) {
         this.resourceKey = resourceKey;
+        this.fileSize = fileSize;
         this.createdAt = createdAt;
     }
 
-    public FilePreUploadEvent(Long albumId, Long fileSize, ResourceKey resourceKey, LocalDateTime createdAt) {
-        this(null, albumId, fileSize, resourceKey, createdAt);
+    public static FilePreUploadEvent init(ResourceKey resourceKey, long fileSize) {
+        return new FilePreUploadEvent(resourceKey.value(), fileSize, LocalDateTime.now());
     }
 }

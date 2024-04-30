@@ -1,6 +1,8 @@
 package ecsimsw.picup.album.service;
 
 import ecsimsw.picup.album.domain.PictureFileExtension;
+import ecsimsw.picup.album.domain.ResourceKey;
+import ecsimsw.picup.album.dto.FilePreUploadResponse;
 import ecsimsw.picup.album.dto.FileUploadResponse;
 import ecsimsw.picup.album.dto.PictureInfoResponse;
 import ecsimsw.picup.album.dto.PictureSearchCursor;
@@ -64,5 +66,18 @@ public class PictureService {
         } finally {
             userLock.release(userId);
         }
+    }
+
+    public FilePreUploadResponse preUpload(Long userId, Long albumId, String fileName, Long fileSize) {
+        try {
+            userLock.acquire(userId);
+            return pictureCoreService.preUpload(userId, albumId, fileName, fileSize);
+        } finally {
+            userLock.release(userId);
+        }
+    }
+
+    public Long commit(Long userId, Long albumId, String resourceKey) {
+        return pictureCoreService.commit(userId, albumId, resourceKey).getId();
     }
 }

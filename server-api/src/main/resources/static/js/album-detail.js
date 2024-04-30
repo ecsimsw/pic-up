@@ -1,4 +1,4 @@
-const serverUrl = ""
+const serverUrl = "http://localhost:8084"
 
 let mobileMode = false
 let albumId = 0;
@@ -25,21 +25,22 @@ document.addEventListener("DOMContentLoaded", function () {
         addDropZone(albumId);
         setAlbumInfo();
         fetchData(serverUrl + "/api/album/" + albumId + "/picture", function (pictures) {
+            console.log(pictures)
             pictures.forEach(picture => {
                 if (inPagePictures.has(picture.id)) {
                     return
                 }
-                const itemId = createNewPictureItem(albumId, picture.id, picture.thumbnailResourceKey)
+                const itemId = createNewPictureItem(albumId, picture.id, picture.thumbnailUrl)
                 if(!picture.isVideo) {
                     if(mobileMode) {
                         addGalleryImage(
-                            picture.thumbnailResourceKey,
-                            picture.thumbnailResourceKey,
+                            picture.thumbnailUrl,
+                            picture.thumbnailUrl,
                         )
                     } else {
                         addGalleryImage(
-                            picture.resourceKey,
-                            picture.thumbnailResourceKey,
+                            picture.resourceUrl,
+                            picture.thumbnailUrl,
                         )
                     }
                     addImageViewer(`album-${albumId}-picture-${picture.id}`, galleryOrderNumber);
@@ -70,17 +71,17 @@ function handleScroll() {
                 if(inPagePictures.has(picture.id)) {
                     return
                 }
-                const itemId = createNewPictureItem(albumId, picture.id, picture.thumbnailResourceKey)
+                const itemId = createNewPictureItem(albumId, picture.id, picture.thumbnailUrl)
                 if(!picture.isVideo) {
                     if(mobileMode) {
                         addGalleryImage(
-                            picture.thumbnailResourceKey,
-                            picture.thumbnailResourceKey,
+                            picture.thumbnailUrl,
+                            picture.thumbnailUrl,
                         )
                     } else {
                         addGalleryImage(
-                            picture.resourceKey,
-                            picture.thumbnailResourceKey,
+                            picture.resourceUrl,
+                            picture.thumbnailUrl,
                         )
                     }
                     addImageViewer(`album-${albumId}-picture-${picture.id}`, galleryOrderNumber);
@@ -104,34 +105,56 @@ function addDropZone(albumId) {
     new Dropzone(document.querySelector('#myDropzone'), {
         dictDefaultMessage: 'Drop Here!',
         // url: serverUrl + "/api/album/" + albumId + "/picture",
-        url: getMeSomeUrl,
-        accept: doStuffAsync,
+        url: dynamicUploadUrl,
+        accept: getPreSignedUrl,
         acceptedFiles: ".jpeg,.jpg,.png,.gif,.mp4",
         paramName: "file",
         maxFilesize: 200, // MB
+        method: "PUT",
         init: function () {
-            this.on("processing", function(file) {
-                console.log("hihi")
-            });
             this.on("success", function (file) {
                 console.log("upload success : " + file.name);
-                isUploaded = true
+                fetch(serverUrl + "/api/album/" + albumId + "/picture/upload?resourceKey=" + file.resourceKey, {
+                    method: "POST",
+                    credentials: 'include',
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Access-control-allow-methods": "*"
+                    }
+                }).then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    } else {
+                        isUploaded = true
+                    }
+                })
             });
         }
     });
 }
 
-const doStuffAsync = (file, done) => {
-    fetch(serverUrl + "/api/album/"+albumId + "/picture/presigned?fileSize="+file.size, {
+const getPreSignedUrl = (file, done) => {
+    fetch(serverUrl + "/api/album/"+albumId + "/picture/presigned?fileSize="+file.size+"&fileName="+file.name, {
         method: "POST",
-    }).then((response) => {
-        file.dynamicUploadUrl = response.preSignedUrl
+        credentials: 'include',
+        headers: {
+            "Content-Type": "application/json",
+            "Access-control-allow-methods": "*"
+        }
+    }).then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        return response.json();
+    }).then(data => {
+        file.dynamicUploadUrl = data.preSignedUrl
+        file.resourceKey = data.resourceKey
         done();//call the dropzone done
     })
 }
 
-const getMeSomeUrl = (files) => {
-    return `${files[0].dynamicUploadUrl}?sugar&spice`;
+const dynamicUploadUrl = (files) => {
+    return `${files[0].dynamicUploadUrl}`;
 }
 
 function setAlbumInfo() {
@@ -171,7 +194,7 @@ function addGalleryImage(src, thumb) {
 }
 
 function addVideo(itemId, picture) {
-    const pictureItem = document.getElementById(itemId).addEventListener("click", function(event) {
+    document.getElementById(itemId).addEventListener("click", function(event) {
         document.getElementById("video-popup").style.display = "flex";
         var div = document.createElement("div");
         div.id = "my-video-content"

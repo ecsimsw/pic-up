@@ -26,14 +26,21 @@ public class ResourceKey {
         this.resourceKey = resourceKey;
     }
 
-    public static ResourceKey generate(MultipartFile file) {
-        var filename = file.getOriginalFilename();
-        int indexOfExtension = filename.lastIndexOf(".");
-        var extension = filename.substring(indexOfExtension + 1);
-        return withExtension(extension);
+    public static ResourceKey fromFileName(String fileName) {
+        if(fileName == null || !fileName.contains(".")) {
+            throw new AlbumException("Invalid file name");
+        }
+        int indexOfExtension = fileName.lastIndexOf(".");
+        var extension = fileName.substring(indexOfExtension + 1);
+        return fromExtension(extension);
     }
 
-    public static ResourceKey withExtension(String extension) {
+    public static ResourceKey fromMultipartFile(MultipartFile file) {
+        var fileName = file.getOriginalFilename();
+        return fromFileName(fileName);
+    }
+
+    public static ResourceKey fromExtension(String extension) {
         return new ResourceKey(UUID.randomUUID() + "." + extension);
     }
 

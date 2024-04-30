@@ -2,11 +2,8 @@ package ecsimsw.picup.album.service;
 
 import static ecsimsw.picup.config.CacheType.FIRST_10_PIC_IN_ALBUM;
 
-import ecsimsw.picup.album.domain.Album;
-import ecsimsw.picup.album.domain.AlbumRepository;
-import ecsimsw.picup.album.domain.Picture;
-import ecsimsw.picup.album.domain.PictureRepository;
-import ecsimsw.picup.album.domain.Picture_;
+import ecsimsw.picup.album.domain.*;
+import ecsimsw.picup.album.dto.FilePreUploadResponse;
 import ecsimsw.picup.album.dto.FileUploadResponse;
 import ecsimsw.picup.album.dto.PictureSearchCursor;
 import ecsimsw.picup.album.exception.AlbumException;
@@ -29,6 +26,24 @@ public class PictureCoreService {
     private final PictureRepository pictureRepository;
     private final FileService fileService;
     private final StorageUsageService storageUsageService;
+
+    @Transactional
+    public FilePreUploadResponse preUpload(Long userId, Long albumId, String fileName, Long fileSize) {
+        validateAlbumOwner(userId, albumId);
+        storageUsageService.addUsage(userId, fileSize);
+        return fileService.preUpload(fileName, fileSize);
+    }
+
+    @CacheEvict(value = FIRST_10_PIC_IN_ALBUM, key = "{#userId, #albumId}")
+    @Transactional
+    public Picture commit(Long userId, Long albumId, String resourceKey) {
+        var preUploadEvent = fileService.commit(resourceKey);
+        var album = albumRepository.findById(albumId).orElseThrow();
+        var picture = new Picture(album, new ResourceKey(preUploadEvent.getResourceKey()), new ResourceKey(preUploadEvent.getResourceKey()), preUploadEvent.getFileSize());
+        pictureRepository.save(picture);
+        storageUsageService.addUsage(userId, picture.getFileSize());
+        return picture;
+    }
 
     @CacheEvict(value = FIRST_10_PIC_IN_ALBUM, key = "{#userId, #albumId}")
     @Transactional
@@ -69,7 +84,7 @@ public class PictureCoreService {
         deleteAll(userId, albumId, pictures);
     }
 
-    @Cacheable(value = FIRST_10_PIC_IN_ALBUM, key = "{#userId, #albumId}", condition = "#cursor.createdAt().isEmpty() && #cursor.limit()==10")
+//    @Cacheable(value = FIRST_10_PIC_IN_ALBUM, key = "{#userId, #albumId}", condition = "#cursor.createdAt().isEmpty() && #cursor.limit()==10")
     @Transactional(readOnly = true)
     public List<Picture> fetchOrderByCursor(Long userId, Long albumId, PictureSearchCursor cursor) {
         var album = getUserAlbum(userId, albumId);

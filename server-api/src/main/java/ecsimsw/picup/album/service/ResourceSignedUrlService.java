@@ -1,4 +1,4 @@
-package ecsimsw.picup.cdn;
+package ecsimsw.picup.album.service;
 
 import lombok.RequiredArgsConstructor;
 import software.amazon.awssdk.services.cloudfront.CloudFrontUtilities;
@@ -10,7 +10,7 @@ import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 
 @RequiredArgsConstructor
-public class CloudFrontSignUrlSignService implements UrlSignService {
+public class ResourceSignedUrlService {
 
     private static final String CDN_PROTOCOL = "https";
     private static final int EXPIRATION_AFTER_DAYS = 7;
@@ -20,7 +20,6 @@ public class CloudFrontSignUrlSignService implements UrlSignService {
     private final String publicKeyId;
     private final String privateKeyPath;
 
-    @Override
     public String sign(String remoteIp, String resourcePath) {
         try {
             var sign = cannedSign(remoteIp, resourcePath);

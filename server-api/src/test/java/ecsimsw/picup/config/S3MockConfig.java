@@ -8,8 +8,7 @@ import com.amazonaws.client.builder.AwsClientBuilder;
 import com.amazonaws.regions.Regions;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
-import ecsimsw.picup.cdn.MockCloudFrontSignUrlSignService;
-import ecsimsw.picup.cdn.UrlSignService;
+import ecsimsw.picup.dev.MockResourceSignedUrlService;
 import io.findify.s3mock.S3Mock;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -50,7 +49,7 @@ public class S3MockConfig {
     @Primary
     @Bean
     public UrlSignService mockSignUrlService() {
-        return new MockCloudFrontSignUrlSignService();
+        return new MockResourceSignedUrlService();
     }
 
     @Primary
