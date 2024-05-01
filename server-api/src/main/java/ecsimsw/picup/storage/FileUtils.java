@@ -1,5 +1,7 @@
 package ecsimsw.picup.storage;
 
+import ecsimsw.picup.album.exception.AlbumException;
+
 import java.text.DecimalFormat;
 
 public class FileUtils {
@@ -18,5 +20,13 @@ public class FileUtils {
             return df.format(size / sizeGb) + " Gb";
         }
         return size + "b";
+    }
+
+    public static String getExtensionFromName(String fileName) {
+        if(fileName == null || fileName.isBlank()) {
+            throw new AlbumException("Invalid file name");
+        }
+        var indexOfExtension = fileName.lastIndexOf(".");
+        return fileName.substring(indexOfExtension + 1);
     }
 }

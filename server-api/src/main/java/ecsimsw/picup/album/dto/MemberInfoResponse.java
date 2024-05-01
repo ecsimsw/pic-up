@@ -1,21 +1,15 @@
 package ecsimsw.picup.album.dto;
 
-import ecsimsw.picup.auth.AuthTokenPayload;
 import ecsimsw.picup.album.domain.Member;
 import ecsimsw.picup.album.domain.StorageUsage;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Setter;
+import ecsimsw.picup.auth.AuthTokenPayload;
 
-@AllArgsConstructor
-@Setter
-@Getter
-public class MemberInfoResponse {
-
-    private Long id;
-    private String username;
-    private long limitAsByte;
-    private long usageAsByte;
+public record MemberInfoResponse(
+    Long id,
+    String username,
+    long limitAsByte,
+    long usageAsByte
+) {
 
     public static MemberInfoResponse of(Member member, StorageUsage usage) {
         return new MemberInfoResponse(
