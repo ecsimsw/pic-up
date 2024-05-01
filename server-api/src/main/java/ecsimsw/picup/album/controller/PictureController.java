@@ -3,7 +3,7 @@ package ecsimsw.picup.album.controller;
 import ecsimsw.picup.album.annotation.RemoteIp;
 import ecsimsw.picup.album.annotation.SearchCursor;
 import ecsimsw.picup.album.dto.FilePreUploadResponse;
-import ecsimsw.picup.album.dto.PictureInfoResponse;
+import ecsimsw.picup.album.dto.PictureResponse;
 import ecsimsw.picup.album.dto.PictureSearchCursor;
 import ecsimsw.picup.album.dto.PicturesDeleteRequest;
 import ecsimsw.picup.album.service.PictureService;
@@ -21,9 +21,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.multipart.MultipartFile;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -31,16 +29,6 @@ import org.springframework.web.multipart.MultipartFile;
 public class PictureController {
 
     private final PictureService pictureService;
-
-    @PostMapping("/api/album/{albumId}/picture")
-    public ResponseEntity<Long> createPicture(
-        @TokenPayload AuthTokenPayload loginUser,
-        @PathVariable Long albumId,
-        @RequestPart MultipartFile file
-    ) {
-        var pictureId = pictureService.upload(loginUser.userId(), albumId, file);
-        return ResponseEntity.ok(pictureId);
-    }
 
     @PostMapping("/api/album/{albumId}/picture/presigned")
     public ResponseEntity<FilePreUploadResponse> preUpload(
@@ -64,7 +52,7 @@ public class PictureController {
     }
 
     @GetMapping("/api/album/{albumId}/picture")
-    public ResponseEntity<List<PictureInfoResponse>> getPictures(
+    public ResponseEntity<List<PictureResponse>> getPictures(
         @RemoteIp String remoteIp,
         @TokenPayload AuthTokenPayload loginUser,
         @PathVariable Long albumId,

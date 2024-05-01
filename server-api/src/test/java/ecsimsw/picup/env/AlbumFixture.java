@@ -5,7 +5,7 @@ import static ecsimsw.picup.env.MemberFixture.USER_ID;
 import ecsimsw.picup.album.domain.Album;
 import ecsimsw.picup.album.domain.Picture;
 import ecsimsw.picup.album.domain.ResourceKey;
-import ecsimsw.picup.album.dto.PictureInfoResponse;
+import ecsimsw.picup.album.dto.PictureResponse;
 import ecsimsw.picup.album.dto.FileUploadResponse;
 import java.time.LocalDateTime;
 import org.springframework.mock.web.MockMultipartFile;
@@ -32,7 +32,7 @@ public class AlbumFixture {
         return new Album(userId, ALBUM_NAME, RESOURCE_KEY, FILE_SIZE);
     }
 
-    public static PictureInfoResponse PICTURE_INFO_RESPONSE = new PictureInfoResponse(USER_ID, ALBUM_ID, false, RESOURCE_KEY.getResourceKey(), THUMBNAIL_RESOURCE_KEY.getResourceKey(), LocalDateTime.now());
+    public static PictureResponse PICTURE_INFO_RESPONSE = new PictureResponse(USER_ID, ALBUM_ID, false, RESOURCE_KEY.getResourceKey(), THUMBNAIL_RESOURCE_KEY.getResourceKey(), LocalDateTime.now());
 
     public static FileUploadResponse ORIGIN_FILE = new FileUploadResponse(RESOURCE_KEY, FILE_SIZE);
     public static FileUploadResponse THUMBNAIL_FILE = new FileUploadResponse(RESOURCE_KEY, FILE_SIZE);

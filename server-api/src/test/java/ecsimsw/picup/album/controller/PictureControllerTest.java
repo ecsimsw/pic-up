@@ -17,7 +17,6 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import ecsimsw.picup.album.dto.PictureSearchCursor;
 import ecsimsw.picup.album.dto.PicturesDeleteRequest;
 import ecsimsw.picup.album.service.PictureService;
-import ecsimsw.picup.album.service.ResourceUrlService;
 import ecsimsw.picup.auth.AuthArgumentResolver;
 import ecsimsw.picup.auth.AuthInterceptor;
 import ecsimsw.picup.auth.AuthTokenPayload;
@@ -76,7 +75,7 @@ class PictureControllerTest {
         var uploadFile = new MockMultipartFile("file", "pic.jpg", "jpg", new byte[0]);
         var expectedPictureInfo = PICTURE_INFO_RESPONSE;
 
-        when(pictureService.upload(loginUserId, expectedPictureInfo.id(), uploadFile))
+        when(pictureService.uploadVideo(loginUserId, expectedPictureInfo.id(), uploadFile))
             .thenReturn(expectedPictureInfo.id());
 
         mockMvc.perform(multipart("/api/album/" + albumId + "/picture").file(uploadFile))

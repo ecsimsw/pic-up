@@ -7,6 +7,7 @@ import com.amazonaws.services.s3.AmazonS3;
 import ecsimsw.picup.album.domain.*;
 import ecsimsw.picup.album.dto.FilePreUploadResponse;
 import ecsimsw.picup.album.dto.FileUploadResponse;
+import ecsimsw.picup.album.exception.AlbumException;
 import ecsimsw.picup.storage.S3Utils;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -25,7 +26,7 @@ import org.springframework.web.multipart.MultipartFile;
 @Service
 public class FileService {
 
-    private static final long PRE_SIGNED_URL_EXPIRATION_SEC = 10;
+    private static final long PRE_SIGNED_URL_EXPIRATION_MS = 10_000;
     private static final int WAIT_TIME_FOR_PICTURE_UPLOAD_SEC = 10;
     private static final int FILE_DELETION_RETRY_COUNTS = 3;
 
@@ -95,19 +96,20 @@ public class FileService {
         var resourceKey = ResourceKey.fromFileName(fileName);
         var preUploadEvent = FilePreUploadEvent.init(resourceKey, fileSize);
         filePreUploadEventRepository.save(preUploadEvent);
-        var resourcePath = resourcePath(resourceKey);
-        var preSignedUrl = preSignedUrl(resourcePath);
+        var preSignedUrl = S3Utils.getPreSignedUrl(
+            s3Client,
+            BUCKET_NAME,
+            resourcePath(resourceKey),
+            PRE_SIGNED_URL_EXPIRATION_MS
+        );
         return FilePreUploadResponse.of(preUploadEvent, preSignedUrl);
     }
 
+    @Transactional
     public FilePreUploadEvent commit(String resourceKey) {
-        var preUploadEvent = filePreUploadEventRepository.findById(resourceKey).orElseThrow();
+        var preUploadEvent = filePreUploadEventRepository.findById(resourceKey).orElseThrow(() -> new AlbumException("Nothing to commit"));
         filePreUploadEventRepository.delete(preUploadEvent);
         return preUploadEvent;
-    }
-
-    public String preSignedUrl(String resourcePath) {
-        return S3Utils.getPreSignedUrl(s3Client, BUCKET_NAME, resourcePath, PRE_SIGNED_URL_EXPIRATION_SEC * 1000);
     }
 
     private String resourcePath(ResourceKey resourceKey) {

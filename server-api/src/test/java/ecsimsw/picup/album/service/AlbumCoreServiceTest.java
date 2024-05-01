@@ -86,7 +86,7 @@ class AlbumCoreServiceTest {
     @Test
     void getUserAlbum() {
         var savedId = albumCoreService.create(USER_ID, ALBUM_NAME, ORIGIN_FILE);
-        var result = albumCoreService.getUserAlbum(USER_ID, savedId);
+        var result = albumCoreService.userAlbum(USER_ID, savedId);
         assertAll(
             () -> assertThat(result.getId()).isNotNull(),
             () -> assertThat(result.getName()).isEqualTo(ALBUM_NAME),
@@ -100,7 +100,7 @@ class AlbumCoreServiceTest {
     void getUserAlbumWithInvalidUser() {
         var savedId = albumCoreService.create(USER_ID, ALBUM_NAME, ORIGIN_FILE);
         assertThatThrownBy(
-            () -> albumCoreService.getUserAlbum(USER_ID + 1, savedId)
+            () -> albumCoreService.userAlbum(USER_ID + 1, savedId)
         );
     }
 }

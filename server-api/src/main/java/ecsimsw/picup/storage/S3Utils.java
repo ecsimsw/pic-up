@@ -49,15 +49,14 @@ public class S3Utils {
     }
 
     public static String getPreSignedUrl(AmazonS3 s3Client, String bucket, String path, long expirationMs) {
-        GeneratePresignedUrlRequest generatePresignedUrlRequest = new GeneratePresignedUrlRequest(bucket, path)
+        var preSignedUrlRequest = new GeneratePresignedUrlRequest(bucket, path)
             .withMethod(HttpMethod.PUT)
             .withExpiration(new Date(System.currentTimeMillis() + expirationMs));
-        generatePresignedUrlRequest.addRequestParameter(
+        preSignedUrlRequest.addRequestParameter(
             Headers.S3_CANNED_ACL,
             CannedAccessControlList.PublicRead.toString()
         );
-        URL url = s3Client.generatePresignedUrl(generatePresignedUrlRequest);
-        return url.toString();
+        return s3Client.generatePresignedUrl(preSignedUrlRequest).toString();
     }
 }
 

@@ -141,26 +141,4 @@ class PictureCoreServiceTest {
         assertThat(result).isEqualTo(List.of(picture2, picture1));
         assertThat(result).doesNotContain(picture4);
     }
-
-    @DisplayName("Picture 정보를 조회한다.")
-    @Test
-    void read() {
-        var album = albumRepository.save(new Album(USER_ID, ALBUM_NAME, RESOURCE_KEY, FILE_SIZE));
-        var saved = pictureCoreService.create(USER_ID, album.getId(), ORIGIN_FILE, THUMBNAIL_FILE);
-        var result = pictureCoreService.read(USER_ID, album.getId(), saved.getId());
-        assertThat(result).isEqualTo(saved);
-    }
-
-    @DisplayName("다른 사용자의 Picture 정보를 조회할 수 없다.")
-    @Test
-    void readOthers() {
-        var album = albumRepository.save(new Album(USER_ID, ALBUM_NAME, RESOURCE_KEY, FILE_SIZE));
-        var saved = pictureCoreService.create(USER_ID, album.getId(), ORIGIN_FILE, THUMBNAIL_FILE);
-        assertThatThrownBy(
-            () -> pictureCoreService.read(USER_ID+1, album.getId(), saved.getId())
-        ).isInstanceOf(UnauthorizedException.class);
-        assertThatThrownBy(
-            () -> pictureCoreService.fetchOrderByCursor(USER_ID+1, album.getId(), PictureSearchCursor.from(2, saved.getCreatedAt()))
-        ).isInstanceOf(UnauthorizedException.class);
-    }
 }

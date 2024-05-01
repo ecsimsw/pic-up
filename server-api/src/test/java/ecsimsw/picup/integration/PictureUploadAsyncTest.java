@@ -83,7 +83,7 @@ class PictureUploadAsyncTest {
         when(fileService.uploadImageThumbnailAsync(any(), any(Float.class)))
             .thenReturn(completedFuture(new FileUploadResponse(RESOURCE_KEY, FILE_SIZE)));
 
-        pictureService.upload(userId, albumId, MULTIPART_FILE);
+        pictureService.uploadVideo(userId, albumId, MULTIPART_FILE);
     }
 
     @DisplayName("업로드 중 예외가 발생할 경우, 정상 테스크는 업로드 완료 후 제거 로직이 실행된다.")
@@ -97,7 +97,7 @@ class PictureUploadAsyncTest {
             .thenReturn(completedFuture(uploaded));
 
         assertThatThrownBy(
-            () -> pictureService.upload(userId, albumId, MULTIPART_FILE)
+            () -> pictureService.uploadVideo(userId, albumId, MULTIPART_FILE)
         ).isInstanceOf(AlbumException.class);
 
         InOrder orderVerifier = inOrder(fileService);
@@ -114,7 +114,7 @@ class PictureUploadAsyncTest {
             .thenReturn(failedFuture(new StorageException("Fail to store file")));
 
         assertThatThrownBy(
-            () -> pictureService.upload(userId, albumId, MULTIPART_FILE)
+            () -> pictureService.uploadVideo(userId, albumId, MULTIPART_FILE)
         ).isInstanceOf(AlbumException.class);
 
         InOrder orderVerifier = inOrder(fileService);

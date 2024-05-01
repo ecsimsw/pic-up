@@ -4,6 +4,7 @@ import static ecsimsw.picup.config.CacheType.USER_ALBUMS;
 
 import ecsimsw.picup.album.domain.Album;
 import ecsimsw.picup.album.domain.AlbumRepository;
+import ecsimsw.picup.album.dto.AlbumResponse;
 import ecsimsw.picup.auth.UnauthorizedException;
 import ecsimsw.picup.album.dto.FileUploadResponse;
 import java.util.List;
@@ -23,8 +24,9 @@ public class AlbumCoreService {
 
     @Cacheable(value = USER_ALBUMS, key = "#userId")
     @Transactional(readOnly = true)
-    public List<Album> findAll(Long userId) {
-        return albumRepository.findAllByUserIdOrderByCreatedAtDesc(userId);
+    public List<AlbumResponse> findAll(Long userId) {
+        var albums = albumRepository.findAllByUserIdOrderByCreatedAtDesc(userId);
+        return AlbumResponse.listOf(albums);
     }
 
     @CacheEvict(value = USER_ALBUMS, key = "#userId")
@@ -37,13 +39,19 @@ public class AlbumCoreService {
     @CacheEvict(value = USER_ALBUMS, key = "#userId")
     @Transactional
     public void delete(Long userId, Long albumId) {
-        var album = getUserAlbum(userId, albumId);
+        var album = getAlbumByUser(userId, albumId);
         fileService.deleteAsync(album.getResourceKey());
         pictureCoreService.deleteAllInAlbum(userId, albumId);
         albumRepository.delete(album);
     }
 
-    public Album getUserAlbum(Long userId, Long albumId) {
+    @Transactional(readOnly = true)
+    public AlbumResponse userAlbum(Long userId, Long albumId) {
+        var album = getAlbumByUser(userId, albumId);
+        return AlbumResponse.of(album);
+    }
+
+    private Album getAlbumByUser(Long userId, Long albumId) {
         return albumRepository.findByIdAndUserId(albumId, userId)
             .orElseThrow(() -> new UnauthorizedException("Not an accessible album from user"));
     }

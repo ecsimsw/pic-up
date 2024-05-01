@@ -14,7 +14,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import ecsimsw.picup.album.dto.AlbumInfoResponse;
+import ecsimsw.picup.album.dto.AlbumResponse;
 import ecsimsw.picup.album.service.AlbumService;
 import ecsimsw.picup.album.service.ResourceUrlService;
 import ecsimsw.picup.auth.AuthArgumentResolver;
@@ -82,7 +82,7 @@ class AlbumControllerTest {
     @DisplayName("로그인 유저의 앨범 목록을 조회한다.")
     @Test
     void getAlbums() throws Exception {
-        var expectedAlbumInfos = List.of(AlbumInfoResponse.of(ALBUM()));
+        var expectedAlbumInfos = List.of(AlbumResponse.of(ALBUM()));
 
         when(albumService.readAlbums(loginUserId))
             .thenReturn(expectedAlbumInfos);
@@ -98,7 +98,7 @@ class AlbumControllerTest {
     @Test
     void getAlbum() throws Exception {
         var albumId = 1L;
-        var expectedAlbumInfo = AlbumInfoResponse.of(ALBUM());
+        var expectedAlbumInfo = AlbumResponse.of(ALBUM());
 
         when(albumService.readAlbum(loginUserId, albumId))
             .thenReturn(expectedAlbumInfo);
