@@ -39,7 +39,6 @@ public class AlbumCoreService {
     public void delete(Long userId, Long albumId) {
         var album = getUserAlbum(userId, albumId);
         fileService.deleteAsync(album.getResourceKey());
-        // TODO :: domain event
         pictureCoreService.deleteAllInAlbum(userId, albumId);
         albumRepository.delete(album);
     }
