@@ -21,6 +21,6 @@ public class MockDataService {
     @PostConstruct
     public void init() {
         var id = memberService.signUp(new SignUpRequest("ecsimsw", "password")).id();
-//        albumService.initAlbum(id, "name", new MockMultipartFile("name.jpg", "name.jpg", "jpg", new byte[0]));
+        albumService.initAlbum(id, "name", new MockMultipartFile("name.jpg", "name.jpg", "jpg", new byte[0]));
     }
 }

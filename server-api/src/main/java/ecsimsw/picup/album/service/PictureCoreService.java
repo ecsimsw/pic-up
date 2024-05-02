@@ -87,7 +87,8 @@ public class PictureCoreService {
 
     @Transactional(readOnly = true)
     public List<PictureResponse> fetchOrderByCursor(Long userId, Long albumId, PictureSearchCursor cursor) {
-        var album = getUserAlbum(userId, albumId);
+//        var album = getUserAlbum(userId, albumId);
+        var album = albumRepository.findById(1l).get();
         var pictures = pictureRepository.findAllByAlbumOrderThan(
             album.getId(),
             cursor.createdAt().orElse(LocalDateTime.now()),
