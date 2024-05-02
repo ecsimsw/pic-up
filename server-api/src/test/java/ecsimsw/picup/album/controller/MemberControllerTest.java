@@ -12,7 +12,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import ecsimsw.picup.album.dto.MemberInfoResponse;
+import ecsimsw.picup.album.dto.MemberResponse;
 import ecsimsw.picup.album.dto.SignInRequest;
 import ecsimsw.picup.album.dto.SignUpRequest;
 import ecsimsw.picup.album.service.MemberService;
@@ -49,7 +49,7 @@ class MemberControllerTest {
     @Test
     public void signInTest() throws Exception {
         var signInRequest = new SignInRequest("username", "password");
-        var expectBody = new MemberInfoResponse(1L, signInRequest.username(), 0L, 0L);
+        var expectBody = new MemberResponse(1L, signInRequest.username(), 0L, 0L);
         var expectedAt = new Cookie(ACCESS_TOKEN_COOKIE_NAME, "accessToken");
         var expectedRt = new Cookie(REFRESH_TOKEN_COOKIE_NAME, "refreshToken");
 
@@ -91,7 +91,7 @@ class MemberControllerTest {
     @Test
     public void signUp() throws Exception {
         var signUpRequest = new SignUpRequest("username", "password");
-        var expectBody = new MemberInfoResponse(1L, signUpRequest.username(), 0L, 0L);
+        var expectBody = new MemberResponse(1L, signUpRequest.username(), 0L, 0L);
         var expectedAt = new Cookie(ACCESS_TOKEN_COOKIE_NAME, "accessToken");
         var expectedRt = new Cookie(REFRESH_TOKEN_COOKIE_NAME, "refreshToken");
 

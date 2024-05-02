@@ -3,7 +3,7 @@ package ecsimsw.picup.album.service;
 import ecsimsw.picup.album.domain.Member;
 import ecsimsw.picup.album.domain.MemberRepository;
 import ecsimsw.picup.album.domain.Password;
-import ecsimsw.picup.album.dto.MemberInfoResponse;
+import ecsimsw.picup.album.dto.MemberResponse;
 import ecsimsw.picup.album.dto.SignInRequest;
 import ecsimsw.picup.album.dto.SignUpRequest;
 import ecsimsw.picup.album.exception.MemberException;
@@ -23,20 +23,20 @@ public class MemberService {
     private final StorageUsageService storageUsageService;
 
     @Transactional
-    public MemberInfoResponse signIn(SignInRequest request) {
+    public MemberResponse signIn(SignInRequest request) {
         try {
             var member = getMember(request.username());
             var requestPassword = encryptPassword(request.password(), member.getPassword().getSalt());
 //            member.authenticate(requestPassword);
             var usage = storageUsageService.getUsage(member.getId());
-            return MemberInfoResponse.of(member, usage);
+            return MemberResponse.of(member, usage);
         } catch (Exception e) {
             throw new UnauthorizedException("Invalid login info");
         }
     }
 
     @Transactional
-    public MemberInfoResponse signUp(SignUpRequest request) {
+    public MemberResponse signUp(SignUpRequest request) {
         if (memberRepository.existsByUsername(request.username())) {
             throw new MemberException("Duplicated username");
         }
@@ -44,14 +44,14 @@ public class MemberService {
         var member = new Member(request.username(), password);
         memberRepository.save(member);
         var usage = storageUsageService.init(member.getId(), DEFAULT_STORAGE_LIMIT_BYTE);
-        return MemberInfoResponse.of(member, usage);
+        return MemberResponse.of(member, usage);
     }
 
     @Transactional(readOnly = true)
-    public MemberInfoResponse me(String username) {
+    public MemberResponse me(String username) {
         var member = getMember(username);
         var usage = storageUsageService.getUsage(member.getId());
-        return MemberInfoResponse.of(member, usage);
+        return MemberResponse.of(member, usage);
     }
 
     private Password encryptPassword(String plainPassword) {

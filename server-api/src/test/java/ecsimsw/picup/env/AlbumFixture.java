@@ -25,11 +25,11 @@ public class AlbumFixture {
     }
 
     public static Album ALBUM() {
-        return new Album(USER_ID, ALBUM_NAME, RESOURCE_KEY, FILE_SIZE);
+        return new Album(USER_ID, ALBUM_NAME, RESOURCE_KEY);
     }
 
     public static Album ALBUM(Long userId) {
-        return new Album(userId, ALBUM_NAME, RESOURCE_KEY, FILE_SIZE);
+        return new Album(userId, ALBUM_NAME, RESOURCE_KEY);
     }
 
     public static PictureResponse PICTURE_INFO_RESPONSE = new PictureResponse(USER_ID, ALBUM_ID, false, RESOURCE_KEY.getResourceKey(), THUMBNAIL_RESOURCE_KEY.getResourceKey(), LocalDateTime.now());

@@ -48,7 +48,7 @@ public class UserLockConcurrentTest {
 
     @BeforeEach
     public void init() {
-        userId = memberService.signUp(SIGN_UP_REQUEST).getId();
+        userId = memberService.signUp(SIGN_UP_REQUEST).id();
         albumId = albumCoreService.create(userId, ALBUM_NAME, ORIGIN_FILE);
     }
 

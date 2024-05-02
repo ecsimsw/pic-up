@@ -7,8 +7,6 @@ import javax.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import static ecsimsw.picup.config.S3Config.ROOT_PATH;
-
 @NoArgsConstructor
 @Getter
 @Table(indexes = {
@@ -25,13 +23,13 @@ public class Picture {
     @ManyToOne
     private Album album;
 
-    @AttributeOverride(name = "resourceKey", column = @Column(name = "resourceKey"))
+    @AttributeOverride(name = "resourceKey", column = @Column(name = "fileResource"))
     @Embedded
-    private ResourceKey resourceKey;
+    private ResourceKey fileResource;
 
-    @AttributeOverride(name = "resourceKey", column = @Column(name = "thumbnailResourceKey"))
+    @AttributeOverride(name = "resourceKey", column = @Column(name = "thumbnail"))
     @Embedded
-    private ResourceKey thumbnailResourceKey;
+    private ResourceKey thumbnail;
 
     @Column(nullable = false)
     private Long fileSize;
@@ -39,27 +37,38 @@ public class Picture {
     @Column(nullable = false)
     private LocalDateTime createdAt;
 
-    public Picture(Long id, Album album, ResourceKey resourceKey, ResourceKey thumbnailResourceKey, long fileSize, LocalDateTime createdAt) {
-        if (album == null || resourceKey == null || thumbnailResourceKey == null || fileSize < 0) {
+    public Picture(Long id, Album album, ResourceKey fileResource, ResourceKey thumbnail, long fileSize, LocalDateTime createdAt) {
+        if (album == null || fileResource == null || fileSize < 0) {
             throw new AlbumException("Invalid picture format");
         }
         this.id = id;
         this.album = album;
-        this.resourceKey = resourceKey;
-        this.thumbnailResourceKey = thumbnailResourceKey;
+        this.fileResource = fileResource;
+        this.thumbnail = thumbnail;
         this.fileSize = fileSize;
         this.createdAt = createdAt;
     }
 
-    public Picture(Album album, ResourceKey resourceKey, ResourceKey thumbnailResourceKey, long fileSize) {
-        this(null, album, resourceKey, thumbnailResourceKey, fileSize, LocalDateTime.now());
+    public Picture(Album album, ResourceKey fileResource, ResourceKey thumbnail, long fileSize) {
+        this(null, album, fileResource, thumbnail, fileSize, LocalDateTime.now());
+    }
+
+    public Picture(Album album, String fileResource, long fileSize) {
+        this(null, album, new ResourceKey(fileResource), null, fileSize, LocalDateTime.now());
+    }
+
+    public void setThumbnail(String resourceKey) {
+        if(thumbnail != null) {
+            throw new AlbumException("Thumbnail already exists");
+        }
+        this.thumbnail = new ResourceKey(resourceKey);
     }
 
     public void checkSameUser(Long userId) {
-        album.authorize(userId);
+        this.album.authorize(userId);
     }
 
     public PictureFileExtension extension() {
-        return PictureFileExtension.of(resourceKey.extension());
+        return PictureFileExtension.of(this.fileResource.extension());
     }
 }

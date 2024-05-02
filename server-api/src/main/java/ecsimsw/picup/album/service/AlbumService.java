@@ -1,6 +1,5 @@
 package ecsimsw.picup.album.service;
 
-import ecsimsw.picup.album.domain.Album;
 import ecsimsw.picup.album.dto.AlbumResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

@@ -1,6 +1,5 @@
 package ecsimsw.picup.album.service;
 
-import ecsimsw.picup.album.domain.Picture;
 import ecsimsw.picup.album.dto.FilePreUploadResponse;
 import ecsimsw.picup.album.dto.FileUploadResponse;
 import ecsimsw.picup.album.dto.PictureResponse;
@@ -36,7 +35,11 @@ public class PictureService {
     }
 
     public Long commit(Long userId, Long albumId, String resourceKey) {
-        return pictureCoreService.commitPreUpload(userId, albumId, resourceKey).id();
+        return pictureCoreService.commit(userId, albumId, resourceKey).id();
+    }
+
+    public void thumbnail(String originResourceKey, String thumbnailResourceKey) {
+        pictureCoreService.thumbnail(originResourceKey, thumbnailResourceKey);
     }
 
     public long uploadVideo(Long userId, Long albumId, MultipartFile file) {

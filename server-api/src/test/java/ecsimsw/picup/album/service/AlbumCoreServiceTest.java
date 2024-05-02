@@ -3,6 +3,7 @@ package ecsimsw.picup.album.service;
 import ecsimsw.picup.album.domain.Album;
 import ecsimsw.picup.album.domain.AlbumRepository;
 import ecsimsw.picup.album.domain.ResourceKey;
+import ecsimsw.picup.album.dto.AlbumResponse;
 import ecsimsw.picup.auth.UnauthorizedException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -40,11 +41,15 @@ class AlbumCoreServiceTest {
     @DisplayName("사용자의 앨범을 모두 조회한다.")
     @Test
     void findAll() {
-        var album1 = albumRepository.save(new Album(USER_ID, ALBUM_NAME, new ResourceKey("resourceKey1"), FILE_SIZE));
-        var album2 = albumRepository.save(new Album(USER_ID, ALBUM_NAME, new ResourceKey("resourceKey2"), FILE_SIZE));
-        var album3 = albumRepository.save(new Album(USER_ID, ALBUM_NAME, new ResourceKey("resourceKey3"), FILE_SIZE));
+        var album1 = albumRepository.save(new Album(USER_ID, ALBUM_NAME, new ResourceKey("resourceKey1")));
+        var album2 = albumRepository.save(new Album(USER_ID, ALBUM_NAME, new ResourceKey("resourceKey2")));
+        var album3 = albumRepository.save(new Album(USER_ID, ALBUM_NAME, new ResourceKey("resourceKey3")));
         var result = albumCoreService.findAll(USER_ID);
-        assertThat(result).contains(album1, album2, album3);
+        assertThat(result).contains(
+            AlbumResponse.of(album1),
+            AlbumResponse.of(album2),
+            AlbumResponse.of(album3)
+        );
     }
 
     @DisplayName("앨범을 생성한다.")
@@ -88,10 +93,10 @@ class AlbumCoreServiceTest {
         var savedId = albumCoreService.create(USER_ID, ALBUM_NAME, ORIGIN_FILE);
         var result = albumCoreService.userAlbum(USER_ID, savedId);
         assertAll(
-            () -> assertThat(result.getId()).isNotNull(),
-            () -> assertThat(result.getName()).isEqualTo(ALBUM_NAME),
-            () -> assertThat(result.getResourceKey()).isEqualTo(ORIGIN_FILE.resourceKey()),
-            () -> assertThat(result.getCreatedAt()).isNotNull()
+            () -> assertThat(result.id()).isNotNull(),
+            () -> assertThat(result.name()).isEqualTo(ALBUM_NAME),
+            () -> assertThat(result.thumbnailUrl()).isNotNull(),
+            () -> assertThat(result.createdAt()).isNotNull()
         );
     }
 

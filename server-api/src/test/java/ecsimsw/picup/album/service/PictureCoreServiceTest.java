@@ -47,21 +47,21 @@ class PictureCoreServiceTest {
     @DisplayName("앨범에 picture 를 생성한다.")
     @Test
     void createImage() {
-        var album = albumRepository.save(new Album(USER_ID, ALBUM_NAME, RESOURCE_KEY, FILE_SIZE));
+        var album = albumRepository.save(new Album(USER_ID, ALBUM_NAME, RESOURCE_KEY));
         var picture = pictureCoreService.create(USER_ID, album.getId(), ORIGIN_FILE, THUMBNAIL_FILE);
         assertAll(
-            () -> assertThat(picture.getId()).isNotNull(),
-            () -> assertThat(picture.getAlbum().getId()).isEqualTo(album.getId()),
-            () -> assertThat(picture.getResourceKey()).isEqualTo(ORIGIN_FILE.resourceKey()),
-            () -> assertThat(picture.getThumbnailResourceKey()).isEqualTo(THUMBNAIL_FILE.resourceKey()),
-            () -> assertThat(picture.getCreatedAt()).isNotNull()
+            () -> assertThat(picture.id()).isNotNull(),
+            () -> assertThat(picture.albumId()).isEqualTo(album.getId()),
+            () -> assertThat(picture.resourceUrl()).isEqualTo(ORIGIN_FILE.resourceKey().value()),
+            () -> assertThat(picture.thumbnailUrl()).isEqualTo(THUMBNAIL_FILE.resourceKey().value()),
+            () -> assertThat(picture.createdAt()).isNotNull()
         );
     }
 
     @DisplayName("사용자의 사용량 제한을 넘어 Picture 를 업로드 할 수 없다.")
     @Test
     void createOverTheStorageLimit() {
-        var album = albumRepository.save(new Album(USER_ID, ALBUM_NAME, RESOURCE_KEY, FILE_SIZE));
+        var album = albumRepository.save(new Album(USER_ID, ALBUM_NAME, RESOURCE_KEY));
         var uploadFileSize = ORIGIN_FILE.size();
         doThrow(AlbumException.class)
             .when(storageUsageService).addUsage(USER_ID, uploadFileSize);
@@ -73,7 +73,7 @@ class PictureCoreServiceTest {
     @DisplayName("다른 유저의 앨범에 Picture 를 생성할 수 없다.")
     @Test
     void createInNonExistsAlbum() {
-        var album = albumRepository.save(new Album(USER_ID, ALBUM_NAME, RESOURCE_KEY, FILE_SIZE));
+        var album = albumRepository.save(new Album(USER_ID, ALBUM_NAME, RESOURCE_KEY));
         assertThatThrownBy(
             () -> pictureCoreService.create(USER_ID + 1, album.getId(), ORIGIN_FILE, THUMBNAIL_FILE)
         ).isInstanceOf(UnauthorizedException.class);
@@ -82,9 +82,9 @@ class PictureCoreServiceTest {
     @DisplayName("업로드된 Picture 의 크기대로 사용자의 스토리지 사용량이 업데이트 된다.")
     @Test
     void updateUsageByUpload() {
-        var album = albumRepository.save(new Album(USER_ID, ALBUM_NAME, RESOURCE_KEY, FILE_SIZE));
+        var album = albumRepository.save(new Album(USER_ID, ALBUM_NAME, RESOURCE_KEY));
         var pictureInfo = pictureCoreService.create(USER_ID, album.getId(), ORIGIN_FILE, THUMBNAIL_FILE);
-        var picture = pictureRepository.findById(pictureInfo.getId()).orElseThrow();
+        var picture = pictureRepository.findById(pictureInfo.id()).orElseThrow();
         verify(storageUsageService, atLeastOnce())
             .addUsage(USER_ID, picture.getFileSize());
     }
@@ -92,17 +92,17 @@ class PictureCoreServiceTest {
     @DisplayName("다중 제거한다.")
     @Test
     void deleteAll() {
-        var album = albumRepository.save(new Album(USER_ID, ALBUM_NAME, RESOURCE_KEY, FILE_SIZE));
+        var album = albumRepository.save(new Album(USER_ID, ALBUM_NAME, RESOURCE_KEY));
         var picture1 = pictureCoreService.create(USER_ID, album.getId(), ORIGIN_FILE, THUMBNAIL_FILE);
         var picture2 = pictureCoreService.create(USER_ID, album.getId(), ORIGIN_FILE, THUMBNAIL_FILE);
-        pictureCoreService.deleteAllByIds(USER_ID, album.getId(), List.of(picture1.getId(), picture2.getId()));
+        pictureCoreService.deleteAllByIds(USER_ID, album.getId(), List.of(picture1.id(), picture2.id()));
         assertThat(pictureRepository.findAllByAlbumId(album.getId())).isEmpty();
     }
 
     @DisplayName("앨범 내의 모든 Picture 를 제거한다.")
     @Test
     void deleteAllInAlbum() {
-        var album = albumRepository.save(new Album(USER_ID, ALBUM_NAME, RESOURCE_KEY, FILE_SIZE));
+        var album = albumRepository.save(new Album(USER_ID, ALBUM_NAME, RESOURCE_KEY));
         pictureCoreService.create(USER_ID, album.getId(), ORIGIN_FILE, THUMBNAIL_FILE);
         pictureCoreService.create(USER_ID, album.getId(), ORIGIN_FILE, THUMBNAIL_FILE);
         pictureCoreService.deleteAllInAlbum(USER_ID, album.getId());
@@ -112,7 +112,7 @@ class PictureCoreServiceTest {
     @DisplayName("다른 유저의 Picture 를 제거할 수 없다.")
     @Test
     void deleteUnauthorized() {
-        var album = albumRepository.save(new Album(USER_ID, ALBUM_NAME, RESOURCE_KEY, FILE_SIZE));
+        var album = albumRepository.save(new Album(USER_ID, ALBUM_NAME, RESOURCE_KEY));
         pictureCoreService.create(USER_ID, album.getId(), ORIGIN_FILE, THUMBNAIL_FILE);
         assertThatThrownBy(
             () -> pictureCoreService.deleteAllInAlbum(USER_ID + 1, album.getId())
@@ -122,7 +122,7 @@ class PictureCoreServiceTest {
     @DisplayName("제거된 Picture 의 크기 합만큼 사용량이 업데이트 된다.")
     @Test
     void updateUsageByDelete() {
-        var album = albumRepository.save(new Album(USER_ID, ALBUM_NAME, RESOURCE_KEY, FILE_SIZE));
+        var album = albumRepository.save(new Album(USER_ID, ALBUM_NAME, RESOURCE_KEY));
         var picturesInAlbum = pictureRepository.findAllByAlbumId(album.getId());
         pictureCoreService.deleteAllInAlbum(USER_ID, album.getId());
         verify(storageUsageService, atLeastOnce())
@@ -132,12 +132,12 @@ class PictureCoreServiceTest {
     @DisplayName("커서보다 오래된 N 개의 Picture 를 조회한다.")
     @Test
     void fetchOrderByCursor() {
-        var album = albumRepository.save(new Album(USER_ID, ALBUM_NAME, RESOURCE_KEY, FILE_SIZE));
+        var album = albumRepository.save(new Album(USER_ID, ALBUM_NAME, RESOURCE_KEY));
         var picture1 = pictureCoreService.create(USER_ID, album.getId(), ORIGIN_FILE, THUMBNAIL_FILE);
         var picture2 = pictureCoreService.create(USER_ID, album.getId(), ORIGIN_FILE, THUMBNAIL_FILE);
         var picture3 = pictureCoreService.create(USER_ID, album.getId(), ORIGIN_FILE, THUMBNAIL_FILE);
         var picture4 = pictureCoreService.create(USER_ID, album.getId(), ORIGIN_FILE, THUMBNAIL_FILE);
-        var result = pictureCoreService.fetchOrderByCursor(USER_ID, album.getId(), PictureSearchCursor.from(2, picture3.getCreatedAt()));
+        var result = pictureCoreService.fetchOrderByCursor(USER_ID, album.getId(), PictureSearchCursor.from(2, picture3.createdAt()));
         assertThat(result).isEqualTo(List.of(picture2, picture1));
         assertThat(result).doesNotContain(picture4);
     }

@@ -11,12 +11,16 @@ import java.util.Optional;
 
 public interface PictureRepository extends JpaRepository<Picture, Long> {
 
-    Optional<Picture> findByIdAndAlbumId(Long id, Long albumId);
-
     List<Picture> findAllByAlbumId(Long albumId);
 
     @Query("SELECT picture FROM Picture picture JOIN FETCH picture.album " +
-        "WHERE picture.album.id = :albumId AND picture.createdAt < :createdAt")
+        "WHERE picture.album.id = :albumId AND picture.fileResource.resourceKey = :resourceKey AND picture.isDeleted = false")
+    Optional<Picture> findByResourceKey(
+        @Param("resourceKey") String resourceKey
+    );
+
+    @Query("SELECT picture FROM Picture picture JOIN FETCH picture.album " +
+        "WHERE picture.album.id = :albumId AND picture.createdAt < :createdAt AND picture.isDeleted = false")
     List<Picture> findAllByAlbumOrderThan(
         @Param("albumId") Long albumId,
         @Param("createdAt") LocalDateTime createdAt,

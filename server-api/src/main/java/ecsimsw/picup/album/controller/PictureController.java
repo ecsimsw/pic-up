@@ -41,7 +41,7 @@ public class PictureController {
         return ResponseEntity.ok(preUploadResponse);
     }
 
-    @PostMapping("/api/album/{albumId}/picture/upload")
+    @PostMapping("/api/album/{albumId}/picture/commit")
     public ResponseEntity<Long> commit(
         @TokenPayload AuthTokenPayload loginUser,
         @PathVariable Long albumId,
@@ -49,6 +49,15 @@ public class PictureController {
     ) {
         var pictureId = pictureService.commit(loginUser.userId(), albumId, resourceKey);
         return ResponseEntity.ok(pictureId);
+    }
+
+    @PostMapping("/api/picture/thumbnail")
+    public ResponseEntity<Void> thumbnail(
+        @RequestParam String originResourceKey,
+        @RequestParam String thumbnailResourceKey
+    ) {
+        pictureService.thumbnail(originResourceKey, thumbnailResourceKey);
+        return ResponseEntity.ok().build();
     }
 
     @GetMapping("/api/album/{albumId}/picture")

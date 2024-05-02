@@ -41,11 +41,10 @@ class AlbumControllerTest {
     private final AlbumService albumService = mock(AlbumService.class);
     private final ResourceUrlService resourceUrlService = mock(ResourceUrlService.class);
     private final AuthTokenService authTokenService = mock(AuthTokenService.class);
+    private final String remoteIp = "192.168.0.1";
 
     private final MockMvc mockMvc = MockMvcBuilders
-        .standaloneSetup(new AlbumController(
-            albumService, resourceUrlService
-        ))
+        .standaloneSetup(new AlbumController(albumService))
         .addInterceptors(new AuthInterceptor(authTokenService))
         .setCustomArgumentResolvers(new AuthArgumentResolver(authTokenService))
         .setControllerAdvice(new GlobalControllerAdvice())
@@ -84,11 +83,11 @@ class AlbumControllerTest {
     void getAlbums() throws Exception {
         var expectedAlbumInfos = List.of(AlbumResponse.of(ALBUM()));
 
-        when(albumService.readAlbums(loginUserId))
+        when(albumService.readAlbums(loginUserId, remoteIp))
             .thenReturn(expectedAlbumInfos);
 
         mockMvc.perform(get("/api/album")
-                .header("X-Forwarded-For", "192.168.0.1")
+                .header("X-Forwarded-For", remoteIp)
             )
             .andExpect(status().isOk())
             .andExpect(content().string(OBJECT_MAPPER.writeValueAsString(expectedAlbumInfos)));
@@ -100,11 +99,11 @@ class AlbumControllerTest {
         var albumId = 1L;
         var expectedAlbumInfo = AlbumResponse.of(ALBUM());
 
-        when(albumService.readAlbum(loginUserId, albumId))
+        when(albumService.readAlbum(loginUserId, remoteIp, albumId))
             .thenReturn(expectedAlbumInfo);
 
         mockMvc.perform(get("/api/album/" + albumId)
-                .header("X-Forwarded-For", "192.168.0.1")
+                .header("X-Forwarded-For", remoteIp)
             )
             .andExpect(status().isOk())
             .andExpect(content().string(OBJECT_MAPPER.writeValueAsString(expectedAlbumInfo)));
@@ -115,11 +114,11 @@ class AlbumControllerTest {
     void getAlbumUnAuth() throws Exception {
         var invalidAlbumId = 1L;
 
-        when(albumService.readAlbum(loginUserId, invalidAlbumId))
+        when(albumService.readAlbum(loginUserId, remoteIp, invalidAlbumId))
             .thenThrow(UnauthorizedException.class);
 
         mockMvc.perform(get("/api/album/" + invalidAlbumId)
-                .header("X-Forwarded-For", "192.168.0.1")
+                .header("X-Forwarded-For", remoteIp)
             )
             .andExpect(status().isUnauthorized());
     }

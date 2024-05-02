@@ -1,18 +1,19 @@
 package ecsimsw.picup.album.service;
 
-import static ecsimsw.picup.config.CacheType.FIRST_10_PIC_IN_ALBUM;
-
-import ecsimsw.picup.album.domain.*;
+import ecsimsw.picup.album.domain.Album;
+import ecsimsw.picup.album.domain.AlbumRepository;
+import ecsimsw.picup.album.domain.Picture;
+import ecsimsw.picup.album.domain.PictureRepository;
+import ecsimsw.picup.album.domain.Picture_;
 import ecsimsw.picup.album.dto.FilePreUploadResponse;
 import ecsimsw.picup.album.dto.FileUploadResponse;
 import ecsimsw.picup.album.dto.PictureResponse;
 import ecsimsw.picup.album.dto.PictureSearchCursor;
+import ecsimsw.picup.album.exception.AlbumException;
 import ecsimsw.picup.auth.UnauthorizedException;
 import java.time.LocalDateTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
@@ -34,17 +35,23 @@ public class PictureCoreService {
         return fileService.preUpload(fileName, fileSize);
     }
 
-    @CacheEvict(value = FIRST_10_PIC_IN_ALBUM, key = "{#userId, #albumId}")
     @Transactional
-    public PictureResponse commitPreUpload(Long userId, Long albumId, String resourceKey) {
+    public PictureResponse commit(Long userId, Long albumId, String resourceKey) {
         var album = getUserAlbum(userId, albumId);
         var preUploadEvent = fileService.commit(resourceKey);
-        var picture = new Picture(album, new ResourceKey(preUploadEvent.getResourceKey()), new ResourceKey(preUploadEvent.getResourceKey()), preUploadEvent.getFileSize());
+        var picture = new Picture(album, preUploadEvent.getResourceKey(), preUploadEvent.getFileSize());
         pictureRepository.save(picture);
         return PictureResponse.of(picture);
     }
 
-    @CacheEvict(value = FIRST_10_PIC_IN_ALBUM, key = "{#userId, #albumId}")
+    @Transactional
+    public void thumbnail(String originResourceKey, String thumbnailResourceKey) {
+        var picture = pictureRepository.findByResourceKey(originResourceKey)
+            .orElseThrow(() -> new AlbumException("Not exists picture"));
+        picture.setThumbnail(thumbnailResourceKey);
+        pictureRepository.save(picture);
+    }
+
     @Transactional
     public PictureResponse create(Long userId, Long albumId, FileUploadResponse originFile, FileUploadResponse thumbnailFile) {
         var album = getUserAlbum(userId, albumId);
@@ -54,34 +61,30 @@ public class PictureCoreService {
         return PictureResponse.of(picture);
     }
 
-    @CacheEvict(value = FIRST_10_PIC_IN_ALBUM, key = "{#userId, #albumId}")
     @Transactional
     public void deleteAll(Long userId, Long albumId, List<Picture> pictures) {
         validateAlbumOwner(userId, albumId);
         pictures.forEach(picture -> {
             picture.checkSameUser(userId);
-            fileService.deleteAsync(picture.getResourceKey());
-            fileService.deleteAsync(picture.getThumbnailResourceKey());
+            fileService.deleteAsync(picture.getFileResource());
+            fileService.deleteAsync(picture.getThumbnail());
         });
         storageUsageService.subtractUsage(userId, pictures);
         pictureRepository.deleteAll(pictures);
     }
 
-    @CacheEvict(value = FIRST_10_PIC_IN_ALBUM, key = "{#userId, #albumId}")
     @Transactional
     public void deleteAllByIds(Long userId, Long albumId, List<Long> pictureIds) {
         var pictures = pictureRepository.findAllById(pictureIds);
         deleteAll(userId, albumId, pictures);
     }
 
-    @CacheEvict(value = FIRST_10_PIC_IN_ALBUM, key = "{#userId, #albumId}")
     @Transactional
     public void deleteAllInAlbum(Long userId, Long albumId) {
         var pictures = pictureRepository.findAllByAlbumId(albumId);
         deleteAll(userId, albumId, pictures);
     }
 
-    @Cacheable(value = FIRST_10_PIC_IN_ALBUM, key = "{#userId, #albumId}", condition = "#cursor.createdAt().isEmpty() && #cursor.limit()==10")
     @Transactional(readOnly = true)
     public List<PictureResponse> fetchOrderByCursor(Long userId, Long albumId, PictureSearchCursor cursor) {
         var album = getUserAlbum(userId, albumId);

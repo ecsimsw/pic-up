@@ -114,7 +114,7 @@ function addDropZone(albumId) {
         init: function () {
             this.on("success", function (file) {
                 console.log("upload success : " + file.name);
-                fetch(serverUrl + "/api/album/" + albumId + "/picture/upload?resourceKey=" + file.resourceKey, {
+                fetch(serverUrl + "/api/album/" + albumId + "/picture/commit?resourceKey=" + file.resourceKey, {
                     method: "POST",
                     credentials: 'include',
                     headers: {

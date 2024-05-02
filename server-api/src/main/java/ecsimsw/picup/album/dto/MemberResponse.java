@@ -4,15 +4,15 @@ import ecsimsw.picup.album.domain.Member;
 import ecsimsw.picup.album.domain.StorageUsage;
 import ecsimsw.picup.auth.AuthTokenPayload;
 
-public record MemberInfoResponse(
+public record MemberResponse(
     Long id,
     String username,
     long limitAsByte,
     long usageAsByte
 ) {
 
-    public static MemberInfoResponse of(Member member, StorageUsage usage) {
-        return new MemberInfoResponse(
+    public static MemberResponse of(Member member, StorageUsage usage) {
+        return new MemberResponse(
             member.getId(),
             member.getUsername(),
             usage.getLimitAsByte(),

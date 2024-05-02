@@ -27,7 +27,7 @@ public class PictureRepositoryTest {
 
     @BeforeEach
     public void init() {
-        savedAlbum = albumRepository.save(new Album(USER_ID, ALBUM_NAME, RESOURCE_KEY, 0L));
+        savedAlbum = albumRepository.save(new Album(USER_ID, ALBUM_NAME, RESOURCE_KEY));
     }
 
     @DisplayName("Picture 정보를 저장한다.")
@@ -52,7 +52,7 @@ public class PictureRepositoryTest {
             () -> pictureRepository.save(new Picture(savedAlbum, RESOURCE_KEY, THUMBNAIL_RESOURCE_KEY, -1L))
         );
         assertThatThrownBy(() -> {
-            var notSavedAlbum = new Album(2L, ALBUM_NAME, RESOURCE_KEY, FILE_SIZE);
+            var notSavedAlbum = new Album(2L, ALBUM_NAME, RESOURCE_KEY);
             pictureRepository.save(new Picture(notSavedAlbum, RESOURCE_KEY, THUMBNAIL_RESOURCE_KEY, FILE_SIZE));
         });
     }

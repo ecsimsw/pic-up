@@ -27,28 +27,24 @@ public class Album {
     private String name;
 
     @Embedded
-    private ResourceKey resourceKey;
-
-    @Column(nullable = false)
-    private long resourceFileSize;
+    private ResourceKey thumbnail;
 
     @Column(nullable = false)
     private LocalDateTime createdAt;
 
-    public Album(Long id, Long userId, String name, ResourceKey resourceKey, long resourceFileSize, LocalDateTime createdAt) {
-        if (userId == null || name.isBlank()  || resourceFileSize < 0) {
+    public Album(Long id, Long userId, String name, ResourceKey thumbnail, LocalDateTime createdAt) {
+        if (userId == null || name.isBlank()) {
             throw new AlbumException("Invalid album format");
         }
         this.id = id;
         this.userId = userId;
         this.name = name;
-        this.resourceKey = resourceKey;
-        this.resourceFileSize = resourceFileSize;
+        this.thumbnail = thumbnail;
         this.createdAt = createdAt;
     }
 
-    public Album(Long userId, String name, ResourceKey resourceKey, long resourceFileSize) {
-        this(null, userId, name, resourceKey, resourceFileSize, LocalDateTime.now());
+    public Album(Long userId, String name, ResourceKey thumbnail) {
+        this(null, userId, name, thumbnail, LocalDateTime.now());
     }
 
     public void authorize(Long userId) {

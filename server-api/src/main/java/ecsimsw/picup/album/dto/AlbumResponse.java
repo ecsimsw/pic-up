@@ -3,7 +3,6 @@ package ecsimsw.picup.album.dto;
 import static ecsimsw.picup.config.S3Config.ROOT_PATH;
 
 import ecsimsw.picup.album.domain.Album;
-import ecsimsw.picup.album.service.ResourceUrlService;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -19,7 +18,7 @@ public record AlbumResponse(
         return new AlbumResponse(
             album.getId(),
             album.getName(),
-            ROOT_PATH + album.getResourceKey().value(),
+            ROOT_PATH + album.getThumbnail().value(),
             album.getCreatedAt()
         );
     }

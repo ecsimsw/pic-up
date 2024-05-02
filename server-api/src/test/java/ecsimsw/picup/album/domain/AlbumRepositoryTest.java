@@ -22,11 +22,11 @@ public class AlbumRepositoryTest {
     @DisplayName("Album 정보를 저장한다.")
     @Test
     public void save() {
-        var album = albumRepository.save(new Album(USER_ID, ALBUM_NAME, RESOURCE_KEY, 0L));
+        var album = albumRepository.save(new Album(USER_ID, ALBUM_NAME, RESOURCE_KEY));
         assertAll(
             () -> assertThat(album.getId()).isNotNull(),
             () -> assertThat(album.getName()).isEqualTo(ALBUM_NAME),
-            () -> assertThat(album.getResourceKey()).isEqualTo(RESOURCE_KEY),
+            () -> assertThat(album.getThumbnail()).isEqualTo(RESOURCE_KEY),
             () -> assertThat(album.getCreatedAt()).isNotNull()
         );
     }
@@ -35,22 +35,19 @@ public class AlbumRepositoryTest {
     @Test
     public void saveInvalid() {
         assertThatThrownBy(
-            () -> albumRepository.save(new Album(null, ALBUM_NAME, RESOURCE_KEY, 0L))
+            () -> albumRepository.save(new Album(null, ALBUM_NAME, RESOURCE_KEY))
         );
         assertThatThrownBy(
-            () -> albumRepository.save(new Album(USER_ID, ALBUM_NAME, RESOURCE_KEY, -1L))
-        );
-        assertThatThrownBy(
-            () -> albumRepository.save(new Album(USER_ID, ALBUM_NAME, null, 0L))
+            () -> albumRepository.save(new Album(USER_ID, ALBUM_NAME, null))
         );
     }
 
     @DisplayName("유저의 앨범을 최신순으로 조회한다.")
     @Test
     public void findAllInUser() {
-        var album1 = albumRepository.save(new Album(USER_ID, ALBUM_NAME, new ResourceKey("resourceKey1"), FILE_SIZE));
-        var album2 = albumRepository.save(new Album(USER_ID, ALBUM_NAME, new ResourceKey("resourceKey2"), FILE_SIZE));
-        var album3 = albumRepository.save(new Album(USER_ID, ALBUM_NAME, new ResourceKey("resourceKey3"), FILE_SIZE));
+        var album1 = albumRepository.save(new Album(USER_ID, ALBUM_NAME, new ResourceKey("resourceKey1")));
+        var album2 = albumRepository.save(new Album(USER_ID, ALBUM_NAME, new ResourceKey("resourceKey2")));
+        var album3 = albumRepository.save(new Album(USER_ID, ALBUM_NAME, new ResourceKey("resourceKey3")));
         var others = albumRepository.save(ALBUM(Long.MAX_VALUE));
         var result = albumRepository.findAllByUserIdOrderByCreatedAtDesc(USER_ID);
         assertThat(result).isEqualTo(List.of(album3, album2, album1));

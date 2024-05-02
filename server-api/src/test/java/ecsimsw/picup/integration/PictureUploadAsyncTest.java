@@ -68,7 +68,7 @@ class PictureUploadAsyncTest {
 
     @BeforeEach
     void skipThumbnailMaking() {
-        userId = memberService.signUp(new SignUpRequest(UUID.randomUUID() + "", USER_PASSWORD)).getId();
+        userId = memberService.signUp(new SignUpRequest(UUID.randomUUID() + "", USER_PASSWORD)).id();
         albumId = albumCoreService.create(userId, ALBUM_NAME, new FileUploadResponse(RESOURCE_KEY, FILE_SIZE));
 
         when(thumbnailService.resizeImage(any(MultipartFile.class), any(Float.class)))

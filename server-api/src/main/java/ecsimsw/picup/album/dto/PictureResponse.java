@@ -1,5 +1,7 @@
 package ecsimsw.picup.album.dto;
 
+import static ecsimsw.picup.config.S3Config.ROOT_PATH;
+
 import ecsimsw.picup.album.domain.Picture;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -14,12 +16,14 @@ public record PictureResponse(
 ) {
 
     public static PictureResponse of(Picture picture) {
+        var fileResourceUrl = ROOT_PATH + picture.getFileResource().value();
+        var thumbnailUrl = ROOT_PATH + (picture.getThumbnail() != null ? picture.getThumbnail().value() : fileResourceUrl);
         return new PictureResponse(
             picture.getId(),
             picture.getAlbum().getId(),
             picture.extension().isVideo,
-            picture.getResourceKey().value(),
-            picture.getThumbnailResourceKey().value(),
+            fileResourceUrl,
+            thumbnailUrl,
             picture.getCreatedAt()
         );
     }

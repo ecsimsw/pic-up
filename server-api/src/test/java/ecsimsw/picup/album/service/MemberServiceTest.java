@@ -48,8 +48,8 @@ class MemberServiceTest {
         var password = "password";
         var memberInfo = memberService.signUp(new SignUpRequest(username, password));
         assertAll(
-            () -> assertThat(memberInfo.getId()).isNotNull(),
-            () -> assertThat(memberInfo.getUsername()).isEqualTo(username)
+            () -> assertThat(memberInfo.id()).isNotNull(),
+            () -> assertThat(memberInfo.username()).isEqualTo(username)
         );
     }
 
@@ -58,14 +58,14 @@ class MemberServiceTest {
     void initUsage() {
         var memberInfo = memberService.signUp(SIGN_UP_REQUEST);
         verify(storageUsageService, atLeastOnce())
-            .init(memberInfo.getId(), memberInfo.getLimitAsByte());
+            .init(memberInfo.id(), memberInfo.limitAsByte());
     }
 
     @DisplayName("사용자의 비밀번호는 암호화되어 저장된다.")
     @Test
     void checkPasswordEncrypted() {
         var memberInfo = memberService.signUp(SIGN_UP_REQUEST);
-        var result = memberRepository.findById(memberInfo.getId()).orElseThrow();
+        var result = memberRepository.findById(memberInfo.id()).orElseThrow();
         assertThat(result.getPassword().getEncrypted()).isNotEqualTo(SIGN_UP_REQUEST.password());
     }
 
@@ -84,8 +84,8 @@ class MemberServiceTest {
         memberService.signUp(SIGN_UP_REQUEST);
         var memberInfo = memberService.signIn(new SignInRequest(SIGN_UP_REQUEST.username(), SIGN_UP_REQUEST.password()));
         assertAll(
-            () -> assertThat(memberInfo.getId()).isNotNull(),
-            () -> assertThat(memberInfo.getUsername()).isEqualTo(SIGN_UP_REQUEST.username())
+            () -> assertThat(memberInfo.id()).isNotNull(),
+            () -> assertThat(memberInfo.username()).isEqualTo(SIGN_UP_REQUEST.username())
         );
     }
 
@@ -103,10 +103,10 @@ class MemberServiceTest {
     @Test
     void me() {
         var memberInfo = memberService.signUp(SIGN_UP_REQUEST);
-        var result = memberService.me(memberInfo.getUsername());
+        var result = memberService.me(memberInfo.username());
         assertAll(
-            () -> assertThat(result.getId()).isNotNull(),
-            () -> assertThat(result.getUsername()).isEqualTo(SIGN_UP_REQUEST.username())
+            () -> assertThat(result.id()).isNotNull(),
+            () -> assertThat(result.username()).isEqualTo(SIGN_UP_REQUEST.username())
         );
     }
 
