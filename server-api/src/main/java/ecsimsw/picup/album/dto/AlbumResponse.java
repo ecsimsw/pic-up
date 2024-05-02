@@ -28,4 +28,13 @@ public record AlbumResponse(
             .map(AlbumResponse::of)
             .collect(Collectors.toList());
     }
+
+    public AlbumResponse sign(String thumbnailSignedUrl) {
+        return new AlbumResponse(
+            id,
+            name,
+            thumbnailSignedUrl,
+            createdAt
+        );
+    }
 }

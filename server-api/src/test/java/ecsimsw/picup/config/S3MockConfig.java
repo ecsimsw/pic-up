@@ -8,12 +8,11 @@ import com.amazonaws.client.builder.AwsClientBuilder;
 import com.amazonaws.regions.Regions;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
-import ecsimsw.picup.config.dev.MockResourceSignedUrlService;
+import ecsimsw.picup.config.dev.MockResourceUrlService;
 import io.findify.s3mock.S3Mock;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Primary;
@@ -41,8 +40,8 @@ public class S3MockConfig {
 
     @Primary
     @Bean
-    public MockResourceSignedUrlService mockSignUrlService() {
-        return new MockResourceSignedUrlService(
+    public MockResourceUrlService mockSignUrlService() {
+        return new MockResourceUrlService(
             "http://localhost:8084",
             "publicKeyId",
             "privateKeyPath"

@@ -16,21 +16,41 @@ public record PictureResponse(
 ) {
 
     public static PictureResponse of(Picture picture) {
-        var fileResourceUrl = ROOT_PATH + picture.getFileResource().value();
-        var thumbnailUrl = ROOT_PATH + (picture.getThumbnail() != null ? picture.getThumbnail().value() : fileResourceUrl);
         return new PictureResponse(
             picture.getId(),
             picture.getAlbum().getId(),
             picture.extension().isVideo,
-            fileResourceUrl,
-            thumbnailUrl,
+            fileResourceUrl(picture),
+            thumbnailUrl(picture),
             picture.getCreatedAt()
         );
+    }
+
+    private static String fileResourceUrl(Picture picture) {
+        return ROOT_PATH + picture.getFileResource().value();
+    }
+
+    private static String thumbnailUrl(Picture picture) {
+        if(picture.getThumbnail() == null) {
+            return fileResourceUrl(picture);
+        }
+        return ROOT_PATH + picture.getThumbnail().value();
     }
 
     public static List<PictureResponse> listOf(List<Picture> pictures) {
         return pictures.stream()
             .map(PictureResponse::of)
             .toList();
+    }
+
+    public PictureResponse sign(String resourceSignedUrl, String thumbnailSignedUrl) {
+        return new PictureResponse(
+            id,
+            albumId,
+            isVideo,
+            resourceSignedUrl,
+            thumbnailSignedUrl,
+            createdAt
+        );
     }
 }

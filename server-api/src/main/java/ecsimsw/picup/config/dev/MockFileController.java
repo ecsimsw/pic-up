@@ -22,15 +22,16 @@ public class MockFileController {
     private final AmazonS3 amazonS3;
 
     @GetMapping(
-        value = "storage/{resourceKey}",
+        value = ROOT_PATH + "{resourceKey}",
         produces = MediaType.IMAGE_JPEG_VALUE
     )
     public byte[] resource(@PathVariable String resourceKey) {
         return S3Utils.getResource(amazonS3, BUCKET_NAME, ROOT_PATH + resourceKey);
     }
 
-    @PutMapping("storage/{resourceKey}")
+    @PutMapping(ROOT_PATH + "{resourceKey}")
     public void upload(@PathVariable String resourceKey, MultipartFile file) {
+        System.out.println("UPLOAD : " + ROOT_PATH + resourceKey + " " + file.getSize());
         S3Utils.store(amazonS3, BUCKET_NAME, ROOT_PATH + resourceKey, file);
     }
 }

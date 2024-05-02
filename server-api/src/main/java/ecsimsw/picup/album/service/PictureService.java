@@ -1,9 +1,6 @@
 package ecsimsw.picup.album.service;
 
-import ecsimsw.picup.album.dto.FilePreUploadResponse;
-import ecsimsw.picup.album.dto.FileUploadResponse;
-import ecsimsw.picup.album.dto.PictureResponse;
-import ecsimsw.picup.album.dto.PictureSearchCursor;
+import ecsimsw.picup.album.dto.*;
 import ecsimsw.picup.album.exception.AlbumException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -12,8 +9,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.concurrent.CompletionException;
-
-import static ecsimsw.picup.config.S3Config.ROOT_PATH;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -83,13 +78,9 @@ public class PictureService {
     }
 
     private List<PictureResponse> signUrls(String remoteIp, List<PictureResponse> pictures) {
-        return pictures.stream().map(picture -> new PictureResponse(
-            picture.id(),
-            picture.albumId(),
-            picture.isVideo(),
-            urlService.sign(remoteIp, ROOT_PATH + picture.resourceUrl()),
-            urlService.sign(remoteIp, ROOT_PATH + picture.thumbnailUrl()),
-            picture.createdAt()
+        return pictures.stream().map(picture -> picture.sign(
+            urlService.sign(remoteIp, picture.resourceUrl()),
+            urlService.sign(remoteIp, picture.thumbnailUrl())
         )).toList();
     }
 }

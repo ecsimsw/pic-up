@@ -25,12 +25,12 @@ document.addEventListener("DOMContentLoaded", function () {
         addDropZone(albumId);
         setAlbumInfo();
         fetchData(serverUrl + "/api/album/" + albumId + "/picture", function (pictures) {
-            console.log(pictures)
             pictures.forEach(picture => {
                 if (inPagePictures.has(picture.id)) {
                     return
                 }
                 const itemId = createNewPictureItem(albumId, picture.id, picture.thumbnailUrl)
+                console.log(picture.thumbnailUrl)
                 if(!picture.isVideo) {
                     if(mobileMode) {
                         addGalleryImage(
