@@ -14,13 +14,13 @@ public interface PictureRepository extends JpaRepository<Picture, Long> {
     List<Picture> findAllByAlbumId(Long albumId);
 
     @Query("SELECT picture FROM Picture picture JOIN FETCH picture.album " +
-        "WHERE picture.album.id = :albumId AND picture.fileResource.resourceKey = :resourceKey AND picture.isDeleted = false")
+        "WHERE picture.album.id = :albumId AND picture.fileResource.resourceKey = :resourceKey")
     Optional<Picture> findByResourceKey(
         @Param("resourceKey") String resourceKey
     );
 
     @Query("SELECT picture FROM Picture picture JOIN FETCH picture.album " +
-        "WHERE picture.album.id = :albumId AND picture.createdAt < :createdAt AND picture.isDeleted = false")
+        "WHERE picture.album.id = :albumId AND picture.createdAt < :createdAt")
     List<Picture> findAllByAlbumOrderThan(
         @Param("albumId") Long albumId,
         @Param("createdAt") LocalDateTime createdAt,
