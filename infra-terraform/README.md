@@ -5,6 +5,28 @@
 - 생성한 Pre-signed url 으로 객체를 업로드 할 수 있다.
 - Pre-signed url 으로 업로드시 헤더의 컨텐츠 사이즈를 넘어선 파일은 업로드 할 수 없다.
 
+```
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "AllowCloudFrontServicePrincipal",
+            "Effect": "Allow",
+            "Principal": {
+            "Service": "cloudfront.amazonaws.com"
+        },
+        "Action": "s3:GetObject",
+        "Resource": "arn:aws:s3:::picup-ecsimsw/*",
+        "Condition": {
+            "StringEquals": {
+                "AWS:SourceArn": "arn:aws:cloudfront::381492186703:distribution/E3I5N4E6W0XU5Q"
+           }
+         }
+        }
+    ]
+}
+```
+
 ### Module : Cloudfront
 - Origin S3를 캐싱한다.
 - 응답 헤더에 Content-Cache 를 추가한다.
