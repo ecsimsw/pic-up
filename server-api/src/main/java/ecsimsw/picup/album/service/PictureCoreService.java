@@ -45,7 +45,7 @@ public class PictureCoreService {
     }
 
     @Transactional
-    public void thumbnail(String originResourceKey, String thumbnailResourceKey) {
+    public void setThumbnail(String originResourceKey, String thumbnailResourceKey) {
         var picture = pictureRepository.findByResourceKey(originResourceKey)
             .orElseThrow(() -> new AlbumException("Not exists picture"));
         picture.setThumbnail(thumbnailResourceKey);

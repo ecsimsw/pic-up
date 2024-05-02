@@ -53,7 +53,7 @@ public class PictureController {
         @RequestParam String originResourceKey,
         @RequestParam String thumbnailResourceKey
     ) {
-        pictureService.thumbnail(originResourceKey, thumbnailResourceKey);
+        pictureService.setThumbnail(originResourceKey, thumbnailResourceKey);
         return ResponseEntity.ok().build();
     }
 

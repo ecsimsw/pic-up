@@ -33,8 +33,8 @@ public class PictureService {
         return pictureCoreService.commit(userId, albumId, resourceKey).id();
     }
 
-    public void thumbnail(String originResourceKey, String thumbnailResourceKey) {
-        pictureCoreService.thumbnail(originResourceKey, thumbnailResourceKey);
+    public void setThumbnail(String originResourceKey, String thumbnailResourceKey) {
+        pictureCoreService.setThumbnail(originResourceKey, thumbnailResourceKey);
     }
 
     public long uploadVideo(Long userId, Long albumId, MultipartFile file) {

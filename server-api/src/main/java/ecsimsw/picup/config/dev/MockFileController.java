@@ -23,7 +23,7 @@ public class MockFileController {
 
     @GetMapping(
         value = ROOT_PATH + "{resourceKey}",
-        produces = MediaType.IMAGE_JPEG_VALUE
+        produces = MediaType.ALL_VALUE
     )
     public byte[] resource(@PathVariable String resourceKey) {
         return S3Utils.getResource(amazonS3, BUCKET_NAME, ROOT_PATH + resourceKey);

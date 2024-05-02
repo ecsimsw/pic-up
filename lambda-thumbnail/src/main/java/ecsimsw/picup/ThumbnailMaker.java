@@ -4,22 +4,26 @@ import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.services.lambda.runtime.events.S3Event;
 import com.amazonaws.services.lambda.runtime.events.models.s3.S3EventNotification.S3EventNotificationRecord;
-import java.awt.Color;
-import java.awt.Graphics2D;
-import java.awt.RenderingHints;
-import java.awt.image.BufferedImage;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Arrays;
-import java.util.Map;
-import javax.imageio.ImageIO;
+import org.jcodec.api.FrameGrab;
+import org.jcodec.common.model.Picture;
+import org.jcodec.scale.AWTUtil;
 import software.amazon.awssdk.awscore.exception.AwsServiceException;
+import software.amazon.awssdk.core.ResponseInputStream;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.GetObjectRequest;
+import software.amazon.awssdk.services.s3.model.GetObjectResponse;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 import software.amazon.awssdk.utils.Logger;
+
+import javax.imageio.ImageIO;
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
+import java.util.Arrays;
+import java.util.Map;
 
 public class ThumbnailMaker implements RequestHandler<S3Event, String> {
 
@@ -29,7 +33,13 @@ public class ThumbnailMaker implements RequestHandler<S3Event, String> {
     private static final float MINIMUM_SIZE = 300;
     private static final float SCALE_FACTOR = 0.3f;
 
-    private static final String[] ALLOW_FILE_EXTENSION = new String[]{"jpg", "jpeg", "png"};
+    private static final String[] IMAGE_EXTENSIONS = new String[]{"jpg", "jpeg", "png"};
+    private static final String[] VIDEO_EXTENSIONS = new String[]{"mp4"};
+
+    private static final String DEFAULT_VIDEO_CAPTURE_EXTENSION = "jpg";
+    private static final String VIDEO_TEMP_FILE_PATH_PREFIX = "/tmp/";
+    private static final int DEFAULT_VIDEO_CAPTURE_FRAME = 1;
+
     private static final String JPG_MIME = "image/jpeg";
     private static final String PNG_MIME = "image/png";
 
@@ -42,18 +52,39 @@ public class ThumbnailMaker implements RequestHandler<S3Event, String> {
         ) {
             S3EventNotificationRecord record = s3event.getRecords().get(0);
             String bucket = record.getS3().getBucket().getName();
-            String originUploadPath = record.getS3().getObject().getUrlDecodedKey();
-            String extension = getExtensionFromName(originUploadPath);
-            if (!isThumbnailNeeded(extension, originUploadPath)) {
+            String originFilePath = record.getS3().getObject().getUrlDecodedKey();
+            String extension = getExtensionFromName(originFilePath);
+            String thumbnailFilePath = thumbnailUploadPath(originFilePath);
+            log.info(() -> "In : " + originFilePath);
+            if (!originFilePath.startsWith(ORIGINAL_UPLOAD_ROOT_PATH)) {
                 return "";
             }
 
-            log.info(() -> "In : " + originUploadPath);
-            BufferedImage srcImage = getObject(s3Client, bucket, originUploadPath);
-            BufferedImage resized = resizeImage(srcImage, SCALE_FACTOR);
-            String thumbnailUploadPath = thumbnailUploadPath(originUploadPath);
-            putObject(s3Client, resized, bucket, thumbnailUploadPath, extension);
-            log.info(() -> "Writing to: " + thumbnailUploadPath);
+            if (Arrays.stream(IMAGE_EXTENSIONS).anyMatch(ae -> ae.equalsIgnoreCase(extension))) {
+                log.info(() -> "In : " + originFilePath);
+                BufferedImage imageFile = ImageIO.read(s3Client.getObject(GetObjectRequest.builder()
+                    .bucket(bucket)
+                    .key(originFilePath)
+                    .build()));
+                BufferedImage resized = resizeImage(imageFile, SCALE_FACTOR);
+                putObject(s3Client, resized, bucket, thumbnailFilePath, extension);
+                log.info(() -> "Writing to: " + thumbnailFilePath);
+            }
+
+            if (Arrays.stream(VIDEO_EXTENSIONS).anyMatch(ae -> ae.equalsIgnoreCase(extension))) {
+                log.info(() -> "In : " + originFilePath);
+                File videoFile = new File(VIDEO_TEMP_FILE_PATH_PREFIX+"temp." + extension);
+                ResponseInputStream<GetObjectResponse> object = s3Client.getObject(GetObjectRequest.builder()
+                    .bucket(bucket)
+                    .key(originFilePath)
+                    .build());
+                Files.copy(object, videoFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+                Picture picture = FrameGrab.getFrameFromFile(videoFile, DEFAULT_VIDEO_CAPTURE_FRAME);
+                BufferedImage captured = AWTUtil.toBufferedImage(picture);
+                String path = thumbnailFilePath.replace(".mp4", DEFAULT_VIDEO_CAPTURE_EXTENSION);
+                putObject(s3Client, captured, bucket, path, "jpg");
+                log.info(() -> "Writing to: " + path);
+            }
 
             return "Ok";
         } catch (Exception e) {
@@ -61,21 +92,8 @@ public class ThumbnailMaker implements RequestHandler<S3Event, String> {
         }
     }
 
-    private static String thumbnailUploadPath(String srcKey) {
-        return srcKey.replaceFirst(ORIGINAL_UPLOAD_ROOT_PATH, THUMBNAIL_UPLOAD_ROOT_PATH);
-    }
-
-    private boolean isThumbnailNeeded(String extension, String srcKey) {
-        return Arrays.stream(ALLOW_FILE_EXTENSION).anyMatch(ae -> ae.equalsIgnoreCase(extension))
-            || srcKey.startsWith(ORIGINAL_UPLOAD_ROOT_PATH);
-    }
-
-    private BufferedImage getObject(S3Client s3Client, String srcBucket, String srcKey) throws IOException {
-        InputStream s3Object = s3Client.getObject(GetObjectRequest.builder()
-            .bucket(srcBucket)
-            .key(srcKey)
-            .build());
-        return ImageIO.read(s3Object);
+    private static String thumbnailUploadPath(String originFilePath) {
+        return originFilePath.replaceFirst(ORIGINAL_UPLOAD_ROOT_PATH, THUMBNAIL_UPLOAD_ROOT_PATH);
     }
 
     private void putObject(S3Client s3Client, BufferedImage uploadImage, String bucket, String path, String extension) {
@@ -86,13 +104,11 @@ public class ThumbnailMaker implements RequestHandler<S3Event, String> {
                 "Content-Length", String.valueOf(outputStream.size()),
                 "Content-Type", contentType(extension)
             );
-
             PutObjectRequest putObjectRequest = PutObjectRequest.builder()
                 .bucket(bucket)
                 .key(path)
                 .metadata(metadata)
                 .build();
-
             s3Client.putObject(
                 putObjectRequest,
                 RequestBody.fromBytes(outputStream.toByteArray())
@@ -100,16 +116,6 @@ public class ThumbnailMaker implements RequestHandler<S3Event, String> {
         } catch (AwsServiceException | IOException e) {
             throw new IllegalArgumentException("failed to upload : " + e.getMessage());
         }
-    }
-
-    private String contentType(String extension) {
-        if (extension.equalsIgnoreCase("jpg") || extension.equalsIgnoreCase("jpeg")) {
-            return JPG_MIME;
-        }
-        if (extension.equalsIgnoreCase("png")) {
-            return PNG_MIME;
-        }
-        throw new IllegalArgumentException("invalid content type");
     }
 
     private BufferedImage resizeImage(BufferedImage srcImage, float scaleFactor) {
@@ -120,7 +126,6 @@ public class ThumbnailMaker implements RequestHandler<S3Event, String> {
         if (width < MINIMUM_SIZE || height < MINIMUM_SIZE) {
             return srcImage;
         }
-
         BufferedImage resizedImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
         Graphics2D graphics = resizedImage.createGraphics();
         graphics.setPaint(Color.white);
@@ -137,5 +142,15 @@ public class ThumbnailMaker implements RequestHandler<S3Event, String> {
         }
         var indexOfExtension = fileName.lastIndexOf(".");
         return fileName.substring(indexOfExtension + 1);
+    }
+
+    private String contentType(String extension) {
+        if (extension.equalsIgnoreCase("jpg") || extension.equalsIgnoreCase("jpeg")) {
+            return JPG_MIME;
+        }
+        if (extension.equalsIgnoreCase("png")) {
+            return PNG_MIME;
+        }
+        throw new IllegalArgumentException("invalid content type");
     }
 }
