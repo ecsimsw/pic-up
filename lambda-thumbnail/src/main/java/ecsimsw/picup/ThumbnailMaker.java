@@ -4,20 +4,14 @@ import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.services.lambda.runtime.events.S3Event;
 import com.amazonaws.services.lambda.runtime.events.models.s3.S3EventNotification.S3EventNotificationRecord;
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.http.util.EntityUtils;
 import org.jcodec.api.FrameGrab;
-import org.jcodec.api.JCodecException;
 import org.jcodec.common.model.Picture;
 import org.jcodec.scale.AWTUtil;
 import software.amazon.awssdk.awscore.exception.AwsServiceException;
-import software.amazon.awssdk.core.ResponseBytes;
 import software.amazon.awssdk.core.ResponseInputStream;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.services.s3.S3Client;
@@ -32,7 +26,6 @@ import java.awt.image.BufferedImage;
 import java.io.*;
 import java.net.URI;
 import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.Arrays;
 import java.util.Map;
@@ -66,7 +59,8 @@ public class ThumbnailMaker implements RequestHandler<S3Event, String> {
             String bucket = record.getS3().getBucket().getName();
             String originFilePath = record.getS3().getObject().getUrlDecodedKey();
             String extension = getExtensionFromName(originFilePath);
-            String thumbnailFilePath = thumbnailUploadPath(originFilePath);
+            String thumbnailFilePath = thumbnailPath(originFilePath);
+
             log.info(() -> "In : " + originFilePath);
             if (!originFilePath.startsWith(ORIGINAL_UPLOAD_ROOT_PATH)) {
                 return "";
@@ -90,9 +84,9 @@ public class ThumbnailMaker implements RequestHandler<S3Event, String> {
                 Files.copy(object, videoFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
                 Picture picture = FrameGrab.getFrameFromFile(videoFile, DEFAULT_VIDEO_CAPTURE_FRAME);
                 BufferedImage captured = AWTUtil.toBufferedImage(picture);
-                thumbnailFilePath = thumbnailFilePath.replace(".mp4", DEFAULT_VIDEO_CAPTURE_EXTENSION);
                 putObject(s3Client, captured, bucket, thumbnailFilePath, "jpg");
             }
+            log.info(() -> "Upload : " + thumbnailFilePath);
 
             URI uri = new URI("https://www.ecismsw.com:8082/api/picture/thumbnail");
             uri = new URIBuilder(uri)
@@ -107,7 +101,10 @@ public class ThumbnailMaker implements RequestHandler<S3Event, String> {
         }
     }
 
-    private static String thumbnailUploadPath(String originFilePath) {
+    private String thumbnailPath(String originFilePath) {
+        if(getExtensionFromName(originFilePath).equals("mp4")) {
+            originFilePath = originFilePath.replace(".mp4", "." + DEFAULT_VIDEO_CAPTURE_EXTENSION);
+        }
         return originFilePath.replaceFirst(ORIGINAL_UPLOAD_ROOT_PATH, THUMBNAIL_UPLOAD_ROOT_PATH);
     }
 

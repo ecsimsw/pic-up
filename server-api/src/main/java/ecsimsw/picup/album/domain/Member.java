@@ -19,7 +19,7 @@ public class Member {
     @Id
     private Long id;
 
-    @Column(unique = true, nullable = false)
+    @Column(unique = true, nullable = false, length = 30)
     @NotBlank
     private String username;
 

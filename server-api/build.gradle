@@ -6,7 +6,7 @@ plugins {
 }
 
 group = 'ecsimsw.picup'
-version = '1.11.0'
+version = '2.0.0'
 sourceCompatibility = '17'
 
 repositories {
@@ -75,9 +75,6 @@ dependencies {
     annotationProcessor 'org.projectlombok:lombok'
     testCompileOnly 'org.projectlombok:lombok'
     testAnnotationProcessor 'org.projectlombok:lombok'
-
-    // Google Guava
-    implementation 'com.google.guava:guava:11.0.2'
 }
 
 configurations {

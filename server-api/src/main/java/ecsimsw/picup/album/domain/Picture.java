@@ -23,11 +23,11 @@ public class Picture {
     @ManyToOne
     private Album album;
 
-    @AttributeOverride(name = "resourceKey", column = @Column(name = "fileResource"))
+    @AttributeOverride(name = "resourceKey", column = @Column(name = "fileResource", length = 50))
     @Embedded
     private ResourceKey fileResource;
 
-    @AttributeOverride(name = "resourceKey", column = @Column(name = "thumbnail"))
+    @AttributeOverride(name = "resourceKey", column = @Column(name = "thumbnail", length = 50))
     @Embedded
     private ResourceKey thumbnail;
 

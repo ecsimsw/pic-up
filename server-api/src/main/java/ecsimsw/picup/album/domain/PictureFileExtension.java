@@ -4,7 +4,6 @@ import ecsimsw.picup.album.exception.UnsupportedFileTypeException;
 import ecsimsw.picup.storage.FileUtils;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.annotation.Nullable;
 import java.util.Arrays;
 import java.util.Objects;
 
@@ -20,7 +19,7 @@ public enum PictureFileExtension {
         this.isVideo = isVideo;
     }
 
-    public static PictureFileExtension fromFileName(@Nullable String fileName) {
+    public static PictureFileExtension fromFileName(String fileName) {
         var extension = FileUtils.getExtensionFromName(fileName);
         return of(extension);
     }
