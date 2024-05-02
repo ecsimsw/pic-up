@@ -1,6 +1,5 @@
 package ecsimsw.picup.album.domain;
 
-import ecsimsw.picup.album.exception.AlbumException;
 import ecsimsw.picup.album.exception.UnsupportedFileTypeException;
 import ecsimsw.picup.storage.FileUtils;
 import org.springframework.web.multipart.MultipartFile;
