@@ -13,7 +13,7 @@ public class FileEventScheduler {
     private final static int FILE_DELETION_SCHED_DELAY = 10_000;
     private final static int FILE_PRE_UPLOAD_SCHED_DELAY = 10_000;
 
-    private final FileService fileService;
+    private final StorageService fileService;
 
     @Scheduled(fixedDelay = FILE_DELETION_SCHED_DELAY)
     public void scheduleFileDeletion() {

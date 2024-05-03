@@ -35,7 +35,7 @@ class PictureCoreServiceTest {
     private StorageUsageService storageUsageService;
 
     @Mock
-    private FileService fileService;
+    private StorageService fileService;
 
     private PictureCoreService pictureCoreService;
 
@@ -48,7 +48,7 @@ class PictureCoreServiceTest {
     @Test
     void createImage() {
         var album = albumRepository.save(new Album(USER_ID, ALBUM_NAME, RESOURCE_KEY));
-        var picture = pictureCoreService.create(USER_ID, album.getId(), ORIGIN_FILE, THUMBNAIL_FILE);
+        var picture = pictureCoreService.create(USER_ID, album.getId(), ORIGIN_FILE);
         assertAll(
             () -> assertThat(picture.id()).isNotNull(),
             () -> assertThat(picture.albumId()).isEqualTo(album.getId()),
@@ -66,7 +66,7 @@ class PictureCoreServiceTest {
         doThrow(AlbumException.class)
             .when(storageUsageService).addUsage(USER_ID, uploadFileSize);
         assertThatThrownBy(
-            () -> pictureCoreService.create(USER_ID, album.getId(), ORIGIN_FILE, THUMBNAIL_FILE)
+            () -> pictureCoreService.create(USER_ID, album.getId(), ORIGIN_FILE)
         ).isInstanceOf(AlbumException.class);
     }
 
@@ -75,7 +75,7 @@ class PictureCoreServiceTest {
     void createInNonExistsAlbum() {
         var album = albumRepository.save(new Album(USER_ID, ALBUM_NAME, RESOURCE_KEY));
         assertThatThrownBy(
-            () -> pictureCoreService.create(USER_ID + 1, album.getId(), ORIGIN_FILE, THUMBNAIL_FILE)
+            () -> pictureCoreService.create(USER_ID + 1, album.getId(), ORIGIN_FILE)
         ).isInstanceOf(UnauthorizedException.class);
     }
 
@@ -83,7 +83,7 @@ class PictureCoreServiceTest {
     @Test
     void updateUsageByUpload() {
         var album = albumRepository.save(new Album(USER_ID, ALBUM_NAME, RESOURCE_KEY));
-        var pictureInfo = pictureCoreService.create(USER_ID, album.getId(), ORIGIN_FILE, THUMBNAIL_FILE);
+        var pictureInfo = pictureCoreService.create(USER_ID, album.getId(), ORIGIN_FILE);
         var picture = pictureRepository.findById(pictureInfo.id()).orElseThrow();
         verify(storageUsageService, atLeastOnce())
             .addUsage(USER_ID, picture.getFileSize());
@@ -93,9 +93,9 @@ class PictureCoreServiceTest {
     @Test
     void deleteAll() {
         var album = albumRepository.save(new Album(USER_ID, ALBUM_NAME, RESOURCE_KEY));
-        var picture1 = pictureCoreService.create(USER_ID, album.getId(), ORIGIN_FILE, THUMBNAIL_FILE);
-        var picture2 = pictureCoreService.create(USER_ID, album.getId(), ORIGIN_FILE, THUMBNAIL_FILE);
-        pictureCoreService.deleteAllByIds(USER_ID, album.getId(), List.of(picture1.id(), picture2.id()));
+        var picture1 = pictureCoreService.create(USER_ID, album.getId(), ORIGIN_FILE);
+        var picture2 = pictureCoreService.create(USER_ID, album.getId(), ORIGIN_FILE);
+        pictureCoreService.deleteAllByIds(USER_ID, List.of(picture1.id(), picture2.id()));
         assertThat(pictureRepository.findAllByAlbumId(album.getId())).isEmpty();
     }
 
@@ -103,8 +103,8 @@ class PictureCoreServiceTest {
     @Test
     void deleteAllInAlbum() {
         var album = albumRepository.save(new Album(USER_ID, ALBUM_NAME, RESOURCE_KEY));
-        pictureCoreService.create(USER_ID, album.getId(), ORIGIN_FILE, THUMBNAIL_FILE);
-        pictureCoreService.create(USER_ID, album.getId(), ORIGIN_FILE, THUMBNAIL_FILE);
+        pictureCoreService.create(USER_ID, album.getId(), ORIGIN_FILE);
+        pictureCoreService.create(USER_ID, album.getId(), ORIGIN_FILE);
         pictureCoreService.deleteAllInAlbum(USER_ID, album.getId());
         assertThat(pictureRepository.findAllByAlbumId(album.getId())).isEmpty();
     }
@@ -113,7 +113,7 @@ class PictureCoreServiceTest {
     @Test
     void deleteUnauthorized() {
         var album = albumRepository.save(new Album(USER_ID, ALBUM_NAME, RESOURCE_KEY));
-        pictureCoreService.create(USER_ID, album.getId(), ORIGIN_FILE, THUMBNAIL_FILE);
+        pictureCoreService.create(USER_ID, album.getId(), ORIGIN_FILE);
         assertThatThrownBy(
             () -> pictureCoreService.deleteAllInAlbum(USER_ID + 1, album.getId())
         ).isInstanceOf(UnauthorizedException.class);
@@ -133,10 +133,10 @@ class PictureCoreServiceTest {
     @Test
     void fetchOrderByCursor() {
         var album = albumRepository.save(new Album(USER_ID, ALBUM_NAME, RESOURCE_KEY));
-        var picture1 = pictureCoreService.create(USER_ID, album.getId(), ORIGIN_FILE, THUMBNAIL_FILE);
-        var picture2 = pictureCoreService.create(USER_ID, album.getId(), ORIGIN_FILE, THUMBNAIL_FILE);
-        var picture3 = pictureCoreService.create(USER_ID, album.getId(), ORIGIN_FILE, THUMBNAIL_FILE);
-        var picture4 = pictureCoreService.create(USER_ID, album.getId(), ORIGIN_FILE, THUMBNAIL_FILE);
+        var picture1 = pictureCoreService.create(USER_ID, album.getId(), ORIGIN_FILE);
+        var picture2 = pictureCoreService.create(USER_ID, album.getId(), ORIGIN_FILE);
+        var picture3 = pictureCoreService.create(USER_ID, album.getId(), ORIGIN_FILE);
+        var picture4 = pictureCoreService.create(USER_ID, album.getId(), ORIGIN_FILE);
         var result = pictureCoreService.fetchOrderByCursor(USER_ID, album.getId(), PictureSearchCursor.from(2, picture3.createdAt()));
         assertThat(result).isEqualTo(List.of(picture2, picture1));
         assertThat(result).doesNotContain(picture4);

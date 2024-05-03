@@ -1,6 +1,6 @@
 package ecsimsw.picup.config;
 
-import static ecsimsw.picup.config.S3Config.BUCKET_NAME;
+import static ecsimsw.picup.album.service.StorageService.BUCKET_NAME;
 
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.auth.AnonymousAWSCredentials;

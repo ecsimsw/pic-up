@@ -14,14 +14,12 @@ public class AlbumService {
     private static final float ALBUM_THUMBNAIL_SCALE = 0.5f;
 
     private final UserLock userLock;
-    private final FileService fileService;
+    private final StorageService fileService;
     private final AlbumCoreService albumCoreService;
-    private final ThumbnailService thumbnailService;
     private final ResourceUrlService urlService;
 
     public long initAlbum(Long userId, String name, MultipartFile file) {
-        var resized = thumbnailService.resizeImage(file, ALBUM_THUMBNAIL_SCALE);
-        var thumbnailFile = fileService.uploadFileAsync(resized).join();
+        var thumbnailFile = fileService.uploadImageThumbnailAsync(file, ALBUM_THUMBNAIL_SCALE).join();
         try {
             return albumCoreService.create(userId, name, thumbnailFile);
         } catch (Exception e) {

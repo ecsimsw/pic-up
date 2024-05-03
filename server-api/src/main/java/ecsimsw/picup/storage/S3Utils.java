@@ -9,6 +9,7 @@ import com.amazonaws.services.s3.model.GetObjectRequest;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.util.IOUtils;
 import ecsimsw.picup.album.exception.StorageException;
+import java.io.OutputStream;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -37,6 +38,15 @@ public class S3Utils {
         try {
             var s3Object = s3Client.getObject(new GetObjectRequest(bucket, path));
             return IOUtils.toByteArray(s3Object.getObjectContent());
+        } catch (Exception e) {
+            throw new StorageException("Failed to get object : " + path);
+        }
+    }
+
+    public static void getResource(AmazonS3 s3Client, String bucket, String path, OutputStream os) {
+        try {
+            var s3Object = s3Client.getObject(new GetObjectRequest(bucket, path));
+            IOUtils.copy(s3Object.getObjectContent(), os);
         } catch (Exception e) {
             throw new StorageException("Failed to get object : " + path);
         }

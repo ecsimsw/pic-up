@@ -1,5 +1,7 @@
 package ecsimsw.picup.config.dev;
 
+import static ecsimsw.picup.album.service.StorageService.BUCKET_NAME;
+
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.auth.AnonymousAWSCredentials;
 import com.amazonaws.client.builder.AwsClientBuilder;
@@ -12,8 +14,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Profile;
-
-import static ecsimsw.picup.config.S3Config.BUCKET_NAME;
 
 @Configuration
 public class MockS3Config {

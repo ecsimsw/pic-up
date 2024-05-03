@@ -1,6 +1,7 @@
 package ecsimsw.picup.album.dto;
 
-import static ecsimsw.picup.config.S3Config.ROOT_PATH;
+import static ecsimsw.picup.album.service.StorageService.ROOT_PATH;
+import static ecsimsw.picup.album.service.StorageService.THUMBNAIL_PATH;
 
 import ecsimsw.picup.album.domain.Picture;
 import java.time.LocalDateTime;
@@ -31,10 +32,10 @@ public record PictureResponse(
     }
 
     private static String thumbnailUrl(Picture picture) {
-        if(picture.getThumbnail() == null) {
-            return fileResourceUrl(picture);
+        if(picture.getHasThumbnail()) {
+            return THUMBNAIL_PATH + picture.getFileResource().value();
         }
-        return ROOT_PATH + picture.getThumbnail().value();
+        return ROOT_PATH + picture.getFileResource().value();
     }
 
     public static List<PictureResponse> listOf(List<Picture> pictures) {

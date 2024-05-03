@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 @Entity
-public class FilePreUploadEvent {
+public class PreUploadPicture {
 
     @Id
     private String resourceKey;
@@ -21,13 +21,18 @@ public class FilePreUploadEvent {
     @Column
     private LocalDateTime createdAt;
 
-    public FilePreUploadEvent(String resourceKey, Long fileSize, LocalDateTime createdAt) {
+    public PreUploadPicture(String resourceKey, Long fileSize, LocalDateTime createdAt) {
         this.resourceKey = resourceKey;
         this.fileSize = fileSize;
         this.createdAt = createdAt;
     }
 
-    public static FilePreUploadEvent init(ResourceKey resourceKey, long fileSize) {
-        return new FilePreUploadEvent(resourceKey.value(), fileSize, LocalDateTime.now());
+    public static PreUploadPicture init(String fileName, long fileSize) {
+        var resourceKey = ResourceKey.fromFileName(fileName);
+        return new PreUploadPicture(resourceKey.value(), fileSize, LocalDateTime.now());
+    }
+
+    public Picture toPicture(Album album) {
+        return new Picture(album, resourceKey, fileSize);
     }
 }

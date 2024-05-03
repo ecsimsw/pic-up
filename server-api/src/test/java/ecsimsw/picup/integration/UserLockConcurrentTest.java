@@ -7,7 +7,7 @@ import static ecsimsw.picup.utils.ConcurrentJobTestUtils.concurrentJob;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import ecsimsw.picup.album.service.AlbumCoreService;
-import ecsimsw.picup.album.service.FileService;
+import ecsimsw.picup.album.service.StorageService;
 import ecsimsw.picup.album.service.MemberService;
 import ecsimsw.picup.album.service.PictureService;
 import ecsimsw.picup.album.service.StorageUsageService;
@@ -38,7 +38,7 @@ public class UserLockConcurrentTest {
     private StorageUsageService storageUsageService;
 
     @MockBean
-    private FileService fileService;
+    private StorageService fileService;
 
     @MockBean
     private ThumbnailService thumbnailService;

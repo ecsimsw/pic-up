@@ -90,8 +90,8 @@ public class ThumbnailMaker implements RequestHandler<S3Event, String> {
 
             URI uri = new URI("https://www.ecismsw.com:8082/api/picture/thumbnail");
             uri = new URIBuilder(uri)
-                .addParameter("originResourceKey", originFilePath)
-                .addParameter("thumbnailResourceKey", thumbnailFilePath)
+                .addParameter("originResourceKey", originFilePath.replaceFirst(ORIGINAL_UPLOAD_ROOT_PATH, ""))
+                .addParameter("thumbnailResourceKey", thumbnailFilePath.replaceFirst(THUMBNAIL_UPLOAD_ROOT_PATH, ""))
                 .build();
             HttpClient httpClient = HttpClientBuilder.create().build();
             httpClient.execute(new HttpPost(uri));

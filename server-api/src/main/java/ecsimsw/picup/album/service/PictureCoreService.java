@@ -5,8 +5,9 @@ import ecsimsw.picup.album.domain.AlbumRepository;
 import ecsimsw.picup.album.domain.Picture;
 import ecsimsw.picup.album.domain.PictureRepository;
 import ecsimsw.picup.album.domain.Picture_;
-import ecsimsw.picup.album.dto.FilePreUploadResponse;
-import ecsimsw.picup.album.dto.FileUploadResponse;
+import ecsimsw.picup.album.domain.PreUploadPicture;
+import ecsimsw.picup.album.domain.PreUploadPictureRepository;
+import ecsimsw.picup.album.dto.PreUploadPictureResponse;
 import ecsimsw.picup.album.dto.PictureResponse;
 import ecsimsw.picup.album.dto.PictureSearchCursor;
 import ecsimsw.picup.album.exception.AlbumException;
@@ -25,70 +26,64 @@ public class PictureCoreService {
 
     private final AlbumRepository albumRepository;
     private final PictureRepository pictureRepository;
-    private final FileService fileService;
+    private final StorageService storageService;
     private final StorageUsageService storageUsageService;
+    private final PreUploadPictureRepository preUploadPictureRepository;
 
     @Transactional
-    public FilePreUploadResponse preUpload(Long userId, Long albumId, String fileName, Long fileSize) {
+    public PreUploadPictureResponse preUpload(Long userId, Long albumId, String fileName, Long fileSize) {
         validateAlbumOwner(userId, albumId);
         storageUsageService.addUsage(userId, fileSize);
-        return fileService.preUpload(fileName, fileSize);
+        var preUpload = PreUploadPicture.init(fileName, fileSize);
+        preUploadPictureRepository.save(preUpload);
+        var preSignedUrl = storageService.preSingedUrl(preUpload);
+        return PreUploadPictureResponse.of(preUpload, preSignedUrl);
     }
 
     @Transactional
     public PictureResponse commit(Long userId, Long albumId, String resourceKey) {
         var album = getUserAlbum(userId, albumId);
-        var preUploadEvent = fileService.commit(resourceKey);
-        var picture = new Picture(album, preUploadEvent.getResourceKey(), preUploadEvent.getFileSize());
+        var preUpload = preUploadPictureRepository.findById(resourceKey).orElseThrow(() -> new AlbumException("Nothing to commit"));
+        preUploadPictureRepository.delete(preUpload);
+        var picture = preUpload.toPicture(album);
         pictureRepository.save(picture);
         return PictureResponse.of(picture);
     }
 
     @Transactional
-    public void setThumbnail(String originResourceKey, String thumbnailResourceKey) {
-        var picture = pictureRepository.findByResourceKey(originResourceKey)
+    public void setThumbnailReady(String resourceKey) {
+        var picture = pictureRepository.findByResourceKey(resourceKey)
             .orElseThrow(() -> new AlbumException("Not exists picture"));
-        picture.setThumbnail(thumbnailResourceKey);
+        picture.setHasThumbnail(true);
         pictureRepository.save(picture);
     }
 
     @Transactional
-    public PictureResponse create(Long userId, Long albumId, FileUploadResponse originFile, FileUploadResponse thumbnailFile) {
-        var album = getUserAlbum(userId, albumId);
-        var picture = new Picture(album, originFile.resourceKey(), thumbnailFile.resourceKey(), originFile.size());
-        pictureRepository.save(picture);
-        storageUsageService.addUsage(userId, picture.getFileSize());
-        return PictureResponse.of(picture);
-    }
-
-    @Transactional
-    public void deleteAll(Long userId, Long albumId, List<Picture> pictures) {
-        validateAlbumOwner(userId, albumId);
+    public void deleteAll(Long userId, List<Picture> pictures) {
         pictures.forEach(picture -> {
             picture.checkSameUser(userId);
-            fileService.deleteAsync(picture.getFileResource());
-            fileService.deleteAsync(picture.getThumbnail());
+            storageService.deleteAsync(picture.getFileResource());
         });
         storageUsageService.subtractUsage(userId, pictures);
         pictureRepository.deleteAll(pictures);
     }
 
     @Transactional
-    public void deleteAllByIds(Long userId, Long albumId, List<Long> pictureIds) {
+    public void deleteAllByIds(Long userId, List<Long> pictureIds) {
         var pictures = pictureRepository.findAllById(pictureIds);
-        deleteAll(userId, albumId, pictures);
+        deleteAll(userId, pictures);
     }
 
     @Transactional
     public void deleteAllInAlbum(Long userId, Long albumId) {
+        validateAlbumOwner(userId, albumId);
         var pictures = pictureRepository.findAllByAlbumId(albumId);
-        deleteAll(userId, albumId, pictures);
+        deleteAll(userId, pictures);
     }
 
     @Transactional(readOnly = true)
     public List<PictureResponse> fetchOrderByCursor(Long userId, Long albumId, PictureSearchCursor cursor) {
-//        var album = getUserAlbum(userId, albumId);
-        var album = albumRepository.findById(1l).get();
+        var album = getUserAlbum(userId, albumId);
         var pictures = pictureRepository.findAllByAlbumOrderThan(
             album.getId(),
             cursor.createdAt().orElse(LocalDateTime.now()),

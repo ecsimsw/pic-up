@@ -13,9 +13,6 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class S3Config {
 
-    public static final String ROOT_PATH = "storage/";
-    public static final String BUCKET_NAME = "picup-ecsimsw";
-
     @Bean
     public AmazonS3 objectStorageClient(
         @Value("${object.storage.credential.accessKey}")

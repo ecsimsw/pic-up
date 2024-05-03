@@ -16,7 +16,7 @@ public class AlbumCoreService {
 
     private final PictureCoreService pictureCoreService;
     private final AlbumRepository albumRepository;
-    private final FileService fileService;
+    private final StorageService fileService;
 
     @Transactional(readOnly = true)
     public List<AlbumResponse> findAll(Long userId) {

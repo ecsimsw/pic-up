@@ -28,7 +28,7 @@ public class PictureController {
     private final PictureService pictureService;
 
     @PostMapping("/api/album/{albumId}/picture/presigned")
-    public ResponseEntity<FilePreUploadResponse> preUpload(
+    public ResponseEntity<PreUploadPictureResponse> preUpload(
         @TokenPayload AuthTokenPayload loginUser,
         @PathVariable Long albumId,
         @RequestParam String fileName,
@@ -50,10 +50,9 @@ public class PictureController {
 
     @PostMapping("/api/picture/thumbnail")
     public ResponseEntity<Void> thumbnail(
-        @RequestParam String originResourceKey,
-        @RequestParam String thumbnailResourceKey
+        @RequestParam String resourceKey
     ) {
-        pictureService.setThumbnail(originResourceKey, thumbnailResourceKey);
+        pictureService.setThumbnailReady(resourceKey);
         return ResponseEntity.ok().build();
     }
 

@@ -1,6 +1,6 @@
 package ecsimsw.picup.album.dto;
 
-import static ecsimsw.picup.config.S3Config.ROOT_PATH;
+import static ecsimsw.picup.album.service.StorageService.ROOT_PATH;
 
 import ecsimsw.picup.album.domain.Album;
 import java.time.LocalDateTime;

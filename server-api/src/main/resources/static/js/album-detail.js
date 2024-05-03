@@ -207,7 +207,7 @@ function addVideo(itemId, picture) {
             '         preload="auto"\n' +
             '         width="80%"\n' +
             '         height="80%"\n' +
-            '         poster=\"' + picture.thumbnailResourceKey + '\"\n' +
+            '         poster=\"' + picture.thumbnailUrl + '\"\n' +
             '         data-setup="{}"\n' +
             '         \n' +
             '        <source src=\"' + picture.resourceKey + "\"" +' type="video/mp4"/>\n' +

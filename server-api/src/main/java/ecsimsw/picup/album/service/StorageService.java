@@ -1,11 +1,7 @@
 package ecsimsw.picup.album.service;
 
-import static ecsimsw.picup.config.S3Config.BUCKET_NAME;
-import static ecsimsw.picup.config.S3Config.ROOT_PATH;
-
 import com.amazonaws.services.s3.AmazonS3;
 import ecsimsw.picup.album.domain.*;
-import ecsimsw.picup.album.dto.FilePreUploadResponse;
 import ecsimsw.picup.album.dto.FileUploadResponse;
 import ecsimsw.picup.album.exception.AlbumException;
 import ecsimsw.picup.storage.S3Utils;
@@ -24,7 +20,11 @@ import org.springframework.web.multipart.MultipartFile;
 @Slf4j
 @RequiredArgsConstructor
 @Service
-public class FileService {
+public class StorageService {
+
+    public static final String ROOT_PATH = "storage/";
+    public static final String THUMBNAIL_PATH = "thumb/";
+    public static final String BUCKET_NAME = "picup-ecsimsw";
 
     private static final long PRE_SIGNED_URL_EXPIRATION_MS = 10_000;
     private static final int WAIT_TIME_FOR_PICTURE_UPLOAD_SEC = 10;
@@ -32,28 +32,33 @@ public class FileService {
 
     private final AmazonS3 s3Client;
     private final ThumbnailService thumbnailService;
-    private final FilePreUploadEventRepository filePreUploadEventRepository;
+    private final PreUploadPictureRepository preUploadPictureRepository;
     private final FileDeletionEventRepository fileDeletionEventRepository;
-
-    @Async
-    public CompletableFuture<FileUploadResponse> uploadFileAsync(MultipartFile file) {
-        var resourceKey = ResourceKey.fromMultipartFile(file);
-        var resourcePath = resourcePath(resourceKey);
-        S3Utils.store(s3Client, BUCKET_NAME, resourcePath, file);
-        var uploadResponse = new FileUploadResponse(resourceKey, file.getSize());
-        return new AsyncResult<>(uploadResponse).completable();
-    }
 
     @Async
     public CompletableFuture<FileUploadResponse> uploadImageThumbnailAsync(MultipartFile file, float scale) {
         var thumbnailFile = thumbnailService.resizeImage(file, scale);
-        return uploadFileAsync(thumbnailFile);
+        var resourceKey = ResourceKey.fromMultipartFile(thumbnailFile);
+        S3Utils.store(s3Client, BUCKET_NAME, THUMBNAIL_PATH + resourceKey.value(), file);
+        var uploadResponse = new FileUploadResponse(resourceKey, file.getSize());
+        return new AsyncResult<>(uploadResponse).completable();
     }
 
-    @Async
-    public CompletableFuture<FileUploadResponse> uploadVideoThumbnailAsync(MultipartFile videoFile) {
-        var thumbnailFile = thumbnailService.captureVideo(videoFile);
-        return uploadFileAsync(thumbnailFile);
+    @Transactional
+    public String preSingedUrl(PreUploadPicture preUploadPicture) {
+        return S3Utils.getPreSignedUrl(
+            s3Client,
+            BUCKET_NAME,
+            ROOT_PATH + preUploadPicture.getResourceKey(),
+            PRE_SIGNED_URL_EXPIRATION_MS
+        );
+    }
+
+    @Transactional
+    public PreUploadPicture commit(String resourceKey) {
+        var preUploadEvent = preUploadPictureRepository.findById(resourceKey).orElseThrow(() -> new AlbumException("Nothing to commit"));
+        preUploadPictureRepository.delete(preUploadEvent);
+        return preUploadEvent;
     }
 
     @Transactional
@@ -69,7 +74,7 @@ public class FileService {
     @Transactional
     public void deleteFailedToUploadFiles() {
         var expiration = LocalDateTime.now().minusSeconds(WAIT_TIME_FOR_PICTURE_UPLOAD_SEC);
-        filePreUploadEventRepository.findAllByCreatedAtGreaterThan(expiration);
+        preUploadPictureRepository.deleteAllCreatedAfter(expiration);
     }
 
     @Transactional
@@ -81,38 +86,14 @@ public class FileService {
                     log.error("failed to delete");
                     return;
                 }
-                var resourcePath = resourcePath(event.getResourceKey());
-                S3Utils.deleteIfExists(s3Client, BUCKET_NAME, resourcePath);
+                var resourcePath = ROOT_PATH + event.getResourceKey().value();;
+                S3Utils.deleteIfExists(s3Client, BUCKET_NAME, ROOT_PATH + resourcePath);
+                S3Utils.deleteIfExists(s3Client, BUCKET_NAME, THUMBNAIL_PATH + resourcePath);
                 fileDeletionEventRepository.delete(event);
             } catch (Exception e) {
                 event.countFailed();
                 fileDeletionEventRepository.save(event);
             }
         });
-    }
-
-    @Transactional
-    public FilePreUploadResponse preUpload(String fileName, long fileSize) {
-        var resourceKey = ResourceKey.fromFileName(fileName);
-        var preUploadEvent = FilePreUploadEvent.init(resourceKey, fileSize);
-        filePreUploadEventRepository.save(preUploadEvent);
-        var preSignedUrl = S3Utils.getPreSignedUrl(
-            s3Client,
-            BUCKET_NAME,
-            resourcePath(resourceKey),
-            PRE_SIGNED_URL_EXPIRATION_MS
-        );
-        return FilePreUploadResponse.of(preUploadEvent, preSignedUrl);
-    }
-
-    @Transactional
-    public FilePreUploadEvent commit(String resourceKey) {
-        var preUploadEvent = filePreUploadEventRepository.findById(resourceKey).orElseThrow(() -> new AlbumException("Nothing to commit"));
-        filePreUploadEventRepository.delete(preUploadEvent);
-        return preUploadEvent;
-    }
-
-    private String resourcePath(ResourceKey resourceKey) {
-        return ROOT_PATH + resourceKey.value();
     }
 }

@@ -23,45 +23,40 @@ public class Picture {
     @ManyToOne
     private Album album;
 
-    @AttributeOverride(name = "resourceKey", column = @Column(name = "fileResource", length = 50))
     @Embedded
     private ResourceKey fileResource;
-
-    @AttributeOverride(name = "resourceKey", column = @Column(name = "thumbnail", length = 50))
-    @Embedded
-    private ResourceKey thumbnail;
 
     @Column(nullable = false)
     private Long fileSize;
 
     @Column(nullable = false)
+    private Boolean hasThumbnail;
+
+    @Column(nullable = false)
     private LocalDateTime createdAt;
 
-    public Picture(Long id, Album album, ResourceKey fileResource, ResourceKey thumbnail, long fileSize, LocalDateTime createdAt) {
+    public Picture(Long id, Album album, ResourceKey fileResource, boolean hasThumbnail, long fileSize, LocalDateTime createdAt) {
         if (album == null || fileResource == null || fileSize < 0) {
             throw new AlbumException("Invalid picture format");
         }
         this.id = id;
         this.album = album;
         this.fileResource = fileResource;
-        this.thumbnail = thumbnail;
+        this.hasThumbnail = hasThumbnail;
         this.fileSize = fileSize;
         this.createdAt = createdAt;
     }
 
-    public Picture(Album album, ResourceKey fileResource, ResourceKey thumbnail, long fileSize) {
-        this(null, album, fileResource, thumbnail, fileSize, LocalDateTime.now());
+    public Picture(Album album, ResourceKey fileResource, boolean hasThumbnail, long fileSize) {
+        this(null, album, fileResource, hasThumbnail, fileSize, LocalDateTime.now());
     }
 
     public Picture(Album album, String fileResource, long fileSize) {
-        this(null, album, new ResourceKey(fileResource), null, fileSize, LocalDateTime.now());
+        this(null, album, new ResourceKey(fileResource), false, fileSize, LocalDateTime.now());
     }
 
-    public void setThumbnail(String resourceKey) {
-        if(thumbnail != null) {
-            throw new AlbumException("Thumbnail already exists");
-        }
-        this.thumbnail = new ResourceKey(resourceKey);
+    public void setHasThumbnail(boolean hasThumbnail) {
+        this.hasThumbnail = hasThumbnail;
     }
 
     public void checkSameUser(Long userId) {
