@@ -18,8 +18,8 @@ public interface StorageResourceRepository extends JpaRepository<StorageResource
 
     @Modifying
     @Query("SELECT resource FROM StorageResource resource " +
-            "WHERE resource.createdAt > :expiration")
-    List<StorageResource> findAllCreatedBefore(
+            "WHERE resource.createdAt > :expiration AND resource.toBeDeleted = true")
+    List<StorageResource> findAllToBeDeletedCreatedBefore(
         @Param("expiration") LocalDateTime expiration
     );
 }

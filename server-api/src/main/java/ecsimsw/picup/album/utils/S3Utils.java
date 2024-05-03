@@ -31,15 +31,6 @@ public class S3Utils {
         }
     }
 
-    public static byte[] getResource(AmazonS3 s3Client, String bucket, String path) {
-        try {
-            var s3Object = s3Client.getObject(new GetObjectRequest(bucket, path));
-            return IOUtils.toByteArray(s3Object.getObjectContent());
-        } catch (Exception e) {
-            throw new StorageException("Failed to get object : " + path);
-        }
-    }
-
     public static void getResource(AmazonS3 s3Client, String bucket, String path, OutputStream os) {
         try {
             var s3Object = s3Client.getObject(new GetObjectRequest(bucket, path));

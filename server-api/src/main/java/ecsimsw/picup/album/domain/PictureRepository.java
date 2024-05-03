@@ -16,7 +16,7 @@ public interface PictureRepository extends JpaRepository<Picture, Long> {
     @Query("SELECT picture FROM Picture picture JOIN FETCH picture.album " +
         "WHERE picture.fileResource.resourceKey = :resourceKey")
     Optional<Picture> findByResourceKey(
-        @Param("resourceUrl") String resourceKey
+        @Param("resourceKey") String resourceKey
     );
 
     @Query("SELECT picture FROM Picture picture JOIN FETCH picture.album " +

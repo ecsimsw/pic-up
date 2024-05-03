@@ -1,5 +1,6 @@
 package ecsimsw.picup.album.service;
 
+import ecsimsw.picup.album.controller.PreUploadResponse;
 import ecsimsw.picup.album.domain.Picture;
 import ecsimsw.picup.album.dto.PictureResponse;
 import ecsimsw.picup.album.dto.PictureSearchCursor;
@@ -19,7 +20,7 @@ public class PictureFacadeService {
     private final PictureService pictureService;
     private final FileUrlService fileUrlService;
 
-    public String preUpload(Long userId, Long albumId, String fileName, Long fileSize) {
+    public PreUploadResponse preUpload(Long userId, Long albumId, String fileName, Long fileSize) {
         return pictureService.preUpload(userId, albumId, fileName, fileSize);
     }
 
@@ -53,17 +54,16 @@ public class PictureFacadeService {
     }
 
     private PictureResponse toResponse(Picture picture, String remoteIp) {
-        if (picture.getHasThumbnail()) {
+        if (!picture.getHasThumbnail()) {
             return PictureResponse.of(
                 picture,
-                fileUrlService.fileUrl(STORAGE, remoteIp, picture.getFileResource()),
-                fileUrlService.fileUrl(THUMBNAIL, remoteIp, picture.getFileResource())
+                fileUrlService.fileUrl(STORAGE, remoteIp, picture.getFileResource())
             );
         }
         return PictureResponse.of(
             picture,
             fileUrlService.fileUrl(STORAGE, remoteIp, picture.getFileResource()),
-            fileUrlService.fileUrl(STORAGE, remoteIp, picture.getFileResource())
+            fileUrlService.fileUrl(THUMBNAIL, remoteIp, picture.getFileResource())
         );
     }
 }

@@ -1,5 +1,6 @@
 package ecsimsw.picup.album.service;
 
+import ecsimsw.picup.album.controller.PreUploadResponse;
 import ecsimsw.picup.album.domain.*;
 import ecsimsw.picup.album.dto.PictureResponse;
 import ecsimsw.picup.album.dto.PictureSearchCursor;
@@ -26,7 +27,7 @@ public class PictureService {
     private final PictureRepository pictureRepository;
 
     @Transactional
-    public String preUpload(Long userId, Long albumId, String fileName, Long fileSize) {
+    public PreUploadResponse preUpload(Long userId, Long albumId, String fileName, Long fileSize) {
         checkAbleToUpload(userId, albumId, fileSize);
         return fileService.preUpload(STORAGE, fileName, fileSize);
     }
@@ -75,7 +76,7 @@ public class PictureService {
 
     private void checkAbleToUpload(Long userId, Long albumId, long fileSize) {
         validateAlbumOwner(userId, albumId);
-        if(storageUsageService.isAbleToStore(userId, fileSize)) {
+        if(!storageUsageService.isAbleToStore(userId, fileSize)) {
             throw new AlbumException("Lack of storage space");
         }
     }

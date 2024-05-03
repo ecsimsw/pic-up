@@ -8,6 +8,7 @@ public record PictureResponse(
     Long id,
     Long albumId,
     boolean isVideo,
+    boolean hasThumbnail,
     String resourceUrl,
     String thumbnailUrl,
     LocalDateTime createdAt
@@ -17,8 +18,21 @@ public record PictureResponse(
             picture.getId(),
             picture.getAlbum().getId(),
             picture.extension().isVideo,
+            true,
             resourceUrl,
             thumbnailUrl,
+            picture.getCreatedAt()
+        );
+    }
+
+    public static PictureResponse of(Picture picture, String resourceUrl) {
+        return new PictureResponse(
+            picture.getId(),
+            picture.getAlbum().getId(),
+            picture.extension().isVideo,
+            false,
+            resourceUrl,
+            resourceUrl,
             picture.getCreatedAt()
         );
     }

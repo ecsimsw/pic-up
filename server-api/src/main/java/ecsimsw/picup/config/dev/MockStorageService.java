@@ -1,49 +1,24 @@
-//package ecsimsw.picup.config.dev;
-//
-//import com.amazonaws.services.s3.AmazonS3;
-//import ecsimsw.picup.album.domain.FileDeletionEventRepository;
-//import ecsimsw.picup.album.domain.StorageResourceRepository;
-//import ecsimsw.picup.album.domain.StorageType;
-//import ecsimsw.picup.album.dto.PreUploadResponse;
-//import ecsimsw.picup.album.domain.ResourceKey;
-//import ecsimsw.picup.album.dto.PreUploadPictureResponse;
-//import ecsimsw.picup.album.service.FileResourceService;
-//import ecsimsw.picup.album.service.StorageService;
-//import ecsimsw.picup.album.service.ThumbnailService;
-//import org.springframework.context.annotation.Primary;
-//import org.springframework.context.annotation.Profile;
-//import org.springframework.stereotype.Service;
-//
-//@Primary
-//@Profile("dev")
-//@Service
-//public class MockStorageService extends FileResourceService {
-//
-//    private final StorageResourceRepository preUploadPictureRepository;
-//
-//    public MockStorageService(
-//        AmazonS3 s3Client,
-//        StorageResourceRepository storageResourceRepository,
-//    ) {
-//        super(s3Client, storageResourceRepository);
-//        this.preUploadPictureRepository = storageResourceRepository;
-//    }
-//
-//    @Override
-//    public String preUpload(StorageType type, String fileName, long fileSize) {
-//        var resourceUrl = ResourceKey.fromFileName(fileName);
-//        St
-//        var preUploadEvent = PreUploadResponse.of(resourceUrl, fileSize);
-//        preUploadPictureRepository.save(preUploadEvent);
-//        var preSignedUrl = "http://localhost:8084/storage/" + resourceUrl.value();
-//        return PreUploadPictureResponse.of(preUploadEvent, preSignedUrl);
-//    }
-//
-//    public PreUploadPictureResponse preUpload(String fileName, long fileSize) {
-//        var resourceUrl = ResourceKey.fromFileName(fileName);
-//        var preUploadEvent = PreUploadResponse.init(resourceUrl, fileSize);
-//        preUploadPictureRepository.save(preUploadEvent);
-//        var preSignedUrl = "http://localhost:8084/storage/" + resourceUrl.value();
-//        return PreUploadPictureResponse.of(preUploadEvent, preSignedUrl);
-//    }
-//}
+package ecsimsw.picup.config.dev;
+
+import com.amazonaws.services.s3.AmazonS3;
+import ecsimsw.picup.album.domain.StorageResourceRepository;
+import ecsimsw.picup.album.service.FileStorageService;
+import ecsimsw.picup.album.service.ThumbnailService;
+import org.springframework.context.annotation.Primary;
+import org.springframework.context.annotation.Profile;
+import org.springframework.stereotype.Service;
+
+@Primary
+@Profile("dev")
+@Service
+public class MockStorageService extends FileStorageService {
+
+    public MockStorageService(AmazonS3 s3Client, StorageResourceRepository storageResourceRepository, ThumbnailService thumbnailService) {
+        super(s3Client, storageResourceRepository, thumbnailService);
+    }
+
+    @Override
+    public String preSignedUrl(String resourceUrl) {
+        return "http://localhost:8084/" + resourceUrl;
+    }
+}

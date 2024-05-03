@@ -22,8 +22,6 @@ public class MockCacheMangerConfig {
         ConcurrentMapCacheManager cacheManager = new ConcurrentMapCacheManager();
         cacheManager.setAllowNullValues(false);
         cacheManager.setCacheNames(List.of(
-            CacheType.USER_ALBUMS,
-            CacheType.FIRST_10_PIC_IN_ALBUM,
             CacheType.SIGNED_URL
         ));
         return cacheManager;

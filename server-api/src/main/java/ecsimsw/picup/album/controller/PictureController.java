@@ -23,8 +23,8 @@ public class PictureController {
 
     private final PictureFacadeService pictureService;
 
-    @PostMapping("/api/album/{albumId}/picture/presigned")
-    public ResponseEntity<String> preUpload(
+    @PostMapping("/api/album/{albumId}/picture/preUpload")
+    public ResponseEntity<PreUploadResponse> preUpload(
         @TokenPayload AuthTokenPayload loginUser,
         @PathVariable Long albumId,
         @RequestParam String fileName,

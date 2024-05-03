@@ -25,31 +25,7 @@ document.addEventListener("DOMContentLoaded", function () {
         addDropZone(albumId);
         setAlbumInfo();
         fetchData(serverUrl + "/api/album/" + albumId + "/picture", function (pictures) {
-            pictures.forEach(picture => {
-                if (inPagePictures.has(picture.id)) {
-                    return
-                }
-                const itemId = createNewPictureItem(albumId, picture.id, picture.thumbnailUrl)
-                console.log(picture.thumbnailUrl)
-                if(!picture.isVideo) {
-                    if(mobileMode) {
-                        addGalleryImage(
-                            picture.thumbnailUrl,
-                            picture.thumbnailUrl,
-                        )
-                    } else {
-                        addGalleryImage(
-                            picture.resourceUrl,
-                            picture.thumbnailUrl,
-                        )
-                    }
-                    addImageViewer(`album-${albumId}-picture-${picture.id}`, galleryOrderNumber);
-                    galleryOrderNumber++
-                } else {
-                    addVideo(itemId, picture)
-                }
-                inPagePictures.add(picture.id)
-            });
+            addPicturesInPage(pictures);
             cursorId = pictures[pictures.length - 1].id
             cursorCreatedAt = pictures[pictures.length - 1].createdAt
         })
@@ -71,25 +47,7 @@ function handleScroll() {
                 if(inPagePictures.has(picture.id)) {
                     return
                 }
-                const itemId = createNewPictureItem(albumId, picture.id, picture.thumbnailUrl)
-                if(!picture.isVideo) {
-                    if(mobileMode) {
-                        addGalleryImage(
-                            picture.thumbnailUrl,
-                            picture.thumbnailUrl,
-                        )
-                    } else {
-                        addGalleryImage(
-                            picture.resourceUrl,
-                            picture.thumbnailUrl,
-                        )
-                    }
-                    addImageViewer(`album-${albumId}-picture-${picture.id}`, galleryOrderNumber);
-                    galleryOrderNumber++
-                } else {
-                    addVideo(itemId, picture)
-                }
-                inPagePictures.add(picture.id)
+                addPicturesInPage(pictures);
             });
             if (pictures.length === 0) {
                 cursorEnd = true;
@@ -99,6 +57,36 @@ function handleScroll() {
             }
         })
     }
+}
+
+function addPicturesInPage(pictures) {
+    pictures.forEach(picture => {
+        if (inPagePictures.has(picture.id)) {
+            return
+        }
+        if (picture.isVideo && picture.hasThumbnail) {
+            const itemId = createNewPictureItem(albumId, picture.id, picture.thumbnailUrl)
+            addVideo(itemId, picture.resourceUrl, picture.thumbnailUrl)
+            inPagePictures.add(picture.id)
+            return
+        }
+        if (picture.isVideo && !picture.hasThumbnail) {
+            const thumbnailUrl = "../assets/images/video.png"
+            const itemId = createNewPictureItem(albumId, picture.id, thumbnailUrl)
+            addVideo(itemId, picture.resourceUrl, thumbnailUrl)
+            inPagePictures.add(picture.id)
+            return
+        }
+        createNewPictureItem(albumId, picture.id, picture.thumbnailUrl)
+        if (mobileMode) {
+            addGalleryImage(picture.thumbnailUrl, picture.thumbnailUrl)
+        } else {
+            addGalleryImage(picture.resourceUrl, picture.thumbnailUrl)
+        }
+        addImageViewer(`album-${albumId}-picture-${picture.id}`, galleryOrderNumber);
+        galleryOrderNumber++
+        inPagePictures.add(picture.id)
+    });
 }
 
 function addDropZone(albumId) {
@@ -134,7 +122,7 @@ function addDropZone(albumId) {
 }
 
 const getPreSignedUrl = (file, done) => {
-    fetch(serverUrl + "/api/album/"+albumId + "/picture/presigned?fileSize="+file.size+"&fileName="+file.name, {
+    fetch(serverUrl + "/api/album/"+albumId + "/picture/preUpload?fileSize="+file.size+"&fileName="+file.name, {
         method: "POST",
         credentials: 'include',
         headers: {
@@ -193,7 +181,7 @@ function addGalleryImage(src, thumb) {
     })
 }
 
-function addVideo(itemId, picture) {
+function addVideo(itemId, videoSrc, thumbnailSrc) {
     document.getElementById(itemId).addEventListener("click", function(event) {
         document.getElementById("video-popup").style.display = "flex";
         var div = document.createElement("div");
@@ -201,17 +189,17 @@ function addVideo(itemId, picture) {
         div.style.textAlign= "center";
         div.innerHTML =
             '  <video\n' +
-            '         id="my-video"\n' +
-            '         className="video-js"\n' +
-            '         controls\n' +
-            '         preload="auto"\n' +
-            '         width="80%"\n' +
-            '         height="80%"\n' +
-            '         poster=\"' + picture.thumbnailUrl + '\"\n' +
-            '         data-setup="{}"\n' +
-            '         \n' +
-            '        <source src=\"' + picture.resourceKey + "\"" +' type="video/mp4"/>\n' +
-            '     </video>'
+        '         id="my-video"\n' +
+        '         className="video-js"\n' +
+        '         controls\n' +
+        '         preload="auto"\n' +
+        '         width="80%"\n' +
+        '         height="80%"\n' +
+        '         poster=\"' + thumbnailSrc + '\"\n' +
+        '         data-setup="{}"\n' +
+        '         \n' +
+        '        <source src=\"' + videoSrc + "\"" +' type="video/mp4"/>\n' +
+        '     </video>'
         let elementById = document.getElementById("video-content");
         while (elementById.firstChild) {
             elementById.removeChild(elementById.lastChild);

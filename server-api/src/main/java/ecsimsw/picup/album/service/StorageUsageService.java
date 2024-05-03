@@ -53,6 +53,7 @@ public class StorageUsageService {
 
     @Transactional
     public boolean isAbleToStore(Long userId, long fileSize) {
-        return getUsage(userId).isAbleToStore(fileSize);
+        return getUsage(userId)
+            .isAbleToStore(fileSize);
     }
 }
