@@ -1,14 +1,9 @@
 package ecsimsw.picup.album.service;
 
-import ecsimsw.picup.album.domain.Album;
-import ecsimsw.picup.album.domain.AlbumRepository;
-import ecsimsw.picup.album.domain.Picture;
-import ecsimsw.picup.album.domain.PictureRepository;
-import ecsimsw.picup.album.domain.Picture_;
-import ecsimsw.picup.album.domain.ResourceKey;
-import ecsimsw.picup.album.dto.PreUploadPictureResponse;
+import ecsimsw.picup.album.domain.*;
 import ecsimsw.picup.album.dto.PictureResponse;
 import ecsimsw.picup.album.dto.PictureSearchCursor;
+import ecsimsw.picup.album.dto.PreUploadResponse;
 import ecsimsw.picup.album.exception.AlbumException;
 import ecsimsw.picup.auth.UnauthorizedException;
 import java.time.LocalDateTime;
@@ -25,29 +20,28 @@ public class PictureCoreService {
 
     private final AlbumRepository albumRepository;
     private final PictureRepository pictureRepository;
-    private final StorageService storageService;
     private final StorageUsageService storageUsageService;
 
-    @Transactional
-    public PreUploadPictureResponse preUpload(Long userId, Long albumId, String fileName, Long fileSize) {
+    @Transactional(readOnly = true)
+    public void checkAbleToUpload(Long userId, Long albumId, long fileSize) {
         validateAlbumOwner(userId, albumId);
-        storageUsageService.addUsage(userId, fileSize);
-        var resourceKey = ResourceKey.fromFileName(fileName);
-        var preSignedUrl = storageService.preSingedUrl(resourceKey, fileSize);
-        return PreUploadPictureResponse.of(resourceKey, preSignedUrl);
+        if(storageUsageService.isAbleToStore(userId, fileSize)) {
+            throw new AlbumException("Lack of storage space");
+        }
     }
 
     @Transactional
-    public PictureResponse commit(Long userId, Long albumId, String resourceKey) {
+    public long create(Long userId, Long albumId, PreUploadResponse preUpload) {
+        validateAlbumOwner(userId, albumId);
         var album = getUserAlbum(userId, albumId);
-        var preSignedUpload = storageService.commit(new ResourceKey(resourceKey));
-        var picture = preSignedUpload.toPicture(album);
+        var picture = preUpload.toPicture(album);
         pictureRepository.save(picture);
-        return PictureResponse.of(picture);
+        storageUsageService.addUsage(userId, preUpload.fileSize());
+        return picture.getId();
     }
 
     @Transactional
-    public void setThumbnailReady(String resourceKey) {
+    public void setThumbnailResource(String resourceKey) {
         var picture = pictureRepository.findByResourceKey(resourceKey)
             .orElseThrow(() -> new AlbumException("Not exists picture"));
         picture.setHasThumbnail(true);
@@ -55,27 +49,14 @@ public class PictureCoreService {
     }
 
     @Transactional
-    public void deleteAll(Long userId, List<Picture> pictures) {
-        pictures.forEach(picture -> {
-            picture.checkSameUser(userId);
-            storageService.deleteAsync(picture.getFileResource());
-        });
-        storageUsageService.subtractUsage(userId, pictures);
-        pictureRepository.deleteAll(pictures);
-    }
-
-    @Transactional
-    public void deleteAllByIds(Long userId, Long albumId, List<Long> pictureIds) {
+    public List<ResourceKey> deleteAllByIds(Long userId, Long albumId, List<Long> pictureIds) {
         validateAlbumOwner(userId, albumId);
         var pictures = pictureRepository.findAllById(pictureIds);
-        deleteAll(userId, pictures);
-    }
-
-    @Transactional
-    public void deleteAllInAlbum(Long userId, Long albumId) {
-        validateAlbumOwner(userId, albumId);
-        var pictures = pictureRepository.findAllByAlbumId(albumId);
-        deleteAll(userId, pictures);
+        storageUsageService.subtractUsage(userId, pictures);
+        pictureRepository.deleteAll(pictures);
+        return pictures.stream()
+            .map(Picture::getFileResource)
+            .toList();
     }
 
     @Transactional(readOnly = true)

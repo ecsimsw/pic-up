@@ -49,6 +49,10 @@ public class StorageResource {
         return new StorageResource(null, storageType, resourceKey, fileSize, true, 0, LocalDateTime.now());
     }
 
+    public void setToBeDeleted(boolean toBeDeleted) {
+        this.toBeDeleted = toBeDeleted;
+    }
+
     public void markToBeDeleted() {
         this.toBeDeleted = true;
     }

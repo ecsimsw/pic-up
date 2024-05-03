@@ -12,6 +12,8 @@ public interface StorageResourceRepository extends JpaRepository<StorageResource
 
     List<StorageResource> findAllByResourceKey(ResourceKey resourceKey);
 
+    List<StorageResource> findAllByResourceKeyIn(List<ResourceKey> resourceKeys);
+
     Optional<StorageResource> findByStorageTypeAndResourceKey(StorageType type, ResourceKey resourceKey);
 
     @Modifying

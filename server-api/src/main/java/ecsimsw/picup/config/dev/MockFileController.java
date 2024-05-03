@@ -16,9 +16,9 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import static ecsimsw.picup.album.service.StorageService.BUCKET_NAME;
-import static ecsimsw.picup.album.service.StorageService.ROOT_PATH;
-import static ecsimsw.picup.album.service.StorageService.THUMBNAIL_PATH;
+import static ecsimsw.picup.album.service.FileResourceService.BUCKET;
+import static ecsimsw.picup.album.service.FileResourceService.ROOT_PATH;
+import static ecsimsw.picup.album.service.FileResourceService.THUMBNAIL_PATH;
 
 @RequiredArgsConstructor
 @Profile("dev")
@@ -32,10 +32,10 @@ public class MockFileController {
     @PutMapping(ROOT_PATH + "{resourceKey}")
     public void upload(@PathVariable String resourceKey, MultipartFile file) {
         System.out.println("UPLOAD : " + ROOT_PATH + resourceKey + " " + file.getSize());
-        S3Utils.store(amazonS3, BUCKET_NAME, ROOT_PATH + resourceKey, file);
+        S3Utils.store(amazonS3, BUCKET, ROOT_PATH + resourceKey, file);
         var thumbnailFile = thumbnailService.captureVideo(file);
-        S3Utils.store(amazonS3, BUCKET_NAME, THUMBNAIL_PATH + resourceKey, thumbnailFile);
-        pictureService.setThumbnailReady(resourceKey);
+        S3Utils.store(amazonS3, BUCKET, THUMBNAIL_PATH + resourceKey, thumbnailFile);
+        pictureService.saveThumbnailResource(resourceKey, thumbnailFile.getSize());
     }
 
     @GetMapping(
@@ -47,7 +47,7 @@ public class MockFileController {
         HttpServletResponse response
     ) throws IOException {
         System.out.println("DOWNLOAD : " + ROOT_PATH + resourceKey);
-        S3Utils.getResource(amazonS3, BUCKET_NAME, ROOT_PATH + resourceKey, response.getOutputStream());
+        S3Utils.getResource(amazonS3, BUCKET, ROOT_PATH + resourceKey, response.getOutputStream());
         return ResponseEntity.ok().build();
     }
 }

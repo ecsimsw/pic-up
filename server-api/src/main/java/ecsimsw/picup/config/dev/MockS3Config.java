@@ -1,6 +1,6 @@
 package ecsimsw.picup.config.dev;
 
-import static ecsimsw.picup.album.service.StorageService.BUCKET_NAME;
+import static ecsimsw.picup.album.service.FileResourceService.BUCKET;
 
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.auth.AnonymousAWSCredentials;
@@ -45,7 +45,7 @@ public class MockS3Config {
             .withEndpointConfiguration(endpoint)
             .withCredentials(new AWSStaticCredentialsProvider(new AnonymousAWSCredentials()))
             .build();
-        amazonS3.createBucket(BUCKET_NAME);
+        amazonS3.createBucket(BUCKET);
         return amazonS3;
     }
 }

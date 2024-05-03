@@ -16,7 +16,7 @@ import static ecsimsw.picup.config.CacheType.SIGNED_URL;
 
 @Slf4j
 @Service
-public class ResourceUrlService {
+public class FileUrlService {
 
     private static final String CDN_PROTOCOL = "https";
     private static final int EXPIRATION_AFTER_DAYS = 7;
@@ -26,7 +26,7 @@ public class ResourceUrlService {
     private final String publicKeyId;
     private final String privateKeyPath;
 
-    public ResourceUrlService(
+    public FileUrlService(
         @Value("${aws.cloudfront.domain}")
         String domainName,
         @Value("${aws.cloudfront.publicKeyId}")

@@ -28,14 +28,14 @@ public class PictureController {
     private final PictureService pictureService;
 
     @PostMapping("/api/album/{albumId}/picture/presigned")
-    public ResponseEntity<PreUploadPictureResponse> preUpload(
+    public ResponseEntity<String> preUpload(
         @TokenPayload AuthTokenPayload loginUser,
         @PathVariable Long albumId,
         @RequestParam String fileName,
         @RequestParam Long fileSize
     ) {
-        var preUploadResponse = pictureService.preUpload(loginUser.userId(), albumId, fileName, fileSize);
-        return ResponseEntity.ok(preUploadResponse);
+        var preSignedUrl = pictureService.preUpload(loginUser.userId(), albumId, fileName, fileSize);
+        return ResponseEntity.ok(preSignedUrl);
     }
 
     @PostMapping("/api/album/{albumId}/picture/commit")
@@ -50,9 +50,10 @@ public class PictureController {
 
     @PostMapping("/api/picture/thumbnail")
     public ResponseEntity<Void> thumbnail(
-        @RequestParam String resourceKey
+        @RequestParam String resourceKey,
+        @RequestParam Long fileSize
     ) {
-        pictureService.setThumbnailReady(resourceKey);
+        pictureService.saveThumbnailResource(resourceKey, fileSize);
         return ResponseEntity.ok().build();
     }
 

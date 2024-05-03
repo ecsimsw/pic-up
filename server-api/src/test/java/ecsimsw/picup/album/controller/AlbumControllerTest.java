@@ -16,7 +16,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import ecsimsw.picup.album.dto.AlbumResponse;
 import ecsimsw.picup.album.service.AlbumService;
-import ecsimsw.picup.album.service.ResourceUrlService;
+import ecsimsw.picup.album.service.FileUrlService;
 import ecsimsw.picup.auth.AuthArgumentResolver;
 import ecsimsw.picup.auth.AuthInterceptor;
 import ecsimsw.picup.auth.AuthTokenPayload;
@@ -39,7 +39,7 @@ class AlbumControllerTest {
     }
 
     private final AlbumService albumService = mock(AlbumService.class);
-    private final ResourceUrlService resourceUrlService = mock(ResourceUrlService.class);
+    private final FileUrlService fileUrlService = mock(FileUrlService.class);
     private final AuthTokenService authTokenService = mock(AuthTokenService.class);
     private final String remoteIp = "192.168.0.1";
 
@@ -57,7 +57,7 @@ class AlbumControllerTest {
         when(authTokenService.tokenPayload(any()))
             .thenReturn(new AuthTokenPayload(loginUserId, USER_NAME));
 
-        when(resourceUrlService.sign(any(), any()))
+        when(fileUrlService.sign(any(), any()))
             .thenAnswer(input -> input.getArguments()[1]);
     }
 

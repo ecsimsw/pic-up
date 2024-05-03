@@ -50,4 +50,9 @@ public class StorageUsageService {
         usage.subtract(subtractUsageSum);
         storageUsageRepository.save(usage);
     }
+
+    @Transactional
+    public boolean isAbleToStore(Long userId, long fileSize) {
+        return getUsage(userId).isAbleToStore(fileSize);
+    }
 }

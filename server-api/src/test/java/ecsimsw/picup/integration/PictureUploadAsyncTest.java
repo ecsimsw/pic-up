@@ -18,7 +18,7 @@ import ecsimsw.picup.album.dto.SignUpRequest;
 import ecsimsw.picup.album.exception.AlbumException;
 import ecsimsw.picup.album.exception.StorageException;
 import ecsimsw.picup.album.service.AlbumCoreService;
-import ecsimsw.picup.album.service.StorageService;
+import ecsimsw.picup.album.service.FileResourceService;
 import ecsimsw.picup.album.service.MemberService;
 import ecsimsw.picup.album.service.PictureService;
 import ecsimsw.picup.album.service.ThumbnailService;
@@ -58,7 +58,7 @@ class PictureUploadAsyncTest {
     private AlbumCoreService albumCoreService;
 
     @MockBean
-    private StorageService fileService;
+    private FileResourceService fileService;
 
     @MockBean
     private ThumbnailService thumbnailService;

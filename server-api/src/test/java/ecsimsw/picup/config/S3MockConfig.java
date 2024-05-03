@@ -1,6 +1,6 @@
 package ecsimsw.picup.config;
 
-import static ecsimsw.picup.album.service.StorageService.BUCKET_NAME;
+import static ecsimsw.picup.album.service.FileResourceService.BUCKET;
 
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.auth.AnonymousAWSCredentials;
@@ -8,7 +8,7 @@ import com.amazonaws.client.builder.AwsClientBuilder;
 import com.amazonaws.regions.Regions;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
-import ecsimsw.picup.config.dev.MockResourceUrlService;
+import ecsimsw.picup.config.dev.MockFileUrlService;
 import io.findify.s3mock.S3Mock;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -40,8 +40,8 @@ public class S3MockConfig {
 
     @Primary
     @Bean
-    public MockResourceUrlService mockSignUrlService() {
-        return new MockResourceUrlService(
+    public MockFileUrlService mockSignUrlService() {
+        return new MockFileUrlService(
             "http://localhost:8084",
             "publicKeyId",
             "privateKeyPath"
@@ -59,7 +59,7 @@ public class S3MockConfig {
             .withEndpointConfiguration(endpoint)
             .withCredentials(new AWSStaticCredentialsProvider(new AnonymousAWSCredentials()))
             .build();
-        client.createBucket(BUCKET_NAME);
+        client.createBucket(BUCKET);
         return client;
     }
 }

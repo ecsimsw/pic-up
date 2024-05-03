@@ -1,6 +1,6 @@
 package ecsimsw.picup.config.dev;
 
-import ecsimsw.picup.album.service.ResourceUrlService;
+import ecsimsw.picup.album.service.FileUrlService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.annotation.Primary;
@@ -12,9 +12,9 @@ import static ecsimsw.picup.config.CacheType.SIGNED_URL;
 @Primary
 @Profile("dev")
 @Service
-public class MockResourceUrlService extends ResourceUrlService {
+public class MockFileUrlService extends FileUrlService {
 
-    public MockResourceUrlService(
+    public MockFileUrlService(
         @Value("${aws.cloudfront.domain}")
         String domainName,
         @Value("${aws.cloudfront.publicKeyId}")

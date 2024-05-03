@@ -1,22 +1,22 @@
 package ecsimsw.picup.album.service;
 
-import ecsimsw.picup.album.domain.Album;
-import ecsimsw.picup.album.domain.AlbumRepository;
+import ecsimsw.picup.album.domain.*;
 import ecsimsw.picup.album.dto.AlbumResponse;
-import ecsimsw.picup.auth.UnauthorizedException;
 import ecsimsw.picup.album.dto.FileUploadResponse;
-import java.util.List;
+import ecsimsw.picup.auth.UnauthorizedException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @RequiredArgsConstructor
 @Service
 public class AlbumCoreService {
 
-    private final PictureCoreService pictureCoreService;
+    private final PictureRepository pictureRepository;
     private final AlbumRepository albumRepository;
-    private final StorageService fileService;
+    private final StorageUsageService storageUsageService;
 
     @Transactional(readOnly = true)
     public List<AlbumResponse> findAll(Long userId) {
@@ -31,11 +31,17 @@ public class AlbumCoreService {
     }
 
     @Transactional
-    public void delete(Long userId, Long albumId) {
+    public List<ResourceKey> delete(Long userId, Long albumId) {
         var album = getAlbumByUser(userId, albumId);
-        fileService.deleteAsync(album.getThumbnail());
-        pictureCoreService.deleteAllInAlbum(userId, albumId);
+        var pictures = pictureRepository.findAllByAlbumId(albumId);
+        pictureRepository.deleteAll(pictures);
         albumRepository.delete(album);
+        storageUsageService.subtractUsage(userId, pictures);
+        var resources = pictures.stream()
+            .map(Picture::getFileResource)
+            .toList();
+        resources.add(album.getThumbnail());
+        return resources;
     }
 
     @Transactional(readOnly = true)

@@ -3,9 +3,12 @@ package ecsimsw.picup.album.service;
 import ecsimsw.picup.album.dto.AlbumResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+
+import static ecsimsw.picup.album.domain.StorageType.THUMBNAIL;
 
 @RequiredArgsConstructor
 @Service
@@ -13,15 +16,14 @@ public class AlbumService {
 
     private static final float ALBUM_THUMBNAIL_SCALE = 0.5f;
 
-    private final UserLock userLock;
-    private final StorageService fileService;
     private final AlbumCoreService albumCoreService;
-    private final ResourceUrlService urlService;
     private final ThumbnailService thumbnailService;
+    private final FileResourceService fileService;
+    private final FileUrlService urlService;
 
     public long initAlbum(Long userId, String name, MultipartFile file) {
         var thumbnailFile = thumbnailService.resizeImage(file, ALBUM_THUMBNAIL_SCALE);
-        var thumbnail = fileService.uploadImageThumbnailAsync(thumbnailFile).join();
+        var thumbnail = fileService.uploadFile(THUMBNAIL, thumbnailFile);
         try {
             return albumCoreService.create(userId, name, thumbnail);
         } catch (Exception e) {
@@ -30,13 +32,10 @@ public class AlbumService {
         }
     }
 
+    @Transactional
     public void deleteAlbum(Long userId, Long albumId) {
-        try {
-            userLock.acquire(userId);
-            albumCoreService.delete(userId, albumId);
-        } finally {
-            userLock.release(userId);
-        }
+        var resourceKeys = albumCoreService.delete(userId, albumId);
+        fileService.deleteAllAsync(resourceKeys);
     }
 
     public List<AlbumResponse> readAlbums(Long userId, String remoteIp) {
