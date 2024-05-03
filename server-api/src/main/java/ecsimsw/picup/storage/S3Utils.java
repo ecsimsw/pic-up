@@ -58,6 +58,10 @@ public class S3Utils {
         }
     }
 
+    public static void delete(AmazonS3 s3Client, String bucket, String path) {
+        s3Client.deleteObject(bucket, path);
+    }
+
     public static String getPreSignedUrl(AmazonS3 s3Client, String bucket, String path, long expirationMs) {
         var preSignedUrlRequest = new GeneratePresignedUrlRequest(bucket, path)
             .withMethod(HttpMethod.PUT)

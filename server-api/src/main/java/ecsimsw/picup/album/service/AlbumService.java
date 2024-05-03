@@ -17,13 +17,15 @@ public class AlbumService {
     private final StorageService fileService;
     private final AlbumCoreService albumCoreService;
     private final ResourceUrlService urlService;
+    private final ThumbnailService thumbnailService;
 
     public long initAlbum(Long userId, String name, MultipartFile file) {
-        var thumbnailFile = fileService.uploadImageThumbnailAsync(file, ALBUM_THUMBNAIL_SCALE).join();
+        var thumbnailFile = thumbnailService.resizeImage(file, ALBUM_THUMBNAIL_SCALE);
+        var thumbnail = fileService.uploadImageThumbnailAsync(thumbnailFile).join();
         try {
-            return albumCoreService.create(userId, name, thumbnailFile);
+            return albumCoreService.create(userId, name, thumbnail);
         } catch (Exception e) {
-            fileService.deleteAsync(thumbnailFile.resourceKey());
+            fileService.deleteAsync(thumbnail.resourceKey());
             throw e;
         }
     }

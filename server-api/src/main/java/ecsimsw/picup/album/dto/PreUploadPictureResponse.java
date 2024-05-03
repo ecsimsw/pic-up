@@ -1,15 +1,15 @@
 package ecsimsw.picup.album.dto;
 
-import ecsimsw.picup.album.domain.PreUploadPicture;
+import ecsimsw.picup.album.domain.ResourceKey;
 
 public record PreUploadPictureResponse(
     String preSignedUrl,
     String resourceKey
-){
-    public static PreUploadPictureResponse of(PreUploadPicture preUploadEvent, String preSignedUrl) {
+) {
+    public static PreUploadPictureResponse of(ResourceKey resourceKey, String preSignedUrl) {
         return new PreUploadPictureResponse(
             preSignedUrl,
-            preUploadEvent.getResourceKey()
+            resourceKey.value()
         );
     }
 }

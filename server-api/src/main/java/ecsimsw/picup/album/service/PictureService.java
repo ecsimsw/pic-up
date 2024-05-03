@@ -34,14 +34,14 @@ public class PictureService {
     }
 
     public List<PictureResponse> pictures(Long userId, String remoteIp, Long albumId, PictureSearchCursor cursor) {
-        var pictures = pictureCoreService.fetchOrderByCursor(userId, albumId, cursor);
+        var pictures = pictureCoreService.fetchAfterCursor(userId, albumId, cursor);
         return signUrls(remoteIp, pictures);
     }
 
     public void deletePictures(Long userId, Long albumId, List<Long> pictureIds) {
         try {
             userLock.acquire(userId);
-            pictureCoreService.deleteAllByIds(userId, pictureIds);
+            pictureCoreService.deleteAllByIds(userId, albumId, pictureIds);
         } finally {
             userLock.release(userId);
         }

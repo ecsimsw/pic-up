@@ -5,8 +5,7 @@ import ecsimsw.picup.album.domain.AlbumRepository;
 import ecsimsw.picup.album.domain.Picture;
 import ecsimsw.picup.album.domain.PictureRepository;
 import ecsimsw.picup.album.domain.Picture_;
-import ecsimsw.picup.album.domain.PreUploadPicture;
-import ecsimsw.picup.album.domain.PreUploadPictureRepository;
+import ecsimsw.picup.album.domain.ResourceKey;
 import ecsimsw.picup.album.dto.PreUploadPictureResponse;
 import ecsimsw.picup.album.dto.PictureResponse;
 import ecsimsw.picup.album.dto.PictureSearchCursor;
@@ -28,24 +27,21 @@ public class PictureCoreService {
     private final PictureRepository pictureRepository;
     private final StorageService storageService;
     private final StorageUsageService storageUsageService;
-    private final PreUploadPictureRepository preUploadPictureRepository;
 
     @Transactional
     public PreUploadPictureResponse preUpload(Long userId, Long albumId, String fileName, Long fileSize) {
         validateAlbumOwner(userId, albumId);
         storageUsageService.addUsage(userId, fileSize);
-        var preUpload = PreUploadPicture.init(fileName, fileSize);
-        preUploadPictureRepository.save(preUpload);
-        var preSignedUrl = storageService.preSingedUrl(preUpload);
-        return PreUploadPictureResponse.of(preUpload, preSignedUrl);
+        var resourceKey = ResourceKey.fromFileName(fileName);
+        var preSignedUrl = storageService.preSingedUrl(resourceKey, fileSize);
+        return PreUploadPictureResponse.of(resourceKey, preSignedUrl);
     }
 
     @Transactional
     public PictureResponse commit(Long userId, Long albumId, String resourceKey) {
         var album = getUserAlbum(userId, albumId);
-        var preUpload = preUploadPictureRepository.findById(resourceKey).orElseThrow(() -> new AlbumException("Nothing to commit"));
-        preUploadPictureRepository.delete(preUpload);
-        var picture = preUpload.toPicture(album);
+        var preSignedUpload = storageService.commit(new ResourceKey(resourceKey));
+        var picture = preSignedUpload.toPicture(album);
         pictureRepository.save(picture);
         return PictureResponse.of(picture);
     }
@@ -69,7 +65,8 @@ public class PictureCoreService {
     }
 
     @Transactional
-    public void deleteAllByIds(Long userId, List<Long> pictureIds) {
+    public void deleteAllByIds(Long userId, Long albumId, List<Long> pictureIds) {
+        validateAlbumOwner(userId, albumId);
         var pictures = pictureRepository.findAllById(pictureIds);
         deleteAll(userId, pictures);
     }
@@ -82,7 +79,7 @@ public class PictureCoreService {
     }
 
     @Transactional(readOnly = true)
-    public List<PictureResponse> fetchOrderByCursor(Long userId, Long albumId, PictureSearchCursor cursor) {
+    public List<PictureResponse> fetchAfterCursor(Long userId, Long albumId, PictureSearchCursor cursor) {
         var album = getUserAlbum(userId, albumId);
         var pictures = pictureRepository.findAllByAlbumOrderThan(
             album.getId(),

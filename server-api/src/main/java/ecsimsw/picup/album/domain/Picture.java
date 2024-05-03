@@ -51,8 +51,8 @@ public class Picture {
         this(null, album, fileResource, hasThumbnail, fileSize, LocalDateTime.now());
     }
 
-    public Picture(Album album, String fileResource, long fileSize) {
-        this(null, album, new ResourceKey(fileResource), false, fileSize, LocalDateTime.now());
+    public Picture(Album album, ResourceKey fileResource, long fileSize) {
+        this(null, album, fileResource, false, fileSize, LocalDateTime.now());
     }
 
     public void setHasThumbnail(boolean hasThumbnail) {
