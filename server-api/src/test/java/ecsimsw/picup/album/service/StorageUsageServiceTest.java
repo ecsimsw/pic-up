@@ -3,7 +3,6 @@ package ecsimsw.picup.album.service;
 import ecsimsw.picup.album.exception.AlbumException;
 import ecsimsw.picup.album.domain.StorageUsage;
 import ecsimsw.picup.album.domain.StorageUsageRepository;
-import ecsimsw.picup.album.service.StorageUsageService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -63,7 +62,7 @@ public class StorageUsageServiceTest {
         storageUsageService.addUsage(userId, initialFileSize);
 
         var deleteFileSize1 = 1;
-        storageUsageService.subtractUsage(userId, deleteFileSize1);
+        storageUsageService.subtractAll(userId, deleteFileSize1);
         assertThat(storageUsageService.getUsage(userId).getUsageAsByte())
             .isEqualTo(initialFileSize - deleteFileSize1);
     }
@@ -75,7 +74,7 @@ public class StorageUsageServiceTest {
         storageUsageService.addUsage(userId, initialFileSize);
 
         var deleteFileSize = initialFileSize + 1;
-        storageUsageService.subtractUsage(userId, deleteFileSize);
+        storageUsageService.subtractAll(userId, deleteFileSize);
 
         assertThat(storageUsageService.getUsage(userId).getUsageAsByte())
             .isEqualTo(0);

@@ -1,8 +1,6 @@
 package ecsimsw.picup.album.service;
 
 import ecsimsw.picup.album.domain.*;
-import ecsimsw.picup.album.dto.AlbumResponse;
-import ecsimsw.picup.album.dto.FileUploadResponse;
 import ecsimsw.picup.auth.UnauthorizedException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -19,24 +17,23 @@ public class AlbumCoreService {
     private final StorageUsageService storageUsageService;
 
     @Transactional(readOnly = true)
-    public List<AlbumResponse> findAll(Long userId) {
-        var albums = albumRepository.findAllByUserIdOrderByCreatedAtDesc(userId);
-        return AlbumResponse.listOf(albums);
+    public List<Album> findAll(Long userId) {
+        return albumRepository.findAllByUserIdOrderByCreatedAtDesc(userId);
     }
 
     @Transactional
-    public Long create(Long userId, String name, FileUploadResponse thumbnailFile) {
-        var album = albumRepository.save(new Album(userId, name, thumbnailFile.resourceKey()));
+    public Long create(Long userId, String name, ResourceKey thumbnailResourceKey) {
+        var album = albumRepository.save(new Album(userId, name, thumbnailResourceKey));
         return album.getId();
     }
 
     @Transactional
     public List<ResourceKey> delete(Long userId, Long albumId) {
-        var album = getAlbumByUser(userId, albumId);
+        var album = userAlbum(userId, albumId);
         var pictures = pictureRepository.findAllByAlbumId(albumId);
         pictureRepository.deleteAll(pictures);
         albumRepository.delete(album);
-        storageUsageService.subtractUsage(userId, pictures);
+        storageUsageService.subtractAll(userId, pictures);
         var resources = pictures.stream()
             .map(Picture::getFileResource)
             .toList();
@@ -45,12 +42,7 @@ public class AlbumCoreService {
     }
 
     @Transactional(readOnly = true)
-    public AlbumResponse userAlbum(Long userId, Long albumId) {
-        var album = getAlbumByUser(userId, albumId);
-        return AlbumResponse.of(album);
-    }
-
-    private Album getAlbumByUser(Long userId, Long albumId) {
+    public Album userAlbum(Long userId, Long albumId) {
         return albumRepository.findByIdAndUserId(albumId, userId)
             .orElseThrow(() -> new UnauthorizedException("Not an accessible album from user"));
     }

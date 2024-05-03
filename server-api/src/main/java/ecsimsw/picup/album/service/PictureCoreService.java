@@ -1,9 +1,7 @@
 package ecsimsw.picup.album.service;
 
 import ecsimsw.picup.album.domain.*;
-import ecsimsw.picup.album.dto.PictureResponse;
 import ecsimsw.picup.album.dto.PictureSearchCursor;
-import ecsimsw.picup.album.dto.PreUploadResponse;
 import ecsimsw.picup.album.exception.AlbumException;
 import ecsimsw.picup.auth.UnauthorizedException;
 import java.time.LocalDateTime;
@@ -31,12 +29,12 @@ public class PictureCoreService {
     }
 
     @Transactional
-    public long create(Long userId, Long albumId, PreUploadResponse preUpload) {
+    public long create(Long userId, Long albumId, StorageResource preUpload) {
         validateAlbumOwner(userId, albumId);
         var album = getUserAlbum(userId, albumId);
-        var picture = preUpload.toPicture(album);
+        var picture = new Picture(album, preUpload.getResourceKey(), preUpload.getFileSize());
         pictureRepository.save(picture);
-        storageUsageService.addUsage(userId, preUpload.fileSize());
+        storageUsageService.addUsage(userId, picture.getFileSize());
         return picture.getId();
     }
 
@@ -52,7 +50,7 @@ public class PictureCoreService {
     public List<ResourceKey> deleteAllByIds(Long userId, Long albumId, List<Long> pictureIds) {
         validateAlbumOwner(userId, albumId);
         var pictures = pictureRepository.findAllById(pictureIds);
-        storageUsageService.subtractUsage(userId, pictures);
+        storageUsageService.subtractAll(userId, pictures);
         pictureRepository.deleteAll(pictures);
         return pictures.stream()
             .map(Picture::getFileResource)
@@ -60,14 +58,13 @@ public class PictureCoreService {
     }
 
     @Transactional(readOnly = true)
-    public List<PictureResponse> fetchAfterCursor(Long userId, Long albumId, PictureSearchCursor cursor) {
+    public List<Picture> fetchAfterCursor(Long userId, Long albumId, PictureSearchCursor cursor) {
         var album = getUserAlbum(userId, albumId);
-        var pictures = pictureRepository.findAllByAlbumOrderThan(
+        return pictureRepository.findAllByAlbumOrderThan(
             album.getId(),
             cursor.createdAt().orElse(LocalDateTime.now()),
             PageRequest.of(0, cursor.limit(), Direction.DESC, Picture_.CREATED_AT)
         );
-        return PictureResponse.listOf(pictures);
     }
 
     private Album getUserAlbum(Long userId, Long albumId) {

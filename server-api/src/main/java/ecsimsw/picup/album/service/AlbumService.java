@@ -1,5 +1,7 @@
 package ecsimsw.picup.album.service;
 
+import ecsimsw.picup.album.domain.Album;
+import ecsimsw.picup.album.domain.ResourceKey;
 import ecsimsw.picup.album.dto.AlbumResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -17,17 +19,14 @@ public class AlbumService {
     private static final float ALBUM_THUMBNAIL_SCALE = 0.5f;
 
     private final AlbumCoreService albumCoreService;
-    private final ThumbnailService thumbnailService;
     private final FileResourceService fileService;
-    private final FileUrlService urlService;
 
     public long initAlbum(Long userId, String name, MultipartFile file) {
-        var thumbnailFile = thumbnailService.resizeImage(file, ALBUM_THUMBNAIL_SCALE);
-        var thumbnail = fileService.uploadFile(THUMBNAIL, thumbnailFile);
+        var thumbnail = fileService.upload(THUMBNAIL, file, ALBUM_THUMBNAIL_SCALE);
         try {
             return albumCoreService.create(userId, name, thumbnail);
         } catch (Exception e) {
-            fileService.deleteAsync(thumbnail.resourceKey());
+            fileService.deleteAsync(thumbnail);
             throw e;
         }
     }
@@ -38,24 +37,22 @@ public class AlbumService {
         fileService.deleteAllAsync(resourceKeys);
     }
 
+    @Transactional(readOnly = true)
     public List<AlbumResponse> readAlbums(Long userId, String remoteIp) {
-        var albumResponses = albumCoreService.findAll(userId);
-        return albumResponses.stream()
-            .map(response -> signUrl(response, remoteIp))
+        var albums = albumCoreService.findAll(userId);
+        return albums.stream()
+            .map(album -> toResponse(album, remoteIp))
             .toList();
     }
 
+    @Transactional(readOnly = true)
     public AlbumResponse readAlbum(Long userId, String remoteIp, Long albumId) {
-        var albumResponse = albumCoreService.userAlbum(userId, albumId);
-        return signUrl(albumResponse, remoteIp);
+        var album = albumCoreService.userAlbum(userId, albumId);
+        return toResponse(album, remoteIp);
     }
 
-    private AlbumResponse signUrl(AlbumResponse albumResponse, String remoteIp) {
-        return new AlbumResponse(
-            albumResponse.id(),
-            albumResponse.name(),
-            urlService.sign(remoteIp, albumResponse.thumbnailUrl()),
-            albumResponse.createdAt()
-        );
+    private AlbumResponse toResponse(Album album, String remoteIp) {
+        var thumbnailUrl = fileService.fileUrl(THUMBNAIL, remoteIp, album.getThumbnail());
+        return AlbumResponse.of(album, thumbnailUrl);
     }
 }

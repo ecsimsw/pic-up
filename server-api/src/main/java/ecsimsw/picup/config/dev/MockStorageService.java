@@ -31,19 +31,19 @@
 //
 //    @Override
 //    public String preUpload(StorageType type, String fileName, long fileSize) {
-//        var resourceKey = ResourceKey.fromFileName(fileName);
+//        var resourceUrl = ResourceKey.fromFileName(fileName);
 //        St
-//        var preUploadEvent = PreUploadResponse.of(resourceKey, fileSize);
+//        var preUploadEvent = PreUploadResponse.of(resourceUrl, fileSize);
 //        preUploadPictureRepository.save(preUploadEvent);
-//        var preSignedUrl = "http://localhost:8084/storage/" + resourceKey.value();
+//        var preSignedUrl = "http://localhost:8084/storage/" + resourceUrl.value();
 //        return PreUploadPictureResponse.of(preUploadEvent, preSignedUrl);
 //    }
 //
 //    public PreUploadPictureResponse preUpload(String fileName, long fileSize) {
-//        var resourceKey = ResourceKey.fromFileName(fileName);
-//        var preUploadEvent = PreUploadResponse.init(resourceKey, fileSize);
+//        var resourceUrl = ResourceKey.fromFileName(fileName);
+//        var preUploadEvent = PreUploadResponse.init(resourceUrl, fileSize);
 //        preUploadPictureRepository.save(preUploadEvent);
-//        var preSignedUrl = "http://localhost:8084/storage/" + resourceKey.value();
+//        var preSignedUrl = "http://localhost:8084/storage/" + resourceUrl.value();
 //        return PreUploadPictureResponse.of(preUploadEvent, preSignedUrl);
 //    }
 //}

@@ -52,8 +52,8 @@
 //        assertAll(
 //            () -> assertThat(picture.id()).isNotNull(),
 //            () -> assertThat(picture.albumId()).isEqualTo(album.getId()),
-//            () -> assertThat(picture.resourceUrl()).isEqualTo(ORIGIN_FILE.resourceKey().value()),
-//            () -> assertThat(picture.thumbnailUrl()).isEqualTo(THUMBNAIL_FILE.resourceKey().value()),
+//            () -> assertThat(picture.resourceUrl()).isEqualTo(ORIGIN_FILE.resourceUrl().value()),
+//            () -> assertThat(picture.thumbnailUrl()).isEqualTo(THUMBNAIL_FILE.resourceUrl().value()),
 //            () -> assertThat(picture.createdAt()).isNotNull()
 //        );
 //    }

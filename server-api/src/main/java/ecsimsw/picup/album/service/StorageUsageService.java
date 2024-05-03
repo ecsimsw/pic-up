@@ -35,14 +35,14 @@ public class StorageUsageService {
     }
 
     @Transactional
-    public void subtractUsage(Long userId, long fileSize) {
+    public void subtractAll(Long userId, long fileSize) {
         var usage = getUsage(userId);
         usage.subtract(fileSize);
         storageUsageRepository.save(usage);
     }
 
     @Transactional
-    public void subtractUsage(Long userId, List<Picture> pictures) {
+    public void subtractAll(Long userId, List<Picture> pictures) {
         var subtractUsageSum = pictures.stream()
             .mapToLong(Picture::getFileSize)
             .sum();

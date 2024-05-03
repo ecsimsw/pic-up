@@ -1,5 +1,6 @@
 package ecsimsw.picup.album.service;
 
+import ecsimsw.picup.album.domain.Picture;
 import ecsimsw.picup.album.domain.ResourceKey;
 import ecsimsw.picup.album.dto.PictureResponse;
 import ecsimsw.picup.album.dto.PictureSearchCursor;
@@ -19,7 +20,6 @@ import static ecsimsw.picup.album.domain.StorageType.THUMBNAIL;
 public class PictureService {
 
     private final PictureCoreService pictureCoreService;
-    private final FileUrlService urlService;
     private final FileResourceService fileService;
 
     @Transactional
@@ -40,18 +40,31 @@ public class PictureService {
         pictureCoreService.setThumbnailResource(resourceKey);
     }
 
-    @Transactional(readOnly = true)
-    public List<PictureResponse> pictures(Long userId, String remoteIp, Long albumId, PictureSearchCursor cursor) {
-        var pictures = pictureCoreService.fetchAfterCursor(userId, albumId, cursor);
-        return pictures.stream().map(picture -> picture.sign(
-            urlService.sign(remoteIp, picture.resourceUrl()),
-            urlService.sign(remoteIp, picture.thumbnailUrl())
-        )).toList();
-    }
-
     @Transactional
     public void deletePictures(Long userId, Long albumId, List<Long> pictureIds) {
         var resourceKeys = pictureCoreService.deleteAllByIds(userId, albumId, pictureIds);
         fileService.deleteAllAsync(resourceKeys);
+    }
+
+    public List<PictureResponse> pictures(Long userId, String remoteIp, Long albumId, PictureSearchCursor cursor) {
+        var pictures = pictureCoreService.fetchAfterCursor(userId, albumId, cursor);
+        return pictures.stream()
+            .map(picture -> toResponse(picture, remoteIp))
+            .toList();
+    }
+
+    private PictureResponse toResponse(Picture picture, String remoteIp) {
+        if(picture.getHasThumbnail()) {
+            return PictureResponse.of(
+                picture,
+                fileService.fileUrl(STORAGE, remoteIp, picture.getFileResource()),
+                fileService.fileUrl(THUMBNAIL, remoteIp, picture.getFileResource())
+            );
+        }
+        return PictureResponse.of(
+            picture,
+            fileService.fileUrl(STORAGE, remoteIp, picture.getFileResource()),
+            fileService.fileUrl(STORAGE, remoteIp, picture.getFileResource())
+        );
     }
 }
