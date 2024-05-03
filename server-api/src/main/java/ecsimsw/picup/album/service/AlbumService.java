@@ -1,8 +1,7 @@
 package ecsimsw.picup.album.service;
 
-import ecsimsw.picup.album.domain.Album;
-import ecsimsw.picup.album.domain.ResourceKey;
-import ecsimsw.picup.album.dto.AlbumResponse;
+import ecsimsw.picup.album.domain.*;
+import ecsimsw.picup.auth.UnauthorizedException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,41 +17,40 @@ public class AlbumService {
 
     private static final float ALBUM_THUMBNAIL_SCALE = 0.5f;
 
-    private final AlbumCoreService albumCoreService;
-    private final FileResourceService fileService;
+    private final StorageUsageService storageUsageService;
+    private final FileStorageService fileService;
+    private final AlbumRepository albumRepository;
+    private final PictureRepository pictureRepository;
 
+    @Transactional
     public long initAlbum(Long userId, String name, MultipartFile file) {
         var thumbnail = fileService.upload(THUMBNAIL, file, ALBUM_THUMBNAIL_SCALE);
-        try {
-            return albumCoreService.create(userId, name, thumbnail);
-        } catch (Exception e) {
-            fileService.deleteAsync(thumbnail);
-            throw e;
-        }
+        var album = albumRepository.save(new Album(userId, name, thumbnail));
+        return album.getId();
+    }
+
+    @Transactional(readOnly = true)
+    public List<Album> findAll(Long userId) {
+        return albumRepository.findAllByUserIdOrderByCreatedAtDesc(userId);
     }
 
     @Transactional
-    public void deleteAlbum(Long userId, Long albumId) {
-        var resourceKeys = albumCoreService.delete(userId, albumId);
-        fileService.deleteAllAsync(resourceKeys);
-    }
-
-    @Transactional(readOnly = true)
-    public List<AlbumResponse> readAlbums(Long userId, String remoteIp) {
-        var albums = albumCoreService.findAll(userId);
-        return albums.stream()
-            .map(album -> toResponse(album, remoteIp))
+    public void delete(Long userId, Long albumId) {
+        var album = userAlbum(userId, albumId);
+        var pictures = pictureRepository.findAllByAlbumId(albumId);
+        pictureRepository.deleteAll(pictures);
+        albumRepository.delete(album);
+        storageUsageService.subtractAll(userId, pictures);
+        var resources = pictures.stream()
+            .map(Picture::getFileResource)
             .toList();
+        resources.add(album.getThumbnail());
+        fileService.deleteAllAsync(resources);
     }
 
     @Transactional(readOnly = true)
-    public AlbumResponse readAlbum(Long userId, String remoteIp, Long albumId) {
-        var album = albumCoreService.userAlbum(userId, albumId);
-        return toResponse(album, remoteIp);
-    }
-
-    private AlbumResponse toResponse(Album album, String remoteIp) {
-        var thumbnailUrl = fileService.fileUrl(THUMBNAIL, remoteIp, album.getThumbnail());
-        return AlbumResponse.of(album, thumbnailUrl);
+    public Album userAlbum(Long userId, Long albumId) {
+        return albumRepository.findByIdAndUserId(albumId, userId)
+            .orElseThrow(() -> new UnauthorizedException("Not an accessible album from user"));
     }
 }

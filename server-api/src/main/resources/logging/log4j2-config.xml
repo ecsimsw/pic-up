@@ -15,7 +15,7 @@
       <AppenderRef ref="ApplicationLogsConsoleAppender" level="info"/>
       <AppenderRef ref="ApplicationLogsRollingFile" level="info"/>
     </Root>
-    <Logger name="ecsimsw.picup.storage.S3Utils" level="info" additivity="false">
+    <Logger name="ecsimsw.picup.album.utils.S3Utils" level="info" additivity="false">
       <AppenderRef ref="S3LogsRollingFile" level="info"/>
     </Logger>
   </Loggers>

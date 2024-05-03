@@ -1,4 +1,4 @@
-package ecsimsw.picup.storage;
+package ecsimsw.picup.album.utils;
 
 import ecsimsw.picup.album.exception.StorageException;
 import java.io.File;
@@ -24,10 +24,8 @@ public class FileStorageUtils {
         }
     }
 
-    public static void deleteIfExists(String path) {
+    public static void delete(String path) {
         var file = new File(path);
-        if (file.exists()) {
-            file.delete();
-        }
+        file.delete();
     }
 }

@@ -1,4 +1,4 @@
-package ecsimsw.picup.storage;
+package ecsimsw.picup.album.utils;
 
 import com.amazonaws.HttpMethod;
 import com.amazonaws.services.s3.AmazonS3;
@@ -13,10 +13,7 @@ import java.io.OutputStream;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.net.URL;
 import java.util.Date;
-
-import static ecsimsw.picup.storage.FileUtils.fileStringSize;
 
 @Slf4j
 public class S3Utils {
@@ -28,7 +25,7 @@ public class S3Utils {
             metadata.setContentType(file.getContentType());
             metadata.setContentLength(file.getSize());
             s3Client.putObject(bucket, path, file.getInputStream(), metadata);
-            log.info("S3 upload time : " + (System.currentTimeMillis() - start) + " ms, " + fileStringSize(file.getSize()));
+            log.info("S3 upload time : " + (System.currentTimeMillis() - start) + " ms, " + FileUtils.fileStringSize(file.getSize()));
         } catch (Exception e) {
             throw new StorageException("Object storage server exception while uploading", e);
         }
@@ -52,17 +49,11 @@ public class S3Utils {
         }
     }
 
-    public static void deleteIfExists(AmazonS3 s3Client, String bucket, String path) {
-        if (s3Client.doesObjectExist(bucket, path)) {
-            s3Client.deleteObject(bucket, path);
-        }
-    }
-
     public static void delete(AmazonS3 s3Client, String bucket, String path) {
         s3Client.deleteObject(bucket, path);
     }
 
-    public static String getPreSignedUrl(AmazonS3 s3Client, String bucket, String path, long expirationMs) {
+    public static String preSignedUrl(AmazonS3 s3Client, String bucket, String path, long expirationMs) {
         var preSignedUrlRequest = new GeneratePresignedUrlRequest(bucket, path)
             .withMethod(HttpMethod.PUT)
             .withExpiration(new Date(System.currentTimeMillis() + expirationMs));

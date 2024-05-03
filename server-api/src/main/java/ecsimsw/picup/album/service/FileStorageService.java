@@ -1,9 +1,12 @@
 package ecsimsw.picup.album.service;
 
 import com.amazonaws.services.s3.AmazonS3;
-import ecsimsw.picup.album.domain.*;
+import ecsimsw.picup.album.domain.ResourceKey;
+import ecsimsw.picup.album.domain.StorageResource;
+import ecsimsw.picup.album.domain.StorageResourceRepository;
+import ecsimsw.picup.album.domain.StorageType;
 import ecsimsw.picup.album.exception.StorageException;
-import ecsimsw.picup.storage.S3Utils;
+import ecsimsw.picup.album.utils.S3Utils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -14,16 +17,17 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
+import static ecsimsw.picup.album.domain.StorageType.STORAGE;
 import static ecsimsw.picup.album.domain.StorageType.THUMBNAIL;
 
 @Slf4j
 @RequiredArgsConstructor
 @Service
-public class FileResourceService {
+public class FileStorageService {
 
     private static final String BUCKET = "picup-ecsimsw";
     private static final Map<StorageType, String> ROOT_PATH_PER_STORAGE_TYPE = Map.of(
-        StorageType.STORAGE, "storage/",
+        STORAGE, "storage/",
         THUMBNAIL, "thumb/"
     );
 
@@ -33,7 +37,6 @@ public class FileResourceService {
 
     private final AmazonS3 s3Client;
     private final StorageResourceRepository storageResourceRepository;
-    private final FileUrlService fileUrlService;
     private final ThumbnailService thumbnailService;
 
     @Transactional
@@ -50,20 +53,24 @@ public class FileResourceService {
         var resourceKey = ResourceKey.fromFileName(fileName);
         var preUpload = StorageResource.preUpload(type, resourceKey, fileSize);
         storageResourceRepository.save(preUpload);
-        return S3Utils.getPreSignedUrl(s3Client, BUCKET, resourcePath(preUpload), PRE_SIGNED_URL_EXPIRATION_MS);
+        return S3Utils.preSignedUrl(s3Client, BUCKET, resourcePath(preUpload), PRE_SIGNED_URL_EXPIRATION_MS);
+    }
+
+    public StorageResource readPreUpload(StorageType type, ResourceKey resourceKey) {
+        return storageResourceRepository.findByStorageTypeAndResourceKey(type, resourceKey)
+            .orElseThrow(() -> new StorageException("There's nothing to commit"));
     }
 
     @Transactional
-    public StorageResource commitPreUpload(StorageType type, ResourceKey resourceKey) {
+    public void commitPreUpload(StorageType type, ResourceKey resourceKey) {
         var preUpload = storageResourceRepository.findByStorageTypeAndResourceKey(type, resourceKey)
             .orElseThrow(() -> new StorageException("There's nothing to commit"));
         preUpload.setToBeDeleted(false);
         storageResourceRepository.save(preUpload);
-        return preUpload;
     }
 
     @Transactional
-    public void saveStorageResource(StorageType type, ResourceKey resourceKey, long fileSize) {
+    public void saveResource(StorageType type, ResourceKey resourceKey, long fileSize) {
         var storageResource = new StorageResource(type, resourceKey, fileSize);
         storageResourceRepository.save(storageResource);
     }
@@ -106,15 +113,10 @@ public class FileResourceService {
         return resourcePath(resource.getStorageType(), resource.getResourceKey());
     }
 
-    private String resourcePath(StorageType type, ResourceKey resourceKey) {
+    public String resourcePath(StorageType type, ResourceKey resourceKey) {
         if (!ROOT_PATH_PER_STORAGE_TYPE.containsKey(type)) {
             return resourceKey.value();
         }
         return ROOT_PATH_PER_STORAGE_TYPE.get(type) + resourceKey.value();
-    }
-
-    public String fileUrl(StorageType type, String remoteIp, ResourceKey resourceKey) {
-        var resourcePath = resourcePath(type, resourceKey);
-        return fileUrlService.sign(remoteIp, resourcePath);
     }
 }

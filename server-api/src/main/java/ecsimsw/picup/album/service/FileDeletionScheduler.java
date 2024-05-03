@@ -6,11 +6,11 @@ import org.springframework.stereotype.Service;
 
 @RequiredArgsConstructor
 @Service
-public class StorageScheduler {
+public class FileDeletionScheduler {
 
     private final static int FILE_DELETION_SCHED_DELAY = 10_000;
 
-    private final FileResourceService fileService;
+    private final FileStorageService fileService;
 
     @Scheduled(fixedDelay = FILE_DELETION_SCHED_DELAY)
     public void scheduleDelete() {

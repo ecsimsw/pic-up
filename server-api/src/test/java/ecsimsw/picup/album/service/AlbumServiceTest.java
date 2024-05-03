@@ -22,20 +22,20 @@ import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.verify;
 
 @DataJpaTest
-class AlbumCoreServiceTest {
+class AlbumServiceTest {
 
     @Autowired
     private AlbumRepository albumRepository;
 
     @Mock
-    private PictureCoreService pictureCoreService;
+    private PictureService pictureService;
 
-    private AlbumCoreService albumCoreService;
+    private AlbumService albumService;
 
     @BeforeEach
     public void init(@Autowired AlbumRepository albumRepository) {
-        var fileService = Mockito.mock(FileResourceService.class);
-        albumCoreService = new AlbumCoreService(pictureCoreService, albumRepository, fileService);
+        var fileService = Mockito.mock(FileStorageService.class);
+        albumService = new AlbumService(pictureService, albumRepository, fileService);
     }
 
     @DisplayName("사용자의 앨범을 모두 조회한다.")
@@ -44,7 +44,7 @@ class AlbumCoreServiceTest {
         var album1 = albumRepository.save(new Album(USER_ID, ALBUM_NAME, new ResourceKey("resourceKey1")));
         var album2 = albumRepository.save(new Album(USER_ID, ALBUM_NAME, new ResourceKey("resourceKey2")));
         var album3 = albumRepository.save(new Album(USER_ID, ALBUM_NAME, new ResourceKey("resourceKey3")));
-        var result = albumCoreService.findAll(USER_ID);
+        var result = albumService.findAll(USER_ID);
         assertThat(result).contains(
             AlbumResponse.of(album1),
             AlbumResponse.of(album2),
@@ -55,7 +55,7 @@ class AlbumCoreServiceTest {
     @DisplayName("앨범을 생성한다.")
     @Test
     void create() {
-        var result = albumCoreService.create(USER_ID, ALBUM_NAME, ORIGIN_FILE);
+        var result = albumService.create(USER_ID, ALBUM_NAME, ORIGIN_FILE);
         assertAll(
             () -> assertThat(result).isNotNull()
         );
@@ -64,34 +64,34 @@ class AlbumCoreServiceTest {
     @DisplayName("앨범 정보를 제거한다.")
     @Test
     void delete() {
-        var savedId = albumCoreService.create(USER_ID, ALBUM_NAME, ORIGIN_FILE);
-        albumCoreService.delete(USER_ID, savedId);
-        assertThat(albumCoreService.findAll(USER_ID)).isEmpty();
+        var savedId = albumService.create(USER_ID, ALBUM_NAME, ORIGIN_FILE);
+        albumService.delete(USER_ID, savedId);
+        assertThat(albumService.findAll(USER_ID)).isEmpty();
     }
 
     @DisplayName("앨범에 포함된 Picture 정보가 모두 제거된다.")
     @Test
     void deleteAllPictures() {
-        var savedId = albumCoreService.create(USER_ID, ALBUM_NAME, ORIGIN_FILE);
-        albumCoreService.delete(USER_ID, savedId);
-        verify(pictureCoreService, atLeastOnce())
+        var savedId = albumService.create(USER_ID, ALBUM_NAME, ORIGIN_FILE);
+        albumService.delete(USER_ID, savedId);
+        verify(pictureService, atLeastOnce())
             .deleteAllInAlbum(USER_ID, savedId);
     }
 
     @DisplayName("앨범 주인이 아닌 사용자는 앨범을 제거할 수 없다.")
     @Test
     void deleteWithInvalidUser() {
-        var savedId = albumCoreService.create(USER_ID, ALBUM_NAME, ORIGIN_FILE);
+        var savedId = albumService.create(USER_ID, ALBUM_NAME, ORIGIN_FILE);
         assertThatThrownBy(
-            () -> albumCoreService.delete(USER_ID + 1, savedId)
+            () -> albumService.delete(USER_ID + 1, savedId)
         ).isInstanceOf(UnauthorizedException.class);
     }
 
     @DisplayName("단일 앨범 정보를 조회한다.")
     @Test
     void getUserAlbum() {
-        var savedId = albumCoreService.create(USER_ID, ALBUM_NAME, ORIGIN_FILE);
-        var result = albumCoreService.userAlbum(USER_ID, savedId);
+        var savedId = albumService.create(USER_ID, ALBUM_NAME, ORIGIN_FILE);
+        var result = albumService.userAlbum(USER_ID, savedId);
         assertAll(
             () -> assertThat(result.id()).isNotNull(),
             () -> assertThat(result.name()).isEqualTo(ALBUM_NAME),
@@ -103,9 +103,9 @@ class AlbumCoreServiceTest {
     @DisplayName("다른 사용자의 앨범 정보를 조회할 수 없다.")
     @Test
     void getUserAlbumWithInvalidUser() {
-        var savedId = albumCoreService.create(USER_ID, ALBUM_NAME, ORIGIN_FILE);
+        var savedId = albumService.create(USER_ID, ALBUM_NAME, ORIGIN_FILE);
         assertThatThrownBy(
-            () -> albumCoreService.userAlbum(USER_ID + 1, savedId)
+            () -> albumService.userAlbum(USER_ID + 1, savedId)
         );
     }
 }

@@ -17,8 +17,8 @@ import static org.mockito.Mockito.when;
 import ecsimsw.picup.album.dto.SignUpRequest;
 import ecsimsw.picup.album.exception.AlbumException;
 import ecsimsw.picup.album.exception.StorageException;
-import ecsimsw.picup.album.service.AlbumCoreService;
-import ecsimsw.picup.album.service.FileResourceService;
+import ecsimsw.picup.album.service.AlbumService;
+import ecsimsw.picup.album.service.FileStorageService;
 import ecsimsw.picup.album.service.MemberService;
 import ecsimsw.picup.album.service.PictureService;
 import ecsimsw.picup.album.service.ThumbnailService;
@@ -55,10 +55,10 @@ class PictureUploadAsyncTest {
     private MemberService memberService;
 
     @Autowired
-    private AlbumCoreService albumCoreService;
+    private AlbumService albumService;
 
     @MockBean
-    private FileResourceService fileService;
+    private FileStorageService fileService;
 
     @MockBean
     private ThumbnailService thumbnailService;
@@ -69,7 +69,7 @@ class PictureUploadAsyncTest {
     @BeforeEach
     void skipThumbnailMaking() {
         userId = memberService.signUp(new SignUpRequest(UUID.randomUUID() + "", USER_PASSWORD)).id();
-        albumId = albumCoreService.create(userId, ALBUM_NAME, new FileUploadResponse(RESOURCE_KEY, FILE_SIZE));
+        albumId = albumService.create(userId, ALBUM_NAME, new FileUploadResponse(RESOURCE_KEY, FILE_SIZE));
 
         when(thumbnailService.resizeImage(any(MultipartFile.class), any(Float.class)))
             .thenAnswer(input -> input.getArgument(0));

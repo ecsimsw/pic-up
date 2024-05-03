@@ -3,8 +3,8 @@ package ecsimsw.picup.album.service;
 import ecsimsw.picup.album.domain.PictureFileExtension;
 import ecsimsw.picup.album.domain.ResourceKey;
 import ecsimsw.picup.album.exception.AlbumException;
-import ecsimsw.picup.storage.ThumbnailUtils;
-import ecsimsw.picup.storage.FileStorageUtils;
+import ecsimsw.picup.album.utils.ThumbnailUtils;
+import ecsimsw.picup.album.utils.FileStorageUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.stereotype.Service;
@@ -58,7 +58,7 @@ public class ThumbnailService {
             CAPTURE_FRAME_NUMBER,
             VIDEO_THUMBNAIL_DEFAULT_FORMAT.name()
         );
-        FileStorageUtils.deleteIfExists(videoFilePath);
+        FileStorageUtils.delete(videoFilePath);
         return thumbnailFile;
     }
 }

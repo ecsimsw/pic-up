@@ -6,8 +6,8 @@ import static ecsimsw.picup.env.MemberFixture.SIGN_UP_REQUEST;
 import static ecsimsw.picup.utils.ConcurrentJobTestUtils.concurrentJob;
 import static org.assertj.core.api.Assertions.assertThat;
 
-import ecsimsw.picup.album.service.AlbumCoreService;
-import ecsimsw.picup.album.service.FileResourceService;
+import ecsimsw.picup.album.service.AlbumService;
+import ecsimsw.picup.album.service.FileStorageService;
 import ecsimsw.picup.album.service.MemberService;
 import ecsimsw.picup.album.service.PictureService;
 import ecsimsw.picup.album.service.StorageUsageService;
@@ -32,13 +32,13 @@ public class UserLockConcurrentTest {
     private MemberService memberService;
 
     @Autowired
-    private AlbumCoreService albumCoreService;
+    private AlbumService albumService;
 
     @Autowired
     private StorageUsageService storageUsageService;
 
     @MockBean
-    private FileResourceService fileService;
+    private FileStorageService fileService;
 
     @MockBean
     private ThumbnailService thumbnailService;
@@ -49,7 +49,7 @@ public class UserLockConcurrentTest {
     @BeforeEach
     public void init() {
         userId = memberService.signUp(SIGN_UP_REQUEST).id();
-        albumId = albumCoreService.create(userId, ALBUM_NAME, ORIGIN_FILE);
+        albumId = albumService.create(userId, ALBUM_NAME, ORIGIN_FILE);
     }
 
     @DisplayName("이미지 동시 업로드, 스토리지 사용량 정상 업데이트를 확인한다.")
