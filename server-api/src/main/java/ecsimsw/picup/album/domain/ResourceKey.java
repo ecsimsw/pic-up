@@ -18,7 +18,7 @@ import java.util.UUID;
 public class ResourceKey {
 
     @Convert(converter = AesStringConverter.class)
-    @Column(nullable = false, length = 128)
+    @Column(nullable = false, length = 255)
     private String resourceKey;
 
     public ResourceKey(String resourceKey) {

@@ -24,7 +24,7 @@ public class Album {
     private Long userId;
 
     @Convert(converter = AesStringConverter.class)
-    @Column(length = 128)
+    @Column(length = 255)
     private String name;
 
     @Embedded
