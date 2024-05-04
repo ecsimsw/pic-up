@@ -49,6 +49,7 @@ public class PictureController {
         @RequestParam String resourceKey,
         @RequestParam Long fileSize
     ) {
+        log.info("Get thumbnail from lambda : " + resourceKey);
         pictureService.setPictureThumbnail(resourceKey, fileSize);
         return ResponseEntity.ok().build();
     }
