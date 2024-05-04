@@ -58,21 +58,22 @@ public class ThumbnailMaker implements RequestHandler<S3Event, String> {
             S3EventNotificationRecord record = s3event.getRecords().get(0);
             String bucket = record.getS3().getBucket().getName();
             String originFilePath = record.getS3().getObject().getUrlDecodedKey();
-            String extension = getExtensionFromName(originFilePath);
             String thumbnailFilePath = thumbnailPath(originFilePath);
+            String extension = getExtensionFromName(originFilePath);
 
             log.info(() -> "In : " + originFilePath);
             if (!originFilePath.startsWith(ORIGINAL_UPLOAD_ROOT_PATH)) {
                 return "";
             }
 
+            long fileSize = 0L;
             if (Arrays.stream(IMAGE_EXTENSIONS).anyMatch(ae -> ae.equalsIgnoreCase(extension))) {
                 BufferedImage imageFile = ImageIO.read(s3Client.getObject(GetObjectRequest.builder()
                     .bucket(bucket)
                     .key(originFilePath)
                     .build()));
                 BufferedImage resized = resizeImage(imageFile, SCALE_FACTOR);
-                putObject(s3Client, resized, bucket, thumbnailFilePath, extension);
+                fileSize = putObject(s3Client, resized, bucket, thumbnailFilePath, extension);
             }
 
             if (Arrays.stream(VIDEO_EXTENSIONS).anyMatch(ae -> ae.equalsIgnoreCase(extension))) {
@@ -84,14 +85,14 @@ public class ThumbnailMaker implements RequestHandler<S3Event, String> {
                 Files.copy(object, videoFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
                 Picture picture = FrameGrab.getFrameFromFile(videoFile, DEFAULT_VIDEO_CAPTURE_FRAME);
                 BufferedImage captured = AWTUtil.toBufferedImage(picture);
-                putObject(s3Client, captured, bucket, thumbnailFilePath, "jpg");
+                fileSize = putObject(s3Client, captured, bucket, thumbnailFilePath, "jpg");
             }
             log.info(() -> "Upload : " + thumbnailFilePath);
 
             URI uri = new URI("https://www.ecismsw.com:8082/api/picture/thumbnail");
             uri = new URIBuilder(uri)
-                .addParameter("originResourceKey", originFilePath.replaceFirst(ORIGINAL_UPLOAD_ROOT_PATH, ""))
-                .addParameter("thumbnailResourceKey", thumbnailFilePath.replaceFirst(THUMBNAIL_UPLOAD_ROOT_PATH, ""))
+                .addParameter("resourceKey", originFilePath.replaceFirst(ORIGINAL_UPLOAD_ROOT_PATH, ""))
+                .addParameter("fileSize", String.valueOf(fileSize))
                 .build();
             HttpClient httpClient = HttpClientBuilder.create().build();
             httpClient.execute(new HttpPost(uri));
@@ -108,12 +109,13 @@ public class ThumbnailMaker implements RequestHandler<S3Event, String> {
         return originFilePath.replaceFirst(ORIGINAL_UPLOAD_ROOT_PATH, THUMBNAIL_UPLOAD_ROOT_PATH);
     }
 
-    private void putObject(S3Client s3Client, BufferedImage uploadImage, String bucket, String path, String extension) {
+    private long putObject(S3Client s3Client, BufferedImage uploadImage, String bucket, String path, String extension) {
         try {
             ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
             ImageIO.write(uploadImage, extension, outputStream);
+            long fileSize = outputStream.size();
             Map<String, String> metadata = Map.of(
-                "Content-Length", String.valueOf(outputStream.size()),
+                "Content-Length", String.valueOf(fileSize),
                 "Content-Type", contentType(extension)
             );
             PutObjectRequest putObjectRequest = PutObjectRequest.builder()
@@ -125,6 +127,7 @@ public class ThumbnailMaker implements RequestHandler<S3Event, String> {
                 putObjectRequest,
                 RequestBody.fromBytes(outputStream.toByteArray())
             );
+            return fileSize;
         } catch (AwsServiceException | IOException e) {
             throw new IllegalArgumentException("failed to upload : " + e.getMessage());
         }
