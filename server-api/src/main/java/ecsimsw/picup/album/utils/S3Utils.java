@@ -44,6 +44,10 @@ public class S3Utils {
         s3Client.deleteObject(bucket, path);
     }
 
+    public static boolean hasContent(AmazonS3 s3Client, String bucket, String path) {
+        return s3Client.doesObjectExist(bucket, path);
+    }
+
     public static String preSignedUrl(AmazonS3 s3Client, String bucket, String path, long expirationMs) {
         var preSignedUrlRequest = new GeneratePresignedUrlRequest(bucket, path)
             .withMethod(HttpMethod.PUT)

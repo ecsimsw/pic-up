@@ -85,9 +85,11 @@ public class FileStorageService {
                 resource.countDeleteFailed();
                 storageResourceRepository.save(resource);
                 if (resource.getDeleteFailedCount() > FILE_DELETION_RETRY_COUNTS) {
-                    fileDeletionFailedHistoryRepository.save(FileDeletionFailedHistory.from(resource));
+                    if(!S3Utils.hasContent(s3Client, BUCKET, resourcePath(resource))) {
+                        fileDeletionFailedHistoryRepository.save(FileDeletionFailedHistory.from(resource));
+                        log.error("Failed to delete file resource : " + resource.getResourceKey().value() + " " + resource.getStorageType().name());
+                    }
                     storageResourceRepository.delete(resource);
-                    log.error("Failed to delete file resource : " + resource.getResourceKey().value() + " " + resource.getStorageType().name());
                 }
             }
         }
