@@ -8,15 +8,15 @@
   <Appenders>
     <xi:include href="components/application-logs-console-appender.xml"/>
     <xi:include href="components/application-logs-rolling-file.xml"/>
-    <xi:include href="components/s3-logs-rolling-file.xml"/>
+    <xi:include href="components/file-dlq-logs-rolling-file.xml"/>
   </Appenders>
   <Loggers>
     <Root level="info">
       <AppenderRef ref="ApplicationLogsConsoleAppender" level="info"/>
       <AppenderRef ref="ApplicationLogsRollingFile" level="info"/>
     </Root>
-    <Logger name="ecsimsw.picup.album.utils.S3Utils" level="info" additivity="false">
-      <AppenderRef ref="S3LogsRollingFile" level="info"/>
+    <Logger name="ecsimsw.picup.album.service.FileStorageService" level="info" additivity="true">
+      <AppenderRef ref="FileDLQLogsRollingFile" level="error"/>
     </Logger>
   </Loggers>
 </Configuration>

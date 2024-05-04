@@ -1,14 +1,8 @@
 package ecsimsw.picup.album.domain;
 
 import java.time.LocalDateTime;
-import javax.persistence.Column;
-import javax.persistence.Embedded;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -16,6 +10,9 @@ import lombok.NoArgsConstructor;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
+@Table(indexes = {
+    @Index(name = "idx_resource_key", columnList = "resourceKey")
+})
 @Entity
 public class StorageResource {
 
@@ -41,20 +38,20 @@ public class StorageResource {
     @Column(nullable = false)
     private LocalDateTime createdAt;
 
-    public StorageResource(StorageType storageType, ResourceKey resourceKey, Long fileSize) {
-        this(null, storageType, resourceKey, fileSize, false, 0, LocalDateTime.now());
-    }
-
     public static StorageResource preUpload(StorageType storageType, ResourceKey resourceKey, Long fileSize) {
         return new StorageResource(null, storageType, resourceKey, fileSize, true, 0, LocalDateTime.now());
     }
 
-    public void setToBeDeleted(boolean toBeDeleted) {
-        this.toBeDeleted = toBeDeleted;
+    public StorageResource(StorageType storageType, ResourceKey resourceKey, Long fileSize) {
+        this(null, storageType, resourceKey, fileSize, false, 0, LocalDateTime.now());
     }
 
-    public void markToBeDeleted() {
-        this.toBeDeleted = true;
+    public Picture toPicture(Album album) {
+        return new Picture(album, resourceKey, fileSize);
+    }
+
+    public void setToBeDeleted(boolean toBeDeleted) {
+        this.toBeDeleted = toBeDeleted;
     }
 
     public void countDeleteFailed() {

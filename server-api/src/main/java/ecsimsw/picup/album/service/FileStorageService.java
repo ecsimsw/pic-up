@@ -2,10 +2,7 @@ package ecsimsw.picup.album.service;
 
 import com.amazonaws.services.s3.AmazonS3;
 import ecsimsw.picup.album.controller.PreUploadResponse;
-import ecsimsw.picup.album.domain.ResourceKey;
-import ecsimsw.picup.album.domain.StorageResource;
-import ecsimsw.picup.album.domain.StorageResourceRepository;
-import ecsimsw.picup.album.domain.StorageType;
+import ecsimsw.picup.album.domain.*;
 import ecsimsw.picup.album.exception.StorageException;
 import ecsimsw.picup.album.utils.S3Utils;
 import lombok.RequiredArgsConstructor;
@@ -30,6 +27,7 @@ public class FileStorageService {
     private final AmazonS3 s3Client;
     private final StorageResourceRepository storageResourceRepository;
     private final ThumbnailService thumbnailService;
+    private final FileDeletionFailedHistoryRepository fileDeletionFailedHistoryRepository;
 
     @Transactional
     public ResourceKey upload(StorageType type, MultipartFile file, float scale) {
@@ -50,17 +48,13 @@ public class FileStorageService {
         return new PreUploadResponse(preSignedUrl, resourceKey.value());
     }
 
-    public StorageResource readPreUpload(StorageType type, ResourceKey resourceKey) {
-        return storageResourceRepository.findByStorageTypeAndResourceKey(type, resourceKey)
-            .orElseThrow(() -> new StorageException("There's nothing to commit"));
-    }
-
     @Transactional
-    public void commitPreUpload(StorageType type, ResourceKey resourceKey) {
+    public StorageResource commitPreUpload(StorageType type, ResourceKey resourceKey) {
         var preUpload = storageResourceRepository.findByStorageTypeAndResourceKey(type, resourceKey)
-            .orElseThrow(() -> new StorageException("There's nothing to commit"));
+            .orElseThrow(() -> new StorageException("Not exists resource"));
         preUpload.setToBeDeleted(false);
         storageResourceRepository.save(preUpload);
+        return preUpload;
     }
 
     @Transactional
@@ -70,37 +64,33 @@ public class FileStorageService {
     }
 
     @Transactional
-    public void deleteAsync(ResourceKey resourceKey) {
-        var resources = storageResourceRepository.findAllByResourceKey(resourceKey);
-        resources.forEach(resource -> resource.setToBeDeleted(true));
-        storageResourceRepository.saveAll(resources);
+    public void deleteAsync(ResourceKey resource) {
+        deleteAllAsync(List.of(resource));
     }
 
     @Transactional
     public void deleteAllAsync(List<ResourceKey> resourceKeys) {
-        var resources = storageResourceRepository.findAllByResourceKeyIn(resourceKeys);
-        resources.forEach(resource -> resource.setToBeDeleted(true));
-        storageResourceRepository.saveAll(resources);
+        storageResourceRepository.updateAllToBeDeleted(resourceKeys);
     }
 
-    @Transactional(readOnly = true)
+    @Transactional
     public void deleteAllDummies() {
         var expiration = LocalDateTime.now().minusSeconds(WAIT_TIME_TO_BE_DELETED);
         var toBeDeleted = storageResourceRepository.findAllToBeDeletedCreatedBefore(expiration);
-        toBeDeleted.forEach(resource -> {
+        for(var resource : toBeDeleted) {
             try {
-                if (resource.getDeleteFailedCount() > FILE_DELETION_RETRY_COUNTS) {
-                    // TODO :: DLQ
-                    storageResourceRepository.delete(resource);
-                    return;
-                }
                 S3Utils.delete(s3Client, BUCKET, resourcePath(resource));
                 storageResourceRepository.delete(resource);
             } catch (Exception e) {
                 resource.countDeleteFailed();
                 storageResourceRepository.save(resource);
+                if (resource.getDeleteFailedCount() > FILE_DELETION_RETRY_COUNTS) {
+                    fileDeletionFailedHistoryRepository.save(FileDeletionFailedHistory.from(resource));
+                    storageResourceRepository.delete(resource);
+                    log.error("Failed to delete file resource : " + resource.getResourceKey().value() + " " + resource.getStorageType().name());
+                }
             }
-        });
+        }
     }
 
     private String resourcePath(StorageResource resource) {

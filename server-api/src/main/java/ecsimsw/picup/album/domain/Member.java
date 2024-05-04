@@ -12,6 +12,9 @@ import software.amazon.awssdk.annotations.NotNull;
 
 @NoArgsConstructor
 @Getter
+@Table(indexes = {
+    @Index(name = "idx_username", columnList = "username")
+})
 @Entity
 public class Member {
 

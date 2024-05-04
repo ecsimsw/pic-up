@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static ecsimsw.picup.album.domain.StorageType.THUMBNAIL;
 
@@ -44,7 +45,7 @@ public class AlbumService {
         var resources = pictures.stream()
             .map(Picture::getFileResource)
             .toList();
-        resources.add(album.getThumbnail());
+        fileService.deleteAsync(album.getThumbnail());
         fileService.deleteAllAsync(resources);
     }
 

@@ -7,16 +7,18 @@ import lombok.Setter;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.persistence.Column;
+import javax.persistence.Convert;
+import javax.persistence.Converter;
 import javax.persistence.Embeddable;
 import java.util.UUID;
 
-@Setter
 @Getter
 @NoArgsConstructor
 @Embeddable
 public class ResourceKey {
 
-    @Column(nullable = false, length = 50)
+    @Convert(converter = AesStringConverter.class)
+    @Column(nullable = false, length = 128)
     private String resourceKey;
 
     public ResourceKey(String resourceKey) {

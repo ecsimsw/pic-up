@@ -34,13 +34,12 @@ public class PictureService {
 
     @Transactional
     public void commitPreUpload(Long userId, Long albumId, String resourceKey) {
-        var preUpload = fileService.readPreUpload(STORAGE, new ResourceKey(resourceKey));
+        var preUpload = fileService.commitPreUpload(STORAGE, new ResourceKey(resourceKey));
         checkAbleToUpload(userId, albumId, preUpload.getFileSize());
         var album = getUserAlbum(userId, albumId);
-        var picture = new Picture(album, preUpload.getResourceKey(), preUpload.getFileSize());
+        var picture = preUpload.toPicture(album);
         pictureRepository.save(picture);
         storageUsageService.addUsage(userId, picture.getFileSize());
-        fileService.commitPreUpload(STORAGE, new ResourceKey(resourceKey));
     }
 
     @Transactional
