@@ -97,6 +97,7 @@ function addDropZone(albumId) {
         accept: getPreSignedUrl,
         acceptedFiles: ".jpeg,.jpg,.png,.gif,.mp4",
         paramName: "file",
+        uploadMultiple: false,
         maxFilesize: 200, // MB
         method: "PUT",
         init: function () {
