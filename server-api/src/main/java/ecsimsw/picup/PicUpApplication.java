@@ -14,7 +14,7 @@ public class PicUpApplication {
 
     public static void main(String[] args) {
         var app = new SpringApplication(PicUpApplication.class);
-        app.setAdditionalProfiles("dev");
+        app.setAdditionalProfiles("prod");
         app.run(args);
     }
 }
