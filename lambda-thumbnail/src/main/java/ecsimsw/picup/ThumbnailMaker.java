@@ -124,8 +124,7 @@ public class ThumbnailMaker implements RequestHandler<S3Event, String> {
             graphics.drawImage(uploadImage, 0, 0, COLOR, null);
             ByteArrayOutputStream buffer = new ByteArrayOutputStream();
             ImageIO.write(uploadImage, extension, buffer);
-            byte[] uploadingFile = buffer.toByteArray();
-            long fileSize = uploadingFile.length;
+            int fileSize = buffer.size();
             Map<String, String> metadata = Map.of(
                 "Content-Length", String.valueOf(fileSize),
                 "Content-Type", contentType(extension)
@@ -134,7 +133,7 @@ public class ThumbnailMaker implements RequestHandler<S3Event, String> {
                 .bucket(bucket)
                 .key(path)
                 .metadata(metadata)
-                .build(), RequestBody.fromBytes(uploadingFile)
+                .build(), RequestBody.fromBytes(buffer.toByteArray())
             );
             return fileSize;
         } catch (AwsServiceException | IOException e) {
@@ -186,7 +185,7 @@ public class ThumbnailMaker implements RequestHandler<S3Event, String> {
         var extension = getExtensionFromName(originFileName);
         var sb = new StringBuilder(originFileName);
         var extensionIndex = originFileName.lastIndexOf(extension);
-        sb.replace(extensionIndex, originFileName.length() + extensionIndex, ("." + newExtension));
+        sb.replace(extensionIndex, originFileName.length() + extensionIndex, newExtension);
         return sb.toString();
     }
 }

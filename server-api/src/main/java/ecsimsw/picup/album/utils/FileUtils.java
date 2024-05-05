@@ -34,7 +34,7 @@ public class FileUtils {
         var extension = getExtensionFromName(originFileName);
         var sb = new StringBuilder(originFileName);
         var extensionIndex = originFileName.lastIndexOf(extension);
-        sb.replace(extensionIndex, originFileName.length() + extensionIndex, ("." + newExtension));
+        sb.replace(extensionIndex, originFileName.length() + extensionIndex, newExtension);
         return sb.toString();
     }
 }
