@@ -97,10 +97,17 @@ function addDropZone(albumId) {
         accept: getPreSignedUrl,
         acceptedFiles: ".jpeg,.jpg,.png,.gif,.mp4",
         paramName: "file",
-        uploadMultiple: false,
         maxFilesize: 200, // MB
+        uploadMultiple:false,	//멀티파일 업로드
         method: "PUT",
         init: function () {
+
+            this.on("sending", function(file, xhr, formData) {
+                // Will send the filesize along with the file as POST data.
+                formData.append("filesize", file.size);
+                formData.append("fileName", "myName");
+            });
+
             this.on("success", function (file) {
                 console.log("upload success : " + file.name);
                 fetch(serverUrl + "/api/album/" + albumId + "/picture/commit?resourceKey=" + file.resourceKey, {

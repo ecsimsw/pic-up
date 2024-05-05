@@ -1,8 +1,7 @@
 package ecsimsw.picup.album.service;
 
-import ecsimsw.picup.album.controller.PreUploadResponse;
+import ecsimsw.picup.album.dto.PreUploadResponse;
 import ecsimsw.picup.album.domain.*;
-import ecsimsw.picup.album.dto.PictureResponse;
 import ecsimsw.picup.album.dto.PictureSearchCursor;
 import ecsimsw.picup.album.exception.AlbumException;
 import ecsimsw.picup.auth.UnauthorizedException;

@@ -1,7 +1,7 @@
 package ecsimsw.picup.album.service;
 
 import com.amazonaws.services.s3.AmazonS3;
-import ecsimsw.picup.album.controller.PreUploadResponse;
+import ecsimsw.picup.album.dto.PreUploadResponse;
 import ecsimsw.picup.album.domain.*;
 import ecsimsw.picup.album.exception.StorageException;
 import ecsimsw.picup.album.utils.S3Utils;

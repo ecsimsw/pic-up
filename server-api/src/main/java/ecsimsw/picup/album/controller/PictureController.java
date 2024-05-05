@@ -5,6 +5,7 @@ import ecsimsw.picup.album.annotation.SearchCursor;
 import ecsimsw.picup.album.dto.PictureResponse;
 import ecsimsw.picup.album.dto.PictureSearchCursor;
 import ecsimsw.picup.album.dto.PicturesDeleteRequest;
+import ecsimsw.picup.album.dto.PreUploadResponse;
 import ecsimsw.picup.album.service.PictureFacadeService;
 import ecsimsw.picup.auth.AuthTokenPayload;
 import ecsimsw.picup.auth.TokenPayload;

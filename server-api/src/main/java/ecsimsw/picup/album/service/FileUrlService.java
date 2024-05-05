@@ -53,7 +53,8 @@ public class FileUrlService {
     private CustomSignerRequest cannedSign(String remoteIp, String resourcePath) throws Exception {
         return CustomSignerRequest.builder()
             .privateKey(Path.of(privateKeyPath))
-            .ipRange(remoteIp + "/32")
+//            .ipRange(remoteIp + "/32")
+            .ipRange("0.0.0.0" + "/32")
             .resourceUrl(new URL(CDN_PROTOCOL, domainName, "/" + resourcePath).toString())
             .keyPairId(publicKeyId)
             .expirationDate(Instant.now().plus(SIGNED_URL_EXPIRATION_AFTER_DAYS, ChronoUnit.DAYS))

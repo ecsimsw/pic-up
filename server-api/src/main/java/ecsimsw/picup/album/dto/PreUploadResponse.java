@@ -1,4 +1,4 @@
-package ecsimsw.picup.album.controller;
+package ecsimsw.picup.album.dto;
 
 public record PreUploadResponse(
     String preSignedUrl,

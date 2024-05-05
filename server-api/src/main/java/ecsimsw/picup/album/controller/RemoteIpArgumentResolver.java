@@ -10,7 +10,6 @@ import org.springframework.web.method.support.ModelAndViewContainer;
 
 import javax.servlet.http.HttpServletRequest;
 
-@Component
 public class RemoteIpArgumentResolver implements HandlerMethodArgumentResolver {
 
     @Override
