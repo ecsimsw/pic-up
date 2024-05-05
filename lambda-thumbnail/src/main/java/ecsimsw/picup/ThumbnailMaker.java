@@ -48,6 +48,8 @@ public class ThumbnailMaker implements RequestHandler<S3Event, String> {
     private static final String JPG_MIME = "image/jpeg";
     private static final String PNG_MIME = "image/png";
 
+    private static final String APPLICATION_SERVER_URL = "https://www.ecsimsw.com:8082/api/picture/thumbnail";
+
     private static final Logger log = Logger.loggerFor(ThumbnailMaker.class);
 
     @Override
@@ -61,19 +63,28 @@ public class ThumbnailMaker implements RequestHandler<S3Event, String> {
             String thumbnailFilePath = thumbnailPath(originFilePath);
             String extension = getExtensionFromName(originFilePath);
 
-            log.info(() -> "In : " + originFilePath);
+            log.info(() -> "v2.0 In : " + originFilePath);
             if (!originFilePath.startsWith(ORIGINAL_UPLOAD_ROOT_PATH)) {
                 return "";
             }
 
             long fileSize = 0L;
+            log.info(() -> "ININ ");
             if (Arrays.stream(IMAGE_EXTENSIONS).anyMatch(ae -> ae.equalsIgnoreCase(extension))) {
-                BufferedImage imageFile = ImageIO.read(s3Client.getObject(GetObjectRequest.builder()
+                ResponseInputStream<GetObjectResponse> object = s3Client.getObject(GetObjectRequest.builder()
                     .bucket(bucket)
                     .key(originFilePath)
-                    .build()));
-                BufferedImage resized = resizeImage(imageFile, SCALE_FACTOR);
-                fileSize = putObject(s3Client, resized, bucket, thumbnailFilePath, extension);
+                    .build());
+                byte[] a = object.readAllBytes();
+                log.info(() -> String.valueOf(a.length));
+
+                ByteArrayInputStream is = new ByteArrayInputStream(a);
+                BufferedImage bi = ImageIO.read(is);
+
+//                BufferedImage imageFile = ImageIO.read(object);
+                log.info(() -> String.valueOf(bi == null));
+//                BufferedImage resized = resizeImage(bi, SCALE_FACTOR);
+                fileSize = putObject(s3Client, bi, bucket, thumbnailFilePath, extension);
             }
 
             if (Arrays.stream(VIDEO_EXTENSIONS).anyMatch(ae -> ae.equalsIgnoreCase(extension))) {
@@ -89,7 +100,7 @@ public class ThumbnailMaker implements RequestHandler<S3Event, String> {
             }
             log.info(() -> "Upload : " + thumbnailFilePath);
 
-            URI uri = new URI("https://www.ecismsw.com:8082/api/picture/thumbnail");
+            URI uri = new URI(APPLICATION_SERVER_URL);
             uri = new URIBuilder(uri)
                 .addParameter("resourceKey", originFilePath.replaceFirst(ORIGINAL_UPLOAD_ROOT_PATH, ""))
                 .addParameter("fileSize", String.valueOf(fileSize))

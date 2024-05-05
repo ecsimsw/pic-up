@@ -45,6 +45,7 @@ public class FileStorageService {
         storageResourceRepository.save(preUpload);
         var resourceUrl = resourcePath(preUpload);
         var preSignedUrl = preSignedUrl(resourceUrl);
+        System.out.println("preSigned : " + preSignedUrl);
         return new PreUploadResponse(preSignedUrl, resourceKey.value());
     }
 
@@ -78,19 +79,23 @@ public class FileStorageService {
         var expiration = LocalDateTime.now().minusSeconds(WAIT_TIME_TO_BE_DELETED);
         var toBeDeleted = storageResourceRepository.findAllToBeDeletedCreatedBefore(expiration);
         for(var resource : toBeDeleted) {
-            try {
-                S3Utils.delete(s3Client, BUCKET, resourcePath(resource));
-                storageResourceRepository.delete(resource);
-            } catch (Exception e) {
-                resource.countDeleteFailed();
-                storageResourceRepository.save(resource);
-                if (resource.getDeleteFailedCount() > FILE_DELETION_RETRY_COUNTS) {
-                    if(!S3Utils.hasContent(s3Client, BUCKET, resourcePath(resource))) {
-                        fileDeletionFailedHistoryRepository.save(FileDeletionFailedHistory.from(resource));
-                        log.error("Failed to delete file resource : " + resource.getResourceKey().value() + " " + resource.getStorageType().name());
-                    }
-                    storageResourceRepository.delete(resource);
+            deleteDummyFile(resource);
+        }
+    }
+
+    private void deleteDummyFile(StorageResource resource) {
+        try {
+            S3Utils.delete(s3Client, BUCKET, resourcePath(resource));
+            storageResourceRepository.delete(resource);
+        } catch (Exception e) {
+            resource.countDeleteFailed();
+            storageResourceRepository.save(resource);
+            if (resource.getDeleteFailedCount() > FILE_DELETION_RETRY_COUNTS) {
+                if(!S3Utils.hasContent(s3Client, BUCKET, resourcePath(resource))) {
+                    fileDeletionFailedHistoryRepository.save(FileDeletionFailedHistory.from(resource));
+                    log.error("Failed to delete file resource : " + resource.getResourceKey().value() + " " + resource.getStorageType().name());
                 }
+                storageResourceRepository.delete(resource);
             }
         }
     }
@@ -107,6 +112,6 @@ public class FileStorageService {
     }
 
     public String preSignedUrl(String resourceUrl) {
-        return S3Utils.preSignedUrl(s3Client, BUCKET, resourceUrl, PRE_SIGNED_URL_EXPIRATION_MS);
+        return S3Utils.preSignedUrl(s3Client, BUCKET, resourceUrl, PRE_SIGNED_URL_EXPIRATION_MS * 100);
     }
 }
