@@ -34,7 +34,7 @@ public class MockCDN {
     public void upload(@PathVariable String resourceKey, MultipartFile file) {
         log.info("UPLOAD : " + "storage/" + resourceKey);
         S3Utils.store(amazonS3, BUCKET, ROOT_PATH_STORAGE + resourceKey, file);
-        if(ResourceKey.fromFileName(file.getOriginalFilename()).extension().equals(".mp4")) {
+        if(ResourceKey.fromFileName(file.getOriginalFilename()).extension().isVideo) {
             var thumbnailFile = thumbnailService.captureVideo(file);
             S3Utils.store(amazonS3, BUCKET, ROOT_PATH_THUMBNAIL + thumbnailFile.getOriginalFilename(), thumbnailFile);
         } else {

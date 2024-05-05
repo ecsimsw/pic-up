@@ -105,10 +105,11 @@ public class FileStorageService {
     }
 
     public String resourcePath(StorageType type, ResourceKey resourceKey) {
-        if (!ROOT_PATH_PER_STORAGE_TYPE.containsKey(type)) {
-            return resourceKey.value();
+        var rootPath = ROOT_PATH_PER_STORAGE_TYPE.getOrDefault(type, ROOT_PATH_STORAGE);
+        if(resourceKey.extension().isVideo && type == StorageType.THUMBNAIL) {
+            return rootPath + resourceKey.value().replace(".mp4", ".jpg");
         }
-        return ROOT_PATH_PER_STORAGE_TYPE.get(type) + resourceKey.value();
+        return rootPath + resourceKey.value();
     }
 
     public String preSignedUrl(String resourceUrl) {

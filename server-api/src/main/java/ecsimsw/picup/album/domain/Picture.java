@@ -64,6 +64,6 @@ public class Picture {
     }
 
     public PictureFileExtension extension() {
-        return PictureFileExtension.of(this.fileResource.extension());
+        return this.fileResource.extension();
     }
 }

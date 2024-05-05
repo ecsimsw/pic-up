@@ -4,6 +4,7 @@ import ecsimsw.picup.album.exception.AlbumException;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.apache.logging.log4j.core.appender.rolling.FileExtension;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.persistence.Column;
@@ -18,7 +19,7 @@ import java.util.UUID;
 public class ResourceKey {
 
     @Convert(converter = AesStringConverter.class)
-    @Column(nullable = false, length = 255)
+    @Column(nullable = false)
     private String resourceKey;
 
     public ResourceKey(String resourceKey) {
@@ -46,9 +47,10 @@ public class ResourceKey {
         return new ResourceKey(UUID.randomUUID() + "." + extension);
     }
 
-    public String extension() {
+    public PictureFileExtension extension() {
         int indexOfExtension = resourceKey.lastIndexOf(".");
-        return resourceKey.substring(indexOfExtension + 1);
+        String extension = resourceKey.substring(indexOfExtension + 1);
+        return PictureFileExtension.of(extension);
     }
 
     public String value() {
