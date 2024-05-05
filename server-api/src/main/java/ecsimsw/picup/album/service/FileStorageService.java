@@ -4,6 +4,7 @@ import com.amazonaws.services.s3.AmazonS3;
 import ecsimsw.picup.album.dto.PreUploadResponse;
 import ecsimsw.picup.album.domain.*;
 import ecsimsw.picup.album.exception.StorageException;
+import ecsimsw.picup.album.utils.FileUtils;
 import ecsimsw.picup.album.utils.S3Utils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,6 +22,7 @@ import static ecsimsw.picup.config.S3Config.*;
 @Service
 public class FileStorageService {
 
+    private static final String DEFAULT_VIDEO_THUMBNAIL_EXTENSION = "jpg";
     private static final int WAIT_TIME_TO_BE_DELETED = 10;
     private static final int FILE_DELETION_RETRY_COUNTS = 3;
 
@@ -106,9 +108,8 @@ public class FileStorageService {
 
     public String resourcePath(StorageType type, ResourceKey resourceKey) {
         var rootPath = ROOT_PATH_PER_STORAGE_TYPE.getOrDefault(type, ROOT_PATH_STORAGE);
-        System.out.println(resourceKey.extension().isVideo + " " + type);
         if(resourceKey.extension().isVideo && type == StorageType.THUMBNAIL) {
-            return rootPath + resourceKey.value().replace(".mp4", ".jpg");
+            return rootPath + FileUtils.changeExtensionTo(resourceKey.value(), DEFAULT_VIDEO_THUMBNAIL_EXTENSION);
         }
         return rootPath + resourceKey.value();
     }

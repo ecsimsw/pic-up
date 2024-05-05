@@ -23,10 +23,18 @@ public class FileUtils {
     }
 
     public static String getExtensionFromName(String fileName) {
-        if(fileName == null || fileName.isBlank()) {
+        if (fileName == null || fileName.isBlank()) {
             throw new AlbumException("Invalid file name");
         }
         var indexOfExtension = fileName.lastIndexOf(".");
         return fileName.substring(indexOfExtension + 1);
+    }
+
+    public static String changeExtensionTo(String originFileName, String newExtension) {
+        var extension = getExtensionFromName(originFileName);
+        var sb = new StringBuilder(originFileName);
+        var extensionIndex = originFileName.lastIndexOf(extension);
+        sb.replace(extensionIndex, originFileName.length() + extensionIndex, ("." + newExtension));
+        return sb.toString();
     }
 }
