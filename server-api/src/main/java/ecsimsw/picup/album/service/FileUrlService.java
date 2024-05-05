@@ -54,7 +54,7 @@ public class FileUrlService {
         return CustomSignerRequest.builder()
             .privateKey(Path.of(privateKeyPath))
 //            .ipRange(remoteIp + "/32")
-            .ipRange("0.0.0.0" + "/32")
+//            .ipRange("0.0.0.0" + "/32")
             .resourceUrl(new URL(CDN_PROTOCOL, domainName, "/" + resourcePath).toString())
             .keyPairId(publicKeyId)
             .expirationDate(Instant.now().plus(SIGNED_URL_EXPIRATION_AFTER_DAYS, ChronoUnit.DAYS))
