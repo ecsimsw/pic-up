@@ -106,6 +106,7 @@ public class FileStorageService {
 
     public String resourcePath(StorageType type, ResourceKey resourceKey) {
         var rootPath = ROOT_PATH_PER_STORAGE_TYPE.getOrDefault(type, ROOT_PATH_STORAGE);
+        System.out.println(resourceKey.extension().isVideo + " " + type);
         if(resourceKey.extension().isVideo && type == StorageType.THUMBNAIL) {
             return rootPath + resourceKey.value().replace(".mp4", ".jpg");
         }
