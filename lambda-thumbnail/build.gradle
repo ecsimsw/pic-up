@@ -3,7 +3,7 @@ plugins {
 }
 
 group = 'ecsimsw.picup.lambda'
-version = '2.0.0'
+version = '2.0.1'
 
 repositories {
     mavenCentral()
@@ -17,6 +17,8 @@ dependencies {
     implementation 'org.slf4j:slf4j-simple:1.7.25'
     implementation 'org.jcodec:jcodec-javase:0.2.5'
     implementation 'org.apache.httpcomponents:httpclient:4.3.5'
+
+    implementation 'net.coobird:thumbnailator:0.4.20'
 }
 
 task buildZip(type: Zip) {
