@@ -91,7 +91,9 @@ function addPicturesInPage(pictures) {
 
 function addDropZone(albumId) {
     new Dropzone(document.querySelector('#myDropzone'), {
-        url: dynamicUploadUrl,
+        url: (files) => {
+            return `${files[0].dynamicUploadUrl}`;
+        },
         accept: fetchPreSignedUrlFromBE,
         method: "PUT",
         init: function () {
@@ -141,11 +143,6 @@ const fetchPreSignedUrlFromBE = (file, done) => {
         done();//call the dropzone done
     })
 }
-
-const dynamicUploadUrl = (files) => {
-    return `${files[0].dynamicUploadUrl}`;
-}
-
 function setAlbumInfo() {
     fetchData(serverUrl + "/api/album/" + albumId, function (album) {
         const albumTitle = document.getElementById("album-title");
