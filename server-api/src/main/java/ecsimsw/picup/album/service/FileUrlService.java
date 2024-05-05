@@ -15,7 +15,7 @@ import java.nio.file.Path;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 
-import static ecsimsw.picup.config.CacheType.SIGNED_URL;
+import static ecsimsw.picup.album.domain.CacheType.SIGNED_URL;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -36,11 +36,11 @@ public class FileUrlService {
     @Value("${aws.cloudfront.privateKeyPath}")
     private String privateKeyPath;
 
-    private final FileStorageService fileStorageService;
+    private final FileResourceService fileResourceService;
 
-//    @Cacheable(value = SIGNED_URL, key = "{#storageType, #remoteIp, #fileResource.value()}")
+    @Cacheable(value = SIGNED_URL, key = "{#storageType, #remoteIp, #fileResource.value()}")
     public String fileUrl(StorageType storageType, String remoteIp, ResourceKey fileResource) {
-        var resourcePath = fileStorageService.resourcePath(storageType, fileResource);
+        var resourcePath = fileResourceService.filePath(storageType, fileResource);
         try {
             var sign = cannedSign(remoteIp, resourcePath);
             var signedUrl = cloudFrontUtilities.getSignedUrlWithCustomPolicy(sign);
@@ -53,8 +53,7 @@ public class FileUrlService {
     private CustomSignerRequest cannedSign(String remoteIp, String resourcePath) throws Exception {
         return CustomSignerRequest.builder()
             .privateKey(Path.of(privateKeyPath))
-//            .ipRange(remoteIp + "/32")
-//            .ipRange("0.0.0.0" + "/32")
+            .ipRange(remoteIp + "/32")
             .resourceUrl(new URL(CDN_PROTOCOL, domainName, "/" + resourcePath).toString())
             .keyPairId(publicKeyId)
             .expirationDate(Instant.now().plus(SIGNED_URL_EXPIRATION_AFTER_DAYS, ChronoUnit.DAYS))

@@ -8,7 +8,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static ecsimsw.picup.album.domain.StorageType.THUMBNAIL;
 
@@ -16,16 +15,14 @@ import static ecsimsw.picup.album.domain.StorageType.THUMBNAIL;
 @Service
 public class AlbumService {
 
-    private static final float ALBUM_THUMBNAIL_SCALE = 0.5f;
-
     private final StorageUsageService storageUsageService;
-    private final FileStorageService fileService;
+    private final FileResourceService resourceService;
     private final AlbumRepository albumRepository;
     private final PictureRepository pictureRepository;
 
     @Transactional
     public long initAlbum(Long userId, String name, MultipartFile file) {
-        var thumbnail = fileService.upload(THUMBNAIL, file, ALBUM_THUMBNAIL_SCALE);
+        var thumbnail = resourceService.upload(THUMBNAIL, file);
         var album = albumRepository.save(new Album(userId, name, thumbnail));
         return album.getId();
     }
@@ -45,8 +42,8 @@ public class AlbumService {
         var resources = pictures.stream()
             .map(Picture::getFileResource)
             .toList();
-        fileService.deleteAsync(album.getThumbnail());
-        fileService.deleteAllAsync(resources);
+        resourceService.deleteAsync(album.getThumbnail());
+        resourceService.deleteAllAsync(resources);
     }
 
     @Transactional(readOnly = true)

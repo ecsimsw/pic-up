@@ -4,6 +4,8 @@ import ecsimsw.picup.album.exception.MemberException;
 import java.util.Objects;
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
+
+import ecsimsw.picup.ecrypt.SHA256Utils;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -24,6 +26,12 @@ public class Password {
         }
         this.encrypted = encrypted;
         this.salt = salt;
+    }
+
+    public static Password initFrom(String plainPassword) {
+        var salt = SHA256Utils.getSalt();
+        var encrypted = SHA256Utils.encrypt(plainPassword, salt);
+        return new Password(encrypted, salt);
     }
 
     @Override

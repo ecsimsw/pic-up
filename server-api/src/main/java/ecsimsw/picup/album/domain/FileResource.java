@@ -14,7 +14,7 @@ import lombok.NoArgsConstructor;
     @Index(name = "idx_resource_key", columnList = "resourceKey")
 })
 @Entity
-public class StorageResource {
+public class FileResource {
 
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
@@ -38,11 +38,11 @@ public class StorageResource {
     @Column(nullable = false)
     private LocalDateTime createdAt;
 
-    public static StorageResource preUpload(StorageType storageType, ResourceKey resourceKey, Long fileSize) {
-        return new StorageResource(null, storageType, resourceKey, fileSize, true, 0, LocalDateTime.now());
+    public static FileResource preUpload(StorageType storageType, ResourceKey resourceKey, Long fileSize) {
+        return new FileResource(null, storageType, resourceKey, fileSize, true, 0, LocalDateTime.now());
     }
 
-    public StorageResource(StorageType storageType, ResourceKey resourceKey, Long fileSize) {
+    public FileResource(StorageType storageType, ResourceKey resourceKey, Long fileSize) {
         this(null, storageType, resourceKey, fileSize, false, 0, LocalDateTime.now());
     }
 

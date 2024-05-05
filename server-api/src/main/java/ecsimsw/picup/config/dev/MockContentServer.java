@@ -2,13 +2,11 @@ package ecsimsw.picup.config.dev;
 
 import com.amazonaws.services.s3.AmazonS3;
 import ecsimsw.picup.album.domain.ResourceKey;
-import ecsimsw.picup.album.service.PictureService;
 import ecsimsw.picup.album.service.ThumbnailService;
 import ecsimsw.picup.album.utils.S3Utils;
-import java.io.IOException;
-import javax.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Profile;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -18,23 +16,26 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+
 import static ecsimsw.picup.config.S3Config.*;
 
 @Slf4j
 @RequiredArgsConstructor
+@Primary
 @Profile("dev")
 @RestController
-public class MockCDN {
+public class MockContentServer {
 
     private final AmazonS3 amazonS3;
     private final ThumbnailService thumbnailService;
-    private final PictureService pictureService;
 
     @PutMapping(ROOT_PATH_STORAGE + "{resourceKey}")
     public void upload(@PathVariable String resourceKey, MultipartFile file) {
         log.info("UPLOAD : " + "storage/" + resourceKey);
         S3Utils.store(amazonS3, BUCKET, ROOT_PATH_STORAGE + resourceKey, file);
-        if(ResourceKey.fromFileName(file.getOriginalFilename()).extension().isVideo) {
+        if (ResourceKey.fromFileName(file.getOriginalFilename()).extension().isVideo) {
             var thumbnailFile = thumbnailService.captureVideo(file);
             S3Utils.store(amazonS3, BUCKET, ROOT_PATH_THUMBNAIL + thumbnailFile.getOriginalFilename(), thumbnailFile);
         } else {
@@ -56,7 +57,7 @@ public class MockCDN {
         @PathVariable String resourceKey,
         HttpServletResponse response
     ) throws IOException {
-        log.info("DOWNLOAD : " + ROOT_PATH_STORAGE+ resourceKey);
+        log.info("DOWNLOAD : " + ROOT_PATH_STORAGE + resourceKey);
         S3Utils.getResource(amazonS3, BUCKET, ROOT_PATH_STORAGE + resourceKey, response.getOutputStream());
         return ResponseEntity.ok().build();
     }

@@ -1,7 +1,5 @@
 package ecsimsw.picup.config;
 
-import static ecsimsw.picup.album.service.FileStorageService.BUCKET;
-
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.auth.AnonymousAWSCredentials;
 import com.amazonaws.client.builder.AwsClientBuilder;
@@ -10,12 +8,15 @@ import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import ecsimsw.picup.config.dev.MockFileUrlService;
 import io.findify.s3mock.S3Mock;
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Primary;
+
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
+
+import static ecsimsw.picup.album.service.FileResourceService.BUCKET;
 
 @Slf4j
 @TestConfiguration

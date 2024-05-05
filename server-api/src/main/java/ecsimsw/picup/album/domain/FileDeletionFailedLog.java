@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-public class FileDeletionFailedHistory {
+public class FileDeletionFailedLog {
 
     @Id
     private LocalDateTime createdAt;
@@ -22,12 +22,12 @@ public class FileDeletionFailedHistory {
     @Embedded
     private ResourceKey resourceKey;
 
-    public FileDeletionFailedHistory(StorageType storageType, ResourceKey resourceKey) {
+    public FileDeletionFailedLog(StorageType storageType, ResourceKey resourceKey) {
         this(LocalDateTime.now(), storageType, resourceKey);
     }
 
-    public static FileDeletionFailedHistory from(StorageResource resource) {
-        return new FileDeletionFailedHistory(
+    public static FileDeletionFailedLog from(FileResource resource) {
+        return new FileDeletionFailedLog(
             resource.getStorageType(),
             resource.getResourceKey()
         );

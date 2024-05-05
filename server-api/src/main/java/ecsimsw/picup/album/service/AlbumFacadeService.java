@@ -14,14 +14,18 @@ import static ecsimsw.picup.album.domain.StorageType.THUMBNAIL;
 @Service
 public class AlbumFacadeService {
 
+    private static final float ALBUM_THUMBNAIL_SCALE = 0.5f;
+
     private final UserLock userLock;
     private final AlbumService albumService;
     private final FileUrlService urlService;
+    private final ThumbnailService thumbnailService;
 
     public long initAlbum(Long userId, String name, MultipartFile file) {
+        var thumbnailFile = thumbnailService.resizeImage(file, ALBUM_THUMBNAIL_SCALE);
         try {
             userLock.acquire(userId);
-            return albumService.initAlbum(userId, name, file);
+            return albumService.initAlbum(userId, name, thumbnailFile);
         } finally {
             userLock.release(userId);
         }

@@ -17,11 +17,8 @@ import static org.mockito.Mockito.when;
 import ecsimsw.picup.album.dto.SignUpRequest;
 import ecsimsw.picup.album.exception.AlbumException;
 import ecsimsw.picup.album.exception.StorageException;
-import ecsimsw.picup.album.service.AlbumService;
-import ecsimsw.picup.album.service.FileStorageService;
-import ecsimsw.picup.album.service.MemberService;
-import ecsimsw.picup.album.service.PictureService;
-import ecsimsw.picup.album.service.ThumbnailService;
+import ecsimsw.picup.album.service.*;
+import ecsimsw.picup.album.service.FileResourceService;
 import ecsimsw.picup.config.RedisConfig;
 import ecsimsw.picup.config.S3MockConfig;
 import ecsimsw.picup.album.dto.FileUploadResponse;
@@ -58,7 +55,7 @@ class PictureUploadAsyncTest {
     private AlbumService albumService;
 
     @MockBean
-    private FileStorageService fileService;
+    private FileResourceService fileService;
 
     @MockBean
     private ThumbnailService thumbnailService;

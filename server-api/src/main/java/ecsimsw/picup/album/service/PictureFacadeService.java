@@ -1,5 +1,6 @@
 package ecsimsw.picup.album.service;
 
+import ecsimsw.picup.album.domain.ResourceKey;
 import ecsimsw.picup.album.dto.PreUploadResponse;
 import ecsimsw.picup.album.domain.Picture;
 import ecsimsw.picup.album.dto.PictureResponse;
@@ -24,7 +25,7 @@ public class PictureFacadeService {
         return pictureService.preUpload(userId, albumId, fileName, fileSize);
     }
 
-    public void commitPreUpload(Long userId, Long albumId, String resourceKey) {
+    public void commitPreUpload(Long userId, Long albumId, ResourceKey resourceKey) {
         try {
             userLock.acquire(userId);
             pictureService.commitPreUpload(userId, albumId, resourceKey);
@@ -33,7 +34,7 @@ public class PictureFacadeService {
         }
     }
 
-    public void setPictureThumbnail(String resourceKey, long fileSize) {
+    public void setPictureThumbnail(ResourceKey resourceKey, long fileSize) {
         pictureService.setPictureThumbnail(resourceKey, fileSize);
     }
 

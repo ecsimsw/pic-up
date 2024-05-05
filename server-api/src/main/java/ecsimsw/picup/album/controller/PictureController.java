@@ -2,6 +2,7 @@ package ecsimsw.picup.album.controller;
 
 import ecsimsw.picup.album.annotation.RemoteIp;
 import ecsimsw.picup.album.annotation.SearchCursor;
+import ecsimsw.picup.album.domain.ResourceKey;
 import ecsimsw.picup.album.dto.PictureResponse;
 import ecsimsw.picup.album.dto.PictureSearchCursor;
 import ecsimsw.picup.album.dto.PicturesDeleteRequest;
@@ -39,7 +40,7 @@ public class PictureController {
     public ResponseEntity<Void> commit(
         @TokenPayload AuthTokenPayload loginUser,
         @PathVariable Long albumId,
-        @RequestParam String resourceKey
+        @RequestParam ResourceKey resourceKey
     ) {
         pictureService.commitPreUpload(loginUser.userId(), albumId, resourceKey);
         return ResponseEntity.ok().build();
@@ -47,7 +48,7 @@ public class PictureController {
 
     @PostMapping("/api/picture/thumbnail")
     public ResponseEntity<Void> thumbnail(
-        @RequestParam String resourceKey,
+        @RequestParam ResourceKey resourceKey,
         @RequestParam Long fileSize
     ) {
         log.info("Get thumbnail from lambda : " + resourceKey);

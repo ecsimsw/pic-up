@@ -8,7 +8,6 @@ import ecsimsw.picup.album.dto.SignInRequest;
 import ecsimsw.picup.album.dto.SignUpRequest;
 import ecsimsw.picup.album.exception.MemberException;
 import ecsimsw.picup.auth.UnauthorizedException;
-import ecsimsw.picup.ecrypt.SHA256Utils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,8 +25,7 @@ public class MemberService {
     public MemberResponse signIn(SignInRequest request) {
         try {
             var member = getMember(request.username());
-            var requestPassword = encryptPassword(request.password(), member.getPassword().getSalt());
-//            member.authenticate(requestPassword);
+            member.authenticate(request.password());
             var usage = storageUsageService.getUsage(member.getId());
             return MemberResponse.of(member, usage);
         } catch (Exception e) {
@@ -40,7 +38,7 @@ public class MemberService {
         if (memberRepository.existsByUsername(request.username())) {
             throw new MemberException("Duplicated username");
         }
-        var password = encryptPassword(request.password());
+        var password = Password.initFrom(request.password());
         var member = new Member(request.username(), password);
         memberRepository.save(member);
         var usage = storageUsageService.init(member.getId(), DEFAULT_STORAGE_LIMIT_BYTE);
@@ -52,21 +50,6 @@ public class MemberService {
         var member = getMember(username);
         var usage = storageUsageService.getUsage(member.getId());
         return MemberResponse.of(member, usage);
-    }
-
-    private Password encryptPassword(String plainPassword) {
-        var salt = SHA256Utils.getSalt();
-        return new Password(
-            SHA256Utils.encrypt(plainPassword, salt),
-            SHA256Utils.getSalt()
-        );
-    }
-
-    private Password encryptPassword(String plainPassword, String salt) {
-        return new Password(
-            SHA256Utils.encrypt(plainPassword, salt),
-            salt
-        );
     }
 
     private Member getMember(String username) {

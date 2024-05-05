@@ -6,12 +6,8 @@ import static ecsimsw.picup.env.MemberFixture.SIGN_UP_REQUEST;
 import static ecsimsw.picup.utils.ConcurrentJobTestUtils.concurrentJob;
 import static org.assertj.core.api.Assertions.assertThat;
 
-import ecsimsw.picup.album.service.AlbumService;
-import ecsimsw.picup.album.service.FileStorageService;
-import ecsimsw.picup.album.service.MemberService;
-import ecsimsw.picup.album.service.PictureService;
-import ecsimsw.picup.album.service.StorageUsageService;
-import ecsimsw.picup.album.service.ThumbnailService;
+import ecsimsw.picup.album.service.*;
+import ecsimsw.picup.album.service.FileResourceService;
 import ecsimsw.picup.config.RedisConfig;
 import ecsimsw.picup.config.S3MockConfig;
 import org.junit.jupiter.api.BeforeEach;
@@ -38,7 +34,7 @@ public class UserLockConcurrentTest {
     private StorageUsageService storageUsageService;
 
     @MockBean
-    private FileStorageService fileService;
+    private FileResourceService fileService;
 
     @MockBean
     private ThumbnailService thumbnailService;

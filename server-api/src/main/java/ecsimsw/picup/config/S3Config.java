@@ -24,6 +24,7 @@ public class S3Config {
 
     public static final String ROOT_PATH_STORAGE = "storage/";
     public static final String ROOT_PATH_THUMBNAIL = "thumb/";
+    public static final String DEFAULT_VIDEO_THUMBNAIL_EXTENSION = "jpg";
 
     public static final Map<StorageType, String> ROOT_PATH_PER_STORAGE_TYPE = Map.of(
         STORAGE, ROOT_PATH_STORAGE,

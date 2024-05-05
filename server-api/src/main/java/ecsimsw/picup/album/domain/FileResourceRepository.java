@@ -8,19 +8,19 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 
-public interface StorageResourceRepository extends JpaRepository<StorageResource, Long> {
+public interface FileResourceRepository extends JpaRepository<FileResource, Long> {
 
-    Optional<StorageResource> findByStorageTypeAndResourceKey(StorageType type, ResourceKey resourceKey);
+    Optional<FileResource> findByStorageTypeAndResourceKey(StorageType type, ResourceKey resourceKey);
 
     @Modifying
-    @Query("SELECT resource FROM StorageResource resource " +
+    @Query("SELECT resource FROM FileResource resource " +
             "WHERE resource.createdAt < :expiration AND resource.toBeDeleted = true")
-    List<StorageResource> findAllToBeDeletedCreatedBefore(
+    List<FileResource> findAllToBeDeletedCreatedBefore(
         @Param("expiration") LocalDateTime expiration
     );
 
     @Modifying
-    @Query("UPDATE StorageResource resource SET resource.toBeDeleted = true " +
+    @Query("UPDATE FileResource resource SET resource.toBeDeleted = true " +
         "WHERE resource.resourceKey IN (:resourceKeys)")
     void updateAllToBeDeleted(List<ResourceKey> resourceKeys);
 }

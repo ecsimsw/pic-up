@@ -2,6 +2,7 @@ package ecsimsw.picup.album.domain;
 
 import ecsimsw.picup.album.exception.LoginFailedException;
 import ecsimsw.picup.album.exception.MemberException;
+import ecsimsw.picup.ecrypt.SHA256Utils;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -44,6 +45,13 @@ public class Member {
 
     public void authenticate(Password password) {
         if(!this.password.equals(password)) {
+            throw new LoginFailedException("Invalid authenticate");
+        }
+    }
+
+    public void authenticate(String inputPassword) {
+        var input = SHA256Utils.encrypt(inputPassword, password.getSalt());
+        if(!this.password.getEncrypted().equals(input)) {
             throw new LoginFailedException("Invalid authenticate");
         }
     }

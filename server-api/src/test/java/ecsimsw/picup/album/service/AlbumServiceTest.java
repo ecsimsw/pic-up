@@ -34,7 +34,7 @@ class AlbumServiceTest {
 
     @BeforeEach
     public void init(@Autowired AlbumRepository albumRepository) {
-        var fileService = Mockito.mock(FileStorageService.class);
+        var fileService = Mockito.mock(FileResourceService.class);
         albumService = new AlbumService(pictureService, albumRepository, fileService);
     }
 

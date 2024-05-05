@@ -21,7 +21,7 @@ import static ecsimsw.picup.album.domain.StorageType.THUMBNAIL;
 public class PictureService {
 
     private final StorageUsageService storageUsageService;
-    private final FileStorageService fileService;
+    private final FileResourceService fileService;
     private final AlbumRepository albumRepository;
     private final PictureRepository pictureRepository;
 
@@ -32,8 +32,8 @@ public class PictureService {
     }
 
     @Transactional
-    public void commitPreUpload(Long userId, Long albumId, String resourceKey) {
-        var preUpload = fileService.commitPreUpload(STORAGE, new ResourceKey(resourceKey));
+    public void commitPreUpload(Long userId, Long albumId, ResourceKey resourceKey) {
+        var preUpload = fileService.commitPreUpload(STORAGE, resourceKey);
         checkAbleToUpload(userId, albumId, preUpload.getFileSize());
         var album = getUserAlbum(userId, albumId);
         var picture = preUpload.toPicture(album);
@@ -42,8 +42,8 @@ public class PictureService {
     }
 
     @Transactional
-    public void setPictureThumbnail(String resourceKey, long fileSize) {
-        fileService.saveResource(THUMBNAIL, new ResourceKey(resourceKey), fileSize);
+    public void setPictureThumbnail(ResourceKey resourceKey, long fileSize) {
+        fileService.saveResource(THUMBNAIL, resourceKey, fileSize);
         var picture = pictureRepository.findByResourceKey(resourceKey)
             .orElseThrow(() -> new AlbumException("Not exists picture"));
         picture.setHasThumbnail(true);

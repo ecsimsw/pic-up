@@ -1,6 +1,6 @@
 package ecsimsw.picup.config.dev;
 
-import ecsimsw.picup.config.CacheType;
+import ecsimsw.picup.album.domain.CacheType;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.cache.concurrent.ConcurrentMapCacheManager;
@@ -21,9 +21,7 @@ public class MockCacheMangerConfig {
     public CacheManager inMemoryCacheManager() {
         ConcurrentMapCacheManager cacheManager = new ConcurrentMapCacheManager();
         cacheManager.setAllowNullValues(false);
-        cacheManager.setCacheNames(List.of(
-            CacheType.SIGNED_URL
-        ));
+        cacheManager.setCacheNames(List.of(CacheType.SIGNED_URL));
         return cacheManager;
     }
 }
