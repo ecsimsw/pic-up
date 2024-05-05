@@ -98,13 +98,15 @@ function addDropZone(albumId) {
         acceptedFiles: ".jpeg,.jpg,.png,.gif,.mp4",
         paramName: "file",
         maxFilesize: 200, // MB
-        uploadMultiple:false,	//멀티파일 업로드
         method: "PUT",
+        headers: {
+            "Content-Type": 'image/jpeg'
+        },
         init: function () {
 
             this.on("sending", function(file, xhr, formData) {
                 // Will send the filesize along with the file as POST data.
-                formData.append("filesize", file.size);
+
                 formData.append("fileName", "myName");
             });
 
