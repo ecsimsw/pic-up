@@ -38,7 +38,7 @@ public class FileUrlService {
 
     private final FileStorageService fileStorageService;
 
-    @Cacheable(value = SIGNED_URL, key = "{#storageType, #remoteIp, #fileResource.value()}")
+//    @Cacheable(value = SIGNED_URL, key = "{#storageType, #remoteIp, #fileResource.value()}")
     public String fileUrl(StorageType storageType, String remoteIp, ResourceKey fileResource) {
         var resourcePath = fileStorageService.resourcePath(storageType, fileResource);
         try {
