@@ -1,12 +1,11 @@
 package ecsimsw.picup.album.domain;
 
-import static ecsimsw.picup.env.AlbumFixture.ALBUM;
-import static ecsimsw.picup.env.AlbumFixture.RESOURCE_KEY;
-import static ecsimsw.picup.env.AlbumFixture.THUMBNAIL_RESOURCE_KEY;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+
+import static ecsimsw.picup.env.AlbumFixture.ALBUM;
+import static ecsimsw.picup.env.AlbumFixture.RESOURCE_KEY;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class PictureTest {
 
@@ -14,7 +13,7 @@ class PictureTest {
     @Test
     void pictureWithoutAlbum() {
         assertThatThrownBy(
-            () -> new Picture(null, RESOURCE_KEY, THUMBNAIL_RESOURCE_KEY, 1L)
+            () -> new Picture(null, RESOURCE_KEY, 1L)
         );
     }
 
@@ -22,7 +21,7 @@ class PictureTest {
     @Test
     void pictureWithoutResourceKey() {
         assertThatThrownBy(
-            () -> new Picture(ALBUM(), null, THUMBNAIL_RESOURCE_KEY, 1L)
+            () -> new Picture(ALBUM(), null, 1L)
         );
     }
 
@@ -30,7 +29,7 @@ class PictureTest {
     @Test
     void pictureWithInvalidFileSize() {
         assertThatThrownBy(
-            () -> new Picture(ALBUM(), RESOURCE_KEY, THUMBNAIL_RESOURCE_KEY, -1L)
+            () -> new Picture(ALBUM(), RESOURCE_KEY, -1L)
         );
     }
 
@@ -38,7 +37,7 @@ class PictureTest {
     @Test
     void checkSameUser() {
         var userId = 1L;
-        var picture = new Picture(ALBUM(userId), RESOURCE_KEY, THUMBNAIL_RESOURCE_KEY, 1L);
+        var picture = new Picture(ALBUM(userId), RESOURCE_KEY, 1L);
         assertThatThrownBy(() -> {
             var wrongUserId = userId + 1;
             picture.checkSameUser(wrongUserId);

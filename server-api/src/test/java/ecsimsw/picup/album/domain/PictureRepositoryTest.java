@@ -33,7 +33,7 @@ public class PictureRepositoryTest {
     @DisplayName("Picture 정보를 저장한다.")
     @Test
     public void save() {
-        var picture = pictureRepository.save(new Picture(savedAlbum, RESOURCE_KEY, THUMBNAIL_RESOURCE_KEY, 0L));
+        var picture = pictureRepository.save(new Picture(savedAlbum, RESOURCE_KEY, 0L));
         assertAll(
             () -> assertThat(picture.getId()).isNotNull(),
             () -> assertThat(picture.getAlbum()).isNotNull(),
@@ -46,14 +46,14 @@ public class PictureRepositoryTest {
     @Test
     public void saveInvalid() {
         assertThatThrownBy(
-            () -> pictureRepository.save(new Picture(null, RESOURCE_KEY, THUMBNAIL_RESOURCE_KEY, FILE_SIZE))
+            () -> pictureRepository.save(new Picture(null, RESOURCE_KEY, FILE_SIZE))
         );
         assertThatThrownBy(
-            () -> pictureRepository.save(new Picture(savedAlbum, RESOURCE_KEY, THUMBNAIL_RESOURCE_KEY, -1L))
+            () -> pictureRepository.save(new Picture(savedAlbum, RESOURCE_KEY, -1L))
         );
         assertThatThrownBy(() -> {
             var notSavedAlbum = new Album(2L, ALBUM_NAME, RESOURCE_KEY);
-            pictureRepository.save(new Picture(notSavedAlbum, RESOURCE_KEY, THUMBNAIL_RESOURCE_KEY, FILE_SIZE));
+            pictureRepository.save(new Picture(notSavedAlbum, RESOURCE_KEY, FILE_SIZE));
         });
     }
 

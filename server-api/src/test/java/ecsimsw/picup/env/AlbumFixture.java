@@ -20,9 +20,7 @@ public class AlbumFixture {
 
     public static final long FILE_SIZE = 256L;
 
-    public static Picture PICTURE(Album album) {
-        return new Picture(album, RESOURCE_KEY, THUMBNAIL_RESOURCE_KEY, FILE_SIZE);
-    }
+    public static Album ALBUM = new Album(USER_ID, ALBUM_NAME, RESOURCE_KEY);
 
     public static Album ALBUM() {
         return new Album(USER_ID, ALBUM_NAME, RESOURCE_KEY);
@@ -32,14 +30,11 @@ public class AlbumFixture {
         return new Album(userId, ALBUM_NAME, RESOURCE_KEY);
     }
 
-    public static PictureResponse PICTURE_INFO_RESPONSE = new PictureResponse(USER_ID, ALBUM_ID, false, RESOURCE_KEY.getResourceKey(), THUMBNAIL_RESOURCE_KEY.getResourceKey(), LocalDateTime.now());
+    public static Picture PICTURE = new Picture(ALBUM, RESOURCE_KEY, FILE_SIZE);
+
+    public static Picture PICTURE(Album album) {
+        return new Picture(album, RESOURCE_KEY, FILE_SIZE);
+    }
 
     public static FileUploadResponse ORIGIN_FILE = new FileUploadResponse(RESOURCE_KEY, FILE_SIZE);
-    public static FileUploadResponse THUMBNAIL_FILE = new FileUploadResponse(RESOURCE_KEY, FILE_SIZE);
-
-    public static MultipartFile MULTIPART_FILE = new MockMultipartFile(RESOURCE_KEY.getResourceKey(), RESOURCE_KEY.getResourceKey(), "png", "Image binary file for test".getBytes());
-
-    public static MultipartFile MULTIPART_FILE(String fileName) {
-        return new MockMultipartFile(fileName, fileName, "png", "Image binary file for test".getBytes());
-    }
 }

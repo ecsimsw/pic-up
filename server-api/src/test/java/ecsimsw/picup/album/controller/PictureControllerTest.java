@@ -1,38 +1,36 @@
 package ecsimsw.picup.album.controller;
 
-import static ecsimsw.picup.env.AlbumFixture.PICTURE_INFO_RESPONSE;
-import static ecsimsw.picup.env.MemberFixture.USER_NAME;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import ecsimsw.picup.album.dto.PictureResponse;
 import ecsimsw.picup.album.dto.PictureSearchCursor;
 import ecsimsw.picup.album.dto.PicturesDeleteRequest;
-import ecsimsw.picup.album.service.PictureService;
+import ecsimsw.picup.album.dto.PreUploadResponse;
+import ecsimsw.picup.album.service.PictureFacadeService;
 import ecsimsw.picup.auth.AuthArgumentResolver;
 import ecsimsw.picup.auth.AuthInterceptor;
 import ecsimsw.picup.auth.AuthTokenPayload;
 import ecsimsw.picup.auth.AuthTokenService;
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Optional;
-
-import ecsimsw.picup.config.dev.AddRequestHeaderFilter;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
-import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Optional;
+
+import static ecsimsw.picup.env.AlbumFixture.PICTURE;
+import static ecsimsw.picup.env.AlbumFixture.RESOURCE_KEY;
+import static ecsimsw.picup.env.MemberFixture.USER_NAME;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 class PictureControllerTest {
 
@@ -42,26 +40,24 @@ class PictureControllerTest {
         OBJECT_MAPPER.registerModule(new JavaTimeModule());
     }
 
-    private final PictureService pictureService = mock(PictureService.class);
+    private final PictureFacadeService pictureFacadeService = mock(PictureFacadeService.class);
     private final AuthTokenService authTokenService = mock(AuthTokenService.class);
-    private final String remoteIp = "192.168.0.1";
 
     private final MockMvc mockMvc = MockMvcBuilders
-        .standaloneSetup(new PictureController(
-            pictureService
-        ))
-        .addFilter(new AddRequestHeaderFilter("X-Forwarded-For", remoteIp))
+        .standaloneSetup(new PictureController(pictureFacadeService))
         .addInterceptors(new AuthInterceptor(authTokenService))
         .setCustomArgumentResolvers(
             new AuthArgumentResolver(authTokenService),
             new SearchCursorArgumentResolver(),
-            new RemoteIpArgumentResolver()
+            new RemoteIpArgumentResolver(),
+            new ResourceKeyArgumentResolver()
         )
         .setControllerAdvice(new GlobalControllerAdvice())
         .build();
 
     private final Long loginUserId = 1L;
     private final Long albumId = 1L;
+    private final String remoteIp = "192.168.0.1";
 
     @BeforeEach
     void init() {
@@ -69,45 +65,52 @@ class PictureControllerTest {
             .thenReturn(new AuthTokenPayload(loginUserId, USER_NAME));
     }
 
-    @DisplayName("앨범에 Picture 를 생성한다.")
+    @DisplayName("Picture 를 업로드할 수 있는 Signed url 을 반환한다.")
     @Test
-    void createPicture() throws Exception {
-        var uploadFile = new MockMultipartFile("file", "pic.jpg", "jpg", new byte[0]);
-        var expectedPictureInfo = PICTURE_INFO_RESPONSE;
+    void getSignedUrl() throws Exception {
+        var uploadFileName = "FILE_NAME";
+        var uploadFileSize = 1L;
+        var expectedPictureInfo = new PreUploadResponse("preSignedUrl", RESOURCE_KEY.value());
 
-        when(pictureService.uploadVideo(loginUserId, expectedPictureInfo.id(), uploadFile))
-            .thenReturn(expectedPictureInfo.id());
+        when(pictureFacadeService.preUpload(loginUserId, albumId, uploadFileName, uploadFileSize))
+            .thenReturn(expectedPictureInfo);
 
-        mockMvc.perform(multipart("/api/album/" + albumId + "/picture").file(uploadFile))
+        mockMvc.perform(multipart("/api/album/" + albumId + "/picture/preUpload")
+                .queryParam("fileName", uploadFileName)
+                .queryParam("fileSize", String.valueOf(uploadFileSize))
+            )
             .andExpect(status().isOk())
-            .andExpect(content().string(OBJECT_MAPPER.writeValueAsString(expectedPictureInfo.id())));
+            .andExpect(content().string(OBJECT_MAPPER.writeValueAsString(expectedPictureInfo)));
     }
 
-    @DisplayName("앨범내 Picture 정보 중 첫 페이지 n 개를 조회한다.")
+    @DisplayName("업로드 성공한 파일의 리소스 키를 요청 받는다.")
     @Test
-    void getFirstPagePictures() throws Exception {
-        var expectedPictureInfos = List.of(PICTURE_INFO_RESPONSE);
-
-        when(pictureService.pictures(loginUserId, remoteIp, albumId,
-            PictureSearchCursor.from(10, Optional.empty())))
-            .thenReturn(expectedPictureInfos);
-
-        mockMvc.perform(get("/api/album/" + albumId + "/picture"))
-            .andExpect(status().isOk())
-            .andExpect(content().string(OBJECT_MAPPER.writeValueAsString(expectedPictureInfos)));
+    void commit() throws Exception {
+        mockMvc.perform(post("/api/album/" + albumId + "/picture/commit")
+                .queryParam("resourceKey", RESOURCE_KEY.value())
+            ).andExpect(status().isOk());
     }
 
-    @DisplayName("앨범내 Cursor 의 생성일보다 오래된 n 개의 사진 정보를 조회한다.")
+    @DisplayName("썸네일 생성에 성공한 파일의 리소스 키와 썸네일 파일 크기를 요청 받는다.")
+    @Test
+    void thumbnail() throws Exception {
+        mockMvc.perform(post("/api/picture/thumbnail")
+            .queryParam("resourceKey", RESOURCE_KEY.value())
+            .queryParam("fileSize", "1")
+        ).andExpect(status().isOk());
+    }
+
+    @DisplayName("앨범내 사진을 Cursor 를 기준으로 조회한다.")
     @Test
     void getPicturesByCursor() throws Exception {
         var expectedCursorCreatedAt = LocalDateTime.of(2024, 4, 8, 10, 45, 12, 728721232);
-        var expectedPictureInfos = List.of(PICTURE_INFO_RESPONSE);
+        var expectedPictureInfos = List.of(PictureResponse.of(PICTURE, RESOURCE_KEY.value()));
 
-        when(pictureService.pictures(loginUserId, remoteIp, albumId,
-            PictureSearchCursor.from(10, Optional.of(expectedCursorCreatedAt))))
+        when(pictureFacadeService.read(loginUserId, remoteIp, albumId, PictureSearchCursor.from(10, Optional.of(expectedCursorCreatedAt))))
             .thenReturn(expectedPictureInfos);
 
         mockMvc.perform(get("/api/album/" + albumId + "/picture")
+                .header("X-Forwarded-For", remoteIp)
                 .param("cursorCreatedAt", "2024-04-08T10:45:12.728721232Z")
             )
             .andExpect(status().isOk())
@@ -118,19 +121,20 @@ class PictureControllerTest {
     @Test
     void getPicturesWithLimit() throws Exception {
         var limit = 20;
-        var expectedPictureInfos = List.of(PICTURE_INFO_RESPONSE);
+        var expectedPictureInfos = List.of(PictureResponse.of(PICTURE, RESOURCE_KEY.value()));
 
-        when(pictureService.pictures(loginUserId, remoteIp, albumId, PictureSearchCursor.from(limit, Optional.empty())))
+        when(pictureFacadeService.read(loginUserId, remoteIp, albumId, PictureSearchCursor.from(limit, Optional.empty())))
             .thenReturn(expectedPictureInfos);
 
         mockMvc.perform(get("/api/album/" + albumId + "/picture")
+                .header("X-Forwarded-For", remoteIp)
                 .param("limit", String.valueOf(limit))
             )
             .andExpect(status().isOk())
             .andExpect(content().string(OBJECT_MAPPER.writeValueAsString(expectedPictureInfos)));
     }
 
-    @DisplayName("사진 다중 제거를 요청한다.")
+    @DisplayName("id로 Picture 다중 제거를 요청한다.")
     @Test
     void deletePictures() throws Exception {
         var pictureIds = List.of(1L, 2L, 3L);
@@ -141,6 +145,7 @@ class PictureControllerTest {
             )
             .andExpect(status().isOk());
 
-        verify(pictureService).deletePictures(loginUserId, albumId, pictureIds);
+        verify(pictureFacadeService)
+            .deletePictures(loginUserId, albumId, pictureIds);
     }
 }
