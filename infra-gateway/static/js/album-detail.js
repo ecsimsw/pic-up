@@ -91,7 +91,7 @@ function addPicturesInPage(pictures) {
 
 function addDropZone(albumId) {
     new Dropzone(document.querySelector('#myDropzone'), {
-        url: (files) => {`${files[0].dynamicUploadUrl}`},
+        url: dynamicUploadUrl,
         accept: fetchPreSignedUrlFromBE,
         method: "PUT",
         init: function () {
@@ -140,6 +140,10 @@ const fetchPreSignedUrlFromBE = (file, done) => {
         file.resourceKey = data.resourceKey
         done();//call the dropzone done
     })
+}
+
+const dynamicUploadUrl = (files) => {
+    return `${files[0].dynamicUploadUrl}`;
 }
 
 function setAlbumInfo() {
