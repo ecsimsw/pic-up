@@ -91,26 +91,16 @@ function addPicturesInPage(pictures) {
 
 function addDropZone(albumId) {
     new Dropzone(document.querySelector('#myDropzone'), {
-        dictDefaultMessage: 'Drop Here!',
-        // url: serverUrl + "/api/album/" + albumId + "/picture",
-        url: dynamicUploadUrl,
-        accept: getPreSignedUrl,
-        acceptedFiles: ".jpeg,.jpg,.png,.gif,.mp4",
-        paramName: "file",
-        maxFilesize: 200, // MB
+        url: (files) => {`${files[0].dynamicUploadUrl}`},
+        accept: fetchPreSignedUrlFromBE,
         method: "PUT",
-        headers: {
-            "Content-Type": 'image/jpeg'
-        },
         init: function () {
-
             this.on("sending", function(file, xhr, formData) {
                 const _send = xhr.send;
                 xhr.send = function() {
                     _send.call(xhr, formData.get("file"));
                 };
             });
-
             this.on("success", function (file) {
                 console.log("upload success : " + file.name);
                 fetch(serverUrl + "/api/album/" + albumId + "/picture/commit?resourceKey=" + file.resourceKey, {
@@ -132,7 +122,7 @@ function addDropZone(albumId) {
     });
 }
 
-const getPreSignedUrl = (file, done) => {
+const fetchPreSignedUrlFromBE = (file, done) => {
     fetch(serverUrl + "/api/album/"+albumId + "/picture/preUpload?fileSize="+file.size+"&fileName="+file.name, {
         method: "POST",
         credentials: 'include',
@@ -150,10 +140,6 @@ const getPreSignedUrl = (file, done) => {
         file.resourceKey = data.resourceKey
         done();//call the dropzone done
     })
-}
-
-const dynamicUploadUrl = (files) => {
-    return `${files[0].dynamicUploadUrl}`;
 }
 
 function setAlbumInfo() {
