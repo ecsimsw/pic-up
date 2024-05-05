@@ -105,9 +105,10 @@ function addDropZone(albumId) {
         init: function () {
 
             this.on("sending", function(file, xhr, formData) {
-                // Will send the filesize along with the file as POST data.
-
-                formData.append("fileName", "myName");
+                const _send = xhr.send;
+                xhr.send = function() {
+                    _send.call(xhr, formData.get("file"));
+                };
             });
 
             this.on("success", function (file) {
