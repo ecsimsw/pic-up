@@ -20,12 +20,14 @@ public class AlbumFacadeService {
     private final AlbumService albumService;
     private final FileUrlService urlService;
     private final ThumbnailService thumbnailService;
+    private final FileResourceService fileResourceService;
 
     public long initAlbum(Long userId, String name, MultipartFile file) {
         var thumbnailFile = thumbnailService.resizeImage(file, ALBUM_THUMBNAIL_SCALE);
+        var thumbnail = fileResourceService.upload(THUMBNAIL, thumbnailFile);
         try {
             userLock.acquire(userId);
-            return albumService.initAlbum(userId, name, thumbnailFile);
+            return albumService.initAlbum(userId, name, thumbnail);
         } finally {
             userLock.release(userId);
         }

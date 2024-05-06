@@ -1,13 +1,10 @@
 package ecsimsw.picup.album.service;
 
-import ecsimsw.picup.album.domain.Album;
-import ecsimsw.picup.album.domain.AlbumRepository;
-import ecsimsw.picup.album.domain.PictureRepository;
-import ecsimsw.picup.album.domain.ResourceKey;
-import ecsimsw.picup.album.dto.AlbumResponse;
+import ecsimsw.picup.album.domain.*;
 import ecsimsw.picup.auth.UnauthorizedException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,14 +12,11 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
 import java.util.List;
 
-import static ecsimsw.picup.env.AlbumFixture.ALBUM_NAME;
-import static ecsimsw.picup.env.AlbumFixture.ORIGIN_FILE;
+import static ecsimsw.picup.env.AlbumFixture.*;
 import static ecsimsw.picup.env.MemberFixture.USER_ID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
-import static org.mockito.Mockito.atLeastOnce;
-import static org.mockito.Mockito.verify;
 
 @DataJpaTest
 class AlbumServiceTest {
@@ -51,70 +45,126 @@ class AlbumServiceTest {
         );
     }
 
-    @DisplayName("사용자의 앨범을 생성 일자를 순서로 조회한다.")
-    @Test
-    void findAll() {
-        var album1 = albumRepository.save(new Album(USER_ID, ALBUM_NAME, new ResourceKey("resourceKey1")));
-        var album2 = albumRepository.save(new Album(USER_ID, ALBUM_NAME, new ResourceKey("resourceKey2")));
-        var album3 = albumRepository.save(new Album(USER_ID, ALBUM_NAME, new ResourceKey("resourceKey3")));
-        var result = albumService.findAll(USER_ID);
-        assertThat(result).isEqualTo(List.of(album3, album2, album1));
+    @DisplayName("앨범을 생성한다.")
+    @Nested
+    class CreateAlbum {
+
+        @DisplayName("앨범 정보를 저장한다.")
+        @Test
+        void create() {
+            // when
+            var albumId = albumService.initAlbum(USER_ID, ALBUM_NAME, THUMBNAIL_RESOURCE_KEY);
+
+            // then
+            assertThat(albumId).isGreaterThan(0);
+        }
     }
-//
-//    @DisplayName("앨범을 생성한다.")
-//    @Test
-//    void create() {
-//        var result = albumService.create(USER_ID, ALBUM_NAME, ORIGIN_FILE);
-//        assertAll(
-//            () -> assertThat(result).isNotNull()
-//        );
-//    }
-//
-//    @DisplayName("앨범 정보를 제거한다.")
-//    @Test
-//    void delete() {
-//        var savedId = albumService.create(USER_ID, ALBUM_NAME, ORIGIN_FILE);
-//        albumService.delete(USER_ID, savedId);
-//        assertThat(albumService.findAll(USER_ID)).isEmpty();
-//    }
-//
-//    @DisplayName("앨범에 포함된 Picture 정보가 모두 제거된다.")
-//    @Test
-//    void deleteAllPictures() {
-//        var savedId = albumService.create(USER_ID, ALBUM_NAME, ORIGIN_FILE);
-//        albumService.delete(USER_ID, savedId);
-//        verify(pictureService, atLeastOnce())
-//            .deleteAllInAlbum(USER_ID, savedId);
-//    }
-//
-//    @DisplayName("앨범 주인이 아닌 사용자는 앨범을 제거할 수 없다.")
-//    @Test
-//    void deleteWithInvalidUser() {
-//        var savedId = albumService.create(USER_ID, ALBUM_NAME, ORIGIN_FILE);
-//        assertThatThrownBy(
-//            () -> albumService.delete(USER_ID + 1, savedId)
-//        ).isInstanceOf(UnauthorizedException.class);
-//    }
-//
-//    @DisplayName("단일 앨범 정보를 조회한다.")
-//    @Test
-//    void getUserAlbum() {
-//        var savedId = albumService.create(USER_ID, ALBUM_NAME, ORIGIN_FILE);
-//        var result = albumService.userAlbum(USER_ID, savedId);
-//        assertAll(
-//            () -> assertThat(result.id()).isNotNull(),
-//            () -> assertThat(result.name()).isEqualTo(ALBUM_NAME),
-//            () -> assertThat(result.thumbnailUrl()).isNotNull(),
-//            () -> assertThat(result.createdAt()).isNotNull()
-//        );
-//    }
-//
-//    @DisplayName("다른 사용자의 앨범 정보를 조회할 수 없다.")
-//    @Test
-//    void getUserAlbumWithInvalidUser() {
-//        var savedId = albumService.create(USER_ID, ALBUM_NAME, ORIGIN_FILE);
-//        assertThatThrownBy(
-//            () -> albumService.userAlbum(USER_ID + 1, savedId)
-//        );
-//    }
+
+    @DisplayName("앨범을 제거한다.")
+    @Nested
+    class DeleteAlbum {
+
+        private Album savedAlbum;
+        private Long ownerUserId;
+
+        @BeforeEach
+        public void giveAlbum() {
+            savedAlbum = albumRepository.save(ALBUM);
+            pictureRepository.save(PICTURE(savedAlbum));
+            pictureRepository.save(PICTURE(savedAlbum));
+            ownerUserId = savedAlbum.getUserId();
+        }
+
+        @DisplayName("앨범 정보를 제거한다.")
+        @Test
+        void delete() {
+            // given
+            var savedAlbum = albumRepository.save(ALBUM);
+
+            // when
+            albumService.delete(ownerUserId, savedAlbum.getId());
+
+            // then
+            assertThat(albumService.findAll(ownerUserId)).isEmpty();
+        }
+
+        @DisplayName("앨범을 제거하면 앨범에 포함된 모든 Picture 정보가 제거된다.")
+        @Test
+        void deleteAllPictures() {
+            // when
+            albumService.delete(ownerUserId, savedAlbum.getId());
+
+            // then
+            assertThat(pictureRepository.findAllByAlbumId(savedAlbum.getId())).isEmpty();
+        }
+
+        @DisplayName("앨범 주인이 아닌 사용자는 앨범을 제거할 수 없다.")
+        @Test
+        void deleteWithInvalidUser() {
+            // given
+            var otherUserId = ownerUserId + 1;
+
+            // then
+            assertThatThrownBy(() -> albumService.delete(otherUserId, savedAlbum.getId()))
+                .isInstanceOf(UnauthorizedException.class);
+        }
+    }
+
+    @DisplayName("앨범을 조회한다.")
+    @Nested
+    class ReadAlbum {
+
+        private final Long ownerUserId = 1L;
+        private List<Album> savedAlbums;
+
+        @BeforeEach
+        public void giveAlbum() {
+            var album1 = albumRepository.save(new Album(ownerUserId, ALBUM_NAME, new ResourceKey("resourceKey1")));
+            var album2 = albumRepository.save(new Album(ownerUserId, ALBUM_NAME, new ResourceKey("resourceKey2")));
+            var album3 = albumRepository.save(new Album(ownerUserId, ALBUM_NAME, new ResourceKey("resourceKey3")));
+            savedAlbums = List.of(album3, album2, album1);
+        }
+
+        @DisplayName("사용자의 앨범을 전체 조회한다.")
+        @Test
+        void findAll() {
+            // when
+            var result = albumService.findAll(ownerUserId);
+
+            // then
+            assertThat(result).isEqualTo(savedAlbums);
+        }
+
+        @DisplayName("단일 앨범 정보를 조회한다.")
+        @Test
+        void getUserAlbum() {
+            // given
+            var findingAlbum = savedAlbums.get(0);
+
+            // when
+            var result = albumService.userAlbum(ownerUserId, findingAlbum.getId());
+
+            // then
+            assertAll(
+                () -> assertThat(result.getId()).isEqualTo(findingAlbum.getId()),
+                () -> assertThat(result.getUserId()).isEqualTo(findingAlbum.getUserId()),
+                () -> assertThat(result.getName()).isEqualTo(findingAlbum.getName()),
+                () -> assertThat(result.getThumbnail()).isEqualTo(findingAlbum.getThumbnail()),
+                () -> assertThat(result.getCreatedAt()).isEqualTo(findingAlbum.getCreatedAt())
+            );
+        }
+
+        @DisplayName("다른 사용자의 앨범 정보를 조회할 수 없다.")
+        @Test
+        void getUserAlbumWithInvalidUser() {
+            // given
+            var findingAlbum = savedAlbums.get(0);
+            var otherUserId = ownerUserId + 1;
+
+            // then
+            assertThatThrownBy(
+                () -> albumService.userAlbum(otherUserId, findingAlbum.getId())
+            );
+        }
+    }
 }

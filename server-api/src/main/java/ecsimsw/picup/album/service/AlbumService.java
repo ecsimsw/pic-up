@@ -21,9 +21,9 @@ public class AlbumService {
     private final PictureRepository pictureRepository;
 
     @Transactional
-    public long initAlbum(Long userId, String name, MultipartFile file) {
-        var thumbnail = resourceService.upload(THUMBNAIL, file);
-        var album = albumRepository.save(new Album(userId, name, thumbnail));
+    public long initAlbum(Long userId, String name, ResourceKey thumbnail) {
+        var album = new Album(userId, name, thumbnail);
+        albumRepository.save(album);
         return album.getId();
     }
 

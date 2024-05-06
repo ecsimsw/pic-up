@@ -18,6 +18,8 @@ public class AlbumFixture {
     public static final ResourceKey RESOURCE_KEY = new ResourceKey("this_is_resource_key.jpg");
     public static final ResourceKey THUMBNAIL_RESOURCE_KEY = new ResourceKey("this_is_thumbnail_resource_key.jpg");
 
+    public static final MultipartFile THUMBNAIL_FILE = new MockMultipartFile(ALBUM_NAME, RESOURCE_KEY.value(), "image/jpg", new byte[0]);
+
     public static final long FILE_SIZE = 256L;
 
     public static Album ALBUM = new Album(USER_ID, ALBUM_NAME, RESOURCE_KEY);
