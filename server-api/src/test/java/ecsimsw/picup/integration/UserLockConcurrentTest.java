@@ -39,13 +39,13 @@
 //    @MockBean
 //    private ThumbnailService thumbnailService;
 //
-//    private Long userId;
+//    private Long id;
 //    private Long albumId;
 //
 //    @BeforeEach
 //    public void init() {
-//        userId = memberService.signUp(SIGN_UP_REQUEST).id();
-//        albumId = albumService.create(userId, ALBUM_NAME, ORIGIN_FILE);
+//        id = memberService.signUp(SIGN_UP_REQUEST).id();
+//        albumId = albumService.create(id, ALBUM_NAME, ORIGIN_FILE);
 //    }
 //
 //    @DisplayName("이미지 동시 업로드, 스토리지 사용량 정상 업데이트를 확인한다.")
@@ -55,9 +55,9 @@
 //        var uploadFile = ORIGIN_FILE;
 //        concurrentJob(
 //            number,
-//            () -> pictureService.createPicture(userId, albumId, uploadFile, uploadFile)
+//            () -> pictureService.createPicture(id, albumId, uploadFile, uploadFile)
 //        );
 //        assertThat(uploadFile.size() * number)
-//            .isEqualTo(storageUsageService.getUsage(userId).getUsageAsByte());
+//            .isEqualTo(storageUsageService.getUsage(id).getUsageAsByte());
 //    }
 //}

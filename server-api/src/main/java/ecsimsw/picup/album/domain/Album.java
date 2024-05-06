@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Getter
 @Table(indexes = {
-    @Index(name = "idx_userId_createdAt", columnList = "userId, createdAt")
+    @Index(name = "idx_userId_createdAt", columnList = "id, createdAt")
 })
 @Entity
 public class Album {

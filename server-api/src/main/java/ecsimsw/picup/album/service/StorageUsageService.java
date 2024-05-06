@@ -58,9 +58,11 @@ public class StorageUsageService {
         storageUsageRepository.save(usage);
     }
 
-    @Transactional
-    public boolean isAbleToStore(Long userId, long fileSize) {
-        return getUsage(userId)
-            .isAbleToStore(fileSize);
+    @Transactional(readOnly = true)
+    public void checkAbleToStore(Long userId, Long fileSize) {
+        var currentUsage = getUsage(userId);
+        if(!currentUsage.isAbleToStore(fileSize)) {
+            throw new AlbumException("Lack of storage space");
+        }
     }
 }

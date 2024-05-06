@@ -27,7 +27,7 @@ public class FileResource {
     private ResourceKey resourceKey;
 
     @Column(nullable = false)
-    private Long fileSize;
+    private Long size;
 
     @Column(nullable = false)
     private Boolean toBeDeleted;
@@ -46,12 +46,12 @@ public class FileResource {
         return new FileResource(storageType, resourceKey, fileSize, false);
     }
 
-    public FileResource(StorageType storageType, ResourceKey resourceKey, Long fileSize, Boolean toBeDeleted) {
-        this(null, storageType, resourceKey,fileSize, toBeDeleted, 0, LocalDateTime.now());
+    public FileResource(StorageType storageType, ResourceKey resourceKey, Long size, Boolean toBeDeleted) {
+        this(null, storageType, resourceKey, size, toBeDeleted, 0, LocalDateTime.now());
     }
 
     public Picture toPicture(Album album) {
-        return new Picture(album, resourceKey, fileSize);
+        return new Picture(album, resourceKey, size);
     }
 
     public void setToBeDeleted(boolean toBeDeleted) {

@@ -1,10 +1,12 @@
 package ecsimsw.picup.album.service;
 
-import ecsimsw.picup.album.domain.Album;
+import ecsimsw.picup.album.domain.FileResource;
+import ecsimsw.picup.album.domain.Picture;
+import ecsimsw.picup.album.dto.AlbumInfo;
 import ecsimsw.picup.album.dto.AlbumResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -14,42 +16,44 @@ import static ecsimsw.picup.album.domain.StorageType.THUMBNAIL;
 @Service
 public class AlbumFacadeService {
 
-    private static final float ALBUM_THUMBNAIL_SCALE = 0.5f;
-
-    private final UserLockService userLockService;
     private final AlbumService albumService;
-    private final ThumbnailService thumbnailService;
-    private final FileUrlService urlService;
-    private final FileResourceService fileResourceService;
+    private final PictureService pictureService;
+    private final StorageUsageService storageUsageService;
+    private final FileResourceService resourceService;
+    private final FileUrlService fileUrlService;
 
-    public long initAlbum(Long userId, String name, MultipartFile file) {
-        var thumbnailFile = thumbnailService.resizeImage(file, ALBUM_THUMBNAIL_SCALE);
-        var thumbnail = fileResourceService.upload(THUMBNAIL, thumbnailFile);
-        return userLockService.<Long>isolate(userId, () -> {
-            return albumService.create(userId, name, thumbnail.getResourceKey());
-        });
+    @Transactional
+    public long init(Long userId, String name, FileResource thumbnail) {
+        return albumService.create(userId, name, thumbnail.getResourceKey());
     }
 
+    @Transactional
     public void delete(Long userId, Long albumId) {
-        userLockService.isolate(userId, () -> {
-            albumService.delete(userId, albumId);
-        });
+        var deletedAlbum = albumService.deleteById(userId, albumId);
+        resourceService.deleteAsync(deletedAlbum.getThumbnail());
+
+        var deletedPictures = pictureService.deleteAllInAlbum(userId, albumId);
+        var pictureFiles = deletedPictures.stream()
+            .map(Picture::getFileResource)
+            .toList();
+        resourceService.deleteAllAsync(pictureFiles);
+        storageUsageService.subtractAll(userId, deletedPictures);
     }
 
-    public List<AlbumResponse> readAlbums(Long userId, String remoteIp) {
-        var albums = albumService.findAll(userId);
-        return albums.stream()
-            .map(album -> toResponse(album, remoteIp))
+    public AlbumResponse read(Long userId, String remoteIp, Long albumId) {
+        var albumInfo = albumService.readAlbum(userId, albumId);
+        return parseFileUrl(albumInfo, remoteIp);
+    }
+
+    public List<AlbumResponse> readAll(Long userId, String remoteIp) {
+        var albumInfos = albumService.readAlbums(userId);
+        return albumInfos.stream()
+            .map(info -> parseFileUrl(info, remoteIp))
             .toList();
     }
 
-    public AlbumResponse readAlbum(Long userId, String remoteIp, Long albumId) {
-        var album = albumService.userAlbum(userId, albumId);
-        return toResponse(album, remoteIp);
-    }
-
-    private AlbumResponse toResponse(Album album, String remoteIp) {
-        var thumbnailUrl = urlService.fileUrl(THUMBNAIL, remoteIp, album.getThumbnail());
-        return AlbumResponse.of(album, thumbnailUrl);
+    public AlbumResponse parseFileUrl(AlbumInfo albumInfo, String remoteIp) {
+        var thumbnailUrl = fileUrlService.fileUrl(THUMBNAIL, remoteIp, albumInfo.thumbnail());
+        return AlbumResponse.of(albumInfo, thumbnailUrl);
     }
 }

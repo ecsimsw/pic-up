@@ -2,12 +2,14 @@ package ecsimsw.picup.album.service;
 
 import ecsimsw.picup.album.domain.Picture;
 import ecsimsw.picup.album.domain.ResourceKey;
+import ecsimsw.picup.album.dto.PictureInfo;
 import ecsimsw.picup.album.dto.PictureResponse;
 import ecsimsw.picup.album.dto.PictureSearchCursor;
-import ecsimsw.picup.album.dto.PreUploadUrlResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static ecsimsw.picup.album.domain.StorageType.STORAGE;
@@ -17,51 +19,62 @@ import static ecsimsw.picup.album.domain.StorageType.THUMBNAIL;
 @Service
 public class PictureFacadeService {
 
-    private final UserLockService userLockService;
     private final PictureService pictureService;
-    private final FileUrlService fileUrlService;
+    private final StorageUsageService storageUsageService;
     private final FileResourceService fileResourceService;
+    private final FileUrlService fileUrlService;
 
-    public PreUploadUrlResponse preUpload(long userId, long albumId, String fileName, long fileSize) {
-        pictureService.checkAbleToUpload(userId, albumId, fileSize);
-        var fileResource = fileResourceService.createDummy(STORAGE, fileName, fileSize);
-        return fileUrlService.uploadUrl(STORAGE, fileResource);
+    @Transactional(readOnly = true)
+    public void checkAbleToUpload(Long userId, Long albumId, Long fileSize) {
+        pictureService.validateAlbumOwner(userId, albumId);
+        storageUsageService.checkAbleToStore(userId, fileSize);
     }
 
+    @Transactional
     public long commitPreUpload(long userId, long albumId, ResourceKey resourceKey) {
-        return userLockService.<Long>isolate(userId, () -> {
-            return pictureService.create(userId, albumId, resourceKey);
-        });
+        var file = fileResourceService.preserve(STORAGE, resourceKey);
+        storageUsageService.addUsage(userId, file.getSize());
+        var picture = pictureService.create(userId, albumId, file.getResourceKey(), file.getSize());
+        return picture.id();
     }
 
+    @Transactional
     public void setPictureThumbnail(ResourceKey resourceKey, long fileSize) {
-        pictureService.setThumbnail(resourceKey, fileSize);
+        fileResourceService.create(THUMBNAIL, resourceKey, fileSize);
+        pictureService.setThumbnail(resourceKey);
     }
 
+    @Transactional
     public void deletePictures(long userId, long albumId, List<Long> pictureIds) {
-        userLockService.isolate(userId, () -> {
-            pictureService.deletePictures(userId, albumId, pictureIds);
-        });
+        var pictures = pictureService.deleteAll(userId, albumId, pictureIds);
+        var resourceKeys = pictures.stream()
+            .map(Picture::getFileResource)
+            .toList();
+        fileResourceService.deleteAllAsync(resourceKeys);
+        storageUsageService.subtractAll(userId, pictures);
     }
 
+    @Transactional(readOnly = true)
     public List<PictureResponse> readPicture(Long userId, String remoteIp, Long albumId, PictureSearchCursor cursor) {
-        var pictures = pictureService.readAfter(userId, albumId, cursor);
-        return pictures.stream()
-            .map(picture -> toResponse(picture, remoteIp))
+        var limit = cursor.limit();
+        var cursorCreatedAt = cursor.createdAt().orElse(LocalDateTime.now());
+        var pictureInfos = pictureService.readAfter(userId, albumId, limit, cursorCreatedAt);
+        return pictureInfos.stream()
+            .map(pictureInfo -> parseFileUrl(pictureInfo, remoteIp))
             .toList();
     }
 
-    private PictureResponse toResponse(Picture picture, String remoteIp) {
-        if (!picture.getHasThumbnail()) {
+    public PictureResponse parseFileUrl(PictureInfo pictureInfo, String remoteIp) {
+        if (!pictureInfo.hasThumbnail()) {
             return PictureResponse.of(
-                picture,
-                fileUrlService.fileUrl(STORAGE, remoteIp, picture.getFileResource())
+                pictureInfo,
+                fileUrlService.fileUrl(STORAGE, remoteIp, pictureInfo.resourceKey())
             );
         }
         return PictureResponse.of(
-            picture,
-            fileUrlService.fileUrl(STORAGE, remoteIp, picture.getFileResource()),
-            fileUrlService.fileUrl(THUMBNAIL, remoteIp, picture.getFileResource())
+            pictureInfo,
+            fileUrlService.fileUrl(STORAGE, remoteIp, pictureInfo.resourceKey()),
+            fileUrlService.fileUrl(THUMBNAIL, remoteIp, pictureInfo.resourceKey())
         );
     }
 }

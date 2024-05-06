@@ -1,7 +1,5 @@
 package ecsimsw.picup.album.dto;
 
-import ecsimsw.picup.album.domain.Picture;
-
 import java.time.LocalDateTime;
 
 public record PictureResponse(
@@ -13,27 +11,27 @@ public record PictureResponse(
     String thumbnailUrl,
     LocalDateTime createdAt
 ) {
-    public static PictureResponse of(Picture picture, String resourceUrl, String thumbnailUrl) {
+    public static PictureResponse of(PictureInfo pictureInfo, String resourceUrl, String thumbnailUrl) {
         return new PictureResponse(
-            picture.getId(),
-            picture.getAlbum().getId(),
-            picture.extension().isVideo,
+            pictureInfo.id(),
+            pictureInfo.albumId(),
+            pictureInfo.isVideo(),
             true,
             resourceUrl,
             thumbnailUrl,
-            picture.getCreatedAt()
+            pictureInfo.createdAt()
         );
     }
 
-    public static PictureResponse of(Picture picture, String resourceUrl) {
+    public static PictureResponse of(PictureInfo pictureInfo, String resourceUrl) {
         return new PictureResponse(
-            picture.getId(),
-            picture.getAlbum().getId(),
-            picture.extension().isVideo,
+            pictureInfo.id(),
+            pictureInfo.albumId(),
+            pictureInfo.isVideo(),
             false,
             resourceUrl,
             resourceUrl,
-            picture.getCreatedAt()
+            pictureInfo.createdAt()
         );
     }
 }

@@ -62,6 +62,8 @@ public class UserLockService {
         }
     }
 
+    public void
+
     private int getIdHash(Long userId) {
         return (int) (userId % HASH_USER_ID_MOD);
     }

@@ -1,6 +1,8 @@
 package ecsimsw.picup.album.service;
 
 import ecsimsw.picup.album.domain.*;
+import ecsimsw.picup.album.dto.AlbumInfo;
+import ecsimsw.picup.album.dto.AlbumResponse;
 import ecsimsw.picup.auth.UnauthorizedException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -8,14 +10,13 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+import static ecsimsw.picup.album.domain.StorageType.THUMBNAIL;
+
 @RequiredArgsConstructor
 @Service
 public class AlbumService {
 
-    private final StorageUsageService storageUsageService;
-    private final FileResourceService resourceService;
     private final AlbumRepository albumRepository;
-    private final PictureRepository pictureRepository;
 
     @Transactional
     public long create(Long userId, String name, ResourceKey thumbnail) {
@@ -23,27 +24,26 @@ public class AlbumService {
         return albumRepository.save(album).getId();
     }
 
-    @Transactional(readOnly = true)
-    public List<Album> findAll(Long userId) {
-        return albumRepository.findAllByUserIdOrderByCreatedAtDesc(userId);
-    }
-
     @Transactional
-    public void delete(Long userId, Long albumId) {
-        var album = userAlbum(userId, albumId);
-        var pictures = pictureRepository.findAllByAlbumId(albumId);
-        pictureRepository.deleteAll(pictures);
+    public Album deleteById(Long userId, Long albumId) {
+        var album = getUserAlbum(userId, albumId);
         albumRepository.delete(album);
-        storageUsageService.subtractAll(userId, pictures);
-        var resources = pictures.stream()
-            .map(Picture::getFileResource)
-            .toList();
-        resourceService.deleteAsync(album.getThumbnail());
-        resourceService.deleteAllAsync(resources);
+        return album;
     }
 
     @Transactional(readOnly = true)
-    public Album userAlbum(Long userId, Long albumId) {
+    public AlbumInfo readAlbum(Long userId, Long albumId) {
+        var album = getUserAlbum(userId, albumId);
+        return AlbumInfo.of(album);
+    }
+
+    @Transactional(readOnly = true)
+    public List<AlbumInfo> readAlbums(Long userId) {
+        var albums = albumRepository.findAllByUserIdOrderByCreatedAtDesc(userId);
+        return AlbumInfo.listOf(albums);
+    }
+
+    private Album getUserAlbum(Long userId, Long albumId) {
         return albumRepository.findByIdAndUserId(albumId, userId)
             .orElseThrow(() -> new UnauthorizedException("Not an accessible album from user"));
     }

@@ -3,7 +3,7 @@ package ecsimsw.picup.album.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import ecsimsw.picup.album.domain.ResourceKey;
-import ecsimsw.picup.album.dto.AlbumResponse;
+import ecsimsw.picup.album.dto.AlbumInfo;
 import ecsimsw.picup.album.service.AlbumFacadeService;
 import ecsimsw.picup.album.service.FileUrlService;
 import ecsimsw.picup.auth.*;
@@ -54,7 +54,7 @@ class AlbumControllerTest {
     @BeforeEach
     void init() {
         when(authTokenService.tokenPayload(any()))
-            .thenReturn(new AuthTokenPayload(loginUserId, USER_NAME));
+            .thenReturn(new LoginUser(loginUserId, USER_NAME));
 
         when(fileUrlService.fileUrl(any(), any(), any()))
             .thenAnswer(input -> ((ResourceKey) (input.getArguments()[2])).value());
@@ -66,7 +66,7 @@ class AlbumControllerTest {
         var uploadFile = new MockMultipartFile("thumbnail", "thumb.jpg", "jpg", new byte[0]);
         var expectedAlbumInfo = 1L;
 
-        when(albumFacadeService.initAlbum(1L, ALBUM_NAME, uploadFile))
+        when(albumFacadeService.init(1L, ALBUM_NAME, uploadFile))
             .thenReturn(expectedAlbumInfo);
 
         mockMvc.perform(multipart("/api/album/")
@@ -80,9 +80,9 @@ class AlbumControllerTest {
     @DisplayName("로그인 유저의 앨범 목록을 조회한다.")
     @Test
     void getAlbums() throws Exception {
-        var expectedAlbumInfos = List.of(AlbumResponse.of(ALBUM, ALBUM.getThumbnail().value()));
+        var expectedAlbumInfos = List.of(AlbumInfo.of(ALBUM, ALBUM.getThumbnail().value()));
 
-        when(albumFacadeService.readAlbums(loginUserId, remoteIp))
+        when(albumFacadeService.readAll(loginUserId, remoteIp))
             .thenReturn(expectedAlbumInfos);
 
         mockMvc.perform(get("/api/album").header("X-Forwarded-For", remoteIp))
@@ -94,9 +94,9 @@ class AlbumControllerTest {
     @Test
     void getAlbum() throws Exception {
         var albumId = 1L;
-        var expectedAlbumInfo = AlbumResponse.of(ALBUM, ALBUM.getThumbnail().value());
+        var expectedAlbumInfo = AlbumInfo.of(ALBUM, ALBUM.getThumbnail().value());
 
-        when(albumFacadeService.readAlbum(loginUserId, remoteIp, albumId))
+        when(albumFacadeService.read(loginUserId, remoteIp, albumId))
             .thenReturn(expectedAlbumInfo);
 
         mockMvc.perform(get("/api/album/" + albumId).header("X-Forwarded-For", remoteIp)).andExpect(status().isOk())
@@ -108,7 +108,7 @@ class AlbumControllerTest {
     void getAlbumUnAuth() throws Exception {
         var invalidAlbumId = 1L;
 
-        when(albumFacadeService.readAlbum(loginUserId, remoteIp, invalidAlbumId))
+        when(albumFacadeService.read(loginUserId, remoteIp, invalidAlbumId))
             .thenThrow(UnauthorizedException.class);
 
         mockMvc.perform(get("/api/album/" + invalidAlbumId).header("X-Forwarded-For", remoteIp))

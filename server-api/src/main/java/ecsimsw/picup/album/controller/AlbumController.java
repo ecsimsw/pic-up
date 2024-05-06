@@ -2,8 +2,8 @@ package ecsimsw.picup.album.controller;
 
 import ecsimsw.picup.album.annotation.RemoteIp;
 import ecsimsw.picup.album.dto.AlbumResponse;
-import ecsimsw.picup.album.service.AlbumFacadeService;
-import ecsimsw.picup.auth.AuthTokenPayload;
+import ecsimsw.picup.album.service.*;
+import ecsimsw.picup.auth.LoginUser;
 import ecsimsw.picup.auth.TokenPayload;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -16,43 +16,54 @@ import java.util.List;
 @RestController
 public class AlbumController {
 
-    private final AlbumFacadeService albumFacadeService;
+    private static final float ALBUM_THUMBNAIL_RESIZE_SCALE = 0.5f;
+
+    private final AlbumFacadeService albumService;
+    private final UserLockService userLockService;
+    private final FileResourceService fileService;
 
     @PostMapping("/api/album")
     public ResponseEntity<Long> createAlbum(
-        @TokenPayload AuthTokenPayload loginUser,
+        @TokenPayload LoginUser user,
         @RequestParam MultipartFile thumbnail,
         @RequestParam String name
     ) {
-        var albumId = albumFacadeService.initAlbum(loginUser.userId(), name, thumbnail);
+        var thumbnailFile = fileService.uploadThumbnail(thumbnail, ALBUM_THUMBNAIL_RESIZE_SCALE);
+        var albumId = userLockService.<Long>isolate(
+            user.id(),
+            () -> albumService.init(user.id(), name, thumbnailFile)
+        );
         return ResponseEntity.ok(albumId);
     }
 
     @GetMapping("/api/album/{albumId}")
     public ResponseEntity<AlbumResponse> getAlbum(
         @RemoteIp String remoteIp,
-        @TokenPayload AuthTokenPayload loginUser,
+        @TokenPayload LoginUser loginUser,
         @PathVariable Long albumId
     ) {
-        var albumInfo = albumFacadeService.readAlbum(loginUser.userId(), remoteIp, albumId);
-        return ResponseEntity.ok(albumInfo);
+        var album = albumService.read(loginUser.id(), remoteIp, albumId);
+        return ResponseEntity.ok(album);
     }
 
     @GetMapping("/api/album")
     public ResponseEntity<List<AlbumResponse>> getAlbums(
         @RemoteIp String remoteIp,
-        @TokenPayload AuthTokenPayload loginUser
+        @TokenPayload LoginUser loginUser
     ) {
-        var albumInfos = albumFacadeService.readAlbums(loginUser.userId(), remoteIp);
+        var albumInfos = albumService.readAll(loginUser.id(), remoteIp);
         return ResponseEntity.ok(albumInfos);
     }
 
     @DeleteMapping("/api/album/{albumId}")
     public ResponseEntity<Void> deleteAlbum(
-        @TokenPayload AuthTokenPayload loginUser,
+        @TokenPayload LoginUser user,
         @PathVariable Long albumId
     ) {
-        albumFacadeService.delete(loginUser.userId(), albumId);
+        userLockService.isolate(
+            user.id(),
+            () -> albumService.delete(user.id(), albumId)
+        );
         return ResponseEntity.ok().build();
     }
 }

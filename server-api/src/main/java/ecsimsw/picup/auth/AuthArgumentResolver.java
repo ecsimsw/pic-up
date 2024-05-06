@@ -4,7 +4,6 @@ import javax.servlet.http.HttpServletRequest;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.MethodParameter;
-import org.springframework.stereotype.Component;
 import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
@@ -21,7 +20,7 @@ public class AuthArgumentResolver implements HandlerMethodArgumentResolver {
     }
 
     @Override
-    public AuthTokenPayload resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer, NativeWebRequest webRequest, WebDataBinderFactory binderFactory) {
+    public LoginUser resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer, NativeWebRequest webRequest, WebDataBinderFactory binderFactory) {
         var request = (HttpServletRequest) webRequest.getNativeRequest();
         var accessToken = authTokenService.getAccessToken(request);
         return authTokenService.tokenPayload(accessToken);

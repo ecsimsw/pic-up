@@ -17,7 +17,7 @@ public class AuthTokenService {
 
     private final AuthTokensCacheRepository authTokensCacheRepository;
 
-    public AuthTokens issue(AuthTokenPayload payload) {
+    public AuthTokens issue(LoginUser payload) {
         var accessToken = createToken(payload, ACCESS_TOKEN_JWT_EXPIRE_TIME);
         var refreshToken = createToken(payload, REFRESH_TOKEN_JWT_EXPIRE_TIME);
         var authTokens = AuthTokens.of(payload, accessToken, refreshToken);
@@ -43,7 +43,7 @@ public class AuthTokenService {
         return issue(payload);
     }
 
-    public AuthTokenPayload tokenPayload(String token) {
+    public LoginUser tokenPayload(String token) {
         return JwtUtils.tokenValue(JWT_SECRET_KEY, token, TOKEN_PAYLOAD_NAME);
     }
 
@@ -92,7 +92,7 @@ public class AuthTokenService {
         }
     }
 
-    private String createToken(AuthTokenPayload payload, int expiredTime) {
+    private String createToken(LoginUser payload, int expiredTime) {
         return JwtUtils.createToken(JWT_SECRET_KEY, Map.of(TOKEN_PAYLOAD_NAME, payload), expiredTime);
     }
 }

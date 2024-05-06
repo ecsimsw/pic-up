@@ -2,7 +2,7 @@ package ecsimsw.picup.album.dto;
 
 import ecsimsw.picup.album.domain.Member;
 import ecsimsw.picup.album.domain.StorageUsage;
-import ecsimsw.picup.auth.AuthTokenPayload;
+import ecsimsw.picup.auth.LoginUser;
 
 public record MemberResponse(
     Long id,
@@ -20,7 +20,7 @@ public record MemberResponse(
         );
     }
 
-    public AuthTokenPayload toTokenPayload() {
-        return new AuthTokenPayload(id, username);
+    public LoginUser toTokenPayload() {
+        return new LoginUser(id, username);
     }
 }

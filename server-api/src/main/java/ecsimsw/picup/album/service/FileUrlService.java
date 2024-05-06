@@ -18,6 +18,7 @@ import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 
 import static ecsimsw.picup.album.domain.CacheType.SIGNED_URL;
+import static ecsimsw.picup.album.domain.StorageType.STORAGE;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -61,6 +62,10 @@ public class FileUrlService {
             .keyPairId(publicKeyId)
             .expirationDate(Instant.now().plus(SIGNED_URL_EXPIRATION_AFTER_DAYS, ChronoUnit.DAYS))
             .build();
+    }
+
+    public PreUploadUrlResponse uploadUrl(FileResource resource) {
+        return uploadUrl(STORAGE, resource.getResourceKey());
     }
 
     public PreUploadUrlResponse uploadUrl(StorageType storageType, FileResource resource) {

@@ -1,10 +1,6 @@
 package ecsimsw.picup.album.dto;
 
-import ecsimsw.picup.album.domain.Album;
-
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.stream.Collectors;
 
 public record AlbumResponse(
     Long id,
@@ -13,12 +9,12 @@ public record AlbumResponse(
     LocalDateTime createdAt
 ) {
 
-    public static AlbumResponse of(Album album, String thumbnailUrl) {
+    public static AlbumResponse of(AlbumInfo albumInfo, String thumbnailUrl) {
         return new AlbumResponse(
-            album.getId(),
-            album.getName(),
+            albumInfo.id(),
+            albumInfo.name(),
             thumbnailUrl,
-            album.getCreatedAt()
+            albumInfo.createdAt()
         );
     }
 }

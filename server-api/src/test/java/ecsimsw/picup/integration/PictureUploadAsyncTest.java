@@ -60,13 +60,13 @@
 //    @MockBean
 //    private ThumbnailService thumbnailService;
 //
-//    private long userId;
+//    private long id;
 //    private long albumId;
 //
 //    @BeforeEach
 //    void skipThumbnailMaking() {
-//        userId = memberService.signUp(new SignUpRequest(UUID.randomUUID() + "", USER_PASSWORD)).id();
-//        albumId = albumService.create(userId, ALBUM_NAME, new FileUploadResponse(RESOURCE_KEY, FILE_SIZE));
+//        id = memberService.signUp(new SignUpRequest(UUID.randomUUID() + "", USER_PASSWORD)).id();
+//        albumId = albumService.create(id, ALBUM_NAME, new FileUploadResponse(RESOURCE_KEY, FILE_SIZE));
 //
 //        when(thumbnailService.resizeImage(any(MultipartFile.class), any(Float.class)))
 //            .thenAnswer(input -> input.getArgument(0));
@@ -80,7 +80,7 @@
 //        when(fileService.uploadImageThumbnailAsync(any(), any(Float.class)))
 //            .thenReturn(completedFuture(new FileUploadResponse(RESOURCE_KEY, FILE_SIZE)));
 //
-//        pictureService.uploadVideo(userId, albumId, MULTIPART_FILE);
+//        pictureService.uploadVideo(id, albumId, MULTIPART_FILE);
 //    }
 //
 //    @DisplayName("업로드 중 예외가 발생할 경우, 정상 테스크는 업로드 완료 후 제거 로직이 실행된다.")
@@ -94,7 +94,7 @@
 //            .thenReturn(completedFuture(uploaded));
 //
 //        assertThatThrownBy(
-//            () -> pictureService.uploadVideo(userId, albumId, MULTIPART_FILE)
+//            () -> pictureService.uploadVideo(id, albumId, MULTIPART_FILE)
 //        ).isInstanceOf(AlbumException.class);
 //
 //        InOrder orderVerifier = inOrder(fileService);
@@ -111,7 +111,7 @@
 //            .thenReturn(failedFuture(new StorageException("Fail to store file")));
 //
 //        assertThatThrownBy(
-//            () -> pictureService.uploadVideo(userId, albumId, MULTIPART_FILE)
+//            () -> pictureService.uploadVideo(id, albumId, MULTIPART_FILE)
 //        ).isInstanceOf(AlbumException.class);
 //
 //        InOrder orderVerifier = inOrder(fileService);

@@ -13,6 +13,8 @@ import org.springframework.web.multipart.MultipartFile;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import static ecsimsw.picup.album.domain.StorageType.STORAGE;
+import static ecsimsw.picup.album.domain.StorageType.THUMBNAIL;
 import static ecsimsw.picup.config.S3Config.*;
 
 @Slf4j
@@ -27,6 +29,7 @@ public class FileResourceService {
     private final FileResourceRepository fileResourceRepository;
     private final FileDeletionFailedLogRepository fileDeletionFailedLogRepository;
     private final FileStorageService fileStorageService;
+    private final ThumbnailService thumbnailService;
 
     @Transactional
     public FileResource upload(StorageType type, MultipartFile file) {
@@ -34,6 +37,17 @@ public class FileResourceService {
         var fileResource = FileResource.stored(type, resourceKey, file.getSize());
         fileStorageService.store(file, filePath(fileResource));
         return fileResourceRepository.save(fileResource);
+    }
+
+    @Transactional
+    public FileResource uploadThumbnail(MultipartFile file, float scale) {
+        var resized = thumbnailService.resizeImage(file, scale);
+        return upload(THUMBNAIL, resized);
+    }
+
+    @Transactional
+    public FileResource createDummy(String fileName, long fileSize) {
+        return createDummy(STORAGE, fileName, fileSize);
     }
 
     @Transactional

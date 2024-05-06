@@ -1,6 +1,6 @@
 package ecsimsw.picup.album.controller;
 
-import ecsimsw.picup.auth.AuthTokenPayload;
+import ecsimsw.picup.auth.LoginUser;
 import ecsimsw.picup.auth.AuthTokenService;
 import ecsimsw.picup.auth.TokenPayload;
 import ecsimsw.picup.album.dto.MemberResponse;
@@ -50,7 +50,7 @@ public class MemberController {
 
     @GetMapping("/api/member/me")
     public ResponseEntity<MemberResponse> me(
-        @TokenPayload AuthTokenPayload userInfo
+        @TokenPayload LoginUser userInfo
     ) {
         var memberInfo = memberService.me(userInfo.username());
         return ResponseEntity.ok(memberInfo);

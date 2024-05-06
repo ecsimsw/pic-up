@@ -1,6 +1,7 @@
 package ecsimsw.picup.album.service;
 
 import ecsimsw.picup.album.domain.*;
+import ecsimsw.picup.album.dto.PictureInfo;
 import ecsimsw.picup.album.dto.PictureSearchCursor;
 import ecsimsw.picup.album.exception.AlbumException;
 import ecsimsw.picup.auth.UnauthorizedException;
@@ -20,56 +21,55 @@ import static ecsimsw.picup.album.domain.StorageType.THUMBNAIL;
 public class PictureService {
 
     private final StorageUsageService storageUsageService;
-    private final FileResourceService fileResourceService;
     private final AlbumRepository albumRepository;
     private final PictureRepository pictureRepository;
 
     @Transactional
-    public long create(Long userId, Long albumId, ResourceKey resourceKey) {
-        var fileResource = fileResourceService.preserve(STORAGE, resourceKey);
+    public PictureInfo create(Long userId, Long albumId, ResourceKey fileResource, long fileSize) {
         var album = getUserAlbum(userId, albumId);
-        var picture = fileResource.toPicture(album);
+        var picture = new Picture(album, fileResource, fileSize);
         pictureRepository.save(picture);
-        storageUsageService.addUsage(userId, picture.getFileSize());
-        return picture.getId();
+        return PictureInfo.of(picture);
     }
 
     @Transactional
-    public void setThumbnail(ResourceKey resourceKey, long fileSize) {
-        fileResourceService.create(THUMBNAIL, resourceKey, fileSize);
+    public void setThumbnail(ResourceKey resourceKey) {
         var picture = findPictureByResource(resourceKey);
         picture.setHasThumbnail(true);
         pictureRepository.save(picture);
     }
 
     @Transactional
-    public void deletePictures(Long userId, Long albumId, List<Long> pictureIds) {
+    public List<Picture> deleteAll(Long userId, Long albumId, List<Long> pictureIds) {
         validateAlbumOwner(userId, albumId);
         var pictures = pictureRepository.findAllById(pictureIds);
-        storageUsageService.subtractAll(userId, pictures);
         pictureRepository.deleteAll(pictures);
-        var resourceKeys = pictures.stream()
-            .map(Picture::getFileResource)
-            .toList();
-        fileResourceService.deleteAllAsync(resourceKeys);
+        return pictures;
     }
 
-    @Transactional(readOnly = true)
-    public List<Picture> readAfter(Long userId, Long albumId, PictureSearchCursor cursor) {
-        var album = getUserAlbum(userId, albumId);
-        return pictureRepository.findAllByAlbumOrderThan(
-            album,
-            cursor.createdAt().orElse(LocalDateTime.now()),
-            PageRequest.of(0, cursor.limit(), Direction.DESC, Picture_.CREATED_AT)
-        );
-    }
-
-    @Transactional(readOnly = true)
-    public void checkAbleToUpload(Long userId, Long albumId, long fileSize) {
+    @Transactional
+    public List<Picture> deleteAllInAlbum(Long userId, Long albumId) {
         validateAlbumOwner(userId, albumId);
-        if(!storageUsageService.isAbleToStore(userId, fileSize)) {
-            throw new AlbumException("Lack of storage space");
-        }
+        var pictures = pictureRepository.findAllByAlbumId(albumId);
+        pictureRepository.deleteAll(pictures);
+        return pictures;
+    }
+
+    @Transactional(readOnly = true)
+    public List<PictureInfo> readAfter(Long userId, Long albumId, int limit, LocalDateTime afterCreatedAt) {
+        var album = getUserAlbum(userId, albumId);
+        var pictures = pictureRepository.findAllByAlbumOrderThan(
+            album,
+            afterCreatedAt,
+            PageRequest.of(0, limit, Direction.DESC, Picture_.CREATED_AT)
+        );
+        return PictureInfo.listOf(pictures);
+    }
+
+    @Transactional(readOnly = true)
+    public void validateAlbumOwner(Long userId, Long albumId) {
+        var album = getUserAlbum(userId, albumId);
+        album.authorize(userId);
     }
 
     private Picture findPictureByResource(ResourceKey resourceKey) {
@@ -82,8 +82,5 @@ public class PictureService {
             .orElseThrow(() -> new UnauthorizedException("Invalid album"));
     }
 
-    private void validateAlbumOwner(Long userId, Long albumId) {
-        var album = getUserAlbum(userId, albumId);
-        album.authorize(userId);
-    }
+
 }

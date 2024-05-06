@@ -86,7 +86,7 @@ class AlbumServiceTest {
             albumService.delete(ownerUserId, savedAlbum.getId());
 
             // then
-            assertThat(albumService.findAll(ownerUserId)).isEmpty();
+            assertThat(albumService.readAlbums(ownerUserId)).isEmpty();
         }
 
         @DisplayName("앨범을 제거하면 앨범에 포함된 모든 Picture 정보가 제거된다.")
@@ -130,7 +130,7 @@ class AlbumServiceTest {
         @Test
         void findAll() {
             // when
-            var result = albumService.findAll(ownerUserId);
+            var result = albumService.readAlbums(ownerUserId);
 
             // then
             assertThat(result).isEqualTo(savedAlbums);
@@ -143,7 +143,7 @@ class AlbumServiceTest {
             var findingAlbum = savedAlbums.get(0);
 
             // when
-            var result = albumService.userAlbum(ownerUserId, findingAlbum.getId());
+            var result = albumService.readAlbum(ownerUserId, findingAlbum.getId());
 
             // then
             assertAll(
@@ -164,7 +164,7 @@ class AlbumServiceTest {
 
             // then
             assertThatThrownBy(
-                () -> albumService.userAlbum(otherUserId, findingAlbum.getId())
+                () -> albumService.readAlbum(otherUserId, findingAlbum.getId())
             );
         }
     }

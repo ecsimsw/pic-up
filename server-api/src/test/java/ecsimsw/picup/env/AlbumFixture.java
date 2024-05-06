@@ -5,9 +5,7 @@ import static ecsimsw.picup.env.MemberFixture.USER_ID;
 import ecsimsw.picup.album.domain.Album;
 import ecsimsw.picup.album.domain.Picture;
 import ecsimsw.picup.album.domain.ResourceKey;
-import ecsimsw.picup.album.dto.PictureResponse;
 import ecsimsw.picup.album.dto.FileUploadResponse;
-import java.time.LocalDateTime;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
 

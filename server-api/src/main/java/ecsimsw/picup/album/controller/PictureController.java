@@ -3,12 +3,9 @@ package ecsimsw.picup.album.controller;
 import ecsimsw.picup.album.annotation.RemoteIp;
 import ecsimsw.picup.album.annotation.SearchCursor;
 import ecsimsw.picup.album.domain.ResourceKey;
-import ecsimsw.picup.album.dto.PictureResponse;
-import ecsimsw.picup.album.dto.PictureSearchCursor;
-import ecsimsw.picup.album.dto.PicturesDeleteRequest;
-import ecsimsw.picup.album.dto.PreUploadUrlResponse;
-import ecsimsw.picup.album.service.PictureFacadeService;
-import ecsimsw.picup.auth.AuthTokenPayload;
+import ecsimsw.picup.album.dto.*;
+import ecsimsw.picup.album.service.*;
+import ecsimsw.picup.auth.LoginUser;
 import ecsimsw.picup.auth.TokenPayload;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -21,26 +18,34 @@ import java.util.List;
 @RestController
 public class PictureController {
 
+    private final UserLockService userLockService;
     private final PictureFacadeService pictureFacadeService;
+    private final FileUrlService fileUrlService;
+    private final FileResourceService fileResourceService;
 
     @PostMapping("/api/album/{albumId}/picture/preUpload")
     public ResponseEntity<PreUploadUrlResponse> preUpload(
-        @TokenPayload AuthTokenPayload loginUser,
+        @TokenPayload LoginUser user,
         @PathVariable Long albumId,
         @RequestParam String fileName,
         @RequestParam Long fileSize
     ) {
-        var preSignedUrl = pictureFacadeService.preUpload(loginUser.userId(), albumId, fileName, fileSize);
+        pictureFacadeService.checkAbleToUpload(user.id(), albumId, fileSize);
+        var fileResource = fileResourceService.createDummy(fileName, fileSize);
+        var preSignedUrl = fileUrlService.uploadUrl(fileResource);
         return ResponseEntity.ok(preSignedUrl);
     }
 
     @PostMapping("/api/album/{albumId}/picture/commit")
     public ResponseEntity<Long> commit(
-        @TokenPayload AuthTokenPayload loginUser,
+        @TokenPayload LoginUser user,
         @PathVariable Long albumId,
         @RequestParam ResourceKey resourceKey
     ) {
-        var pictureId = pictureFacadeService.commitPreUpload(loginUser.userId(), albumId, resourceKey);
+        var pictureId = userLockService.<Long>isolate(
+            user.id(),
+            () -> pictureFacadeService.commitPreUpload(user.id(), albumId, resourceKey)
+        );
         return ResponseEntity.ok(pictureId);
     }
 
@@ -56,22 +61,26 @@ public class PictureController {
     @GetMapping("/api/album/{albumId}/picture")
     public ResponseEntity<List<PictureResponse>> getPictures(
         @RemoteIp String remoteIp,
-        @TokenPayload AuthTokenPayload loginUser,
+        @TokenPayload LoginUser user,
         @PathVariable Long albumId,
         @SearchCursor PictureSearchCursor cursor
     ) {
-        var pictureInfos = pictureFacadeService.readPicture(loginUser.userId(), remoteIp, albumId, cursor);
-        return ResponseEntity.ok(pictureInfos);
+        var pictures = pictureFacadeService.readPicture(user.id(), remoteIp, albumId, cursor);
+        return ResponseEntity.ok(pictures);
     }
 
     @DeleteMapping("/api/album/{albumId}/picture")
     public ResponseEntity<Void> deletePictures(
-        @TokenPayload AuthTokenPayload loginUser,
+        @TokenPayload LoginUser loginUser,
         @PathVariable Long albumId,
         @Valid @RequestBody(required = false)
         PicturesDeleteRequest pictures
     ) {
-        pictureFacadeService.deletePictures(loginUser.userId(), albumId, pictures.pictureIds());
+        var userId = loginUser.id();
+        userLockService.isolate(
+            userId,
+            () -> pictureFacadeService.deletePictures(userId, albumId, pictures.pictureIds())
+        );
         return ResponseEntity.ok().build();
     }
 }

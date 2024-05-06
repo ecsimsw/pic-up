@@ -2,14 +2,14 @@ package ecsimsw.picup.album.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import ecsimsw.picup.album.dto.PictureResponse;
+import ecsimsw.picup.album.dto.PictureInfo;
 import ecsimsw.picup.album.dto.PictureSearchCursor;
 import ecsimsw.picup.album.dto.PicturesDeleteRequest;
 import ecsimsw.picup.album.dto.PreUploadUrlResponse;
 import ecsimsw.picup.album.service.PictureFacadeService;
 import ecsimsw.picup.auth.AuthArgumentResolver;
 import ecsimsw.picup.auth.AuthInterceptor;
-import ecsimsw.picup.auth.AuthTokenPayload;
+import ecsimsw.picup.auth.LoginUser;
 import ecsimsw.picup.auth.AuthTokenService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -62,7 +62,7 @@ class PictureControllerTest {
     @BeforeEach
     void init() {
         when(authTokenService.tokenPayload(any()))
-            .thenReturn(new AuthTokenPayload(loginUserId, USER_NAME));
+            .thenReturn(new LoginUser(loginUserId, USER_NAME));
     }
 
     @DisplayName("Picture 를 업로드할 수 있는 Signed url 을 반환한다.")
@@ -72,8 +72,8 @@ class PictureControllerTest {
         var uploadFileSize = 1L;
         var expectedPictureInfo = new PreUploadUrlResponse("preSignedUrl", RESOURCE_KEY.value());
 
-        when(pictureFacadeService.preUpload(loginUserId, albumId, uploadFileName, uploadFileSize))
-            .thenReturn(expectedPictureInfo);
+//        when(pictureFacadeService.(loginUserId, albumId, uploadFileName, uploadFileSize))
+//            .thenReturn(expectedPictureInfo);
 
         mockMvc.perform(multipart("/api/album/" + albumId + "/picture/preUpload")
                 .queryParam("fileName", uploadFileName)
@@ -104,7 +104,7 @@ class PictureControllerTest {
     @Test
     void getPicturesByCursor() throws Exception {
         var expectedCursorCreatedAt = LocalDateTime.of(2024, 4, 8, 10, 45, 12, 728721232);
-        var expectedPictureInfos = List.of(PictureResponse.of(PICTURE, RESOURCE_KEY.value()));
+        var expectedPictureInfos = List.of(PictureInfo.of(PICTURE, RESOURCE_KEY.value()));
 
         when(pictureFacadeService.readPicture(loginUserId, remoteIp, albumId, PictureSearchCursor.from(10, Optional.of(expectedCursorCreatedAt))))
             .thenReturn(expectedPictureInfos);
@@ -121,7 +121,7 @@ class PictureControllerTest {
     @Test
     void getPicturesWithLimit() throws Exception {
         var limit = 20;
-        var expectedPictureInfos = List.of(PictureResponse.of(PICTURE, RESOURCE_KEY.value()));
+        var expectedPictureInfos = List.of(PictureInfo.of(PICTURE, RESOURCE_KEY.value()));
 
         when(pictureFacadeService.readPicture(loginUserId, remoteIp, albumId, PictureSearchCursor.from(limit, Optional.empty())))
             .thenReturn(expectedPictureInfos);

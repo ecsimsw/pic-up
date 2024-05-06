@@ -1,10 +1,10 @@
 package ecsimsw.picup.auth;
 
-public record AuthTokenPayload(
-    Long userId,
+public record LoginUser(
+    Long id,
     String username
 ) {
     public String tokenKey() {
-        return String.valueOf(userId);
+        return String.valueOf(id);
     }
 }
