@@ -50,10 +50,6 @@ public class FileResource {
         this(null, storageType, resourceKey, size, toBeDeleted, 0, LocalDateTime.now());
     }
 
-    public Picture toPicture(Album album) {
-        return new Picture(album, resourceKey, size);
-    }
-
     public void setToBeDeleted(boolean toBeDeleted) {
         this.toBeDeleted = toBeDeleted;
     }

@@ -33,11 +33,14 @@
 //    @Autowired
 //    private StorageUsageService storageUsageService;
 //
-//    @MockBean
-//    private FileResourceService fileService;
+//    @Autowired
+//    private FileResourceService fileResourceService;
 //
-//    @MockBean
-//    private ThumbnailService thumbnailService;
+//    @Autowired
+//    private FileUrlService fileUrlService;
+//
+//
+//
 //
 //    private Long id;
 //    private Long albumId;

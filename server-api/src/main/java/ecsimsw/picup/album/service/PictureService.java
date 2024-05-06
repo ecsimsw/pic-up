@@ -2,25 +2,21 @@ package ecsimsw.picup.album.service;
 
 import ecsimsw.picup.album.domain.*;
 import ecsimsw.picup.album.dto.PictureInfo;
-import ecsimsw.picup.album.dto.PictureSearchCursor;
 import ecsimsw.picup.album.exception.AlbumException;
 import ecsimsw.picup.auth.UnauthorizedException;
-import java.time.LocalDateTime;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import static ecsimsw.picup.album.domain.StorageType.STORAGE;
-import static ecsimsw.picup.album.domain.StorageType.THUMBNAIL;
+import java.time.LocalDateTime;
+import java.util.List;
 
 @RequiredArgsConstructor
 @Service
 public class PictureService {
 
-    private final StorageUsageService storageUsageService;
     private final AlbumRepository albumRepository;
     private final PictureRepository pictureRepository;
 

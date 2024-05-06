@@ -1,11 +1,13 @@
 package ecsimsw.picup.album.service;
 
-import ecsimsw.picup.album.domain.*;
+import ecsimsw.picup.album.domain.Album;
+import ecsimsw.picup.album.domain.AlbumRepository;
+import ecsimsw.picup.album.domain.PictureRepository;
+import ecsimsw.picup.album.domain.ResourceKey;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
@@ -14,38 +16,20 @@ import static ecsimsw.picup.env.MemberFixture.USER_ID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
-import static org.mockito.Mockito.*;
 
 @DataJpaTest
 class PictureServiceTest {
 
+    private final long savedUserId = USER_ID;
     @Autowired
     private AlbumRepository albumRepository;
-
     @Autowired
     private PictureRepository pictureRepository;
-
-    @Autowired
-    private StorageUsageRepository storageUsageRepository;
-
-    @Mock
-    private FileResourceService fileResourceService;
-
     private PictureService pictureService;
-
-    private final long savedUserId = USER_ID;
 
     @BeforeEach
     void init() {
-        var storageUsageService = new StorageUsageService(storageUsageRepository);
-        storageUsageService.init(savedUserId);
-
-        pictureService = new PictureService(
-            storageUsageService,
-            fileResourceService,
-            albumRepository,
-            pictureRepository
-        );
+        pictureService = new PictureService(albumRepository, pictureRepository);
     }
 
     @DisplayName("Picture 생성 로직 검증")
@@ -58,19 +42,20 @@ class PictureServiceTest {
         @BeforeEach
         void giveAlbum() {
             savedAlbum = albumRepository.save(new Album(savedUserId, ALBUM_NAME, RESOURCE_KEY));
-
-            when(fileResourceService.preserve(any(), any()))
-                .thenAnswer(it -> FileResource.stored(it.getArgument(0), it.getArgument(1), FILE_SIZE));
         }
 
         @DisplayName("앨범에 picture 를 생성한다.")
         @Test
         void create() {
+            // given
+            var fileResource = RESOURCE_KEY;
+            var fileSize = FILE_SIZE;
+
             // when
-            var pictureId = pictureService.create(savedUserId, savedAlbum.getId(), fileResource);
+            var saved = pictureService.create(savedUserId, savedAlbum.getId(), fileResource, fileSize);
 
             // then
-            var expected = pictureRepository.findById(pictureId).orElseThrow();
+            var expected = pictureRepository.findById(saved.id()).orElseThrow();
             assertAll(
                 () -> assertThat(expected.getId()).isNotNull(),
                 () -> assertThat(expected.getAlbum().getId()).isEqualTo(savedAlbum.getId()),
@@ -79,46 +64,16 @@ class PictureServiceTest {
             );
         }
 
-        @DisplayName("업로드시 Picture 파일 크기만큼 스토리지 사용량이 증가한다.")
-        @Test
-        void updateStorageUsage() {
-            // given
-            var usageBefore = storageUsageRepository.findByUserId(savedUserId).orElseThrow();
-
-            var uploadFileSize = FILE_SIZE;
-            when(fileResourceService.preserve(any(), any()))
-                .thenAnswer(it -> FileResource.stored(it.getArgument(0), it.getArgument(1), uploadFileSize));
-
-            // when
-            pictureService.create(savedUserId, savedAlbum.getId(), fileResource);
-
-            // then
-
-        }
-
-        @DisplayName("사용량 제한을 넘어선 업로드시 예외를 반환한다.")
-        @Test
-        void createOverStorageUsage() {
-            // given
-            var uploadFileSize = Long.MAX_VALUE;
-            when(fileResourceService.preserve(any(), any()))
-                .thenAnswer(it -> FileResource.stored(it.getArgument(0), it.getArgument(1), uploadFileSize));
-
-            // then
-            assertThatThrownBy(
-                () -> pictureService.create(savedUserId, savedAlbum.getId(), fileResource)
-            );
-        }
-
         @DisplayName("다른 사용자의 Album 에 Picture 를 생성할 수 없다.")
         @Test
         void createInOthersAlbum() {
             // given
-            var othersAlbum = albumRepository.save(new Album(savedUserId+1, ALBUM_NAME, RESOURCE_KEY));
+            var fileSize = FILE_SIZE;
+            var othersAlbum = albumRepository.save(new Album(savedUserId + 1, ALBUM_NAME, RESOURCE_KEY));
 
             // then
             assertThatThrownBy(
-                () -> pictureService.create(savedUserId, othersAlbum.getId(), fileResource)
+                () -> pictureService.create(savedUserId, othersAlbum.getId(), fileResource, fileSize)
             );
         }
 
@@ -126,11 +81,12 @@ class PictureServiceTest {
         @Test
         void createInNotExistsAlbum() {
             // given
+            var fileSize = FILE_SIZE;
             var notExistsAlbumId = Long.MAX_VALUE;
 
             // then
             assertThatThrownBy(
-                () -> pictureService.create(savedUserId, notExistsAlbumId, fileResource)
+                () -> pictureService.create(savedUserId, notExistsAlbumId, fileResource, fileSize)
             );
         }
     }

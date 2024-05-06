@@ -1,12 +1,14 @@
 package ecsimsw.picup.album.service;
 
-import ecsimsw.picup.album.domain.*;
+import ecsimsw.picup.album.domain.Album;
+import ecsimsw.picup.album.domain.AlbumRepository;
+import ecsimsw.picup.album.domain.ResourceKey;
+import ecsimsw.picup.album.dto.AlbumInfo;
 import ecsimsw.picup.auth.UnauthorizedException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
@@ -17,7 +19,6 @@ import static ecsimsw.picup.env.MemberFixture.USER_ID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
-import static reactor.core.publisher.Mono.when;
 
 @DataJpaTest
 class AlbumServiceTest {
@@ -25,25 +26,11 @@ class AlbumServiceTest {
     @Autowired
     private AlbumRepository albumRepository;
 
-    @Autowired
-    private PictureRepository pictureRepository;
-
-    @Mock
-    private StorageUsageService storageUsageService;
-
-    @Mock
-    private FileResourceService fileResourceService;
-
     private AlbumService albumService;
 
     @BeforeEach
     public void init() {
-        albumService = new AlbumService(
-            storageUsageService,
-            fileResourceService,
-            albumRepository,
-            pictureRepository
-        );
+        albumService = new AlbumService(albumRepository);
     }
 
     @DisplayName("앨범을 생성한다.")
@@ -71,8 +58,6 @@ class AlbumServiceTest {
         @BeforeEach
         public void giveAlbum() {
             savedAlbum = albumRepository.save(ALBUM);
-            pictureRepository.save(PICTURE(savedAlbum));
-            pictureRepository.save(PICTURE(savedAlbum));
             ownerUserId = savedAlbum.getUserId();
         }
 
@@ -83,20 +68,10 @@ class AlbumServiceTest {
             var savedAlbum = albumRepository.save(ALBUM);
 
             // when
-            albumService.delete(ownerUserId, savedAlbum.getId());
+            albumService.deleteById(ownerUserId, savedAlbum.getId());
 
             // then
             assertThat(albumService.readAlbums(ownerUserId)).isEmpty();
-        }
-
-        @DisplayName("앨범을 제거하면 앨범에 포함된 모든 Picture 정보가 제거된다.")
-        @Test
-        void deleteAllPictures() {
-            // when
-            albumService.delete(ownerUserId, savedAlbum.getId());
-
-            // then
-            assertThat(pictureRepository.findAllByAlbumId(savedAlbum.getId())).isEmpty();
         }
 
         @DisplayName("앨범 주인이 아닌 사용자는 앨범을 제거할 수 없다.")
@@ -106,7 +81,7 @@ class AlbumServiceTest {
             var otherUserId = ownerUserId + 1;
 
             // then
-            assertThatThrownBy(() -> albumService.delete(otherUserId, savedAlbum.getId()))
+            assertThatThrownBy(() -> albumService.deleteById(otherUserId, savedAlbum.getId()))
                 .isInstanceOf(UnauthorizedException.class);
         }
     }
@@ -133,7 +108,10 @@ class AlbumServiceTest {
             var result = albumService.readAlbums(ownerUserId);
 
             // then
-            assertThat(result).isEqualTo(savedAlbums);
+            var expected = savedAlbums.stream()
+                .map(AlbumInfo::of)
+                .toList();
+            assertThat(result).isEqualTo(expected);
         }
 
         @DisplayName("단일 앨범 정보를 조회한다.")
@@ -147,11 +125,10 @@ class AlbumServiceTest {
 
             // then
             assertAll(
-                () -> assertThat(result.getId()).isEqualTo(findingAlbum.getId()),
-                () -> assertThat(result.getUserId()).isEqualTo(findingAlbum.getUserId()),
-                () -> assertThat(result.getName()).isEqualTo(findingAlbum.getName()),
-                () -> assertThat(result.getThumbnail()).isEqualTo(findingAlbum.getThumbnail()),
-                () -> assertThat(result.getCreatedAt()).isEqualTo(findingAlbum.getCreatedAt())
+                () -> assertThat(result.id()).isEqualTo(findingAlbum.getId()),
+                () -> assertThat(result.name()).isEqualTo(findingAlbum.getName()),
+                () -> assertThat(result.thumbnail()).isEqualTo(findingAlbum.getThumbnail()),
+                () -> assertThat(result.createdAt()).isEqualTo(findingAlbum.getCreatedAt())
             );
         }
 
