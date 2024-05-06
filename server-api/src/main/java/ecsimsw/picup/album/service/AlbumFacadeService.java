@@ -29,15 +29,15 @@ public class AlbumFacadeService {
 
     @Transactional
     public void delete(Long userId, Long albumId) {
-        var deletedAlbum = albumService.deleteById(userId, albumId);
-        resourceService.deleteAsync(deletedAlbum.getThumbnail());
-
         var deletedPictures = pictureService.deleteAllInAlbum(userId, albumId);
         var pictureFiles = deletedPictures.stream()
             .map(Picture::getFileResource)
             .toList();
         resourceService.deleteAllAsync(pictureFiles);
         storageUsageService.subtractAll(userId, deletedPictures);
+
+        var deletedAlbum = albumService.deleteById(userId, albumId);
+        resourceService.deleteAsync(deletedAlbum.getThumbnail());
     }
 
     public AlbumResponse read(Long userId, String remoteIp, Long albumId) {
