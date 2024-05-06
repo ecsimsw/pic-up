@@ -5,11 +5,8 @@ import ecsimsw.picup.auth.UnauthorizedException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
-
-import static ecsimsw.picup.album.domain.StorageType.THUMBNAIL;
 
 @RequiredArgsConstructor
 @Service
@@ -21,10 +18,9 @@ public class AlbumService {
     private final PictureRepository pictureRepository;
 
     @Transactional
-    public long initAlbum(Long userId, String name, ResourceKey thumbnail) {
+    public long create(Long userId, String name, ResourceKey thumbnail) {
         var album = new Album(userId, name, thumbnail);
-        albumRepository.save(album);
-        return album.getId();
+        return albumRepository.save(album).getId();
     }
 
     @Transactional(readOnly = true)

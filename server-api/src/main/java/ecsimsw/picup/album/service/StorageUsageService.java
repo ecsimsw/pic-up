@@ -13,12 +13,19 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class StorageUsageService {
 
+    private static final Long DEFAULT_STORAGE_LIMIT_BYTE = Long.MAX_VALUE;
+
     private final StorageUsageRepository storageUsageRepository;
 
     @Transactional
     public StorageUsage init(Long userId, long limit) {
         var usage = new StorageUsage(userId, limit);
         return storageUsageRepository.save(usage);
+    }
+
+    @Transactional
+    public StorageUsage init(Long userId) {
+        return init(userId, DEFAULT_STORAGE_LIMIT_BYTE);
     }
 
     @Transactional(readOnly = true)

@@ -5,7 +5,6 @@ import ecsimsw.picup.album.domain.ResourceKey;
 import ecsimsw.picup.album.exception.AlbumException;
 import ecsimsw.picup.album.utils.ThumbnailUtils;
 import ecsimsw.picup.album.utils.FileStorageUtils;
-import ecsimsw.picup.config.S3Config;
 import lombok.RequiredArgsConstructor;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.stereotype.Service;
@@ -38,7 +37,7 @@ public class ThumbnailService {
     }
 
     public MultipartFile captureVideo(MultipartFile videoFile) {
-        var thumbnailFile = captureThumbnailFromVideoFile(videoFile);
+        var thumbnailFile = captureFrame(videoFile);
         var thumbnailResourceKey = ResourceKey.fromExtension(DEFAULT_VIDEO_THUMBNAIL_EXTENSION);
         return new MockMultipartFile(
             thumbnailResourceKey.value(),
@@ -48,7 +47,7 @@ public class ThumbnailService {
         );
     }
 
-    private static byte[] captureThumbnailFromVideoFile(MultipartFile videoFile) {
+    private byte[] captureFrame(MultipartFile videoFile) {
         var videoExtension = PictureFileExtension.fromFileName(videoFile.getOriginalFilename());
         if(!videoExtension.isVideo) {
             throw new AlbumException("Not a video file");

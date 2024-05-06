@@ -65,21 +65,21 @@ public class PictureRepositoryTest {
         var picture3 = pictureRepository.save(PICTURE(savedAlbum));
 
         var result1 = pictureRepository.findAllByAlbumOrderThan(
-            savedAlbum.getId(),
+            savedAlbum,
             picture2.getCreatedAt(),
             PageRequest.of(0, 10)
         );
         assertThat(result1).contains(picture1);
 
         var result2 = pictureRepository.findAllByAlbumOrderThan(
-            savedAlbum.getId(),
+            savedAlbum,
             picture3.getCreatedAt(),
             PageRequest.of(0, 10, Direction.DESC, Picture_.CREATED_AT)
         );
         assertThat(result2).contains(picture2, picture1);
 
         var result3 = pictureRepository.findAllByAlbumOrderThan(
-            savedAlbum.getId(),
+            savedAlbum,
             picture3.getCreatedAt(),
             PageRequest.of(0, 1, Direction.DESC, Picture_.CREATED_AT)
         );

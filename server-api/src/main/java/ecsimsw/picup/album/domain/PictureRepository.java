@@ -20,9 +20,9 @@ public interface PictureRepository extends JpaRepository<Picture, Long> {
     );
 
     @Query("SELECT picture FROM Picture picture JOIN FETCH picture.album " +
-        "WHERE picture.album.id = :albumId AND picture.createdAt < :createdAt")
+        "WHERE picture.album = :album AND picture.createdAt < :createdAt")
     List<Picture> findAllByAlbumOrderThan(
-        @Param("albumId") Long albumId,
+        @Param("album") Album album,
         @Param("createdAt") LocalDateTime createdAt,
         PageRequest pageRequest
     );

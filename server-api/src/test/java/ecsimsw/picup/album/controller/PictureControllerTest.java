@@ -5,7 +5,7 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import ecsimsw.picup.album.dto.PictureResponse;
 import ecsimsw.picup.album.dto.PictureSearchCursor;
 import ecsimsw.picup.album.dto.PicturesDeleteRequest;
-import ecsimsw.picup.album.dto.PreUploadResponse;
+import ecsimsw.picup.album.dto.PreUploadUrlResponse;
 import ecsimsw.picup.album.service.PictureFacadeService;
 import ecsimsw.picup.auth.AuthArgumentResolver;
 import ecsimsw.picup.auth.AuthInterceptor;
@@ -70,7 +70,7 @@ class PictureControllerTest {
     void getSignedUrl() throws Exception {
         var uploadFileName = "FILE_NAME";
         var uploadFileSize = 1L;
-        var expectedPictureInfo = new PreUploadResponse("preSignedUrl", RESOURCE_KEY.value());
+        var expectedPictureInfo = new PreUploadUrlResponse("preSignedUrl", RESOURCE_KEY.value());
 
         when(pictureFacadeService.preUpload(loginUserId, albumId, uploadFileName, uploadFileSize))
             .thenReturn(expectedPictureInfo);
@@ -106,7 +106,7 @@ class PictureControllerTest {
         var expectedCursorCreatedAt = LocalDateTime.of(2024, 4, 8, 10, 45, 12, 728721232);
         var expectedPictureInfos = List.of(PictureResponse.of(PICTURE, RESOURCE_KEY.value()));
 
-        when(pictureFacadeService.read(loginUserId, remoteIp, albumId, PictureSearchCursor.from(10, Optional.of(expectedCursorCreatedAt))))
+        when(pictureFacadeService.readPicture(loginUserId, remoteIp, albumId, PictureSearchCursor.from(10, Optional.of(expectedCursorCreatedAt))))
             .thenReturn(expectedPictureInfos);
 
         mockMvc.perform(get("/api/album/" + albumId + "/picture")
@@ -123,7 +123,7 @@ class PictureControllerTest {
         var limit = 20;
         var expectedPictureInfos = List.of(PictureResponse.of(PICTURE, RESOURCE_KEY.value()));
 
-        when(pictureFacadeService.read(loginUserId, remoteIp, albumId, PictureSearchCursor.from(limit, Optional.empty())))
+        when(pictureFacadeService.readPicture(loginUserId, remoteIp, albumId, PictureSearchCursor.from(limit, Optional.empty())))
             .thenReturn(expectedPictureInfos);
 
         mockMvc.perform(get("/api/album/" + albumId + "/picture")

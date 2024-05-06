@@ -38,12 +38,16 @@ public class FileResource {
     @Column(nullable = false)
     private LocalDateTime createdAt;
 
-    public static FileResource preUpload(StorageType storageType, ResourceKey resourceKey, Long fileSize) {
-        return new FileResource(null, storageType, resourceKey, fileSize, true, 0, LocalDateTime.now());
+    public static FileResource toBeDeleted(StorageType storageType, ResourceKey resourceKey, Long fileSize) {
+        return new FileResource(storageType, resourceKey, fileSize, true);
     }
 
-    public FileResource(StorageType storageType, ResourceKey resourceKey, Long fileSize) {
-        this(null, storageType, resourceKey, fileSize, false, 0, LocalDateTime.now());
+    public static FileResource stored(StorageType storageType, ResourceKey resourceKey, Long fileSize) {
+        return new FileResource(storageType, resourceKey, fileSize, false);
+    }
+
+    public FileResource(StorageType storageType, ResourceKey resourceKey, Long fileSize, Boolean toBeDeleted) {
+        this(null, storageType, resourceKey,fileSize, toBeDeleted, 0, LocalDateTime.now());
     }
 
     public Picture toPicture(Album album) {

@@ -17,6 +17,7 @@ import static ecsimsw.picup.env.MemberFixture.USER_ID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
+import static reactor.core.publisher.Mono.when;
 
 @DataJpaTest
 class AlbumServiceTest {
@@ -53,7 +54,7 @@ class AlbumServiceTest {
         @Test
         void create() {
             // when
-            var albumId = albumService.initAlbum(USER_ID, ALBUM_NAME, THUMBNAIL_RESOURCE_KEY);
+            var albumId = albumService.create(USER_ID, ALBUM_NAME, THUMBNAIL_RESOURCE_KEY);
 
             // then
             assertThat(albumId).isGreaterThan(0);

@@ -1,10 +1,10 @@
 package ecsimsw.picup.album.service;
 
-import ecsimsw.picup.album.domain.ResourceKey;
-import ecsimsw.picup.album.dto.PreUploadResponse;
 import ecsimsw.picup.album.domain.Picture;
+import ecsimsw.picup.album.domain.ResourceKey;
 import ecsimsw.picup.album.dto.PictureResponse;
 import ecsimsw.picup.album.dto.PictureSearchCursor;
+import ecsimsw.picup.album.dto.PreUploadUrlResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -17,38 +17,35 @@ import static ecsimsw.picup.album.domain.StorageType.THUMBNAIL;
 @Service
 public class PictureFacadeService {
 
-    private final UserLock userLock;
+    private final UserLockService userLockService;
     private final PictureService pictureService;
     private final FileUrlService fileUrlService;
+    private final FileResourceService fileResourceService;
 
-    public PreUploadResponse preUpload(Long userId, Long albumId, String fileName, Long fileSize) {
-        return pictureService.preUpload(userId, albumId, fileName, fileSize);
+    public PreUploadUrlResponse preUpload(long userId, long albumId, String fileName, long fileSize) {
+        pictureService.checkAbleToUpload(userId, albumId, fileSize);
+        var fileResource = fileResourceService.createDummy(STORAGE, fileName, fileSize);
+        return fileUrlService.uploadUrl(STORAGE, fileResource);
     }
 
-    public void commitPreUpload(Long userId, Long albumId, ResourceKey resourceKey) {
-        try {
-            userLock.acquire(userId);
-            pictureService.commitPreUpload(userId, albumId, resourceKey);
-        } finally {
-            userLock.release(userId);
-        }
+    public long commitPreUpload(long userId, long albumId, ResourceKey resourceKey) {
+        return userLockService.<Long>isolate(userId, () -> {
+            return pictureService.create(userId, albumId, resourceKey);
+        });
     }
 
     public void setPictureThumbnail(ResourceKey resourceKey, long fileSize) {
-        pictureService.setPictureThumbnail(resourceKey, fileSize);
+        pictureService.setThumbnail(resourceKey, fileSize);
     }
 
-    public void deletePictures(Long userId, Long albumId, List<Long> pictureIds) {
-        try {
-            userLock.acquire(userId);
+    public void deletePictures(long userId, long albumId, List<Long> pictureIds) {
+        userLockService.isolate(userId, () -> {
             pictureService.deletePictures(userId, albumId, pictureIds);
-        } finally {
-            userLock.release(userId);
-        }
+        });
     }
 
-    public List<PictureResponse> read(Long userId, String remoteIp, Long albumId, PictureSearchCursor cursor) {
-        var pictures = pictureService.fetchAfterCursor(userId, albumId, cursor);
+    public List<PictureResponse> readPicture(Long userId, String remoteIp, Long albumId, PictureSearchCursor cursor) {
+        var pictures = pictureService.readAfter(userId, albumId, cursor);
         return pictures.stream()
             .map(picture -> toResponse(picture, remoteIp))
             .toList();

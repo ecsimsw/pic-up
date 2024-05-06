@@ -1,7 +1,6 @@
 package ecsimsw.picup.album.service;
 
 import ecsimsw.picup.album.domain.*;
-import ecsimsw.picup.album.dto.PreUploadResponse;
 import ecsimsw.picup.album.exception.StorageException;
 import ecsimsw.picup.album.utils.FileUtils;
 import lombok.RequiredArgsConstructor;
@@ -30,36 +29,32 @@ public class FileResourceService {
     private final FileStorageService fileStorageService;
 
     @Transactional
-    public ResourceKey upload(StorageType type, MultipartFile file) {
+    public FileResource upload(StorageType type, MultipartFile file) {
         var resourceKey = ResourceKey.fromMultipartFile(file);
-        var fileResource = new FileResource(type, resourceKey, file.getSize());
+        var fileResource = FileResource.stored(type, resourceKey, file.getSize());
         fileStorageService.store(file, filePath(fileResource));
-        fileResourceRepository.save(fileResource);
-        return resourceKey;
+        return fileResourceRepository.save(fileResource);
     }
 
     @Transactional
-    public PreUploadResponse preUpload(StorageType type, String fileName, long fileSize) {
+    public FileResource createDummy(StorageType type, String fileName, long fileSize) {
         var resourceKey = ResourceKey.fromFileName(fileName);
-        var preUploadResource = FileResource.preUpload(type, resourceKey, fileSize);
-        fileResourceRepository.save(preUploadResource);
-        var filePath = filePath(preUploadResource);
-        var preSignedUrl = fileStorageService.generatePreSignedUrl(filePath);
-        return new PreUploadResponse(preSignedUrl, resourceKey.value());
+        var beDeleted = FileResource.toBeDeleted(type, resourceKey, fileSize);
+        return fileResourceRepository.save(beDeleted);
     }
 
     @Transactional
-    public FileResource commitPreUpload(StorageType type, ResourceKey resourceKey) {
-        var preUpload = fileResourceRepository.findByStorageTypeAndResourceKey(type, resourceKey)
+    public FileResource preserve(StorageType type, ResourceKey resourceKey) {
+        var resource = fileResourceRepository.findByStorageTypeAndResourceKey(type, resourceKey)
             .orElseThrow(() -> new StorageException("Not exists resource"));
-        preUpload.setToBeDeleted(false);
-        fileResourceRepository.save(preUpload);
-        return preUpload;
+        resource.setToBeDeleted(false);
+        fileResourceRepository.save(resource);
+        return resource;
     }
 
     @Transactional
-    public void saveResource(StorageType type, ResourceKey resourceKey, long fileSize) {
-        var fileResource = new FileResource(type, resourceKey, fileSize);
+    public void create(StorageType type, ResourceKey resourceKey, long fileSize) {
+        var fileResource = FileResource.stored(type, resourceKey, fileSize);
         fileResourceRepository.save(fileResource);
     }
 
@@ -70,7 +65,7 @@ public class FileResourceService {
 
     @Transactional
     public void deleteAllAsync(List<ResourceKey> resourceKeys) {
-        fileResourceRepository.updateAllToBeDeleted(resourceKeys);
+        fileResourceRepository.setAllToBeDeleted(resourceKeys);
     }
 
     @Scheduled(fixedDelay = FILE_DELETION_SCHED_DELAY)

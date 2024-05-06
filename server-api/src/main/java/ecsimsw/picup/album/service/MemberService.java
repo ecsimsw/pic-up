@@ -16,8 +16,6 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class MemberService {
 
-    private static final Long DEFAULT_STORAGE_LIMIT_BYTE = Long.MAX_VALUE;
-
     private final MemberRepository memberRepository;
     private final StorageUsageService storageUsageService;
 
@@ -41,7 +39,7 @@ public class MemberService {
         var password = Password.initFrom(request.password());
         var member = new Member(request.username(), password);
         memberRepository.save(member);
-        var usage = storageUsageService.init(member.getId(), DEFAULT_STORAGE_LIMIT_BYTE);
+        var usage = storageUsageService.init(member.getId());
         return MemberResponse.of(member, usage);
     }
 

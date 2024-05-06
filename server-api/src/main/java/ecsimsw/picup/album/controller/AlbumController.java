@@ -16,7 +16,7 @@ import java.util.List;
 @RestController
 public class AlbumController {
 
-    private final AlbumFacadeService albumService;
+    private final AlbumFacadeService albumFacadeService;
 
     @PostMapping("/api/album")
     public ResponseEntity<Long> createAlbum(
@@ -24,7 +24,7 @@ public class AlbumController {
         @RequestParam MultipartFile thumbnail,
         @RequestParam String name
     ) {
-        var albumId = albumService.initAlbum(loginUser.userId(), name, thumbnail);
+        var albumId = albumFacadeService.initAlbum(loginUser.userId(), name, thumbnail);
         return ResponseEntity.ok(albumId);
     }
 
@@ -34,7 +34,7 @@ public class AlbumController {
         @TokenPayload AuthTokenPayload loginUser,
         @PathVariable Long albumId
     ) {
-        var albumInfo = albumService.readAlbum(loginUser.userId(), remoteIp, albumId);
+        var albumInfo = albumFacadeService.readAlbum(loginUser.userId(), remoteIp, albumId);
         return ResponseEntity.ok(albumInfo);
     }
 
@@ -43,7 +43,7 @@ public class AlbumController {
         @RemoteIp String remoteIp,
         @TokenPayload AuthTokenPayload loginUser
     ) {
-        var albumInfos = albumService.readAlbums(loginUser.userId(), remoteIp);
+        var albumInfos = albumFacadeService.readAlbums(loginUser.userId(), remoteIp);
         return ResponseEntity.ok(albumInfos);
     }
 
@@ -52,7 +52,7 @@ public class AlbumController {
         @TokenPayload AuthTokenPayload loginUser,
         @PathVariable Long albumId
     ) {
-        albumService.delete(loginUser.userId(), albumId);
+        albumFacadeService.delete(loginUser.userId(), albumId);
         return ResponseEntity.ok().build();
     }
 }

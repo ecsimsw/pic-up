@@ -16,30 +16,24 @@ public class AlbumFacadeService {
 
     private static final float ALBUM_THUMBNAIL_SCALE = 0.5f;
 
-    private final UserLock userLock;
+    private final UserLockService userLockService;
     private final AlbumService albumService;
-    private final FileUrlService urlService;
     private final ThumbnailService thumbnailService;
+    private final FileUrlService urlService;
     private final FileResourceService fileResourceService;
 
     public long initAlbum(Long userId, String name, MultipartFile file) {
         var thumbnailFile = thumbnailService.resizeImage(file, ALBUM_THUMBNAIL_SCALE);
         var thumbnail = fileResourceService.upload(THUMBNAIL, thumbnailFile);
-        try {
-            userLock.acquire(userId);
-            return albumService.initAlbum(userId, name, thumbnail);
-        } finally {
-            userLock.release(userId);
-        }
+        return userLockService.<Long>isolate(userId, () -> {
+            return albumService.create(userId, name, thumbnail.getResourceKey());
+        });
     }
 
     public void delete(Long userId, Long albumId) {
-        try {
-            userLock.acquire(userId);
+        userLockService.isolate(userId, () -> {
             albumService.delete(userId, albumId);
-        } finally {
-            userLock.release(userId);
-        }
+        });
     }
 
     public List<AlbumResponse> readAlbums(Long userId, String remoteIp) {

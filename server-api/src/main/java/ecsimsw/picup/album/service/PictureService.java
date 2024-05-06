@@ -1,6 +1,5 @@
 package ecsimsw.picup.album.service;
 
-import ecsimsw.picup.album.dto.PreUploadResponse;
 import ecsimsw.picup.album.domain.*;
 import ecsimsw.picup.album.dto.PictureSearchCursor;
 import ecsimsw.picup.album.exception.AlbumException;
@@ -21,31 +20,24 @@ import static ecsimsw.picup.album.domain.StorageType.THUMBNAIL;
 public class PictureService {
 
     private final StorageUsageService storageUsageService;
-    private final FileResourceService fileService;
+    private final FileResourceService fileResourceService;
     private final AlbumRepository albumRepository;
     private final PictureRepository pictureRepository;
 
     @Transactional
-    public PreUploadResponse preUpload(Long userId, Long albumId, String fileName, Long fileSize) {
-        checkAbleToUpload(userId, albumId, fileSize);
-        return fileService.preUpload(STORAGE, fileName, fileSize);
-    }
-
-    @Transactional
-    public void commitPreUpload(Long userId, Long albumId, ResourceKey resourceKey) {
-        var preUpload = fileService.commitPreUpload(STORAGE, resourceKey);
-        checkAbleToUpload(userId, albumId, preUpload.getFileSize());
+    public long create(Long userId, Long albumId, ResourceKey resourceKey) {
+        var fileResource = fileResourceService.preserve(STORAGE, resourceKey);
         var album = getUserAlbum(userId, albumId);
-        var picture = preUpload.toPicture(album);
+        var picture = fileResource.toPicture(album);
         pictureRepository.save(picture);
         storageUsageService.addUsage(userId, picture.getFileSize());
+        return picture.getId();
     }
 
     @Transactional
-    public void setPictureThumbnail(ResourceKey resourceKey, long fileSize) {
-        fileService.saveResource(THUMBNAIL, resourceKey, fileSize);
-        var picture = pictureRepository.findByResourceKey(resourceKey)
-            .orElseThrow(() -> new AlbumException("Not exists picture"));
+    public void setThumbnail(ResourceKey resourceKey, long fileSize) {
+        fileResourceService.create(THUMBNAIL, resourceKey, fileSize);
+        var picture = findPictureByResource(resourceKey);
         picture.setHasThumbnail(true);
         pictureRepository.save(picture);
     }
@@ -59,24 +51,30 @@ public class PictureService {
         var resourceKeys = pictures.stream()
             .map(Picture::getFileResource)
             .toList();
-        fileService.deleteAllAsync(resourceKeys);
+        fileResourceService.deleteAllAsync(resourceKeys);
     }
 
     @Transactional(readOnly = true)
-    public List<Picture> fetchAfterCursor(Long userId, Long albumId, PictureSearchCursor cursor) {
+    public List<Picture> readAfter(Long userId, Long albumId, PictureSearchCursor cursor) {
         var album = getUserAlbum(userId, albumId);
         return pictureRepository.findAllByAlbumOrderThan(
-            album.getId(),
+            album,
             cursor.createdAt().orElse(LocalDateTime.now()),
             PageRequest.of(0, cursor.limit(), Direction.DESC, Picture_.CREATED_AT)
         );
     }
 
-    private void checkAbleToUpload(Long userId, Long albumId, long fileSize) {
+    @Transactional(readOnly = true)
+    public void checkAbleToUpload(Long userId, Long albumId, long fileSize) {
         validateAlbumOwner(userId, albumId);
         if(!storageUsageService.isAbleToStore(userId, fileSize)) {
             throw new AlbumException("Lack of storage space");
         }
+    }
+
+    private Picture findPictureByResource(ResourceKey resourceKey) {
+        return pictureRepository.findByResourceKey(resourceKey)
+            .orElseThrow(() -> new AlbumException("Not exists picture"));
     }
 
     private Album getUserAlbum(Long userId, Long albumId) {

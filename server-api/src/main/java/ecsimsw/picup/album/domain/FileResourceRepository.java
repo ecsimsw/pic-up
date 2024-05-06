@@ -22,5 +22,5 @@ public interface FileResourceRepository extends JpaRepository<FileResource, Long
     @Modifying
     @Query("UPDATE FileResource resource SET resource.toBeDeleted = true " +
         "WHERE resource.resourceKey IN (:resourceKeys)")
-    void updateAllToBeDeleted(List<ResourceKey> resourceKeys);
+    void setAllToBeDeleted(List<ResourceKey> resourceKeys);
 }

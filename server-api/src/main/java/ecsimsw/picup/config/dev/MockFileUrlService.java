@@ -3,6 +3,7 @@ package ecsimsw.picup.config.dev;
 import ecsimsw.picup.album.domain.ResourceKey;
 import ecsimsw.picup.album.domain.StorageType;
 import ecsimsw.picup.album.service.FileResourceService;
+import ecsimsw.picup.album.service.FileStorageService;
 import ecsimsw.picup.album.service.FileUrlService;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.annotation.Primary;
@@ -19,8 +20,8 @@ import static ecsimsw.picup.config.S3Config.ROOT_PATH_THUMBNAIL;
 @Service
 public class MockFileUrlService extends FileUrlService {
 
-    public MockFileUrlService(FileResourceService fileResourceService) {
-        super(fileResourceService);
+    public MockFileUrlService(FileResourceService fileResourceService, FileStorageService fileStorageService) {
+        super(fileResourceService, fileStorageService);
     }
 
     @Override

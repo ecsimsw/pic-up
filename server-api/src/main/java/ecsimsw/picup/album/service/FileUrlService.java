@@ -1,7 +1,9 @@
 package ecsimsw.picup.album.service;
 
+import ecsimsw.picup.album.domain.FileResource;
 import ecsimsw.picup.album.domain.ResourceKey;
 import ecsimsw.picup.album.domain.StorageType;
+import ecsimsw.picup.album.dto.PreUploadUrlResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -37,16 +39,17 @@ public class FileUrlService {
     private String privateKeyPath;
 
     private final FileResourceService fileResourceService;
+    private final FileStorageService fileStorageService;
 
     @Cacheable(value = SIGNED_URL, key = "{#storageType, #remoteIp, #fileResource.value()}")
     public String fileUrl(StorageType storageType, String remoteIp, ResourceKey fileResource) {
-        var resourcePath = fileResourceService.filePath(storageType, fileResource);
+        var filePath = fileResourceService.filePath(storageType, fileResource);
         try {
-            var sign = cannedSign(remoteIp, resourcePath);
+            var sign = cannedSign(remoteIp, filePath);
             var signedUrl = cloudFrontUtilities.getSignedUrlWithCustomPolicy(sign);
             return signedUrl.url();
         } catch (Exception e) {
-            throw new IllegalArgumentException("Failed to create cloudfront sign url from : " + resourcePath);
+            throw new IllegalArgumentException("Failed to create cloudfront sign url from : " + filePath);
         }
     }
 
@@ -58,5 +61,15 @@ public class FileUrlService {
             .keyPairId(publicKeyId)
             .expirationDate(Instant.now().plus(SIGNED_URL_EXPIRATION_AFTER_DAYS, ChronoUnit.DAYS))
             .build();
+    }
+
+    public PreUploadUrlResponse uploadUrl(StorageType storageType, FileResource resource) {
+        return uploadUrl(storageType, resource.getResourceKey());
+    }
+
+    public PreUploadUrlResponse uploadUrl(StorageType storageType, ResourceKey resourceKey) {
+        var filePath = fileResourceService.filePath(storageType, resourceKey);
+        var preSignedUrl = fileStorageService.generatePreSignedUrl(filePath);
+        return PreUploadUrlResponse.of(preSignedUrl, resourceKey);
     }
 }
