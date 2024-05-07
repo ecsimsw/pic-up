@@ -5,6 +5,7 @@ import ecsimsw.picup.auth.UnauthorizedException;
 import java.time.LocalDateTime;
 import javax.persistence.*;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -42,6 +43,10 @@ public class Album {
         this.name = name;
         this.thumbnail = thumbnail;
         this.createdAt = createdAt;
+    }
+
+    public Album(Long id, Long userId, String name, ResourceKey thumbnail) {
+        this(id, userId, name, thumbnail, LocalDateTime.now());
     }
 
     public Album(Long userId, String name, ResourceKey thumbnail) {

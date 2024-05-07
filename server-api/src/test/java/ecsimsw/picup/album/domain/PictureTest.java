@@ -3,8 +3,7 @@ package ecsimsw.picup.album.domain;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import static ecsimsw.picup.env.AlbumFixture.ALBUM;
-import static ecsimsw.picup.env.AlbumFixture.RESOURCE_KEY;
+import static ecsimsw.picup.env.AlbumFixture.*;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class PictureTest {
@@ -21,7 +20,7 @@ class PictureTest {
     @Test
     void pictureWithoutResourceKey() {
         assertThatThrownBy(
-            () -> new Picture(ALBUM(), null, 1L)
+            () -> new Picture(ALBUM, null, 1L)
         );
     }
 
@@ -29,15 +28,16 @@ class PictureTest {
     @Test
     void pictureWithInvalidFileSize() {
         assertThatThrownBy(
-            () -> new Picture(ALBUM(), RESOURCE_KEY, -1L)
+            () -> new Picture(ALBUM, RESOURCE_KEY, -1L)
         );
     }
 
-    @DisplayName("사진의 소유자가 아니라면 예외를 발생시킨다.")
+    @DisplayName("사진의 소유자가 맞는지 확인한다.")
     @Test
     void checkSameUser() {
         var userId = 1L;
-        var picture = new Picture(ALBUM(userId), RESOURCE_KEY, 1L);
+        var album = new Album(userId, ALBUM_NAME, THUMBNAIL_RESOURCE_KEY);
+        var picture = new Picture(album, RESOURCE_KEY, FILE_SIZE);
         assertThatThrownBy(() -> {
             var wrongUserId = userId + 1;
             picture.checkSameUser(wrongUserId);

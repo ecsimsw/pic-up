@@ -1,5 +1,6 @@
 package ecsimsw.picup.album.domain;
 
+import static ecsimsw.picup.env.MemberFixture.*;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -8,11 +9,16 @@ import org.junit.jupiter.api.Test;
 
 class MemberTest {
 
+    private final String username = USER_NAME;
+    private final String plainPassword = USER_PASSWORD;
+    private final String salt = USER_PASSWORD_SALT;
+
     @DisplayName("빈 문자열의 유저 이름으로 멤버를 생성할 수 없다.")
     @Test
     void invalidUsername() {
+        var invalidUserName = "";
         assertThatThrownBy(
-            () -> new Member("", new Password("password", "salt"))
+            () -> new Member(invalidUserName, new Password(plainPassword, salt))
         );
     }
 
@@ -20,26 +26,34 @@ class MemberTest {
     @Test
     void invalidPassword() {
         assertThatThrownBy(
-            () -> new Member("username", null)
+            () -> new Member(username, null)
         );
     }
 
     @DisplayName("입력받은 password 가 일치하는지 확인한다.")
     @Test
-    void authenticate() {
-        var password = new Password("password", "salt");
-        var member = new Member("username", password);
+    void authenticate1() {
+        var password = new Password("encrypted", salt);
+        var member = new Member(username, password);
         member.authenticate(password);
     }
 
-    @DisplayName("입력받은 password가 일치하지 않으면 예외를 반환한다.")
+    @DisplayName("입력받은 password 가 일치하는지 확인한다.")
     @Test
-    void authenticateInvalidPassword() {
+    void authenticate2() {
+        var password = Password.initFrom(plainPassword);
+        var member = new Member(username, password);
+        member.authenticate(plainPassword);
+    }
+
+    @DisplayName("입력받은 password 가 일치하는지 확인한다.")
+    @Test
+    void authenticate3() {
+        var password = Password.initFrom(plainPassword);
+        var member = new Member(username, password);
+        var invalidPassword = "invalid";
         assertThatThrownBy(
-            () -> {
-                var member = new Member("username", new Password("password", "salt"));
-                member.authenticate(new Password("other", "salt"));
-            }
+            () -> member.authenticate(invalidPassword)
         );
     }
 }

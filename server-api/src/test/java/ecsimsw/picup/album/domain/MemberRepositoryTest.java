@@ -1,7 +1,6 @@
 package ecsimsw.picup.album.domain;
 
-import static ecsimsw.picup.env.MemberFixture.USER_NAME;
-import static ecsimsw.picup.env.MemberFixture.USER_PASSWORD;
+import static ecsimsw.picup.env.MemberFixture.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
@@ -20,26 +19,11 @@ class MemberRepositoryTest {
     @DisplayName("Member 정보를 저장한다.")
     @Test
     void save() {
-        var result = memberRepository.save(new Member(USER_NAME, new Password(USER_PASSWORD, "salt")));
+        var member = new Member(USER_NAME, new Password(USER_PASSWORD, USER_PASSWORD_SALT));
+        var result = memberRepository.save(member);
         assertAll(
             () -> assertThat(result.getId()).isNotNull(),
             () -> assertThat(result.getUsername()).isEqualTo(USER_NAME)
-        );
-    }
-
-    @DisplayName("빈 사용자 이름으로 Member 를 생성할 수 없다.")
-    @Test
-    void saveWithInvalidMember() {
-        assertThatThrownBy(
-            () -> memberRepository.save(new Member("", new Password("password", "salt")))
-        );
-    }
-
-    @DisplayName("빈 패스워드 값으로 Member 를 생성할 수 없다.")
-    @Test
-    void saveWithEmptyPassword() {
-        assertThatThrownBy(
-            () -> memberRepository.save(new Member("username", new Password()))
         );
     }
 }

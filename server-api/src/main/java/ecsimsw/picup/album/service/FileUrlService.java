@@ -65,7 +65,7 @@ public class FileUrlService {
     }
 
     public PreUploadUrlResponse uploadUrl(FileResource resource) {
-        return uploadUrl(STORAGE, resource.getResourceKey());
+        return uploadUrl(STORAGE, resource);
     }
 
     public PreUploadUrlResponse uploadUrl(StorageType storageType, FileResource resource) {

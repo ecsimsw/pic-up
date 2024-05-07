@@ -31,12 +31,17 @@ public class AlbumRepositoryTest {
         );
     }
 
-    @DisplayName("유효하지 않은 Album 정보 저장시 예외를 반환한다.")
+    @DisplayName("유저 정보없이 Album을 생성할 수 없다.")
     @Test
-    public void saveInvalid() {
+    public void saveInvalidUser() {
         assertThatThrownBy(
             () -> albumRepository.save(new Album(null, ALBUM_NAME, RESOURCE_KEY))
         );
+    }
+
+    @DisplayName("썸네일 정보없이 Album을 생성할 수 없다.")
+    @Test
+    public void saveInvalidThumbnail() {
         assertThatThrownBy(
             () -> albumRepository.save(new Album(USER_ID, ALBUM_NAME, null))
         );
@@ -48,7 +53,7 @@ public class AlbumRepositoryTest {
         var album1 = albumRepository.save(new Album(USER_ID, ALBUM_NAME, new ResourceKey("resourceKey1")));
         var album2 = albumRepository.save(new Album(USER_ID, ALBUM_NAME, new ResourceKey("resourceKey2")));
         var album3 = albumRepository.save(new Album(USER_ID, ALBUM_NAME, new ResourceKey("resourceKey3")));
-        var others = albumRepository.save(ALBUM(Long.MAX_VALUE));
+        var others = albumRepository.save(new Album(Long.MAX_VALUE, ALBUM_NAME, new ResourceKey("resourceKey4")));
         var result = albumRepository.findAllByUserIdOrderByCreatedAtDesc(USER_ID);
         assertThat(result).isEqualTo(List.of(album3, album2, album1));
         assertThat(result).doesNotContain(others);

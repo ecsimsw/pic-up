@@ -25,7 +25,7 @@ class PasswordTest {
         );
     }
 
-    @DisplayName("암호화된 Password 와 Salt 가 모두 일치함을 확인한다.")
+    @DisplayName("암호화된 Password 와 Salt  확인한다.")
     @Test
     void isSame() {
         var password1 = new Password("password", "salt");
