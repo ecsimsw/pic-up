@@ -32,7 +32,7 @@ public class PictureFacadeService {
 
     @Transactional
     public long commitPreUpload(long userId, long albumId, ResourceKey resourceKey) {
-        var file = fileResourceService.preserve(STORAGE, resourceKey);
+        var file = fileResourceService.store(STORAGE, resourceKey);
         storageUsageService.addUsage(userId, file.getSize());
         var picture = pictureService.create(userId, albumId, file.getResourceKey(), file.getSize());
         return picture.id();
@@ -40,7 +40,7 @@ public class PictureFacadeService {
 
     @Transactional
     public void setPictureThumbnail(ResourceKey resourceKey, long fileSize) {
-        fileResourceService.create(THUMBNAIL, resourceKey, fileSize);
+        fileResourceService.store(THUMBNAIL, resourceKey, fileSize);
         pictureService.setThumbnail(resourceKey);
     }
 

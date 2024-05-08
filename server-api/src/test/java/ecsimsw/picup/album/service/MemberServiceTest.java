@@ -2,6 +2,7 @@ package ecsimsw.picup.album.service;
 
 import ecsimsw.picup.album.domain.MemberRepository;
 import ecsimsw.picup.album.domain.StorageUsage;
+import ecsimsw.picup.album.dto.MemberResponse;
 import ecsimsw.picup.album.dto.SignInRequest;
 import ecsimsw.picup.album.dto.SignUpRequest;
 import ecsimsw.picup.album.exception.MemberException;
@@ -151,14 +152,17 @@ class MemberServiceTest {
 
         private final String username = USER_NAME;
         private final String password = USER_PASSWORD;
+        private long userId;
 
         @BeforeEach
         void giveMember() {
-            when(storageUsageService.init(anyLong()))
-                .thenAnswer(input -> new StorageUsage((Long) input.getArguments()[0], Long.MAX_VALUE));
-            when(storageUsageService.getUsage(anyLong()))
-                .thenAnswer(input -> new StorageUsage((Long) input.getArguments()[0], Long.MAX_VALUE));
-            memberService.signUp(new SignUpRequest(username, password));
+            when(storageUsageService.init(any()))
+                .thenAnswer(input -> new StorageUsage(input.getArgument(0), Long.MAX_VALUE));
+
+            userId = memberService.signUp(new SignUpRequest(username, password)).id();
+
+            when(storageUsageService.getUsage(userId))
+                .thenAnswer(input -> new StorageUsage(userId, Long.MAX_VALUE));
         }
 
         @DisplayName("사용자 정보를 확인한다.")

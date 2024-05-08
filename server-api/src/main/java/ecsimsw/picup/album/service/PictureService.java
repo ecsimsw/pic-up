@@ -21,7 +21,7 @@ public class PictureService {
     private final PictureRepository pictureRepository;
 
     @Transactional
-    public PictureInfo create(Long userId, Long albumId, ResourceKey fileResource, long fileSize) {
+    public PictureInfo create(Long userId, Long albumId, ResourceKey fileResource, Long fileSize) {
         var album = getUserAlbum(userId, albumId);
         var picture = new Picture(album, fileResource, fileSize);
         pictureRepository.save(picture);

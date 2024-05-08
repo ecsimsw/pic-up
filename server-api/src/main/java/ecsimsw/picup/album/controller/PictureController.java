@@ -3,6 +3,7 @@ package ecsimsw.picup.album.controller;
 import ecsimsw.picup.album.annotation.RemoteIp;
 import ecsimsw.picup.album.annotation.SearchCursor;
 import ecsimsw.picup.album.domain.ResourceKey;
+import ecsimsw.picup.album.domain.StorageType;
 import ecsimsw.picup.album.dto.*;
 import ecsimsw.picup.album.service.*;
 import ecsimsw.picup.auth.LoginUser;
@@ -13,6 +14,8 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.List;
+
+import static ecsimsw.picup.album.domain.StorageType.STORAGE;
 
 @RequiredArgsConstructor
 @RestController
@@ -31,8 +34,8 @@ public class PictureController {
         @RequestParam Long fileSize
     ) {
         pictureFacadeService.checkAbleToUpload(user.id(), albumId, fileSize);
-        var fileResource = fileResourceService.createDummy(fileName, fileSize);
-        var preSignedUrl = fileUrlService.uploadUrl(fileResource);
+        var fileResource = fileResourceService.createToBeDeleted(STORAGE, fileName, fileSize);
+        var preSignedUrl = fileUrlService.uploadUrl(STORAGE, fileResource);
         return ResponseEntity.ok(preSignedUrl);
     }
 

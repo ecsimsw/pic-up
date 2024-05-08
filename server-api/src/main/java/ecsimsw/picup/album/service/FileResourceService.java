@@ -46,30 +46,24 @@ public class FileResourceService {
     }
 
     @Transactional
-    public FileResource createDummy(String fileName, long fileSize) {
-        return createDummy(STORAGE, fileName, fileSize);
-    }
-
-    @Transactional
-    public FileResource createDummy(StorageType type, String fileName, long fileSize) {
+    public FileResource createToBeDeleted(StorageType type, String fileName, long fileSize) {
         var resourceKey = ResourceKey.fromFileName(fileName);
         var beDeleted = FileResource.toBeDeleted(type, resourceKey, fileSize);
         return fileResourceRepository.save(beDeleted);
     }
 
     @Transactional
-    public FileResource preserve(StorageType type, ResourceKey resourceKey) {
-        var resource = fileResourceRepository.findByStorageTypeAndResourceKey(type, resourceKey)
-            .orElseThrow(() -> new StorageException("Not exists resource"));
-        resource.setToBeDeleted(false);
-        fileResourceRepository.save(resource);
-        return resource;
+    public FileResource store(StorageType type, ResourceKey resourceKey, long fileSize) {
+        var fileResource = FileResource.stored(type, resourceKey, fileSize);
+        return fileResourceRepository.save(fileResource);
     }
 
     @Transactional
-    public void create(StorageType type, ResourceKey resourceKey, long fileSize) {
-        var fileResource = FileResource.stored(type, resourceKey, fileSize);
-        fileResourceRepository.save(fileResource);
+    public FileResource store(StorageType type, ResourceKey resourceKey) {
+        var resource = fileResourceRepository.findByStorageTypeAndResourceKey(type, resourceKey)
+            .orElseThrow(() -> new StorageException("Not exists resource"));
+        resource.setToBeDeleted(false);
+        return fileResourceRepository.save(resource);
     }
 
     @Transactional

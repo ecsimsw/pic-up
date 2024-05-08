@@ -2,6 +2,9 @@ package ecsimsw.picup.album.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import ecsimsw.picup.album.domain.FileResource;
+import ecsimsw.picup.album.domain.ResourceKey;
+import ecsimsw.picup.album.domain.StorageType;
 import ecsimsw.picup.album.dto.PictureResponse;
 import ecsimsw.picup.album.dto.PictureSearchCursor;
 import ecsimsw.picup.album.dto.PicturesDeleteRequest;
@@ -25,6 +28,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
+import static ecsimsw.picup.album.domain.StorageType.STORAGE;
 import static ecsimsw.picup.env.AlbumFixture.RESOURCE_KEY;
 import static ecsimsw.picup.env.MemberFixture.USER_NAME;
 import static org.mockito.ArgumentMatchers.any;
@@ -73,16 +77,20 @@ class PictureControllerTest {
     @DisplayName("Picture 를 업로드할 수 있는 Signed url 을 반환한다.")
     @Test
     void getSignedUrl() throws Exception {
-        var uploadFileName = "FILE_NAME";
-        var uploadFileSize = 1L;
+        var fileName = "FILE_NAME";
+        var fileSize = 1L;
+        var fileResource = new FileResource();
         var expectedPreSignedUrl = new PreUploadUrlResponse("preSignedUrl", RESOURCE_KEY.value());
 
-        when(fileUrlService.uploadUrl(any()))
+        when(fileResourceService.createToBeDeleted(STORAGE, fileName, fileSize))
+            .thenReturn(fileResource);
+
+        when(fileUrlService.uploadUrl(STORAGE, fileResource))
             .thenReturn(expectedPreSignedUrl);
 
         mockMvc.perform(multipart("/api/album/" + albumId + "/picture/preUpload")
-                .queryParam("fileName", uploadFileName)
-                .queryParam("fileSize", String.valueOf(uploadFileSize))
+                .queryParam("fileName", fileName)
+                .queryParam("fileSize", String.valueOf(fileSize))
             )
             .andExpect(status().isOk())
             .andExpect(content().string(OBJECT_MAPPER.writeValueAsString(expectedPreSignedUrl)));
