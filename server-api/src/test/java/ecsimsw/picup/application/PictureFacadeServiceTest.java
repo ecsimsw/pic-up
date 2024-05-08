@@ -28,7 +28,6 @@ public class PictureFacadeServiceTest {
     private PictureService pictureService;
     private StorageUsageService storageUsageService;
     private FileResourceService fileResourceService;
-    private FileUrlService fileUrlService;
     private PictureFacadeService pictureFacadeService;
 
     @BeforeEach
@@ -36,7 +35,7 @@ public class PictureFacadeServiceTest {
         pictureService = mock(PictureService.class);
         storageUsageService = mock(StorageUsageService.class);
         fileResourceService = mock(FileResourceService.class);
-        fileUrlService = mock(FileUrlService.class);
+        FileUrlService fileUrlService = mock(FileUrlService.class);
         pictureFacadeService = new PictureFacadeService(
             pictureService,
             storageUsageService,

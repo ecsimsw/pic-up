@@ -50,9 +50,11 @@ class AlbumFacadeServiceTest {
         // given
         var albumName = ALBUM_NAME;
         var thumbnailFile = FileResource.stored(THUMBNAIL, RESOURCE_KEY, FILE_SIZE);
+        when(albumService.create(userId, albumName, thumbnailFile.getResourceKey()))
+            .thenReturn(new AlbumInfo(ALBUM_ID, albumName, thumbnailFile.getResourceKey(), LocalDateTime.now()));
 
         // when
-        albumFacadeService.init(userId, albumName, thumbnailFile);
+        albumFacadeService.init(userId, albumName, thumbnailFile.getResourceKey());
 
         // then
         verify(albumService).create(userId, albumName, thumbnailFile.getResourceKey());
@@ -71,11 +73,9 @@ class AlbumFacadeServiceTest {
             includedPictures = List.of(PICTURE);
 
             when(albumService.deleteById(userId, album.getId()))
-                .thenReturn(album);
+                .thenReturn(AlbumInfo.of(album));
             when(pictureService.deleteAllInAlbum(userId, album.getId()))
                 .thenReturn(includedPictures);
-            when(albumService.deleteById(userId, album.getId()))
-                .thenReturn(album);
         }
 
         @DisplayName("앨범을 제거시 앨범에 포함된 Picture 정보를 모두 삭제한다.")

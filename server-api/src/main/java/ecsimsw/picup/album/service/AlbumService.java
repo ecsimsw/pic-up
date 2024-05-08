@@ -19,16 +19,17 @@ public class AlbumService {
     private final AlbumRepository albumRepository;
 
     @Transactional
-    public long create(Long userId, String name, ResourceKey thumbnail) {
+    public AlbumInfo create(Long userId, String name, ResourceKey thumbnail) {
         var album = new Album(userId, name, thumbnail);
-        return albumRepository.save(album).getId();
+        albumRepository.save(album);
+        return AlbumInfo.of(album);
     }
 
     @Transactional
-    public Album deleteById(Long userId, Long albumId) {
+    public AlbumInfo deleteById(Long userId, Long albumId) {
         var album = getUserAlbum(userId, albumId);
         albumRepository.delete(album);
-        return album;
+        return AlbumInfo.of(album);
     }
 
     @Transactional(readOnly = true)

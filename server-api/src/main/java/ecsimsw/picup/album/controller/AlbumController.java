@@ -31,7 +31,7 @@ public class AlbumController {
         var thumbnailFile = fileService.uploadThumbnail(thumbnail, ALBUM_THUMBNAIL_RESIZE_SCALE);
         var albumId = userLockService.<Long>isolate(
             user.id(),
-            () -> albumService.init(user.id(), name, thumbnailFile)
+            () -> albumService.init(user.id(), name, thumbnailFile.getResourceKey())
         );
         return ResponseEntity.ok(albumId);
     }

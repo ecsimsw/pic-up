@@ -1,5 +1,8 @@
 package ecsimsw.picup.integration;
 
+import static ecsimsw.picup.utils.MemberFixture.USER_NAME;
+import static ecsimsw.picup.utils.MemberFixture.USER_PASSWORD;
+
 import ecsimsw.picup.album.domain.AlbumRepository;
 import ecsimsw.picup.album.domain.FileResourceRepository;
 import ecsimsw.picup.album.domain.MemberRepository;
@@ -9,14 +12,8 @@ import ecsimsw.picup.album.service.AlbumFacadeService;
 import ecsimsw.picup.album.service.MemberService;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-
-import static ecsimsw.picup.utils.AlbumFixture.ALBUM_NAME;
-import static ecsimsw.picup.utils.AlbumFixture.THUMBNAIL_FILE;
-import static ecsimsw.picup.utils.MemberFixture.USER_NAME;
-import static ecsimsw.picup.utils.MemberFixture.USER_PASSWORD;
 
 @SpringBootTest(classes = {
     RedisConfig.class,
@@ -24,16 +21,11 @@ import static ecsimsw.picup.utils.MemberFixture.USER_PASSWORD;
 })
 public class IntegrationTestContext {
 
-    protected long savedUserId;
-    protected long savedAlbumId;
+    protected static long savedUserId;
 
-    @BeforeEach
-    void init(
-        @Autowired MemberService memberService,
-        @Autowired AlbumFacadeService albumFacadeService
-    ) {
+    @BeforeAll
+    static void initMember(@Autowired MemberService memberService) {
         savedUserId = memberService.signUp(new SignUpRequest(USER_NAME, USER_PASSWORD)).id();
-        savedAlbumId = albumFacadeService.init(savedUserId, ALBUM_NAME, THUMBNAIL_FILE);
     }
 
     @AfterEach

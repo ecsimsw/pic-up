@@ -1,16 +1,15 @@
 package ecsimsw.picup.album.service;
 
-import ecsimsw.picup.album.domain.FileResource;
+import static ecsimsw.picup.album.domain.StorageType.THUMBNAIL;
+
 import ecsimsw.picup.album.domain.Picture;
+import ecsimsw.picup.album.domain.ResourceKey;
 import ecsimsw.picup.album.dto.AlbumInfo;
 import ecsimsw.picup.album.dto.AlbumResponse;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
-
-import static ecsimsw.picup.album.domain.StorageType.THUMBNAIL;
 
 @RequiredArgsConstructor
 @Service
@@ -23,21 +22,22 @@ public class AlbumFacadeService {
     private final FileUrlService fileUrlService;
 
     @Transactional
-    public long init(Long userId, String name, FileResource thumbnail) {
-        return albumService.create(userId, name, thumbnail.getResourceKey());
+    public Long init(Long userId, String name, ResourceKey thumbnail) {
+        return albumService.create(userId, name, thumbnail).id();
     }
 
     @Transactional
     public void delete(Long userId, Long albumId) {
         var deletedPictures = pictureService.deleteAllInAlbum(userId, albumId);
-        var pictureFiles = deletedPictures.stream()
-            .map(Picture::getFileResource)
-            .toList();
-        resourceService.deleteAllAsync(pictureFiles);
-        storageUsageService.subtractAll(userId, deletedPictures);
-
+        if (!deletedPictures.isEmpty()) {
+            var resourceKeys = deletedPictures.stream()
+                .map(Picture::getFileResource)
+                .toList();
+            resourceService.deleteAllAsync(resourceKeys);
+            storageUsageService.subtractAll(userId, deletedPictures);
+        }
         var deletedAlbum = albumService.deleteById(userId, albumId);
-        resourceService.deleteAsync(deletedAlbum.getThumbnail());
+        resourceService.deleteAsync(deletedAlbum.thumbnail());
     }
 
     public AlbumResponse read(Long userId, String remoteIp, Long albumId) {
