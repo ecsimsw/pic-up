@@ -1,10 +1,9 @@
-package ecsimsw.picup.env;
+package ecsimsw.picup.utils;
 
-import static ecsimsw.picup.env.MemberFixture.USER_ID;
+import static ecsimsw.picup.album.domain.StorageType.THUMBNAIL;
+import static ecsimsw.picup.utils.MemberFixture.USER_ID;
 
-import ecsimsw.picup.album.domain.Album;
-import ecsimsw.picup.album.domain.Picture;
-import ecsimsw.picup.album.domain.ResourceKey;
+import ecsimsw.picup.album.domain.*;
 
 import java.util.List;
 
@@ -12,10 +11,13 @@ public class AlbumFixture {
 
     public static final Long ALBUM_ID = 1L;
     public static final String ALBUM_NAME = "album name";
+
     public static final ResourceKey RESOURCE_KEY = new ResourceKey("this_is_resource_key.jpg");
     public static final ResourceKey THUMBNAIL_RESOURCE_KEY = new ResourceKey("this_is_thumbnail_resource_key.jpg");
 
     public static final long FILE_SIZE = 256L;
+
+    public static final FileResource THUMBNAIL_FILE = new FileResource(THUMBNAIL, RESOURCE_KEY, FILE_SIZE, false);
 
     public static Album ALBUM = new Album(USER_ID, ALBUM_NAME, RESOURCE_KEY);
 

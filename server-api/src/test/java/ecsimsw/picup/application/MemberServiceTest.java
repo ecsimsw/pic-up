@@ -1,11 +1,12 @@
-package ecsimsw.picup.album.service;
+package ecsimsw.picup.application;
 
 import ecsimsw.picup.album.domain.MemberRepository;
 import ecsimsw.picup.album.domain.StorageUsage;
-import ecsimsw.picup.album.dto.MemberResponse;
 import ecsimsw.picup.album.dto.SignInRequest;
 import ecsimsw.picup.album.dto.SignUpRequest;
 import ecsimsw.picup.album.exception.MemberException;
+import ecsimsw.picup.album.service.MemberService;
+import ecsimsw.picup.album.service.StorageUsageService;
 import ecsimsw.picup.auth.UnauthorizedException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -15,7 +16,7 @@ import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
-import static ecsimsw.picup.env.MemberFixture.*;
+import static ecsimsw.picup.utils.MemberFixture.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;

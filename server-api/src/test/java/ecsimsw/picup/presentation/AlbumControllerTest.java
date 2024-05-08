@@ -1,11 +1,12 @@
-package ecsimsw.picup.album.controller;
+package ecsimsw.picup.presentation;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import ecsimsw.picup.album.controller.AlbumController;
+import ecsimsw.picup.album.controller.GlobalControllerAdvice;
+import ecsimsw.picup.album.controller.RemoteIpArgumentResolver;
 import ecsimsw.picup.album.domain.FileResource;
 import ecsimsw.picup.album.domain.ResourceKey;
-import ecsimsw.picup.album.domain.StorageType;
-import ecsimsw.picup.album.dto.AlbumInfo;
 import ecsimsw.picup.album.dto.AlbumResponse;
 import ecsimsw.picup.album.service.AlbumFacadeService;
 import ecsimsw.picup.album.service.FileResourceService;
@@ -25,8 +26,9 @@ import java.util.List;
 import java.util.function.Supplier;
 
 import static ecsimsw.picup.album.domain.StorageType.STORAGE;
-import static ecsimsw.picup.env.AlbumFixture.*;
-import static ecsimsw.picup.env.MemberFixture.USER_NAME;
+import static ecsimsw.picup.utils.AlbumFixture.*;
+import static ecsimsw.picup.utils.MemberFixture.USER_ID;
+import static ecsimsw.picup.utils.MemberFixture.USER_NAME;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.mock;
@@ -59,7 +61,7 @@ class AlbumControllerTest {
         .setControllerAdvice(new GlobalControllerAdvice())
         .build();
 
-    private final Long loginUserId = 1L;
+    private final Long loginUserId = USER_ID;
     private final String remoteIp = "192.168.0.1";
     private final FileResource uploadFile = FileResource.stored(STORAGE, RESOURCE_KEY, FILE_SIZE);
 

@@ -1,10 +1,9 @@
-package ecsimsw.picup.album.controller;
+package ecsimsw.picup.presentation;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import ecsimsw.picup.album.controller.*;
 import ecsimsw.picup.album.domain.FileResource;
-import ecsimsw.picup.album.domain.ResourceKey;
-import ecsimsw.picup.album.domain.StorageType;
 import ecsimsw.picup.album.dto.PictureResponse;
 import ecsimsw.picup.album.dto.PictureSearchCursor;
 import ecsimsw.picup.album.dto.PicturesDeleteRequest;
@@ -29,8 +28,8 @@ import java.util.List;
 import java.util.Optional;
 
 import static ecsimsw.picup.album.domain.StorageType.STORAGE;
-import static ecsimsw.picup.env.AlbumFixture.RESOURCE_KEY;
-import static ecsimsw.picup.env.MemberFixture.USER_NAME;
+import static ecsimsw.picup.utils.AlbumFixture.RESOURCE_KEY;
+import static ecsimsw.picup.utils.MemberFixture.USER_NAME;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;

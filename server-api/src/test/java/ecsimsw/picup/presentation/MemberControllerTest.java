@@ -1,4 +1,4 @@
-package ecsimsw.picup.album.controller;
+package ecsimsw.picup.presentation;
 
 import static ecsimsw.picup.config.AuthConfig.ACCESS_TOKEN_COOKIE_NAME;
 import static ecsimsw.picup.config.AuthConfig.REFRESH_TOKEN_COOKIE_NAME;
@@ -12,6 +12,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import ecsimsw.picup.album.controller.GlobalControllerAdvice;
+import ecsimsw.picup.album.controller.MemberController;
 import ecsimsw.picup.album.dto.MemberResponse;
 import ecsimsw.picup.album.dto.SignInRequest;
 import ecsimsw.picup.album.dto.SignUpRequest;

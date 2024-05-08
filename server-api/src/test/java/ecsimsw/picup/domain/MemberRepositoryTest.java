@@ -1,14 +1,16 @@
-package ecsimsw.picup.album.domain;
+package ecsimsw.picup.domain;
 
-import static ecsimsw.picup.env.MemberFixture.*;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.assertAll;
-
+import ecsimsw.picup.album.domain.Member;
+import ecsimsw.picup.album.domain.MemberRepository;
+import ecsimsw.picup.album.domain.Password;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+
+import static ecsimsw.picup.utils.MemberFixture.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 @DataJpaTest
 class MemberRepositoryTest {

@@ -1,4 +1,4 @@
-package ecsimsw.picup.env;
+package ecsimsw.picup.utils;
 
 import ecsimsw.picup.album.dto.SignUpRequest;
 

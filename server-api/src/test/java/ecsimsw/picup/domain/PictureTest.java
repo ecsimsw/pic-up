@@ -1,9 +1,11 @@
-package ecsimsw.picup.album.domain;
+package ecsimsw.picup.domain;
 
+import ecsimsw.picup.album.domain.Album;
+import ecsimsw.picup.album.domain.Picture;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import static ecsimsw.picup.env.AlbumFixture.*;
+import static ecsimsw.picup.utils.AlbumFixture.*;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class PictureTest {

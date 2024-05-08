@@ -1,9 +1,10 @@
-package ecsimsw.picup.album.service;
+package ecsimsw.picup.application;
 
 import ecsimsw.picup.album.domain.Album;
 import ecsimsw.picup.album.domain.AlbumRepository;
 import ecsimsw.picup.album.domain.ResourceKey;
 import ecsimsw.picup.album.dto.AlbumInfo;
+import ecsimsw.picup.album.service.AlbumService;
 import ecsimsw.picup.auth.UnauthorizedException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -14,8 +15,8 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
 import java.util.List;
 
-import static ecsimsw.picup.env.AlbumFixture.*;
-import static ecsimsw.picup.env.MemberFixture.USER_ID;
+import static ecsimsw.picup.utils.AlbumFixture.*;
+import static ecsimsw.picup.utils.MemberFixture.USER_ID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;

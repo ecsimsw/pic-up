@@ -1,9 +1,10 @@
-package ecsimsw.picup.album.domain;
+package ecsimsw.picup.domain;
 
-import static ecsimsw.picup.env.MemberFixture.*;
+import static ecsimsw.picup.utils.MemberFixture.*;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.*;
 
+import ecsimsw.picup.album.domain.Member;
+import ecsimsw.picup.album.domain.Password;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 

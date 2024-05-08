@@ -1,10 +1,11 @@
-package ecsimsw.picup.album.service;
+package ecsimsw.picup.application;
 
 import ecsimsw.picup.album.domain.FileResource;
 import ecsimsw.picup.album.domain.Picture;
 import ecsimsw.picup.album.domain.ResourceKey;
 import ecsimsw.picup.album.dto.PictureInfo;
 import ecsimsw.picup.album.exception.AlbumException;
+import ecsimsw.picup.album.service.*;
 import ecsimsw.picup.auth.UnauthorizedException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -16,8 +17,8 @@ import java.util.List;
 
 import static ecsimsw.picup.album.domain.StorageType.STORAGE;
 import static ecsimsw.picup.album.domain.StorageType.THUMBNAIL;
-import static ecsimsw.picup.env.AlbumFixture.*;
-import static ecsimsw.picup.env.MemberFixture.USER_ID;
+import static ecsimsw.picup.utils.AlbumFixture.*;
+import static ecsimsw.picup.utils.MemberFixture.USER_ID;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.*;
 

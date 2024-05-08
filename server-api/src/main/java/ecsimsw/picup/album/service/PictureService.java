@@ -75,6 +75,6 @@ public class PictureService {
 
     private Album getUserAlbum(Long userId, Long albumId) {
         return albumRepository.findByIdAndUserId(albumId, userId)
-            .orElseThrow(() -> new UnauthorizedException("Invalid album"));
+            .orElseThrow(() -> new AlbumException("Invalid album"));
     }
 }

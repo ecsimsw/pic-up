@@ -1,5 +1,6 @@
-package ecsimsw.picup.album.domain;
+package ecsimsw.picup.infrastructure;
 
+import ecsimsw.picup.album.domain.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -11,8 +12,8 @@ import org.springframework.data.domain.Sort.Direction;
 
 import java.util.List;
 
-import static ecsimsw.picup.env.AlbumFixture.*;
-import static ecsimsw.picup.env.MemberFixture.USER_ID;
+import static ecsimsw.picup.utils.AlbumFixture.*;
+import static ecsimsw.picup.utils.MemberFixture.USER_ID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
