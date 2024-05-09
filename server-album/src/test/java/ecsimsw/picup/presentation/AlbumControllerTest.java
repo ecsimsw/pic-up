@@ -79,7 +79,7 @@ class AlbumControllerTest {
     void createAlbum() throws Exception {
         var expectedAlbumInfo = 1L;
 
-        when(fileResourceService.uploadThumbnail(any(MultipartFile.class), any(Long.class)))
+        when(fileResourceService.uploadThumbnail(any(MultipartFile.class), any(Float.class)))
             .thenAnswer(input -> uploadFile);
 
         when(albumFacadeService.init(any(), any(), any()))

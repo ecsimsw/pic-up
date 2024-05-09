@@ -16,14 +16,11 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 @DataJpaTest
 public class StorageUsageServiceTest {
 
-    @Autowired
-    private StorageUsageRepository storageUsageRepository;
-
     private StorageUsageService storageUsageService;
     private final Long userId = 1L;
 
     @BeforeEach
-    public void init() {
+    public void init(@Autowired StorageUsageRepository storageUsageRepository) {
         storageUsageService = new StorageUsageService(storageUsageRepository);
         storageUsageRepository.save(new StorageUsage(userId, Long.MAX_VALUE));
     }

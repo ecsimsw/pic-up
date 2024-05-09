@@ -26,16 +26,13 @@ import static org.mockito.Mockito.*;
 @DataJpaTest
 class MemberServiceTest {
 
-    @Autowired
-    private MemberRepository memberRepository;
-
     @Mock
     private StorageUsageService storageUsageService;
 
     private MemberService memberService;
 
     @BeforeEach
-    void init() {
+    void init(@Autowired MemberRepository memberRepository) {
         memberService = new MemberService(memberRepository, storageUsageService);
     }
 
@@ -73,13 +70,12 @@ class MemberServiceTest {
             var memberInfo = memberService.signUp(SIGN_UP_REQUEST);
 
             // then
-            verify(storageUsageService, atLeastOnce())
-                .init(memberInfo.id());
+            verify(storageUsageService, atLeastOnce()).init(memberInfo.id());
         }
 
         @DisplayName("사용자의 비밀번호는 암호화되어 저장된다.")
         @Test
-        void checkPasswordEncrypted() {
+        void checkPasswordEncrypted(@Autowired MemberRepository memberRepository) {
             // given
             var memberInfo = memberService.signUp(SIGN_UP_REQUEST);
 
@@ -96,7 +92,7 @@ class MemberServiceTest {
             // given
             memberService.signUp(SIGN_UP_REQUEST);
 
-            // then
+            // when, then
             assertThatThrownBy(
                 () -> memberService.signUp(SIGN_UP_REQUEST)
             ).isInstanceOf(MemberException.class);

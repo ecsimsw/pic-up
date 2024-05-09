@@ -20,12 +20,15 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 @DataJpaTest
 public class AlbumRepositoryTest {
 
-    @Autowired
-    private AlbumRepository albumRepository;
+    private final AlbumRepository albumRepository;
+
+    public AlbumRepositoryTest(@Autowired AlbumRepository albumRepository) {
+        this.albumRepository = albumRepository;
+    }
 
     @DisplayName("Album 정보를 저장한다.")
     @Test
-    public void save() {
+    void save() {
         var album = albumRepository.save(new Album(USER_ID, ALBUM_NAME, RESOURCE_KEY));
         assertAll(
             () -> assertThat(album.getId()).isNotNull(),
@@ -37,7 +40,7 @@ public class AlbumRepositoryTest {
 
     @DisplayName("유저 정보없이 Album을 생성할 수 없다.")
     @Test
-    public void saveInvalidUser() {
+    void saveInvalidUser() {
         assertThatThrownBy(
             () -> albumRepository.save(new Album(null, ALBUM_NAME, RESOURCE_KEY))
         );
@@ -45,7 +48,7 @@ public class AlbumRepositoryTest {
 
     @DisplayName("썸네일 정보없이 Album을 생성할 수 없다.")
     @Test
-    public void saveInvalidThumbnail() {
+    void saveInvalidThumbnail() {
         assertThatThrownBy(
             () -> albumRepository.save(new Album(USER_ID, ALBUM_NAME, null))
         );
@@ -53,7 +56,7 @@ public class AlbumRepositoryTest {
 
     @DisplayName("유저의 앨범을 최신순으로 조회한다.")
     @Test
-    public void findAllInUser() {
+    void findAllInUser() {
         var album1 = albumRepository.save(new Album(USER_ID, ALBUM_NAME, new ResourceKey("resourceKey1")));
         var album2 = albumRepository.save(new Album(USER_ID, ALBUM_NAME, new ResourceKey("resourceKey2")));
         var album3 = albumRepository.save(new Album(USER_ID, ALBUM_NAME, new ResourceKey("resourceKey3")));

@@ -22,14 +22,14 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 class PictureServiceTest {
 
     private final long savedUserId = USER_ID;
-    @Autowired
-    private AlbumRepository albumRepository;
-    @Autowired
-    private PictureRepository pictureRepository;
+
     private PictureService pictureService;
 
     @BeforeEach
-    void init() {
+    void init(
+        @Autowired AlbumRepository albumRepository,
+        @Autowired PictureRepository pictureRepository
+    ) {
         pictureService = new PictureService(albumRepository, pictureRepository);
     }
 
@@ -41,13 +41,13 @@ class PictureServiceTest {
         private Album savedAlbum;
 
         @BeforeEach
-        void giveAlbum() {
+        void giveAlbum(@Autowired AlbumRepository albumRepository) {
             savedAlbum = albumRepository.save(new Album(savedUserId, ALBUM_NAME, RESOURCE_KEY));
         }
 
         @DisplayName("앨범에 picture 를 생성한다.")
         @Test
-        void create() {
+        void create(@Autowired PictureRepository pictureRepository) {
             // given
             var fileResource = RESOURCE_KEY;
             var fileSize = FILE_SIZE;
@@ -67,7 +67,7 @@ class PictureServiceTest {
 
         @DisplayName("다른 사용자의 Album 에 Picture 를 생성할 수 없다.")
         @Test
-        void createInOthersAlbum() {
+        void createInOthersAlbum(@Autowired AlbumRepository albumRepository) {
             // given
             var fileSize = FILE_SIZE;
             var othersAlbum = albumRepository.save(new Album(savedUserId + 1, ALBUM_NAME, RESOURCE_KEY));

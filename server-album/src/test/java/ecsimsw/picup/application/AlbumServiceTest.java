@@ -24,13 +24,10 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 @DataJpaTest
 class AlbumServiceTest {
 
-    @Autowired
-    private AlbumRepository albumRepository;
-
     private AlbumService albumService;
 
     @BeforeEach
-    public void init() {
+    public void init(@Autowired AlbumRepository albumRepository) {
         albumService = new AlbumService(albumRepository);
     }
 
@@ -42,10 +39,14 @@ class AlbumServiceTest {
         @Test
         void create() {
             // when
-            var albumId = albumService.create(USER_ID, ALBUM_NAME, THUMBNAIL_RESOURCE_KEY);
+            var albumInfo = albumService.create(USER_ID, ALBUM_NAME, THUMBNAIL_RESOURCE_KEY);
 
             // then
-            assertThat(albumId).isGreaterThan(0);
+            assertAll(
+                () -> assertThat(albumInfo.id()).isGreaterThan(0),
+                () -> assertThat(albumInfo.name()).isEqualTo(ALBUM_NAME),
+                () -> assertThat(albumInfo.thumbnail()).isEqualTo(THUMBNAIL_RESOURCE_KEY)
+            );
         }
     }
 
@@ -57,7 +58,7 @@ class AlbumServiceTest {
         private Long ownerUserId;
 
         @BeforeEach
-        public void giveAlbum() {
+        public void giveAlbum(@Autowired AlbumRepository albumRepository) {
             savedAlbum = albumRepository.save(ALBUM);
             ownerUserId = savedAlbum.getUserId();
         }
@@ -65,9 +66,6 @@ class AlbumServiceTest {
         @DisplayName("앨범 정보를 제거한다.")
         @Test
         void delete() {
-            // given
-            var savedAlbum = albumRepository.save(ALBUM);
-
             // when
             albumService.deleteById(ownerUserId, savedAlbum.getId());
 
@@ -95,7 +93,7 @@ class AlbumServiceTest {
         private List<Album> savedAlbums;
 
         @BeforeEach
-        public void giveAlbum() {
+        public void giveAlbum(@Autowired AlbumRepository albumRepository) {
             var album1 = albumRepository.save(new Album(ownerUserId, ALBUM_NAME, new ResourceKey("resourceKey1")));
             var album2 = albumRepository.save(new Album(ownerUserId, ALBUM_NAME, new ResourceKey("resourceKey2")));
             var album3 = albumRepository.save(new Album(ownerUserId, ALBUM_NAME, new ResourceKey("resourceKey3")));
