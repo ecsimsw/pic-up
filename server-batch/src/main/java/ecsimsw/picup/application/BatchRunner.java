@@ -1,4 +1,4 @@
-package ecsimsw.picup.integration;
+package ecsimsw.picup.application;
 
 import ecsimsw.picup.storage.service.FileResourceService;
 import lombok.RequiredArgsConstructor;

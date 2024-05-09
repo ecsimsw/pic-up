@@ -1,6 +1,6 @@
 package ecsimsw.picup.integration;
 
-import static ecsimsw.picup.integration.FileDeletionService.FILE_DELETION_RETRY_COUNTS;
+import static ecsimsw.picup.application.FileDeletionService.FILE_DELETION_RETRY_COUNTS;
 import static ecsimsw.picup.storage.domain.StorageType.STORAGE;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -9,6 +9,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import ecsimsw.picup.application.FileDeletionService;
 import ecsimsw.picup.domain.FileDeletionFailedLogRepository;
 import ecsimsw.picup.storage.domain.FileResource;
 import ecsimsw.picup.storage.domain.FileResourceRepository;
