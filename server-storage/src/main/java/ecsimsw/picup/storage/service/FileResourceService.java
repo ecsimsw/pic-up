@@ -1,12 +1,14 @@
 package ecsimsw.picup.storage.service;
 
 import ecsimsw.picup.storage.config.S3Config;
-import ecsimsw.picup.storage.domain.*;
+import ecsimsw.picup.storage.domain.FileResource;
+import ecsimsw.picup.storage.domain.FileResourceRepository;
+import ecsimsw.picup.storage.domain.ResourceKey;
+import ecsimsw.picup.storage.domain.StorageType;
 import ecsimsw.picup.storage.exception.StorageException;
 import ecsimsw.picup.storage.utils.FileUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -21,12 +23,9 @@ import static ecsimsw.picup.storage.domain.StorageType.THUMBNAIL;
 @Service
 public class FileResourceService {
 
-    private final static int FILE_DELETION_SCHED_DELAY = 10_000;
     private static final int WAIT_TIME_TO_BE_DELETED = 10;
-    private static final int FILE_DELETION_RETRY_COUNTS = 3;
 
     private final FileResourceRepository fileResourceRepository;
-    private final FileDeletionFailedLogRepository fileDeletionFailedLogRepository;
     private final FileStorageService fileStorageService;
     private final ThumbnailService thumbnailService;
 
@@ -75,38 +74,13 @@ public class FileResourceService {
         fileResourceRepository.setAllToBeDeleted(resourceKeys);
     }
 
-    @Scheduled(fixedDelay = FILE_DELETION_SCHED_DELAY)
-    @Transactional
-    public void deleteAllDummyFiles() {
+    @Transactional(readOnly = true)
+    public List<FileResource> getDummyFiles() {
         var expiration = LocalDateTime.now().minusSeconds(WAIT_TIME_TO_BE_DELETED);
-        var toBeDeleted = fileResourceRepository.findAllToBeDeletedCreatedBefore(expiration);
-        for (var resource : toBeDeleted) {
-            try {
-                fileStorageService.delete(filePath(resource));
-                fileResourceRepository.delete(resource);
-            } catch (Exception e) {
-                resource.countDeleteFailed();
-                fileResourceRepository.save(resource);
-                if (resource.getDeleteFailedCount() > FILE_DELETION_RETRY_COUNTS) {
-                    fileDeletionRecover(resource);
-                }
-            }
-        }
+        return fileResourceRepository.findAllToBeDeletedCreatedBefore(expiration);
     }
 
-    private void fileDeletionRecover(FileResource resource) {
-        var filePath = filePath(resource);
-        if (!fileStorageService.hasContent(filePath)) {
-            fileResourceRepository.delete(resource);
-            return;
-        }
-        var failedLog = FileDeletionFailedLog.from(resource);
-        fileDeletionFailedLogRepository.save(failedLog);
-        fileResourceRepository.delete(resource);
-        log.error("Failed to delete file resource : " + filePath);
-    }
-
-    private String filePath(FileResource resource) {
+    public String filePath(FileResource resource) {
         return filePath(resource.getStorageType(), resource.getResourceKey());
     }
 

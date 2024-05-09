@@ -33,9 +33,6 @@ public class FileResource {
     private Boolean toBeDeleted;
 
     @Column(nullable = false)
-    private int deleteFailedCount;
-
-    @Column(nullable = false)
     private LocalDateTime createdAt;
 
     public static FileResource toBeDeleted(StorageType storageType, ResourceKey resourceKey, Long fileSize) {
@@ -47,14 +44,10 @@ public class FileResource {
     }
 
     public FileResource(StorageType storageType, ResourceKey resourceKey, Long size, Boolean toBeDeleted) {
-        this(null, storageType, resourceKey, size, toBeDeleted, 0, LocalDateTime.now());
+        this(null, storageType, resourceKey, size, toBeDeleted, LocalDateTime.now());
     }
 
     public void setToBeDeleted(boolean toBeDeleted) {
         this.toBeDeleted = toBeDeleted;
-    }
-
-    public void countDeleteFailed() {
-        this.deleteFailedCount++;
     }
 }

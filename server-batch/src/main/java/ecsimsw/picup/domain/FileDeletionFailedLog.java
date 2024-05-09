@@ -1,5 +1,8 @@
-package ecsimsw.picup.storage.domain;
+package ecsimsw.picup.domain;
 
+import ecsimsw.picup.storage.domain.FileResource;
+import ecsimsw.picup.storage.domain.ResourceKey;
+import ecsimsw.picup.storage.domain.StorageType;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
