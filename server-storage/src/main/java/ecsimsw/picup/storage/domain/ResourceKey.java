@@ -1,15 +1,12 @@
-package ecsimsw.picup.album.domain;
+package ecsimsw.picup.storage.domain;
 
-import ecsimsw.picup.album.exception.AlbumException;
+import ecsimsw.picup.storage.exception.StorageException;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
-import org.apache.logging.log4j.core.appender.rolling.FileExtension;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.persistence.Column;
 import javax.persistence.Convert;
-import javax.persistence.Converter;
 import javax.persistence.Embeddable;
 import java.util.UUID;
 
@@ -18,20 +15,20 @@ import java.util.UUID;
 @Embeddable
 public class ResourceKey {
 
-    @Convert(converter = AesStringConverter.class)
+//    @Convert(converter = AesStringConverter.class)
     @Column(nullable = false)
     private String resourceKey;
 
     public ResourceKey(String resourceKey) {
         if (resourceKey.isBlank()) {
-            throw new AlbumException("Invalid resource key");
+            throw new StorageException("Invalid resource key");
         }
         this.resourceKey = resourceKey;
     }
 
     public static ResourceKey fromFileName(String fileName) {
         if(fileName == null || !fileName.contains(".")) {
-            throw new AlbumException("Invalid file name");
+            throw new StorageException("Invalid file name");
         }
         int indexOfExtension = fileName.lastIndexOf(".");
         var extension = fileName.substring(indexOfExtension + 1);
@@ -47,10 +44,10 @@ public class ResourceKey {
         return new ResourceKey(UUID.randomUUID() + "." + extension);
     }
 
-    public PictureFileExtension extension() {
+    public FileResourceExtension extension() {
         int indexOfExtension = resourceKey.lastIndexOf(".");
         String extension = resourceKey.substring(indexOfExtension + 1);
-        return PictureFileExtension.of(extension);
+        return FileResourceExtension.of(extension);
     }
 
     public String value() {

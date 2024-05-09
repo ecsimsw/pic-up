@@ -1,6 +1,6 @@
-package ecsimsw.picup.album.utils;
+package ecsimsw.picup.storage.utils;
 
-import ecsimsw.picup.album.exception.StorageException;
+import ecsimsw.picup.storage.exception.StorageException;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;

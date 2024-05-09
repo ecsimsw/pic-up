@@ -1,4 +1,4 @@
-package ecsimsw.picup.config;
+package ecsimsw.picup.storage.config;
 
 import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
@@ -6,15 +6,15 @@ import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.regions.Regions;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
-import ecsimsw.picup.album.domain.StorageType;
+import ecsimsw.picup.storage.domain.StorageType;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import java.util.Map;
 
-import static ecsimsw.picup.album.domain.StorageType.STORAGE;
-import static ecsimsw.picup.album.domain.StorageType.THUMBNAIL;
+import static ecsimsw.picup.storage.domain.StorageType.STORAGE;
+import static ecsimsw.picup.storage.domain.StorageType.THUMBNAIL;
 
 @Configuration
 public class S3Config {

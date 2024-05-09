@@ -3,7 +3,7 @@ package ecsimsw.picup.album.service;
 import ecsimsw.picup.album.domain.*;
 import ecsimsw.picup.album.dto.PictureInfo;
 import ecsimsw.picup.album.exception.AlbumException;
-import ecsimsw.picup.auth.UnauthorizedException;
+import ecsimsw.picup.storage.domain.ResourceKey;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort.Direction;

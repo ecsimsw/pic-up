@@ -1,7 +1,6 @@
 package ecsimsw.picup.album.controller;
 
-import ecsimsw.picup.album.annotation.RemoteIp;
-import ecsimsw.picup.album.domain.ResourceKey;
+import ecsimsw.picup.storage.domain.ResourceKey;
 import org.springframework.core.MethodParameter;
 import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;

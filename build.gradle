@@ -8,7 +8,6 @@ repositories {
 }
 
 subprojects {
-
     group = 'ecsimsw.picup'
     version = '2.0.1'
     sourceCompatibility = '17'
@@ -23,9 +22,19 @@ subprojects {
     }
 
     dependencies {
+        // spring
+        implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+        implementation 'org.springframework.boot:spring-boot-starter-test'
+
+        // test
+        testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.0'
+        testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.7.0'
+
+        // lombok
         compileOnly 'org.projectlombok:lombok'
         annotationProcessor 'org.projectlombok:lombok'
-        implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+        testCompileOnly 'org.projectlombok:lombok'
+        testAnnotationProcessor 'org.projectlombok:lombok'
     }
 
     test {

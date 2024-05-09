@@ -1,7 +1,7 @@
 package ecsimsw.picup.integration;
 
-import static ecsimsw.picup.album.domain.StorageType.STORAGE;
-import static ecsimsw.picup.album.domain.StorageType.THUMBNAIL;
+import static ecsimsw.picup.storage.domain.StorageType.STORAGE;
+import static ecsimsw.picup.storage.domain.StorageType.THUMBNAIL;
 import static ecsimsw.picup.utils.AlbumFixture.ALBUM_NAME;
 import static ecsimsw.picup.utils.AlbumFixture.FILE_NAME;
 import static ecsimsw.picup.utils.AlbumFixture.FILE_SIZE;
@@ -12,11 +12,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import ecsimsw.picup.album.domain.AlbumRepository;
-import ecsimsw.picup.album.domain.FileResourceRepository;
+import ecsimsw.picup.storage.domain.FileResourceRepository;
 import ecsimsw.picup.album.domain.PictureRepository;
 import ecsimsw.picup.album.dto.SignUpRequest;
 import ecsimsw.picup.album.service.AlbumFacadeService;
-import ecsimsw.picup.album.service.FileResourceService;
+import ecsimsw.picup.storage.service.FileResourceService;
 import ecsimsw.picup.album.service.MemberService;
 import ecsimsw.picup.album.service.PictureFacadeService;
 import ecsimsw.picup.album.service.StorageUsageService;

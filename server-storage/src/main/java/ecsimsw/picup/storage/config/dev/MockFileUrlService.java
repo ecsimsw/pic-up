@@ -1,19 +1,19 @@
-package ecsimsw.picup.config.dev;
+package ecsimsw.picup.storage.config.dev;
 
-import ecsimsw.picup.album.domain.ResourceKey;
-import ecsimsw.picup.album.domain.StorageType;
-import ecsimsw.picup.album.service.FileResourceService;
-import ecsimsw.picup.album.service.FileStorageService;
-import ecsimsw.picup.album.service.FileUrlService;
+import ecsimsw.picup.storage.domain.ResourceKey;
+import ecsimsw.picup.storage.domain.StorageType;
+import ecsimsw.picup.storage.service.FileResourceService;
+import ecsimsw.picup.storage.service.FileStorageService;
+import ecsimsw.picup.storage.service.FileUrlService;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
-import static ecsimsw.picup.album.domain.CacheType.SIGNED_URL;
-import static ecsimsw.picup.album.domain.StorageType.STORAGE;
-import static ecsimsw.picup.config.S3Config.ROOT_PATH_STORAGE;
-import static ecsimsw.picup.config.S3Config.ROOT_PATH_THUMBNAIL;
+import static ecsimsw.picup.storage.config.CacheType.SIGNED_URL;
+import static ecsimsw.picup.storage.config.S3Config.ROOT_PATH_STORAGE;
+import static ecsimsw.picup.storage.config.S3Config.ROOT_PATH_THUMBNAIL;
+import static ecsimsw.picup.storage.domain.StorageType.STORAGE;
 
 @Primary
 @Profile("dev")

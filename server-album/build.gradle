@@ -1,5 +1,8 @@
 dependencies {
-    // Spring
+    // modules
+    implementation project(':server-storage')
+
+    // spring
     implementation 'org.springframework.boot:spring-boot-starter-validation'
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
@@ -8,13 +11,13 @@ dependencies {
     implementation 'org.springframework.retry:spring-retry'
     implementation 'org.springframework.boot:spring-boot-starter-aop'
 
-    // Mysql, H2, Flyway
+    // mysql, h2, flyway
     runtimeOnly 'com.mysql:mysql-connector-j'
     implementation 'org.flywaydb:flyway-core:6.4.2'
     implementation 'com.h2database:h2:1.4.199'
     testRuntimeOnly 'com.h2database:h2:1.4.199'
 
-    // Model metadata
+    // model metadata
     implementation 'org.hibernate:hibernate-jpamodelgen'
     annotationProcessor 'org.hibernate:hibernate-jpamodelgen'
 
@@ -37,28 +40,6 @@ dependencies {
 
     // log4j2
     implementation 'org.springframework.boot:spring-boot-starter-log4j2'
-
-    // encrypt
-//    implementation 'com.github.ecsimsw:utils-encrypt:1.0.7'
-
-    // aws - s3, cloudfront, mock s3
-    implementation 'software.amazon.awssdk:s3:2.25.27'
-    implementation 'software.amazon.awssdk:cloudfront:2.25.27'
-    implementation 'io.findify:s3mock_2.13:0.2.6'
-
-    // thumbnailator, jcodec
-    implementation 'net.coobird:thumbnailator:0.4.20'
-    implementation 'org.jcodec:jcodec-javase:0.2.5'
-
-    // test
-    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.0'
-    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.7.0'
-
-    // lombok
-    compileOnly 'org.projectlombok:lombok'
-    annotationProcessor 'org.projectlombok:lombok'
-    testCompileOnly 'org.projectlombok:lombok'
-    testAnnotationProcessor 'org.projectlombok:lombok'
 }
 
 configurations {

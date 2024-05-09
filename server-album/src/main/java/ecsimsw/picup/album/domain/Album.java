@@ -5,7 +5,7 @@ import ecsimsw.picup.auth.UnauthorizedException;
 import java.time.LocalDateTime;
 import javax.persistence.*;
 
-import lombok.AllArgsConstructor;
+import ecsimsw.picup.storage.domain.ResourceKey;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 

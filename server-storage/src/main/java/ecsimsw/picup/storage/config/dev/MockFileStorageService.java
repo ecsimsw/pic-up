@@ -1,7 +1,7 @@
-package ecsimsw.picup.config.dev;
+package ecsimsw.picup.storage.config.dev;
 
 import com.amazonaws.services.s3.AmazonS3;
-import ecsimsw.picup.album.service.FileStorageService;
+import ecsimsw.picup.storage.service.FileStorageService;
 import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;

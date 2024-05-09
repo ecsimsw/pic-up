@@ -3,13 +3,11 @@ package ecsimsw.picup.album.domain;
 import ecsimsw.picup.album.exception.LoginFailedException;
 import ecsimsw.picup.album.exception.MemberException;
 import ecsimsw.picup.ecrypt.SHA256Utils;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
-import software.amazon.awssdk.annotations.NotNull;
 
 @NoArgsConstructor
 @Getter

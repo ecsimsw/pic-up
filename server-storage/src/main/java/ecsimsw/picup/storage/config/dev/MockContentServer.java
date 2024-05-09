@@ -1,9 +1,9 @@
-package ecsimsw.picup.config.dev;
+package ecsimsw.picup.storage.config.dev;
 
 import com.amazonaws.services.s3.AmazonS3;
-import ecsimsw.picup.album.domain.ResourceKey;
-import ecsimsw.picup.album.service.ThumbnailService;
-import ecsimsw.picup.album.utils.S3Utils;
+import ecsimsw.picup.storage.domain.ResourceKey;
+import ecsimsw.picup.storage.service.ThumbnailService;
+import ecsimsw.picup.storage.utils.S3Utils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Primary;
@@ -19,7 +19,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-import static ecsimsw.picup.config.S3Config.*;
+import static ecsimsw.picup.storage.config.S3Config.*;
 
 @Slf4j
 @RequiredArgsConstructor

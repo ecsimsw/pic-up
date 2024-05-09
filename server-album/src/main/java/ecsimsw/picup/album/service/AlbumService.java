@@ -2,15 +2,13 @@ package ecsimsw.picup.album.service;
 
 import ecsimsw.picup.album.domain.*;
 import ecsimsw.picup.album.dto.AlbumInfo;
-import ecsimsw.picup.album.dto.AlbumResponse;
 import ecsimsw.picup.auth.UnauthorizedException;
+import ecsimsw.picup.storage.domain.ResourceKey;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-
-import static ecsimsw.picup.album.domain.StorageType.THUMBNAIL;
 
 @RequiredArgsConstructor
 @Service

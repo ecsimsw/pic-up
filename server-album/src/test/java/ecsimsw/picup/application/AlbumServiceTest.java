@@ -2,7 +2,7 @@ package ecsimsw.picup.application;
 
 import ecsimsw.picup.album.domain.Album;
 import ecsimsw.picup.album.domain.AlbumRepository;
-import ecsimsw.picup.album.domain.ResourceKey;
+import ecsimsw.picup.storage.domain.ResourceKey;
 import ecsimsw.picup.album.dto.AlbumInfo;
 import ecsimsw.picup.album.service.AlbumService;
 import ecsimsw.picup.auth.UnauthorizedException;

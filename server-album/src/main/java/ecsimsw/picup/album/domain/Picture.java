@@ -4,6 +4,8 @@ import ecsimsw.picup.album.exception.AlbumException;
 import java.time.LocalDateTime;
 import javax.persistence.*;
 
+import ecsimsw.picup.storage.domain.FileResourceExtension;
+import ecsimsw.picup.storage.domain.ResourceKey;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -63,7 +65,7 @@ public class Picture {
         this.album.authorize(userId);
     }
 
-    public PictureFileExtension extension() {
+    public FileResourceExtension extension() {
         return this.fileResource.extension();
     }
 }

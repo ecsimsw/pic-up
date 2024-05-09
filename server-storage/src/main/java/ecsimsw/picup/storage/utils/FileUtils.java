@@ -1,6 +1,6 @@
-package ecsimsw.picup.album.utils;
+package ecsimsw.picup.storage.utils;
 
-import ecsimsw.picup.album.exception.AlbumException;
+import ecsimsw.picup.storage.exception.StorageException;
 
 import java.text.DecimalFormat;
 
@@ -24,7 +24,7 @@ public class FileUtils {
 
     public static String getExtensionFromName(String fileName) {
         if (fileName == null || fileName.isBlank()) {
-            throw new AlbumException("Invalid file name");
+            throw new StorageException("Invalid file name");
         }
         var indexOfExtension = fileName.lastIndexOf(".");
         return fileName.substring(indexOfExtension + 1);

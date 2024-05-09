@@ -1,4 +1,4 @@
-package ecsimsw.picup.album.domain;
+package ecsimsw.picup.storage.domain;
 
 import java.time.LocalDateTime;
 import javax.persistence.*;

@@ -3,7 +3,7 @@ package ecsimsw.picup.application;
 import ecsimsw.picup.album.domain.Album;
 import ecsimsw.picup.album.domain.AlbumRepository;
 import ecsimsw.picup.album.domain.PictureRepository;
-import ecsimsw.picup.album.domain.ResourceKey;
+import ecsimsw.picup.storage.domain.ResourceKey;
 import ecsimsw.picup.album.service.PictureService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;

@@ -5,6 +5,7 @@ import ecsimsw.picup.album.dto.AlbumResponse;
 import ecsimsw.picup.album.service.*;
 import ecsimsw.picup.auth.LoginUser;
 import ecsimsw.picup.auth.TokenPayload;
+import ecsimsw.picup.storage.service.FileResourceService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

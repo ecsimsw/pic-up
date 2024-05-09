@@ -1,9 +1,10 @@
-package ecsimsw.picup.album.service;
+package ecsimsw.picup.storage.service;
 
-import ecsimsw.picup.album.domain.FileResource;
-import ecsimsw.picup.album.domain.ResourceKey;
-import ecsimsw.picup.album.domain.StorageType;
-import ecsimsw.picup.album.dto.PreUploadUrlResponse;
+import ecsimsw.picup.storage.config.CacheType;
+import ecsimsw.picup.storage.domain.FileResource;
+import ecsimsw.picup.storage.domain.ResourceKey;
+import ecsimsw.picup.storage.domain.StorageType;
+import ecsimsw.picup.storage.dto.PreUploadUrlResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -17,8 +18,6 @@ import java.nio.file.Path;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 
-import static ecsimsw.picup.album.domain.CacheType.SIGNED_URL;
-import static ecsimsw.picup.album.domain.StorageType.STORAGE;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -42,7 +41,7 @@ public class FileUrlService {
     private final FileResourceService fileResourceService;
     private final FileStorageService fileStorageService;
 
-    @Cacheable(value = SIGNED_URL, key = "{#storageType, #remoteIp, #fileResource.value()}")
+    @Cacheable(value = CacheType.SIGNED_URL, key = "{#storageType, #remoteIp, #fileResource.value()}")
     public String fileUrl(StorageType storageType, String remoteIp, ResourceKey fileResource) {
         var filePath = fileResourceService.filePath(storageType, fileResource);
         try {

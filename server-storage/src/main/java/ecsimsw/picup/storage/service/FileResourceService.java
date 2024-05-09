@@ -1,8 +1,9 @@
-package ecsimsw.picup.album.service;
+package ecsimsw.picup.storage.service;
 
-import ecsimsw.picup.album.domain.*;
-import ecsimsw.picup.album.exception.StorageException;
-import ecsimsw.picup.album.utils.FileUtils;
+import ecsimsw.picup.storage.config.S3Config;
+import ecsimsw.picup.storage.domain.*;
+import ecsimsw.picup.storage.exception.StorageException;
+import ecsimsw.picup.storage.utils.FileUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -13,9 +14,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import static ecsimsw.picup.album.domain.StorageType.STORAGE;
-import static ecsimsw.picup.album.domain.StorageType.THUMBNAIL;
-import static ecsimsw.picup.config.S3Config.*;
+import static ecsimsw.picup.storage.domain.StorageType.THUMBNAIL;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -112,9 +111,9 @@ public class FileResourceService {
     }
 
     public String filePath(StorageType type, ResourceKey resourceKey) {
-        var storageRootPath = ROOT_PATH_PER_STORAGE_TYPE.getOrDefault(type, ROOT_PATH_STORAGE);
+        var storageRootPath = S3Config.ROOT_PATH_PER_STORAGE_TYPE.getOrDefault(type, S3Config.ROOT_PATH_STORAGE);
         if (resourceKey.extension().isVideo && type == StorageType.THUMBNAIL) {
-            return storageRootPath + FileUtils.changeExtensionTo(resourceKey.value(), DEFAULT_VIDEO_THUMBNAIL_EXTENSION);
+            return storageRootPath + FileUtils.changeExtensionTo(resourceKey.value(), S3Config.DEFAULT_VIDEO_THUMBNAIL_EXTENSION);
         }
         return storageRootPath + resourceKey.value();
     }

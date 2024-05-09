@@ -2,7 +2,7 @@ package ecsimsw.picup.domain;
 
 import ecsimsw.picup.album.domain.Album;
 import ecsimsw.picup.album.domain.AlbumRepository;
-import ecsimsw.picup.album.domain.ResourceKey;
+import ecsimsw.picup.storage.domain.ResourceKey;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

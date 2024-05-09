@@ -1,9 +1,11 @@
 package ecsimsw.picup.utils;
 
-import static ecsimsw.picup.album.domain.StorageType.THUMBNAIL;
+import static ecsimsw.picup.storage.domain.StorageType.THUMBNAIL;
 import static ecsimsw.picup.utils.MemberFixture.USER_ID;
 
 import ecsimsw.picup.album.domain.*;
+import ecsimsw.picup.storage.domain.FileResource;
+import ecsimsw.picup.storage.domain.ResourceKey;
 
 import java.util.List;
 

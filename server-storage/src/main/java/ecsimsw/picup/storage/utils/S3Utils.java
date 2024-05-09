@@ -1,4 +1,4 @@
-package ecsimsw.picup.album.utils;
+package ecsimsw.picup.storage.utils;
 
 import com.amazonaws.HttpMethod;
 import com.amazonaws.services.s3.AmazonS3;
@@ -8,7 +8,7 @@ import com.amazonaws.services.s3.model.GeneratePresignedUrlRequest;
 import com.amazonaws.services.s3.model.GetObjectRequest;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.util.IOUtils;
-import ecsimsw.picup.album.exception.StorageException;
+import ecsimsw.picup.storage.exception.StorageException;
 import java.io.OutputStream;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.multipart.MultipartFile;

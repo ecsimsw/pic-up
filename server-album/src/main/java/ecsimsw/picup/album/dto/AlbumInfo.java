@@ -1,7 +1,7 @@
 package ecsimsw.picup.album.dto;
 
 import ecsimsw.picup.album.domain.Album;
-import ecsimsw.picup.album.domain.ResourceKey;
+import ecsimsw.picup.storage.domain.ResourceKey;
 
 import java.time.LocalDateTime;
 import java.util.List;

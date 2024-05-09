@@ -1,4 +1,4 @@
-package ecsimsw.picup.album.utils;
+package ecsimsw.picup.storage.utils;
 
 import net.coobird.thumbnailator.Thumbnails;
 import net.coobird.thumbnailator.filters.ImageFilter;

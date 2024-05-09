@@ -1,15 +1,18 @@
 package ecsimsw.picup.album.service;
 
-import static ecsimsw.picup.album.domain.StorageType.THUMBNAIL;
-
 import ecsimsw.picup.album.domain.Picture;
-import ecsimsw.picup.album.domain.ResourceKey;
+import ecsimsw.picup.storage.domain.ResourceKey;
 import ecsimsw.picup.album.dto.AlbumInfo;
 import ecsimsw.picup.album.dto.AlbumResponse;
 import java.util.List;
+
+import ecsimsw.picup.storage.service.FileResourceService;
+import ecsimsw.picup.storage.service.FileUrlService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import static ecsimsw.picup.storage.domain.StorageType.THUMBNAIL;
 
 @RequiredArgsConstructor
 @Service

@@ -2,12 +2,14 @@ package ecsimsw.picup.album.controller;
 
 import ecsimsw.picup.album.annotation.RemoteIp;
 import ecsimsw.picup.album.annotation.SearchCursor;
-import ecsimsw.picup.album.domain.ResourceKey;
-import ecsimsw.picup.album.domain.StorageType;
+import ecsimsw.picup.storage.domain.ResourceKey;
 import ecsimsw.picup.album.dto.*;
 import ecsimsw.picup.album.service.*;
 import ecsimsw.picup.auth.LoginUser;
 import ecsimsw.picup.auth.TokenPayload;
+import ecsimsw.picup.storage.dto.PreUploadUrlResponse;
+import ecsimsw.picup.storage.service.FileResourceService;
+import ecsimsw.picup.storage.service.FileUrlService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -15,7 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import java.util.List;
 
-import static ecsimsw.picup.album.domain.StorageType.STORAGE;
+import static ecsimsw.picup.storage.domain.StorageType.STORAGE;
 
 @RequiredArgsConstructor
 @RestController

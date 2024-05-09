@@ -1,4 +1,4 @@
-package ecsimsw.picup.album.domain;
+package ecsimsw.picup.storage.config;
 
 public class CacheType {
 

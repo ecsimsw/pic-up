@@ -1,4 +1,4 @@
-package ecsimsw.picup.album.domain;
+package ecsimsw.picup.storage.domain;
 
 public enum StorageType {
     STORAGE,

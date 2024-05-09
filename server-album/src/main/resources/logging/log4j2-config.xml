@@ -15,7 +15,7 @@
       <AppenderRef ref="ApplicationLogsConsoleAppender" level="info"/>
       <AppenderRef ref="ApplicationLogsRollingFile" level="info"/>
     </Root>
-    <Logger name="ecsimsw.picup.album.service.FileResourceService" level="info" additivity="true">
+    <Logger name="ecsimsw.picup.storage.service.FileResourceService" level="info" additivity="true">
       <AppenderRef ref="FileDLQLogsRollingFile" level="error"/>
     </Logger>
   </Loggers>

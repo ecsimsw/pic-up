@@ -1,6 +1,6 @@
-package ecsimsw.picup.album.dto;
+package ecsimsw.picup.storage.dto;
 
-import ecsimsw.picup.album.domain.ResourceKey;
+import ecsimsw.picup.storage.domain.ResourceKey;
 
 public record FileUploadResponse(
     ResourceKey resourceKey,

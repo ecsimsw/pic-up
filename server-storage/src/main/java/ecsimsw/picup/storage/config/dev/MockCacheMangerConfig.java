@@ -1,6 +1,6 @@
-package ecsimsw.picup.config.dev;
+package ecsimsw.picup.storage.config.dev;
 
-import ecsimsw.picup.album.domain.CacheType;
+import ecsimsw.picup.storage.config.CacheType;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.cache.concurrent.ConcurrentMapCacheManager;
