@@ -1,6 +1,5 @@
 package ecsimsw.picup.ecrypt;
 
-import ecrypt.exception.EncryptionException;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.SecureRandom;
@@ -17,7 +16,7 @@ public class SHA256Utils {
             var hash = digest.digest(plain.getBytes(StandardCharsets.UTF_8));
             return Base64.getEncoder().encodeToString(hash);
         } catch (Exception e) {
-            throw new EncryptionException("Error while decrypt SHA256", e);
+            throw new IllegalArgumentException("Error while decrypt SHA256", e);
         }
     }
 
