@@ -11,6 +11,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Profile;
+import org.springframework.context.event.ContextClosedEvent;
+import org.springframework.context.event.EventListener;
 
 import static ecsimsw.picup.storage.config.S3Config.BUCKET;
 
@@ -20,15 +22,17 @@ public class MockS3Config {
     private static final String MOCK_S3_HOST = "http://localhost";
     private static final int MOCK_S3_PORT = 8001;
 
+    private S3Mock s3Mock;
+
     @Primary
     @Profile("dev")
     @Bean
     public AmazonS3 mockObjectStorageClient() {
-        var api = new S3Mock.Builder()
+        s3Mock = new S3Mock.Builder()
             .withPort(MOCK_S3_PORT)
             .withInMemoryBackend()
             .build();
-        api.start();
+        s3Mock.start();
 
         var endpoint = new AwsClientBuilder.EndpointConfiguration(
             MOCK_S3_HOST + ":" + MOCK_S3_PORT,
@@ -41,5 +45,12 @@ public class MockS3Config {
             .build();
         amazonS3.createBucket(BUCKET);
         return amazonS3;
+    }
+
+    @EventListener(ContextClosedEvent.class)
+    public void onContextClosedEvent() {
+        if(s3Mock != null) {
+            s3Mock.shutdown();
+        }
     }
 }
