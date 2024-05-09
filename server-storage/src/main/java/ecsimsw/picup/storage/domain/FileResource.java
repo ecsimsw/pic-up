@@ -43,6 +43,10 @@ public class FileResource {
         return new FileResource(storageType, resourceKey, fileSize, false);
     }
 
+    public FileResource(StorageType storageType, ResourceKey resourceKey, Long size, Boolean toBeDeleted, LocalDateTime localDateTime) {
+        this(null, storageType, resourceKey, size, toBeDeleted, localDateTime);
+    }
+
     public FileResource(StorageType storageType, ResourceKey resourceKey, Long size, Boolean toBeDeleted) {
         this(null, storageType, resourceKey, size, toBeDeleted, LocalDateTime.now());
     }

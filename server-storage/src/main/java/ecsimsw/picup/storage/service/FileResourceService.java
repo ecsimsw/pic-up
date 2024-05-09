@@ -76,7 +76,11 @@ public class FileResourceService {
 
     @Transactional(readOnly = true)
     public List<FileResource> getDummyFiles() {
-        var expiration = LocalDateTime.now().minusSeconds(WAIT_TIME_TO_BE_DELETED);
+        return getDummyFiles(LocalDateTime.now());
+    }
+
+    @Transactional(readOnly = true)
+    public List<FileResource> getDummyFiles(LocalDateTime expiration) {
         return fileResourceRepository.findAllToBeDeletedCreatedBefore(expiration);
     }
 
