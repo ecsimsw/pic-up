@@ -16,6 +16,22 @@ dependencies {
     testRuntimeOnly 'com.h2database:h2:1.4.199'
 }
 
+jib {
+    from {
+        image = "openjdk:17-alpine"
+    }
+    to {
+        image = "ghcr.io/ecsimsw/picup/server-batch"
+        tags = ["prod", "latest"]
+    }
+    container {
+        jvmFlags = [
+                "-Xmx256m",
+                "-Dspring.profiles.active=dev"
+        ]
+    }
+}
+
 test {
     useJUnitPlatform()
 }

@@ -1,0 +1,16 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: server-batch
+spec:
+  schedule: "*/1 * * * *"     # every minute
+  concurrencyPolicy: Forbid   # skip if job already exists
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+            - name: server-batch
+              image: ghcr.io/ecsimsw/picup/server-batch:latest
+              imagePullPolicy: IfNotPresent  # check container hub if image not present, 'name+tag+digest'
+          restartPolicy: Never
