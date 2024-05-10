@@ -26,8 +26,8 @@ jib {
     }
     container {
         jvmFlags = [
-                "-Xmx256m",
-                "-Dspring.profiles.active=dev"
+            "-Xmx256m",
+            "-Dspring.profiles.active=dev"
         ]
     }
 }

@@ -2,6 +2,7 @@ apiVersion: batch/v1
 kind: CronJob
 metadata:
   name: server-batch
+  namespace: picup
 spec:
   schedule: "*/1 * * * *"     # every minute
   concurrencyPolicy: Forbid   # skip if job already exists
