@@ -355,13 +355,13 @@ spec:
       name: http
       port: 80
       protocol: TCP
-      nodePort: 30080     # customized
+      nodePort: 32080     # customized
       targetPort: http
     - appProtocol: https
       name: https
       port: 443
       protocol: TCP
-      nodePort: 30443      # customized
+      nodePort: 32443      # customized
       targetPort: https
   selector:
     app.kubernetes.io/component: controller

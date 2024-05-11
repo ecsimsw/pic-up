@@ -20,7 +20,7 @@ import static ecsimsw.picup.storage.config.S3Config.BUCKET;
 public class MockS3Config {
 
     private static final String MOCK_S3_HOST = "http://localhost";
-    private static final int MOCK_S3_PORT = 8001;
+    private static final int MOCK_S3_PORT = 8002;
 
     private S3Mock s3Mock;
 

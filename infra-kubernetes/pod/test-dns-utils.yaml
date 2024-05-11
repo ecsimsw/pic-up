@@ -2,7 +2,7 @@ apiVersion: v1
 kind: Pod
 metadata:
   name: dnsutils
-  namespace: test
+  namespace: picup
 spec:
   containers:
     - name: dnsutils

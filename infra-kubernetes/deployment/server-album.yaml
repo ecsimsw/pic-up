@@ -17,5 +17,8 @@ spec:
         - name: server-album
           image: ghcr.io/ecsimsw/picup/server-album:latest
           imagePullPolicy: Always
+          envFrom:
+            - secretRef:
+                name: picup-secret
           ports:
             - containerPort: 8084
