@@ -1,14 +1,12 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: server-album-np
+  name: server-album
   namespace: picup
 spec:
   selector:
     app: server-album
   ports:
     - protocol: TCP
-      port: 30884          # port of service
-      targetPort: 80     # to pod
-      nodePort: 30884      # node's port
-  type: NodePort
+      port: 30884            # port of service
+      targetPort: 8084       # to pod
