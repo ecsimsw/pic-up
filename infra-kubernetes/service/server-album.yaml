@@ -9,6 +9,6 @@ spec:
   ports:
     - protocol: TCP
       port: 30884          # port of service
-      targetPort: 8084     # to pod
+      targetPort: 80     # to pod
       nodePort: 30884      # node's port
   type: NodePort
