@@ -9,5 +9,5 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface RemoteIp {
 
-    String headerName() default "X-Forwarded-For";
+    String headerName() default "x-original-forwarded-for";
 }
