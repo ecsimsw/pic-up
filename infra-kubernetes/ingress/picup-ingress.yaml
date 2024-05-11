@@ -3,8 +3,6 @@ kind: Ingress
 metadata:
   name: picup-ingress
   namespace: picup
-  annotations:
-    nginx.ingress.kubernetes.io/rewrite-target: /
 spec:
   ingressClassName: nginx
   rules:
