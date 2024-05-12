@@ -36,7 +36,7 @@ services:
     image: grafana/promtail:2.9.2
     volumes:
       - ./promtail/config.yaml:/etc/promtail/config.yaml
-      - ~/dev/data/data/picup/picup-server-album-pvc-pvc-593a501f-daee-44d4-9bac-19e6f22d0863:/logs
+      - ~/dev/data/picup/picup-server-album-pvc-pvc-593a501f-daee-44d4-9bac-19e6f22d0863:/logs
     command:
       -config.file=/etc/promtail/config.yaml
     extra_hosts:
