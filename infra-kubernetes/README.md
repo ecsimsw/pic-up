@@ -111,6 +111,14 @@ chmod 700 get_helm.sh
 ./get_helm.sh
 ```
 
+### NFS provisioner
+```
+helm repo add nfs-subdir-external-provisioner https://kubernetes-sigs.github.io/nfs-subdir-external-provisioner
+helm install nfs-subdir-external-provisioner nfs-subdir-external-provisioner/nfs-subdir-external-provisioner \
+    --set nfs.server=x.x.x.x \
+    --set nfs.path=/exported/path
+```
+
 ## Join worker node
 
 ### Previous procedure
