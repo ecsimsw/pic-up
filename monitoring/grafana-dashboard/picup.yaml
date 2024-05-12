@@ -783,7 +783,7 @@
       },
       "gridPos": {
         "h": 9,
-        "w": 12,
+        "w": 24,
         "x": 0,
         "y": 35
       },
@@ -819,10 +819,10 @@
         "uid": "b3a6352c-c038-4089-971d-6d2e9f4f3971"
       },
       "gridPos": {
-        "h": 9,
-        "w": 12,
-        "x": 12,
-        "y": 35
+        "h": 8,
+        "w": 24,
+        "x": 0,
+        "y": 44
       },
       "id": 214,
       "options": {
@@ -843,12 +843,12 @@
             "uid": "b3a6352c-c038-4089-971d-6d2e9f4f3971"
           },
           "editorMode": "builder",
-          "expr": "{job=\"s3\"} |= ``",
+          "expr": "{job=\"error\"} |= ``",
           "queryType": "range",
           "refId": "A"
         }
       ],
-      "title": "s3 upload duration",
+      "title": "error",
       "type": "logs"
     },
     {
@@ -861,7 +861,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 44
+        "y": 52
       },
       "id": 143,
       "panels": [],
@@ -942,7 +942,7 @@
         "h": 8,
         "w": 24,
         "x": 0,
-        "y": 45
+        "y": 53
       },
       "id": 196,
       "options": {
@@ -993,7 +993,7 @@
         "h": 8,
         "w": 24,
         "x": 0,
-        "y": 53
+        "y": 61
       },
       "hiddenSeries": false,
       "id": 101,
@@ -1110,7 +1110,7 @@
         "h": 7,
         "w": 8,
         "x": 0,
-        "y": 61
+        "y": 69
       },
       "hiddenSeries": false,
       "id": 3,
@@ -1229,7 +1229,7 @@
       }
     }
   ],
-  "refresh": false,
+  "refresh": "",
   "schemaVersion": 38,
   "tags": [],
   "templating": {
@@ -1266,8 +1266,8 @@
         "allFormat": "glob",
         "current": {
           "selected": false,
-          "text": "host.docker.internal:8084",
-          "value": "host.docker.internal:8084"
+          "text": "192.168.0.101:30884",
+          "value": "192.168.0.101:30884"
         },
         "datasource": {
           "type": "prometheus",
@@ -1381,8 +1381,8 @@
     ]
   },
   "time": {
-    "from": "2024-04-28T05:46:05.174Z",
-    "to": "2024-04-28T05:51:27.764Z"
+    "from": "now-5m",
+    "to": "now"
   },
   "timepicker": {
     "now": true,
@@ -1413,6 +1413,6 @@
   "timezone": "browser",
   "title": "picup",
   "uid": "ca44fa95-b558-49c4-a8a3-e38797abe519",
-  "version": 12,
+  "version": 14,
   "weekStart": ""
 }
