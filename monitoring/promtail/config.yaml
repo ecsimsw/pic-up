@@ -2,22 +2,22 @@ server:
   http_listen_port: 9080
   grpc_listen_port: 0
 
-positions:
+positions:   # store sent log offset
   filename: /tmp/positions.yaml
 
 clients:
   - url: http://host.docker.internal:3100/loki/api/v1/push
 
 scrape_configs:
-  - job_name: picup
+  - job_name: picup-album
     static_configs:
       - targets:
-          - picup-application
+          - picup-album-application
         labels:
           job: application
           __path__: /logs/application/*.log
       - targets:
-          - picup-s3
+          - picup-album-error
         labels:
-          job: s3
-          __path__: /logs/s3/*.log
+          job: error
+          __path__: /logs/error/*.log
