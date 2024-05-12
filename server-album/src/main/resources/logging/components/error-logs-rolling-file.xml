@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <RollingFile
-  name="FileDLQLogsRollingFile"
-  fileName="${BASE_DIR}/dlq/filed.log"
-  filePattern="${BASE_DIR}/dlq/%d{yyyy-MM-dd}.log.zip"
+  name="ErrorLogsRollingFile"
+  fileName="${BASE_DIR}/error/error.log"
+  filePattern="${BASE_DIR}/error/error-%d{yyyy-MM-dd}.log.zip"
   xmlns:xi="http://www.w3.org/2001/XInclude"
 >
   <xi:include href="pattern-layout.xml"/>
@@ -10,7 +10,7 @@
     <TimeBasedTriggeringPolicy interval="${FILE_LOG_DAY_INTERVAL}" modulate="true" />
   </Policies>
   <DefaultRolloverStrategy>
-    <Delete basePath="${BASE_DIR}/dlq" maxDepth="1">
+    <Delete basePath="${BASE_DIR}/error/" maxDepth="1">
       <IfFileName glob="*.log.zip" />
       <IfLastModified age="${FILE_DELETE_DAY_INTERVAL}d" />
     </Delete>

@@ -17,8 +17,15 @@ spec:
         - name: server-album
           image: ghcr.io/ecsimsw/picup/server-album:latest
           imagePullPolicy: Always
+          volumeMounts:
+            - name: picup-data
+              mountPath: /album-logs
           envFrom:
             - secretRef:
                 name: picup-secret
           ports:
             - containerPort: 8084
+      volumes:
+        - name: picup-data
+          persistentVolumeClaim:
+            claimName: server-album-pvc
