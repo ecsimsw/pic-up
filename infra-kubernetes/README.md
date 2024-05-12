@@ -1,6 +1,6 @@
 ## Install kubernetes
 - cpu : 2
-- mem : 2GB
+- mem : 4GB
 - OS : Ubuntu v22.04
 - CRI : CRI-O  v1.28
 - CNI : CALICO v3.25
@@ -8,8 +8,8 @@
 
 ### Disable Swap
 ```
-sudo -i
-sudo swapoff -a
+sudo -i &&
+sudo swapoff -a &&
 sudo sed -i '/ swap / s/^/#/' /etc/fstab
 ```
 
@@ -62,11 +62,8 @@ echo '1' > /proc/sys/net/ipv4/ip_forward
 ```
 NODE_IP=${NODE_IP_ADDRESS}
 POD_NETWORK_CIDR=${POD_CIDR}
-
-NODE_IP=192.168.0.101
-POD_NETWORK_CIDR=172.16.0.0/16
-# ex, NODE_IP=192.168.0.101
-# ex, POD_NETWORK_CIDR=172.16.0.0/16
+#ex, NODE_IP=192.168.0.101
+#ex, POD_NETWORK_CIDR=172.16.0.0/16
 
 sudo kubeadm init \
 --pod-network-cidr=$POD_NETWORK_CIDR \
@@ -113,10 +110,12 @@ chmod 700 get_helm.sh
 
 ### NFS provisioner
 ```
+sudo apt install nfs-common
+
 helm repo add nfs-subdir-external-provisioner https://kubernetes-sigs.github.io/nfs-subdir-external-provisioner
 helm install nfs-subdir-external-provisioner nfs-subdir-external-provisioner/nfs-subdir-external-provisioner \
     --set nfs.server=x.x.x.x \
-    --set nfs.path=/exported/path
+    --set nfs.path=$PATH
 ```
 
 ## Join worker node

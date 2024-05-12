@@ -1,7 +1,6 @@
 # origin file : https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/high-availability-1.21+.yaml
 # customized : deployment : insecure tls
 
-
 apiVersion: v1
 kind: ServiceAccount
 metadata:
