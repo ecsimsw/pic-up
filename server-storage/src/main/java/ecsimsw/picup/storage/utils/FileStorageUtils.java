@@ -8,6 +8,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+import java.util.List;
 import org.springframework.web.multipart.MultipartFile;
 
 public class FileStorageUtils {
@@ -19,6 +20,14 @@ public class FileStorageUtils {
                 os.write(file.getBytes());
             }
             return filepath;
+        } catch (IOException e) {
+            throw new StorageException("Failed to upload to file storage");
+        }
+    }
+
+    public static List<String> read(String path) {
+        try {
+            return Files.readAllLines(Paths.get(path));
         } catch (IOException e) {
             throw new StorageException("Failed to upload to file storage");
         }

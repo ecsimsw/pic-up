@@ -13,5 +13,15 @@ spec:
           containers:
             - name: server-batch
               image: ghcr.io/ecsimsw/picup/server-batch:latest
-              imagePullPolicy: IfNotPresent  # check container hub if image not present, 'name+tag+digest'
+              imagePullPolicy: Always        # check container hub if image not present, 'name+tag+digest'
+              volumeMounts:
+                - name: picup-data
+                  mountPath: /ext-data       # READ private_key.pem
+              envFrom:
+                - secretRef:
+                    name: server-common-secret
           restartPolicy: Never
+          volumes:
+            - name: picup-data
+              persistentVolumeClaim:
+                claimName: server-album-pvc

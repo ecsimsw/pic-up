@@ -23,17 +23,15 @@ import static ecsimsw.picup.storage.domain.StorageType.THUMBNAIL;
 @Service
 public class FileResourceService {
 
-    private static final int WAIT_TIME_TO_BE_DELETED = 10;
-
     private final FileResourceRepository fileResourceRepository;
-    private final FileStorageService fileStorageService;
+    private final StorageService storageService;
     private final ThumbnailService thumbnailService;
 
     @Transactional
     public FileResource upload(StorageType type, MultipartFile file) {
         var resourceKey = ResourceKey.fromMultipartFile(file);
         var fileResource = FileResource.stored(type, resourceKey, file.getSize());
-        fileStorageService.store(file, filePath(fileResource));
+        storageService.store(file, filePath(fileResource));
         return fileResourceRepository.save(fileResource);
     }
 

@@ -39,7 +39,7 @@ public class FileUrlService {
     private String privateKeyPath;
 
     private final FileResourceService fileResourceService;
-    private final FileStorageService fileStorageService;
+    private final StorageService storageService;
 
     @Cacheable(value = CacheType.SIGNED_URL, key = "{#storageType, #remoteIp, #fileResource.value()}")
     public String fileUrl(StorageType storageType, String remoteIp, ResourceKey fileResource) {
@@ -49,6 +49,7 @@ public class FileUrlService {
             var signedUrl = cloudFrontUtilities.getSignedUrlWithCustomPolicy(sign);
             return signedUrl.url();
         } catch (Exception e) {
+            e.printStackTrace();
             throw new IllegalArgumentException("Failed to create cloudfront sign url from : " + filePath);
         }
     }
@@ -69,7 +70,7 @@ public class FileUrlService {
 
     public PreUploadUrlResponse uploadUrl(StorageType storageType, ResourceKey resourceKey) {
         var filePath = fileResourceService.filePath(storageType, resourceKey);
-        var preSignedUrl = fileStorageService.generatePreSignedUrl(filePath);
+        var preSignedUrl = storageService.generatePreSignedUrl(filePath);
         return PreUploadUrlResponse.of(preSignedUrl, resourceKey);
     }
 }

@@ -24,10 +24,12 @@ spec:
               memory: "1Gi"
           volumeMounts:
             - name: picup-data
-              mountPath: /album-logs
+              mountPath: /album-logs  # WRITE logs
+            - name: picup-data
+              mountPath: /ext-data    # READ private_key.pem
           envFrom:
             - secretRef:
-                name: picup-secret
+                name: server-common-secret
           ports:
             - containerPort: 8084
       volumes:

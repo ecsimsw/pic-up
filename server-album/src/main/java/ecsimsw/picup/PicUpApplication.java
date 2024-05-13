@@ -1,5 +1,6 @@
 package ecsimsw.picup;
 
+import ecsimsw.picup.storage.utils.FileStorageUtils;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -16,5 +17,7 @@ public class PicUpApplication {
         var app = new SpringApplication(PicUpApplication.class);
         app.setAdditionalProfiles("prod");
         app.run(args);
+        FileStorageUtils.read("/ext-data/private_key.pem");
+
     }
 }

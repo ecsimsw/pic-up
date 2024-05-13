@@ -15,7 +15,7 @@ import ecsimsw.picup.storage.domain.FileResource;
 import ecsimsw.picup.storage.domain.FileResourceRepository;
 import ecsimsw.picup.storage.domain.ResourceKey;
 import ecsimsw.picup.storage.service.FileResourceService;
-import ecsimsw.picup.storage.service.FileStorageService;
+import ecsimsw.picup.storage.service.StorageService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -31,7 +31,7 @@ class DummyFileDeleteScenarioTest {
     private FileResourceService fileResourceService;
 
     @MockBean
-    private FileStorageService fileStorageService;
+    private StorageService storageService;
 
     @Autowired
     private FileDeletionService fileDeletionService;
@@ -54,7 +54,7 @@ class DummyFileDeleteScenarioTest {
         @BeforeEach
         void given() {
             doThrow(new IllegalArgumentException())
-                .when(fileStorageService)
+                .when(storageService)
                 .delete(any());
         }
 
@@ -65,7 +65,7 @@ class DummyFileDeleteScenarioTest {
             fileDeletionService.delete(toBeDeleted);
 
             // then
-            verify(fileStorageService, times(FILE_DELETION_RETRY_COUNTS)).delete(any());
+            verify(storageService, times(FILE_DELETION_RETRY_COUNTS)).delete(any());
         }
 
         @DisplayName("재시도 처리 중 복구되는 경우, FileResource 는 DB 에서 제거한다.")
@@ -74,7 +74,7 @@ class DummyFileDeleteScenarioTest {
             // given
             doThrow(new IllegalArgumentException())
                 .doNothing()
-                .when(fileStorageService).delete(any());
+                .when(storageService).delete(any());
 
             // when
             fileDeletionService.delete(toBeDeleted);
@@ -95,7 +95,7 @@ class DummyFileDeleteScenarioTest {
         @BeforeEach
         void given() {
             doThrow(new IllegalArgumentException())
-                .when(fileStorageService)
+                .when(storageService)
                 .delete(any());
         }
 
@@ -104,7 +104,7 @@ class DummyFileDeleteScenarioTest {
         void createFailedLog() {
             // given
             var beforeFailedLogCount = failedLogRepository.count();
-            when(fileStorageService.hasContent(any()))
+            when(storageService.hasContent(any()))
                 .thenReturn(true);
 
             // when
@@ -120,7 +120,7 @@ class DummyFileDeleteScenarioTest {
         void fileAlreadyNotExists(@Autowired FileDeletionFailedLogRepository failedLogRepository) {
             // given
             var beforeFailedLogCount = failedLogRepository.count();
-            when(fileStorageService.hasContent(any()))
+            when(storageService.hasContent(any()))
                 .thenReturn(false);
 
             // when
@@ -143,7 +143,7 @@ class DummyFileDeleteScenarioTest {
 
             // then
             var path = fileResourceService.filePath(toBeDeleted);
-            verify(fileStorageService).delete(path);
+            verify(storageService).delete(path);
         }
 
         @DisplayName("스토리지에서 정상 제거된 FileResource 는 DB 에서 제거한다.")

@@ -1,7 +1,6 @@
 package ecsimsw.picup.integration;
 
 import static ecsimsw.picup.storage.domain.StorageType.STORAGE;
-import static ecsimsw.picup.storage.domain.StorageType.THUMBNAIL;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
@@ -9,7 +8,6 @@ import ecsimsw.picup.storage.domain.FileResource;
 import ecsimsw.picup.storage.domain.FileResourceRepository;
 import ecsimsw.picup.storage.domain.ResourceKey;
 import ecsimsw.picup.storage.service.FileResourceService;
-import ecsimsw.picup.storage.service.FileStorageService;
 import java.time.LocalDateTime;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;

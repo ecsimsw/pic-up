@@ -9,7 +9,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 @RequiredArgsConstructor
 @Service
-public class FileStorageService {
+public class StorageService {
 
     private final AmazonS3 s3Client;
 
