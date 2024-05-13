@@ -13,8 +13,8 @@ const img = open('./assets/Sample_image_0.5Mb.jpg', 'b');
 
 export default function () {
     let loginData = {
-        username : "ecsimsw"+randomIntBetween(1,2000),
-        password : "publicUserForTest"
+        username : "ecsimsw",
+        password : "password"
     };
     const rs = http.post('http://www.ecsimsw.com:8084/api/member/signin', JSON.stringify(loginData), {
         headers: { 'Content-Type': 'application/json' },
