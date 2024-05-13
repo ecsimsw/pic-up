@@ -156,7 +156,7 @@ function callLoginApi(callback) {
         },
         body: JSON.stringify({
             username: "ecsimsw",
-            password: "publicUserForTest"
+            password: "password"
         })
     }).then(response => {
         if (!response.ok) {

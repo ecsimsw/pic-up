@@ -19,9 +19,9 @@ spec:
           imagePullPolicy: Always
           resources:
             requests:
-              memory: "300Mi"
+              memory: "1Gi"
             limits:
-              memory: "300Mi"
+              memory: "1Gi"
           volumeMounts:
             - name: picup-data
               mountPath: /album-logs
