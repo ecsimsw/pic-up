@@ -1,10 +1,35 @@
 ## Utils-dummies
-DB 더미테이터 csv 파일 생성
+DB 더미 데이터를 File upload를 위한 csv 파일을 생성한다.
 
-## 업로드 속도 비교
+### 업로드 방식 비교
 - 단일 삽입 반복
+```
+- insert 1_000 : 2.28 sec
+- Insert 10_000 : 21.90 sec
+- Insert 100_000 : 3 min 39.99 sec
+```
 - Bulk Insert (10, 100, 300)
+```
+1. 10개씩 Bulk insert
+- Insert 100_000 : 24.84 sec
+- Insert 1_000_000 : 4 min 12.68 sec
+
+2. 100개씩 Bulk insert
+- Insert 100_000 : 3.36 sec
+- Insert 1_000_000 : 31.96 sec
+
+3. 300개씩 Bulk insert
+- Insert 100_000 : 1.65 sec
+- Insert 1_000_000 : 15.17 sec
+- Insert 10_000_000 : 3 min 26.18 sec
+```
+
 - CSV 파일 업로드 속도 비교
+```
+- Insert 100_000 : 1.68 sec
+- Insert 1_000_000 : 12.26 sec
+- Insert 10_000_000 : 3 min 13.22 sec
+```
 
 ### 단일 삽입 반복
 ```
@@ -25,9 +50,6 @@ END WHILE;
 END $$
 DELIMITER ;
 ```
-- insert 1_000 : 2.28 sec
-- Insert 10_000 : 21.90 sec
-- Insert 100_000 : 3 min 39.99 sec
 
 ### Bulk insertion (10, 100, 300)
 ```
@@ -56,19 +78,6 @@ END $$
 DELIMITER ;
 ```
 
-1. 10개씩 Bulk insert
-- Insert 100_000 : 24.84 sec
-- Insert 1_000_000 : 4 min 12.68 sec
-
-2. 100개씩 Bulk insert
-- Insert 100_000 : 3.36 sec
-- Insert 1_000_000 : 31.96 sec
-
-3. 300개씩 Bulk insert
-- Insert 100_000 : 1.65 sec
-- Insert 1_000_000 : 15.17 sec
-- Insert 10_000_000 : 3 min 26.18 sec
-
 ### CSV 파일 업로드
 
 1. check safe fie path
@@ -82,8 +91,3 @@ LOAD DATA INFILE "/var/lib/mysql-files/member-data.txt" INTO TABLE MEMBER FIELDS
 LOAD DATA INFILE "/var/lib/mysql-files/album-data.txt" INTO TABLE ALBUM FIELDS TERMINATED BY ',' ENCLOSED BY '"' LINES TERMINATED BY '\n' IGNORE 1 ROWS;
 LOAD DATA INFILE "/var/lib/mysql-files/picture-data.txt" INTO TABLE PICTURE FIELDS TERMINATED BY ',' ENCLOSED BY '"' LINES TERMINATED BY '\n' IGNORE 1 ROWS;
 ```
-
-3. performance
-- Insert 100_000 : 1.68 sec
-- Insert 1_000_000 : 12.26 sec
-- Insert 10_000_000 : 3 min 13.22 sec
