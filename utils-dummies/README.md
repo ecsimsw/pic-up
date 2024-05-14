@@ -1,3 +1,6 @@
+## Utils-dummies
+DB 더미테이터 csv 파일 생성
+
 ## How to insert
 
 ### Environment
@@ -9,8 +12,6 @@ ID, USERNAME, PASSWORD
 ```
 
 ### Comparison
-
-
 ### Single insertion loop
 ```
 CALL BASIC_INSERT();
@@ -20,7 +21,6 @@ CALL BASIC_INSERT();
 - Insert 100_000 : 3 min 39.99 sec
 
 ### Bulk insertion
-
 1. Bulk insert - 10
 ```
 CALL BULK_INSERT_10();
@@ -44,17 +44,14 @@ CALL BULK_INSERT_300();
 - Insert 10_000_000 : 3 min 26.18 sec
 
 ### LOAD DATA FILE
-
 1. check safe fie path
-
 ```
 mysql> SELECT @@GLOBAL.secure_file_priv;
 ```
 
 2. load data
-
 ```
-LOAD DATA INFILE "/var/lib/mysql-files/user-data.txt" INTO TABLE MEMBER FIELDS TERMINATED BY ',' ENCLOSED BY '"' LINES TERMINATED BY '\n' IGNORE 1 ROWS;
+LOAD DATA INFILE "/var/lib/mysql-files/member-data.txt" INTO TABLE MEMBER FIELDS TERMINATED BY ',' ENCLOSED BY '"' LINES TERMINATED BY '\n' IGNORE 1 ROWS;
 LOAD DATA INFILE "/var/lib/mysql-files/album-data.txt" INTO TABLE ALBUM FIELDS TERMINATED BY ',' ENCLOSED BY '"' LINES TERMINATED BY '\n' IGNORE 1 ROWS;
 LOAD DATA INFILE "/var/lib/mysql-files/picture-data.txt" INTO TABLE PICTURE FIELDS TERMINATED BY ',' ENCLOSED BY '"' LINES TERMINATED BY '\n' IGNORE 1 ROWS;
 ```
