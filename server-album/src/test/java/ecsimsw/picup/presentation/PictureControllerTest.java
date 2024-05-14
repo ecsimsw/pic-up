@@ -1,21 +1,33 @@
 package ecsimsw.picup.presentation;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import ecsimsw.picup.album.controller.*;
-import ecsimsw.picup.storage.domain.FileResource;
+import static ecsimsw.picup.storage.domain.StorageType.STORAGE;
+import static ecsimsw.picup.utils.AlbumFixture.RESOURCE_KEY;
+import static ecsimsw.picup.utils.MemberFixture.USER_NAME;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+import ecsimsw.picup.album.controller.GlobalControllerAdvice;
+import ecsimsw.picup.album.controller.PictureController;
+import ecsimsw.picup.album.controller.RemoteIpArgumentResolver;
+import ecsimsw.picup.album.controller.ResourceKeyArgumentResolver;
+import ecsimsw.picup.album.controller.SearchCursorArgumentResolver;
 import ecsimsw.picup.album.dto.PictureResponse;
 import ecsimsw.picup.album.dto.PictureSearchCursor;
 import ecsimsw.picup.album.dto.PicturesDeleteRequest;
-import ecsimsw.picup.storage.dto.PreUploadUrlResponse;
-import ecsimsw.picup.storage.service.FileResourceService;
-import ecsimsw.picup.storage.service.FileUrlService;
-import ecsimsw.picup.album.service.PictureFacadeService;
-import ecsimsw.picup.album.service.UserLockService;
 import ecsimsw.picup.auth.AuthArgumentResolver;
 import ecsimsw.picup.auth.AuthInterceptor;
-import ecsimsw.picup.auth.AuthTokenService;
 import ecsimsw.picup.auth.LoginUser;
+import ecsimsw.picup.storage.domain.FileResource;
+import ecsimsw.picup.storage.dto.PreUploadUrlResponse;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -23,33 +35,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Optional;
-
-import static ecsimsw.picup.storage.domain.StorageType.STORAGE;
-import static ecsimsw.picup.utils.AlbumFixture.RESOURCE_KEY;
-import static ecsimsw.picup.utils.MemberFixture.USER_NAME;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
-class PictureControllerTest {
-
-    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
-
-    static {
-        OBJECT_MAPPER.registerModule(new JavaTimeModule());
-    }
-
-    private final PictureFacadeService pictureFacadeService = mock(PictureFacadeService.class);
-    private final UserLockService userLockService = mock(UserLockService.class);
-    private final AuthTokenService authTokenService = mock(AuthTokenService.class);
-    private final FileUrlService fileUrlService = mock(FileUrlService.class);
-    private final FileResourceService fileResourceService = mock(FileResourceService.class);
+class PictureControllerTest extends ControllerTestContext {
 
     private final MockMvc mockMvc = MockMvcBuilders
         .standaloneSetup(new PictureController(userLockService, pictureFacadeService, fileUrlService, fileResourceService))
@@ -63,9 +49,7 @@ class PictureControllerTest {
         .setControllerAdvice(new GlobalControllerAdvice())
         .build();
 
-    private final Long loginUserId = 1L;
     private final Long albumId = 1L;
-    private final String remoteIp = "192.168.0.1";
 
     @BeforeEach
     void init() {
@@ -120,7 +104,8 @@ class PictureControllerTest {
             loginUserId, albumId, false, false, RESOURCE_KEY.value(), RESOURCE_KEY.value(), LocalDateTime.now()
         ));
 
-        when(pictureFacadeService.readPicture(loginUserId, remoteIp, albumId, PictureSearchCursor.from(10, Optional.of(expectedCursorCreatedAt))))
+        when(pictureFacadeService.readPicture(loginUserId, remoteIp, albumId,
+            PictureSearchCursor.from(10, Optional.of(expectedCursorCreatedAt))))
             .thenReturn(expectedPictures);
 
         mockMvc.perform(get("/api/album/" + albumId + "/picture")
@@ -139,7 +124,8 @@ class PictureControllerTest {
             loginUserId, albumId, false, false, RESOURCE_KEY.value(), RESOURCE_KEY.value(), LocalDateTime.now()
         ));
 
-        when(pictureFacadeService.readPicture(loginUserId, remoteIp, albumId, PictureSearchCursor.from(limit, Optional.empty())))
+        when(pictureFacadeService.readPicture(loginUserId, remoteIp, albumId,
+            PictureSearchCursor.from(limit, Optional.empty())))
             .thenReturn(expectedPictures);
 
         mockMvc.perform(get("/api/album/" + albumId + "/picture")

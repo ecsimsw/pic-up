@@ -1,18 +1,33 @@
 package ecsimsw.picup.presentation;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import static ecsimsw.picup.storage.domain.StorageType.STORAGE;
+import static ecsimsw.picup.utils.AlbumFixture.ALBUM_NAME;
+import static ecsimsw.picup.utils.AlbumFixture.FILE_SIZE;
+import static ecsimsw.picup.utils.AlbumFixture.RESOURCE_KEY;
+import static ecsimsw.picup.utils.AlbumFixture.THUMBNAIL_RESOURCE_KEY;
+import static ecsimsw.picup.utils.MemberFixture.USER_NAME;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 import ecsimsw.picup.album.controller.AlbumController;
 import ecsimsw.picup.album.controller.GlobalControllerAdvice;
 import ecsimsw.picup.album.controller.RemoteIpArgumentResolver;
+import ecsimsw.picup.album.dto.AlbumResponse;
+import ecsimsw.picup.auth.AuthArgumentResolver;
+import ecsimsw.picup.auth.AuthInterceptor;
+import ecsimsw.picup.auth.LoginUser;
+import ecsimsw.picup.auth.UnauthorizedException;
 import ecsimsw.picup.storage.domain.FileResource;
 import ecsimsw.picup.storage.domain.ResourceKey;
-import ecsimsw.picup.album.dto.AlbumResponse;
-import ecsimsw.picup.album.service.AlbumFacadeService;
-import ecsimsw.picup.storage.service.FileResourceService;
-import ecsimsw.picup.storage.service.FileUrlService;
-import ecsimsw.picup.album.service.UserLockService;
-import ecsimsw.picup.auth.*;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.function.Supplier;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -21,35 +36,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.function.Supplier;
-
-import static ecsimsw.picup.storage.domain.StorageType.STORAGE;
-import static ecsimsw.picup.utils.AlbumFixture.*;
-import static ecsimsw.picup.utils.MemberFixture.USER_ID;
-import static ecsimsw.picup.utils.MemberFixture.USER_NAME;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
-class AlbumControllerTest {
-
-    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
-
-    static {
-        OBJECT_MAPPER.registerModule(new JavaTimeModule());
-    }
-
-    private final AlbumFacadeService albumFacadeService = mock(AlbumFacadeService.class);
-    private final UserLockService userLockService = mock(UserLockService.class);
-    private final FileResourceService fileResourceService = mock(FileResourceService.class);
-    private final AuthTokenService authTokenService = mock(AuthTokenService.class);
-    private final FileUrlService fileUrlService = mock(FileUrlService.class);
+class AlbumControllerTest extends ControllerTestContext {
 
     private final MockMvc mockMvc = MockMvcBuilders
         .standaloneSetup(new AlbumController(albumFacadeService, userLockService, fileResourceService))
@@ -61,8 +48,6 @@ class AlbumControllerTest {
         .setControllerAdvice(new GlobalControllerAdvice())
         .build();
 
-    private final Long loginUserId = USER_ID;
-    private final String remoteIp = "192.168.0.1";
     private final FileResource uploadFile = FileResource.stored(STORAGE, RESOURCE_KEY, FILE_SIZE);
 
     @BeforeEach
@@ -86,7 +71,7 @@ class AlbumControllerTest {
             .thenReturn(expectedAlbumInfo);
 
         when(userLockService.<Long>isolate(anyLong(), any(Supplier.class)))
-            .thenAnswer(input -> ((Supplier)input.getArguments()[1]).get());
+            .thenAnswer(input -> ((Supplier) input.getArguments()[1]).get());
 
         mockMvc.perform(multipart("/api/album/")
                 .file(new MockMultipartFile("thumbnail", "thumb.jpg", "jpg", new byte[0]))
