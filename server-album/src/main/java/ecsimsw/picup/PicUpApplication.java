@@ -1,15 +1,8 @@
 package ecsimsw.picup;
 
-import ecsimsw.picup.storage.utils.FileStorageUtils;
-import lombok.extern.log4j.Log4j2;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.retry.annotation.EnableRetry;
-import org.springframework.scheduling.annotation.EnableScheduling;
 
-@Log4j2
-@EnableScheduling
-@EnableRetry
 @SpringBootApplication
 public class PicUpApplication {
 
@@ -17,7 +10,5 @@ public class PicUpApplication {
         var app = new SpringApplication(PicUpApplication.class);
         app.setAdditionalProfiles("prod");
         app.run(args);
-        FileStorageUtils.read("/ext-data/private_key.pem");
-
     }
 }

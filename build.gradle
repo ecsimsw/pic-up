@@ -10,7 +10,7 @@ repositories {
 
 subprojects {
     group = 'ecsimsw.picup'
-    version = '2.0.1'
+    version = '2.0.2'
     sourceCompatibility = '17'
 
     apply plugin: 'java'

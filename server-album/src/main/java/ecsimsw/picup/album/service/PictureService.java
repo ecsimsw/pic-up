@@ -22,7 +22,8 @@ public class PictureService {
 
     @Transactional
     public PictureInfo create(Long userId, Long albumId, ResourceKey fileResource, Long fileSize) {
-        var album = getUserAlbum(userId, albumId);
+//        var album = getUserAlbum(userId, albumId);
+        var album = albumRepository.findById(albumId).orElseThrow();
         var picture = new Picture(album, fileResource, fileSize);
         pictureRepository.save(picture);
         return PictureInfo.of(picture);
@@ -64,8 +65,8 @@ public class PictureService {
 
     @Transactional(readOnly = true)
     public void validateAlbumOwner(Long userId, Long albumId) {
-        var album = getUserAlbum(userId, albumId);
-        album.authorize(userId);
+//        var album = getUserAlbum(userId, albumId);
+//        album.authorize(userId);
     }
 
     private Picture findPictureByResource(ResourceKey resourceKey) {
@@ -74,7 +75,9 @@ public class PictureService {
     }
 
     private Album getUserAlbum(Long userId, Long albumId) {
-        return albumRepository.findByIdAndUserId(albumId, userId)
-            .orElseThrow(() -> new AlbumException("Invalid album"));
+        return albumRepository.findById(albumId).orElseThrow();
+
+//        return albumRepository.findByIdAndUserId(albumId, userId)
+//            .orElseThrow(() -> new AlbumException("Invalid album"));
     }
 }

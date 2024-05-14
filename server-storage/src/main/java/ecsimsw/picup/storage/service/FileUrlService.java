@@ -49,7 +49,6 @@ public class FileUrlService {
             var signedUrl = cloudFrontUtilities.getSignedUrlWithCustomPolicy(sign);
             return signedUrl.url();
         } catch (Exception e) {
-            e.printStackTrace();
             throw new IllegalArgumentException("Failed to create cloudfront sign url from : " + filePath);
         }
     }

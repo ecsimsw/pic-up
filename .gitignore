@@ -1,6 +1,6 @@
 # server
 /storage-temp
-album-logs/*
+album-logs
 private_key.pem
 prod.sh
 

@@ -54,6 +54,8 @@ public class FileResourceService {
         return fileResourceRepository.save(fileResource);
     }
 
+    // TODO :: combine store
+
     @Transactional
     public FileResource store(StorageType type, ResourceKey resourceKey) {
         var resource = fileResourceRepository.findByStorageTypeAndResourceKey(type, resourceKey)
