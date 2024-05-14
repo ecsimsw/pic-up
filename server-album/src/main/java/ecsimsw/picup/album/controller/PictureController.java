@@ -70,6 +70,7 @@ public class PictureController {
         @PathVariable Long albumId,
         @SearchCursor PictureSearchCursor cursor
     ) {
+        System.out.println(user.id() + " " + remoteIp + " " +  albumId + " " + cursor);
         var pictures = pictureFacadeService.readPicture(user.id(), remoteIp, albumId, cursor);
         return ResponseEntity.ok(pictures);
     }

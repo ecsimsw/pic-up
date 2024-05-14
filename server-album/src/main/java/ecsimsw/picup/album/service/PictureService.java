@@ -20,10 +20,11 @@ public class PictureService {
     private final AlbumRepository albumRepository;
     private final PictureRepository pictureRepository;
 
+    // TODO
     @Transactional
     public PictureInfo create(Long userId, Long albumId, ResourceKey fileResource, Long fileSize) {
-//        var album = getUserAlbum(userId, albumId);
-        var album = albumRepository.findById(albumId).orElseThrow();
+        var album = getUserAlbum(userId, albumId);
+//        var album = albumRepository.findById(albumId).orElseThrow();
         var picture = new Picture(album, fileResource, fileSize);
         pictureRepository.save(picture);
         return PictureInfo.of(picture);
@@ -63,10 +64,11 @@ public class PictureService {
         return PictureInfo.listOf(pictures);
     }
 
+    // TODO
     @Transactional(readOnly = true)
     public void validateAlbumOwner(Long userId, Long albumId) {
-//        var album = getUserAlbum(userId, albumId);
-//        album.authorize(userId);
+        var album = getUserAlbum(userId, albumId);
+        album.authorize(userId);
     }
 
     private Picture findPictureByResource(ResourceKey resourceKey) {
@@ -74,10 +76,11 @@ public class PictureService {
             .orElseThrow(() -> new AlbumException("Not exists picture"));
     }
 
+    // TODO
     private Album getUserAlbum(Long userId, Long albumId) {
-        return albumRepository.findById(albumId).orElseThrow();
+//        return albumRepository.findById(albumId).orElseThrow();
 
-//        return albumRepository.findByIdAndUserId(albumId, userId)
-//            .orElseThrow(() -> new AlbumException("Invalid album"));
+        return albumRepository.findByIdAndUserId(albumId, userId)
+            .orElseThrow(() -> new AlbumException("Invalid album"));
     }
 }

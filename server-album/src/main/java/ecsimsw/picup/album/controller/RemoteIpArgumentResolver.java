@@ -21,6 +21,12 @@ public class RemoteIpArgumentResolver implements HandlerMethodArgumentResolver {
     public String resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer, NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
         var headerName = parameter.getParameterAnnotation(RemoteIp.class).headerName();
         var request = (HttpServletRequest) webRequest.getNativeRequest();
-        return request.getHeader(headerName);
+        if(request.getHeader(headerName) != null) {
+            return request.getHeader(headerName);
+        }
+        if(request.getHeader("X-Forwarded-For") != null) {
+            return request.getHeader("X-Forwarded-For");
+        }
+        return request.getRemoteAddr();
     }
 }

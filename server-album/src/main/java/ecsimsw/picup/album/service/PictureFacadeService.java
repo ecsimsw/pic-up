@@ -35,7 +35,7 @@ public class PictureFacadeService {
     // TODO :: remove file size
     @Transactional
     public long commitPreUpload(long userId, long albumId, ResourceKey resourceKey) {
-        var file = fileResourceService.store(STORAGE, resourceKey, 1L);
+        var file = fileResourceService.store(STORAGE, resourceKey);
         storageUsageService.addUsage(userId, file.getSize());
         var picture = pictureService.create(userId, albumId, file.getResourceKey(), file.getSize());
         return picture.id();
