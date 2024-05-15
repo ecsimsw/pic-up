@@ -1,30 +1,25 @@
 import http from 'k6/http';
-import { check, sleep } from 'k6';
-import { randomIntBetween } from 'https://jslib.k6.io/k6-utils/1.2.0/index.js';
+import { sleep } from 'k6';
+
+import {serverUrl} from "./0_env";
+import {checkStatus} from "./0_utils";
 
 export const options = {
-    vus: 100,
-    duration: '2m'
+    vus: 300,
+    duration: '10m'
 };
-
-const serverUrl = "https://www.ecsimsw.com:8082"
 
 export default function () {
     let loginData = {
-        username : "test-user0",
-        password : "password"
+        username: "test-user"+random(0, 99),
+        password: "password"
     };
     http.post(serverUrl + '/api/member/signin', JSON.stringify(loginData), {
-        headers: { 'Content-Type': 'application/json' },
-    });
-    const albumId = randomIntBetween(1,2000)
-    const res = http.post(serverUrl + '/api/album/' + albumId + '/picture/commit?resourceKey=hi.jpg')
-    check(res, {
-        'is status 200': (r) => r.status === 200,
+        headers: {'Content-Type': 'application/json'},
     });
 
-    if(res.status !== 200) {
-        console.log(res.status + " " + res.body)
-    }
+    const albumId = random(1,2000)
+    const res = http.post(serverUrl + '/api/album/' + albumId + '/picture/commit?resourceKey=hi.jpg')
+    checkStatus(res, 200)
     sleep(1)
 }

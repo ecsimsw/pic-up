@@ -1,30 +1,21 @@
 import http from 'k6/http';
-import { check, sleep } from 'k6';
-import { randomIntBetween } from 'https://jslib.k6.io/k6-utils/1.2.0/index.js';
+import { sleep } from 'k6';
 
-export const options = {
-    vus: 500,
-    duration: '1m'
-};
+import {serverUrl} from "./0_env";
+import {checkStatus, random} from './0_utils.js'
 
-const serverUrl = "https://www.ecsimsw.com:8082"
+export const options = env.options
 
 export default function () {
     let loginData = {
-        username : "test-user"+randomIntBetween(0, 99),
-        password : "password"
+        username: "test-user" + random(0, 99),
+        password: "password"
     };
     http.post(serverUrl + '/api/member/signin', JSON.stringify(loginData), {
-        headers: { 'Content-Type': 'application/json' },
+        headers: {'Content-Type': 'application/json'},
     });
+
     const res = http.get(serverUrl + '/api/member/me')
-
-    check(res, {
-        'is status 200': (r) => r.status === 200,
-    });
-
-    if(res.status !== 200) {
-        console.log(res.status + " " + res.body)
-    }
+    checkStatus(res, 200)
     sleep(1)
 }
