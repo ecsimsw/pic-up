@@ -32,6 +32,28 @@ spec:
                 name: server-common-secret
           ports:
             - containerPort: 8084
+          startupProbe:
+            httpGet:
+              path: /actuator/health
+              port: 8084
+            failureThreshold: 30
+            periodSeconds: 2
+          readinessProbe:
+            httpGet:
+              path: /actuator/health
+              port: 8084
+            failureThreshold: 2
+            periodSeconds: 100
+          livenessProbe:
+            httpGet:
+              path: /actuator/health
+              port: 8084
+            failureThreshold: 2
+            periodSeconds: 100
+          lifecycle:
+            preStop:
+              exec:
+                command: [ "sh", "-c", "sleep 10" ]    # Ensure that the IpTable is updated before kubelet kill container.
       volumes:
         - name: picup-data
           persistentVolumeClaim:
