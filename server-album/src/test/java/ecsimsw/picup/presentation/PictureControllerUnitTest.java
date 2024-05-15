@@ -20,6 +20,8 @@ import ecsimsw.picup.album.controller.SearchCursorArgumentResolver;
 import ecsimsw.picup.album.dto.PictureResponse;
 import ecsimsw.picup.album.dto.PictureSearchCursor;
 import ecsimsw.picup.album.dto.PicturesDeleteRequest;
+import ecsimsw.picup.album.service.PictureFacadeService;
+import ecsimsw.picup.album.service.UserLockService;
 import ecsimsw.picup.auth.AuthArgumentResolver;
 import ecsimsw.picup.auth.AuthInterceptor;
 import ecsimsw.picup.auth.LoginUser;
@@ -31,11 +33,13 @@ import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.transaction.annotation.Transactional;
 
-class PictureControllerTest extends ControllerTestContext {
+class PictureControllerUnitTest extends ControllerUnitTestContext {
 
     private final MockMvc mockMvc = MockMvcBuilders
         .standaloneSetup(new PictureController(userLockService, pictureFacadeService, fileUrlService, fileResourceService))
@@ -57,6 +61,7 @@ class PictureControllerTest extends ControllerTestContext {
             .thenReturn(new LoginUser(loginUserId, USER_NAME));
     }
 
+    @Transactional
     @DisplayName("Picture 를 업로드할 수 있는 Signed url 을 반환한다.")
     @Test
     void getSignedUrl() throws Exception {

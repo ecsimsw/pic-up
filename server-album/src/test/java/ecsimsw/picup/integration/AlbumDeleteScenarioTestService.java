@@ -26,14 +26,14 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 @DisplayName("앨범 제거 절차 검증")
-public class AlbumDeleteScenarioTest extends IntegrationTestContext {
+public class AlbumDeleteScenarioTestService extends ServiceIntegrationTestContext {
 
     private final FileResourceService fileResourceService;
     private final AlbumFacadeService albumFacadeService;
     private final StorageUsageService storageUsageService;
     private long savedAlbumId;
 
-    public AlbumDeleteScenarioTest(
+    public AlbumDeleteScenarioTestService(
         @Autowired AlbumFacadeService albumFacadeService,
         @Autowired FileResourceService fileResourceService,
         @Autowired StorageUsageService storageUsageService

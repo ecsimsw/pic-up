@@ -10,17 +10,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.cookie;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import ecsimsw.picup.album.controller.GlobalControllerAdvice;
 import ecsimsw.picup.album.controller.MemberController;
 import ecsimsw.picup.album.dto.MemberResponse;
 import ecsimsw.picup.album.dto.SignInRequest;
 import ecsimsw.picup.album.dto.SignUpRequest;
-import ecsimsw.picup.album.service.MemberService;
 import ecsimsw.picup.auth.AuthArgumentResolver;
 import ecsimsw.picup.auth.AuthInterceptor;
-import ecsimsw.picup.auth.AuthTokenService;
 import ecsimsw.picup.auth.AuthTokens;
 import ecsimsw.picup.auth.UnauthorizedException;
 import javax.servlet.http.Cookie;
@@ -30,7 +26,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-class MemberControllerTest extends ControllerTestContext {
+class MemberControllerUnitTest extends ControllerUnitTestContext {
 
     private final MockMvc mockMvc = MockMvcBuilders
         .standaloneSetup(new MemberController(memberService, authTokenService))

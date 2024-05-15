@@ -32,7 +32,6 @@ public class PictureFacadeService {
         storageUsageService.checkAbleToStore(userId, fileSize);
     }
 
-    // TODO :: remove file size
     @Transactional
     public long commitPreUpload(long userId, long albumId, ResourceKey resourceKey) {
         var file = fileResourceService.store(STORAGE, resourceKey);

@@ -13,6 +13,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 
 import static ecsimsw.picup.storage.domain.StorageType.STORAGE;
 import static ecsimsw.picup.utils.AlbumFixture.*;
@@ -21,13 +22,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @DisplayName("Picture 업로드 절차 검증")
-public class PictureUploadScenarioTest extends IntegrationTestContext {
+public class PictureUploadScenarioTestService extends ServiceIntegrationTestContext {
 
     private final PictureFacadeService pictureFacadeService;
     private final FileResourceService fileResourceService;
     private long albumId;
 
-    public PictureUploadScenarioTest(
+    public PictureUploadScenarioTestService(
         @Autowired PictureFacadeService pictureFacadeService,
         @Autowired FileResourceService fileResourceService
     ) {

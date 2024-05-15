@@ -36,7 +36,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.multipart.MultipartFile;
 
-class AlbumControllerTest extends ControllerTestContext {
+class AlbumControllerUnitTest extends ControllerUnitTestContext {
 
     private final MockMvc mockMvc = MockMvcBuilders
         .standaloneSetup(new AlbumController(albumFacadeService, userLockService, fileResourceService))

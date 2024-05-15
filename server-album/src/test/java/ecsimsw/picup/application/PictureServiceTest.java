@@ -9,6 +9,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
@@ -27,8 +28,8 @@ class PictureServiceTest {
 
     @BeforeEach
     void init(
-        @Autowired AlbumRepository albumRepository,
-        @Autowired PictureRepository pictureRepository
+        @Autowired AlbumRepository albumRepository,     // 진짜 다 구현하는 사람 -> 보수충 단위 테스트의 극 보수충 -> 최범균 / JPARepository 를 쓰지 않아. Repsitory 기능이 적은
+        @Autowired PictureRepository pictureRepository  // 나처럼 살짝 포기하는 사람 -> 토비 / Unit test like
     ) {
         pictureService = new PictureService(albumRepository, pictureRepository);
     }

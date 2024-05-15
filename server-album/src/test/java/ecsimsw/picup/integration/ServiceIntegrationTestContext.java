@@ -15,13 +15,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest(classes = {RedisConfig.class})
-public class IntegrationTestContext {
+public class ServiceIntegrationTestContext {
 
     protected static long savedUserId;
 
     @BeforeAll
     static void initMember(@Autowired MemberService memberService) {
         savedUserId = memberService.signUp(new SignUpRequest(USER_NAME, USER_PASSWORD)).id();
+
+        // A 데이터를 만들고
     }
 
     @AfterEach
@@ -35,5 +37,7 @@ public class IntegrationTestContext {
         pictureRepository.deleteAll();
         albumRepository.deleteAll();
         memberRepository.deleteAll();
+
+        // A 데이터를 지운다.
     }
 }

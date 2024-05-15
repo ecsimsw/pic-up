@@ -3,8 +3,8 @@ import { check, sleep } from 'k6';
 import { randomIntBetween } from 'https://jslib.k6.io/k6-utils/1.2.0/index.js';
 
 export const options = {
-    vus: 300,
-    duration: '10s'
+    vus: 500,
+    duration: '2m'
 };
 
 const serverUrl = "https://www.ecsimsw.com:8082"

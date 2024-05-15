@@ -7,7 +7,7 @@ spec:
   selector:
     matchLabels:
       app: server-album
-  replicas: 1
+  replicas: 2
   template:
     metadata:
       labels:

@@ -13,7 +13,7 @@ import ecsimsw.picup.auth.AuthTokenService;
 import ecsimsw.picup.storage.service.FileResourceService;
 import ecsimsw.picup.storage.service.FileUrlService;
 
-public class ControllerTestContext {
+public class ControllerUnitTestContext {
 
     protected static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
