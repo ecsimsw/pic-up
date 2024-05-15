@@ -1,5 +1,5 @@
-import { check } from 'k6';
-import { randomIntBetween } from 'https://jslib.k6.io/k6-utils/1.2.0/index.js';
+import {check} from 'k6';
+import {randomIntBetween} from 'https://jslib.k6.io/k6-utils/1.2.0/index.js';
 
 export function checkStatus(res, status) {
     check(res, {

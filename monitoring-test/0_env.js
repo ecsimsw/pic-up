@@ -1,4 +1,4 @@
-export const options = {
+export const testParam = {
     vus: 300,
     duration: '10m'
 };

@@ -1,10 +1,10 @@
 import http from 'k6/http';
-import { sleep } from 'k6';
+import {sleep} from 'k6';
 
-import {serverUrl} from "./0_env";
 import {checkStatus, random} from './0_utils.js'
+import {serverUrl, testParam} from "./0_env.js";
 
-export const options = env.options
+export const options = testParam
 
 export default function () {
     let loginData = {
