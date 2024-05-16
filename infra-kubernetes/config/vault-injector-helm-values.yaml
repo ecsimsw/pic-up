@@ -1,0 +1,16 @@
+# Copyright (c) HashiCorp, Inc.
+# SPDX-License-Identifier: MPL-2.0
+
+# Available parameters and their default values for the Vault chart.
+
+global:
+  # External vault server address for the injector and CSI provider to use.
+  # Setting this will disable deployment of a vault server.
+  externalVaultAddr: "http://192.168.0.4:8200"
+
+injector:
+  enabled: "true"
+  # Configures the port the injector should listen on
+  port: 8200
+  # Deprecated: Please use global.externalVaultAddr instead.
+  externalVaultAddr: "http://192.168.0.4:8200"

@@ -1,0 +1,15 @@
+version: '3'
+services:
+  vault:
+    image: vault:1.13.3
+    container_name: vault
+    ports:
+      - 8200:8200
+    volumes:
+      - ~/dev/data/vault/file:/vault/file
+      - ~/dev/data/vault/log:/vault/logs
+      - ./config:/vault/config
+      - ./policy:/vault/policy
+    cap_add:
+      - IPC_LOCK                      # To avoid swapping vault memory onto unencrypted disk.
+    entrypoint: vault server -config=/vault/config/config.json
