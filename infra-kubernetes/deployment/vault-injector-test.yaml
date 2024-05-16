@@ -6,40 +6,36 @@ metadata:
   name: vault-injector-test
   namespace: picup
 spec:
-  progressDeadlineSeconds: 600
   replicas: 1
-  revisionHistoryLimit: 10
   selector:
     matchLabels:
       app: vault-injector-test
-  strategy:
-    rollingUpdate:
-      maxSurge: 25%
-      maxUnavailable: 25%
-    type: RollingUpdate
   template:
     metadata:
       annotations:
-        vault.hashicorp.com/agent-inject: "true"
-        vault.hashicorp.com/agent-inject-secret-test: picup/common
-        vault.hashicorp.com/agent-inject-status: update
         vault.hashicorp.com/role: internal-app
+        vault.hashicorp.com/agent-inject: "true"
+        # KEY : agent-inject-secret-FILEPATH prefixes the path of the file, /vault/secrets directory.
+        # VALUE : vault secret path
+        vault.hashicorp.com/agent-inject-secret-picup: picup/common
+        # DESC : template that what to write in
+        # SECRET : vault secret path
+        # .Data : map[created:20240516 version:1]
+        vault.hashicorp.com/agent-inject-template-picup: |
+            {{- with secret "picup/common" -}}
+            {{- range $k, $v := .Data }}
+            {{- $k }}={{ $v }}
+            {{end}}{{end}}
       labels:
         app: vault-injector-test
     spec:
       containers:
         - image: alpine
-          command:
+          args:
             - "sh"
             - "-c"
-            - "cat /vault/secrets/test && sleep 10000"
-          imagePullPolicy: Always
+            - "source /vault/secrets/picup && sleep 10000"
+          imagePullPolicy: IfNotPresent
           name: vault-injector-test
           resources: {}
-          terminationMessagePath: /dev/termination-log
-          terminationMessagePolicy: File
-      dnsPolicy: ClusterFirst
-      restartPolicy: Always
-      schedulerName: default-scheduler
-      securityContext: {}
       terminationGracePeriodSeconds: 30
