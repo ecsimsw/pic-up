@@ -9,6 +9,16 @@ spec:
   jobTemplate:
     spec:
       template:
+        metadata:
+          annotations:
+            vault.hashicorp.com/role: internal-app
+            vault.hashicorp.com/agent-inject: "true"
+            vault.hashicorp.com/agent-inject-secret-picup: picup/common
+            vault.hashicorp.com/agent-inject-template-picup: |
+              {{- with secret "picup/common" -}}
+              {{- range $k, $v := .Data }}
+              export {{ $k }}={{ $v }}
+              {{end}}{{end}}
         spec:
           containers:
             - name: server-batch
@@ -17,9 +27,9 @@ spec:
               volumeMounts:
                 - name: picup-data
                   mountPath: /ext-data       # READ private_key.pem
-              envFrom:
-                - secretRef:
-                    name: server-common-secret
+#              envFrom:
+#                - secretRef:
+#                    name: server-common-secret
           restartPolicy: Never
           volumes:
             - name: picup-data

@@ -7,7 +7,7 @@ spec:
   selector:
     matchLabels:
       app: server-album
-  replicas: 2
+  replicas: 1
   template:
     metadata:
       labels:
@@ -42,7 +42,7 @@ spec:
             httpGet:
               path: /actuator/health
               port: 8084
-            failureThreshold: 30
+            failureThreshold: 100
             periodSeconds: 2
           readinessProbe:
             httpGet:
