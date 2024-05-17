@@ -2,6 +2,10 @@ dependencies {
     // web
     implementation 'org.springframework.boot:spring-boot-starter-web'
 
+    // model metadata
+    implementation 'org.hibernate:hibernate-jpamodelgen'
+    annotationProcessor 'org.hibernate:hibernate-jpamodelgen'
+
     // aws - s3, cloudfront, mock s3
     implementation 'software.amazon.awssdk:s3:2.25.27'
     implementation 'software.amazon.awssdk:cloudfront:2.25.27'

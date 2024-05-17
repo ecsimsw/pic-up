@@ -13,13 +13,22 @@ import org.springframework.stereotype.Component;
 @Component
 class BatchRunner implements ApplicationRunner {
 
+    private final int FILE_EXPIRATION_BEFORE_SEC = 10;
+
     private final FileResourceService fileResourceService;
     private final FileDeletionService fileDeletionService;
 
     @Override
     public void run(ApplicationArguments applicationArguments) {
-        log.info("Delete dummy file");
-        var dummyFiles = fileResourceService.getDummyFiles(LocalDateTime.now().minusSeconds(10));
-        dummyFiles.forEach(fileDeletionService::delete);
+        var expiration = LocalDateTime.now().minusSeconds(FILE_EXPIRATION_BEFORE_SEC);
+        var segment = 20;
+        while(true) {
+            var dummyFiles = fileResourceService.getDummyFiles(expiration, segment);
+            dummyFiles.forEach(fileDeletionService::delete);
+            if(dummyFiles.isEmpty()) {
+                break;
+            }
+            log.info("Delete dummy files : " + dummyFiles.size());
+        }
     }
 }

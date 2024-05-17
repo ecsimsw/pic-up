@@ -3,12 +3,15 @@ package ecsimsw.picup.storage.service;
 import ecsimsw.picup.storage.config.S3Config;
 import ecsimsw.picup.storage.domain.FileResource;
 import ecsimsw.picup.storage.domain.FileResourceRepository;
+import ecsimsw.picup.storage.domain.FileResource_;
 import ecsimsw.picup.storage.domain.ResourceKey;
 import ecsimsw.picup.storage.domain.StorageType;
 import ecsimsw.picup.storage.exception.StorageException;
 import ecsimsw.picup.storage.utils.FileUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -74,12 +77,15 @@ public class FileResourceService {
 
     @Transactional(readOnly = true)
     public List<FileResource> getDummyFiles() {
-        return getDummyFiles(LocalDateTime.now());
+        return fileResourceRepository.findAllToBeDeletedCreatedBefore(LocalDateTime.now());
     }
 
     @Transactional(readOnly = true)
-    public List<FileResource> getDummyFiles(LocalDateTime expiration) {
-        return fileResourceRepository.findAllToBeDeletedCreatedBefore(expiration);
+    public List<FileResource> getDummyFiles(LocalDateTime expiration, int n) {
+        return fileResourceRepository.findAllToBeDeletedCreatedBefore(
+            expiration,
+            PageRequest.of(0, n, Direction.DESC, FileResource_.CREATED_AT)
+        );
     }
 
     public String filePath(FileResource resource) {

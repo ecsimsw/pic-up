@@ -11,7 +11,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(indexes = {
-    @Index(name = "idx_resource_key", columnList = "resourceKey")
+    @Index(name = "idx_resource_key", columnList = "resourceKey"),
+    @Index(name = "idx_createdAt_resource_key", columnList = "createdAt, resourceKey")
 })
 @Entity
 public class FileResource {
