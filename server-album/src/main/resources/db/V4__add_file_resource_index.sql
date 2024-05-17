@@ -1,1 +1,1 @@
-create index idx_createdAt_resource_key on file_resource (createdAt, resourceKey);
+create index idx_createdAt_resource_key on file_resource (created_at, resource_key);
