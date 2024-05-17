@@ -10,7 +10,6 @@
 
 <img src = "https://github.com/ecsimsw/pic-up/assets/46060746/f311d849-e2a2-4ac7-b007-16c4f447b38b" width="800px">
 
-
 ### Configuration
 
 #### 1. Helm values.yaml
@@ -40,15 +39,15 @@ type: kubernetes.io/service-account-token
 ```
 #### 4. Initialize vault kubernetes auth
 ```
-TOKEN_REVIEWER_JWT=$(kubectl get secret vault-auth-secret --output='go-template={{ .data.token }}' | base64 --decode)
-KUBE_CA_CERT=$(kubectl config view --raw --minify --flatten --output 'jsonpath={.clusters[].cluster.certificate-authority-data}' | base64 --decode)
-KUBE_HOST=$(kubectl config view --raw --minify --flatten -o jsonpath='{.clusters[].cluster.server}')
+export TOKEN_REVIEWER_JWT=eyJhbGciOiJSUzI1NiIsImtpZCI6IktuSmlMMjVTYnYyZUhpZzVwcVNOU0VvZ3BjYm9yZTRpMm5yNzZZUFo3STgifQ.eyJpc3MiOiJrdWJlcm5ldGVzL3NlcnZpY2VhY2NvdW50Iiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9uYW1lc3BhY2UiOiJkZWZhdWx0Iiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9zZWNyZXQubmFtZSI6InZhdWx0LWF1dGgtc2VjcmV0Iiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9zZXJ2aWNlLWFjY291bnQubmFtZSI6InZhdWx0Iiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9zZXJ2aWNlLWFjY291bnQudWlkIjoiZmZmZjA1ZDQtMWRlZi00NDA3LWE3MjctMDExZDNjMjk5NGE1Iiwic3ViIjoic3lzdGVtOnNlcnZpY2VhY2NvdW50OmRlZmF1bHQ6dmF1bHQifQ.oBvupkvsmtzgXzlCe_QUDld7rWma9hrzeiJ-CKFZRQfuf--LZFmJhxwCiUjFTcoKGMtlb41xGpFO78rlMbSmUgKJoX-70csveL-WneR5tfCEeAbksPCVdr30VA6FzJVoURCBmB_9PjX_pves5K1ear_TpRoLffCriqtyyWS9nzqmhq9kFyDjMgreB7vY4joqFe7G-iNBgTUGskpO50nSJvPZBC6oRlgFRJkVLYUxPIlSiMTWpO00gd51IpX9MgXIilqIi4gSqpBKH9vSQfPGr8Fkn34wNEXo8b-Gc5D1fjEPzVV0exfbWqeSFehEvKnk9XMW2Oux-u0INjMrXLHxEA
+export KUBE_HOST=https://192.168.0.101:6443
+export KUBE_CA_CERT=$(kubectl config view --raw --minify --flatten --output 'jsonpath={.clusters[].cluster.certificate-authority-data}' | base64 --decode)
 ```
 ```
 vault auth enable kubernetes
 
 vault write auth/kubernetes/config  \
-   token_reviewer_jwt="$TOKEN_REVIEW_JWT} \
+   token_reviewer_jwt="$TOKEN_REVIEWER_JWT" \
    kubernetes_ca_cert="$KUBE_CA_CERT" \
    kubernetes_host="$KUBE_HOST"
 ```
