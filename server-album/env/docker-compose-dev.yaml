@@ -20,16 +20,3 @@ services:
       resources:
         limits:
           memory: 300M
-
-  rabbitmq:
-    image: rabbitmq:3-management-alpine
-    container_name: 'rabbitmq'
-    ports:
-      - 5672:5672     # for AMQP communication and
-      - 15672:15672   # for the RabbitMQ management interface, http://localhost:15672
-    volumes:
-      - ~/dev/data/rabbitmq-data/:/var/lib/rabbitmq/
-    environment:
-      RABBITMQ_ERLANG_COOKIE: "RabbitMQ-My-Cookies"
-      RABBITMQ_DEFAULT_USER: "admin"
-      RABBITMQ_DEFAULT_PASS: "password"

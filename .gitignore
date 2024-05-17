@@ -2,12 +2,10 @@
 /storage-temp
 album-logs
 private_key.pem
-prod.sh
+/logs
 
 server-api/api-album/src/main/java/ecsimsw/picup/PicUpAlbumApplication.java
 server-api/api-storage/src/main/java/ecsimsw/picup/PicUpStorageApplication.java
-
-/logs
 
 # User-specific stuff
 .idea

@@ -1,3 +1,13 @@
+## Vault kubernetes injector test configuration
+
+apiVersion: v1
+kind: Secret
+metadata:
+  name: vault-auth-secret
+  annotations:
+    kubernetes.io/service-account.name: vault
+type: kubernetes.io/service-account-token
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -24,7 +34,7 @@ spec:
         vault.hashicorp.com/agent-inject-template-picup: |
             {{- with secret "picup/common" -}}
             {{- range $k, $v := .Data }}
-            {{- $k }}={{ $v }}
+            export {{ $k }}={{ $v }}
             {{end}}{{end}}
       labels:
         app: vault-injector-test
