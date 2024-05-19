@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration xmlns:xi="http://www.w3.org/2001/XInclude">
+  <Properties>
+    <Property name="BASE_DIR">album-logs</Property>
+    <Property name="FILE_LOG_DAY_INTERVAL">7</Property>
+    <Property name="FILE_DELETE_DAY_INTERVAL">15</Property>
+  </Properties>
+  <Appenders>
+    <xi:include href="components/application-logs-console-appender.xml"/>
+    <xi:include href="components/application-logs-rolling-file.xml"/>
+    <xi:include href="components/error-logs-rolling-file.xml"/>
+  </Appenders>
+  <Loggers>
+    <Root level="info">
+      <AppenderRef ref="ApplicationLogsConsoleAppender" level="info"/>
+      <AppenderRef ref="ApplicationLogsRollingFile" level="info"/>
+      <AppenderRef ref="ErrorLogsRollingFile" level="error"/>
+    </Root>
+  </Loggers>
+</Configuration>

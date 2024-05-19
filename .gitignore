@@ -1,8 +1,8 @@
 # server
 /storage-temp
-album-logs
-private_key.pem
 /logs
+album-logs
+*.pem
 
 server-api/api-album/src/main/java/ecsimsw/picup/PicUpAlbumApplication.java
 server-api/api-storage/src/main/java/ecsimsw/picup/PicUpStorageApplication.java
