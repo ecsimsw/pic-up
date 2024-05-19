@@ -1,6 +1,6 @@
 package ecsimsw.picup.utils;
 
-import ecsimsw.picup.album.dto.SignUpRequest;
+import ecsimsw.picup.dto.SignUpRequest;
 
 public class MemberFixture {
 

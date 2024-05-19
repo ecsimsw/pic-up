@@ -10,11 +10,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.cookie;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import ecsimsw.picup.album.controller.GlobalControllerAdvice;
-import ecsimsw.picup.album.controller.MemberController;
-import ecsimsw.picup.album.dto.MemberResponse;
-import ecsimsw.picup.album.dto.SignInRequest;
-import ecsimsw.picup.album.dto.SignUpRequest;
+import ecsimsw.picup.controller.GlobalControllerAdvice;
+import ecsimsw.picup.controller.MemberController;
+import ecsimsw.picup.dto.MemberResponse;
+import ecsimsw.picup.dto.SignInRequest;
+import ecsimsw.picup.dto.SignUpRequest;
 import ecsimsw.picup.auth.AuthArgumentResolver;
 import ecsimsw.picup.auth.AuthInterceptor;
 import ecsimsw.picup.auth.AuthTokens;

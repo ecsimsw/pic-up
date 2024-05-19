@@ -1,15 +1,14 @@
 package ecsimsw.picup.application;
 
-import ecsimsw.picup.album.domain.Album;
-import ecsimsw.picup.album.domain.AlbumRepository;
-import ecsimsw.picup.album.domain.PictureRepository;
+import ecsimsw.picup.domain.Album;
+import ecsimsw.picup.domain.AlbumRepository;
+import ecsimsw.picup.domain.PictureRepository;
 import ecsimsw.picup.storage.domain.ResourceKey;
-import ecsimsw.picup.album.service.PictureService;
+import ecsimsw.picup.service.PictureService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 

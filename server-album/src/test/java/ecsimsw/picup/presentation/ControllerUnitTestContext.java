@@ -5,10 +5,10 @@ import static org.mockito.Mockito.mock;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import ecsimsw.picup.album.service.AlbumFacadeService;
-import ecsimsw.picup.album.service.MemberService;
-import ecsimsw.picup.album.service.PictureFacadeService;
-import ecsimsw.picup.album.service.UserLockService;
+import ecsimsw.picup.service.AlbumFacadeService;
+import ecsimsw.picup.service.MemberService;
+import ecsimsw.picup.service.PictureFacadeService;
+import ecsimsw.picup.service.UserLockService;
 import ecsimsw.picup.auth.AuthTokenService;
 import ecsimsw.picup.storage.service.FileResourceService;
 import ecsimsw.picup.storage.service.FileUrlService;

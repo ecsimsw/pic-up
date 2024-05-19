@@ -1,6 +1,10 @@
 package ecsimsw.picup.infrastructure;
 
 import ecsimsw.picup.album.domain.*;
+import ecsimsw.picup.domain.Album;
+import ecsimsw.picup.domain.AlbumRepository;
+import ecsimsw.picup.domain.Picture;
+import ecsimsw.picup.domain.PictureRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;

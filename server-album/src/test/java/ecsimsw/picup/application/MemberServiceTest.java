@@ -1,12 +1,12 @@
 package ecsimsw.picup.application;
 
-import ecsimsw.picup.album.domain.MemberRepository;
-import ecsimsw.picup.album.domain.StorageUsage;
-import ecsimsw.picup.album.dto.SignInRequest;
-import ecsimsw.picup.album.dto.SignUpRequest;
-import ecsimsw.picup.album.exception.MemberException;
-import ecsimsw.picup.album.service.MemberService;
-import ecsimsw.picup.album.service.StorageUsageService;
+import ecsimsw.picup.domain.MemberRepository;
+import ecsimsw.picup.domain.StorageUsage;
+import ecsimsw.picup.dto.SignInRequest;
+import ecsimsw.picup.dto.SignUpRequest;
+import ecsimsw.picup.exception.MemberException;
+import ecsimsw.picup.service.MemberService;
+import ecsimsw.picup.service.StorageUsageService;
 import ecsimsw.picup.auth.UnauthorizedException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;

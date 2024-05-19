@@ -1,8 +1,5 @@
 package ecsimsw.picup.domain;
 
-import ecsimsw.picup.album.domain.Member;
-import ecsimsw.picup.album.domain.MemberRepository;
-import ecsimsw.picup.album.domain.Password;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

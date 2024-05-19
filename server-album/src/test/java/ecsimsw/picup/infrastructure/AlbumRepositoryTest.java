@@ -1,7 +1,7 @@
 package ecsimsw.picup.infrastructure;
 
-import ecsimsw.picup.album.domain.Album;
-import ecsimsw.picup.album.domain.AlbumRepository;
+import ecsimsw.picup.domain.Album;
+import ecsimsw.picup.domain.AlbumRepository;
 import ecsimsw.picup.storage.domain.ResourceKey;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

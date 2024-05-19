@@ -2,18 +2,17 @@ package ecsimsw.picup.integration;
 
 import ecsimsw.picup.storage.domain.FileResource;
 import ecsimsw.picup.storage.domain.FileResourceRepository;
-import ecsimsw.picup.album.dto.SignUpRequest;
-import ecsimsw.picup.album.exception.AlbumException;
-import ecsimsw.picup.album.service.AlbumFacadeService;
+import ecsimsw.picup.dto.SignUpRequest;
+import ecsimsw.picup.exception.AlbumException;
+import ecsimsw.picup.service.AlbumFacadeService;
 import ecsimsw.picup.storage.service.FileResourceService;
-import ecsimsw.picup.album.service.MemberService;
-import ecsimsw.picup.album.service.PictureFacadeService;
-import ecsimsw.picup.album.service.StorageUsageService;
+import ecsimsw.picup.service.MemberService;
+import ecsimsw.picup.service.PictureFacadeService;
+import ecsimsw.picup.service.StorageUsageService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.transaction.annotation.Transactional;
 
 import static ecsimsw.picup.storage.domain.StorageType.STORAGE;
 import static ecsimsw.picup.utils.AlbumFixture.*;

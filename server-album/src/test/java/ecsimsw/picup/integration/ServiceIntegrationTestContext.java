@@ -3,12 +3,12 @@ package ecsimsw.picup.integration;
 import static ecsimsw.picup.utils.MemberFixture.USER_NAME;
 import static ecsimsw.picup.utils.MemberFixture.USER_PASSWORD;
 
-import ecsimsw.picup.album.domain.AlbumRepository;
+import ecsimsw.picup.domain.AlbumRepository;
 import ecsimsw.picup.storage.domain.FileResourceRepository;
-import ecsimsw.picup.album.domain.MemberRepository;
-import ecsimsw.picup.album.domain.PictureRepository;
-import ecsimsw.picup.album.dto.SignUpRequest;
-import ecsimsw.picup.album.service.MemberService;
+import ecsimsw.picup.domain.MemberRepository;
+import ecsimsw.picup.domain.PictureRepository;
+import ecsimsw.picup.dto.SignUpRequest;
+import ecsimsw.picup.service.MemberService;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.springframework.beans.factory.annotation.Autowired;

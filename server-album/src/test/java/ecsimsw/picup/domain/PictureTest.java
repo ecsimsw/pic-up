@@ -1,7 +1,5 @@
 package ecsimsw.picup.domain;
 
-import ecsimsw.picup.album.domain.Album;
-import ecsimsw.picup.album.domain.Picture;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 

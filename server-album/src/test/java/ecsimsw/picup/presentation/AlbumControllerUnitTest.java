@@ -15,10 +15,10 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import ecsimsw.picup.album.controller.AlbumController;
-import ecsimsw.picup.album.controller.GlobalControllerAdvice;
-import ecsimsw.picup.album.controller.RemoteIpArgumentResolver;
-import ecsimsw.picup.album.dto.AlbumResponse;
+import ecsimsw.picup.controller.AlbumController;
+import ecsimsw.picup.controller.GlobalControllerAdvice;
+import ecsimsw.picup.controller.RemoteIpArgumentResolver;
+import ecsimsw.picup.dto.AlbumResponse;
 import ecsimsw.picup.auth.AuthArgumentResolver;
 import ecsimsw.picup.auth.AuthInterceptor;
 import ecsimsw.picup.auth.LoginUser;

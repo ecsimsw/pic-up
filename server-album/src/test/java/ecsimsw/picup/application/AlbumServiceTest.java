@@ -1,10 +1,10 @@
 package ecsimsw.picup.application;
 
-import ecsimsw.picup.album.domain.Album;
-import ecsimsw.picup.album.domain.AlbumRepository;
+import ecsimsw.picup.domain.Album;
+import ecsimsw.picup.domain.AlbumRepository;
 import ecsimsw.picup.storage.domain.ResourceKey;
-import ecsimsw.picup.album.dto.AlbumInfo;
-import ecsimsw.picup.album.service.AlbumService;
+import ecsimsw.picup.dto.AlbumInfo;
+import ecsimsw.picup.service.AlbumService;
 import ecsimsw.picup.auth.UnauthorizedException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;

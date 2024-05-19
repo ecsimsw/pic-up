@@ -3,8 +3,6 @@ package ecsimsw.picup.domain;
 import static ecsimsw.picup.utils.MemberFixture.*;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import ecsimsw.picup.album.domain.Member;
-import ecsimsw.picup.album.domain.Password;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 

@@ -5,9 +5,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
-import ecsimsw.picup.album.domain.Member;
-import ecsimsw.picup.album.domain.MemberRepository;
-import ecsimsw.picup.album.domain.Password;
+import ecsimsw.picup.domain.Member;
+import ecsimsw.picup.domain.MemberRepository;
+import ecsimsw.picup.domain.Password;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -1,8 +1,8 @@
 package ecsimsw.picup.config;
 
-import ecsimsw.picup.album.controller.RemoteIpArgumentResolver;
-import ecsimsw.picup.album.controller.ResourceKeyArgumentResolver;
-import ecsimsw.picup.album.controller.SearchCursorArgumentResolver;
+import ecsimsw.picup.controller.RemoteIpArgumentResolver;
+import ecsimsw.picup.controller.ResourceKeyArgumentResolver;
+import ecsimsw.picup.controller.SearchCursorArgumentResolver;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;

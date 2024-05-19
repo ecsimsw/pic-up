@@ -1,10 +1,13 @@
 package ecsimsw.picup.application;
 
+import ecsimsw.picup.service.PictureFacadeService;
+import ecsimsw.picup.service.PictureService;
+import ecsimsw.picup.service.StorageUsageService;
 import ecsimsw.picup.storage.domain.FileResource;
-import ecsimsw.picup.album.domain.Picture;
+import ecsimsw.picup.domain.Picture;
 import ecsimsw.picup.storage.domain.ResourceKey;
-import ecsimsw.picup.album.dto.PictureInfo;
-import ecsimsw.picup.album.exception.AlbumException;
+import ecsimsw.picup.dto.PictureInfo;
+import ecsimsw.picup.exception.AlbumException;
 import ecsimsw.picup.album.service.*;
 import ecsimsw.picup.auth.UnauthorizedException;
 import ecsimsw.picup.storage.service.FileResourceService;
