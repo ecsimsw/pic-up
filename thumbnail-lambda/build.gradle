@@ -1,0 +1,30 @@
+plugins {
+    id 'java'
+}
+
+group = 'ecsimsw.picup.lambda'
+version = '2.0.1'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'software.amazon.awssdk:s3:2.25.27'
+    implementation 'com.amazonaws:aws-lambda-java-core:1.2.1'
+    implementation 'com.amazonaws:aws-lambda-java-events:3.1.0'
+    implementation 'com.amazonaws:aws-lambda-java-log4j2:1.5.1'
+    implementation 'org.slf4j:slf4j-simple:1.7.25'
+    implementation 'org.apache.httpcomponents:httpclient:4.3.5'
+
+    implementation 'org.jcodec:jcodec-javase:0.2.5'
+    implementation 'net.coobird:thumbnailator:0.4.20'
+}
+
+task buildZip(type: Zip) {
+    from compileJava
+    from processResources
+    into('lib') {
+        from configurations.runtimeClasspath
+    }
+}

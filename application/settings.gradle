@@ -1,0 +1,9 @@
+rootProject.name = 'picup'
+
+include 'storage-api'
+include 'storage-batch'
+include 'storage-core'
+include 'member-api'
+include 'member-core'
+include 'common-api'
+include 'common-core'

@@ -1,7 +1,0 @@
-rootProject.name = 'picup'
-
-include 'server-album'
-include 'server-batch'
-include 'server-storage'
-include 'server-member'
-
