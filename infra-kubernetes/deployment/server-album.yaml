@@ -15,6 +15,7 @@ spec:
       annotations:
         vault.hashicorp.com/role: internal-app
         vault.hashicorp.com/agent-inject: "true"
+        vault.hashicorp.com/agent-pre-populate-only : "true"  # disable sidecar
         vault.hashicorp.com/agent-inject-secret-picup: picup/common
         vault.hashicorp.com/agent-inject-template-picup: |
           {{- with secret "picup/common" -}}
