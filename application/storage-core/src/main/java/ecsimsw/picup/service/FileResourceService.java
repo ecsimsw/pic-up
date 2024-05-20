@@ -71,9 +71,11 @@ public class FileResourceService {
         fileResourceRepository.setAllToBeDeleted(resourceKeys);
     }
 
-    @Transactional(readOnly = true)
-    public List<FileResource> getDummyFiles() {
-        return fileResourceRepository.findAllToBeDeletedCreatedBefore(LocalDateTime.now());
+    @Transactional
+    public void deleteFromStorage(FileResource resource) {
+        var path = filePath(resource);
+        storageService.delete(path);
+        fileResourceRepository.delete(resource);
     }
 
     @Transactional(readOnly = true)

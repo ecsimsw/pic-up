@@ -1,6 +1,7 @@
 dependencies {
     // modules
-    implementation project(':common-api')
+    implementation project(':auth-api')
+    implementation project(':logging-api')
     implementation project(':storage-core')
 
     // spring

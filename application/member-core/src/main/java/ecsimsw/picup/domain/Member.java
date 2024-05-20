@@ -1,13 +1,12 @@
 package ecsimsw.picup.domain;
 
-import ecsimsw.picup.ecrypt.SHA256Utils;
 import ecsimsw.picup.exception.LoginFailedException;
 import ecsimsw.picup.exception.MemberException;
+import ecsimsw.picup.utils.Sha256Utils;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotBlank;
 
 @NoArgsConstructor
 @Getter
@@ -22,7 +21,6 @@ public class Member {
     private Long id;
 
     @Column(unique = true, nullable = false, length = 30)
-    @NotBlank
     private String username;
 
     @Embedded
@@ -48,7 +46,7 @@ public class Member {
     }
 
     public void authenticate(String inputPassword) {
-        var input = SHA256Utils.encrypt(inputPassword, password.getSalt());
+        var input = Sha256Utils.encrypt(inputPassword, password.getSalt());
         if(!this.password.getEncrypted().equals(input)) {
             throw new LoginFailedException("Invalid authenticate");
         }

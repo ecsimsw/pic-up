@@ -11,16 +11,16 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import ecsimsw.picup.auth.LoginUser;
 import ecsimsw.picup.controller.AlbumController;
 import ecsimsw.picup.controller.GlobalControllerAdvice;
 import ecsimsw.picup.controller.RemoteIpArgumentResolver;
+import ecsimsw.picup.domain.LoginUser;
 import ecsimsw.picup.dto.AlbumResponse;
-import ecsimsw.picup.auth.AuthTokenArgumentResolver;
-import ecsimsw.picup.auth.AuthTokenInterceptor;
-import ecsimsw.picup.auth.UnauthorizedException;
+import ecsimsw.picup.config.AuthTokenArgumentResolver;
+import ecsimsw.picup.config.AuthTokenInterceptor;
 import ecsimsw.picup.domain.FileResource;
 import ecsimsw.picup.domain.ResourceKey;
+import ecsimsw.picup.exception.UnauthorizedException;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.function.Supplier;
@@ -32,7 +32,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.web.multipart.MultipartFile;
 
 class AlbumControllerUnitTest extends ControllerUnitTestContext {
 

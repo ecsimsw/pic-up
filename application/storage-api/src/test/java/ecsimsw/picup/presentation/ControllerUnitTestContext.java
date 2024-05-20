@@ -5,7 +5,6 @@ import static org.mockito.Mockito.mock;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import ecsimsw.picup.service.*;
-import ecsimsw.picup.auth.AuthTokenService;
 
 public class ControllerUnitTestContext {
 

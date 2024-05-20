@@ -1,11 +1,11 @@
 package ecsimsw.picup.controller;
 
-import ecsimsw.picup.auth.AuthTokenService;
-import ecsimsw.picup.auth.LoginUser;
-import ecsimsw.picup.auth.TokenPayload;
+import ecsimsw.picup.annotation.TokenPayload;
+import ecsimsw.picup.domain.LoginUser;
 import ecsimsw.picup.dto.MemberResponse;
 import ecsimsw.picup.dto.SignInRequest;
 import ecsimsw.picup.dto.SignUpRequest;
+import ecsimsw.picup.service.AuthTokenService;
 import ecsimsw.picup.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

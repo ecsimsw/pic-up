@@ -37,10 +37,13 @@ class DummyFileSearchScenarioTest {
         fileResourceRepository.saveAll(dummies);
 
         // when
-        var searched = fileResourceService.getDummyFiles();
+        var limit = 10;
+        var searched = fileResourceService.getDummyFiles(LocalDateTime.now(), limit);
 
         // then
-        assertThat(searched).usingRecursiveComparison().isEqualTo(dummies);
+        assertThat(searched).usingRecursiveComparison()
+            .ignoringCollectionOrder()
+            .isEqualTo(dummies);
     }
 
     @DisplayName("삭제 예정 상태가 아닌 파일은 검색되지 않는다.")
@@ -55,7 +58,8 @@ class DummyFileSearchScenarioTest {
         fileResourceRepository.saveAll(dummies);
 
         // when
-        var searched = fileResourceService.getDummyFiles();
+        var limit = 10;
+        var searched = fileResourceService.getDummyFiles(LocalDateTime.now(), limit);
 
         // then
         assertThat(searched).doesNotContainAnyElementsOf(dummies);
@@ -74,7 +78,8 @@ class DummyFileSearchScenarioTest {
         fileResourceRepository.saveAll(dummies);
 
         // when
-        var searched = fileResourceService.getDummyFiles();
+        var limit = 10;
+        var searched = fileResourceService.getDummyFiles(LocalDateTime.now(), limit);
 
         // then
         assertThat(searched).doesNotContainAnyElementsOf(dummies);

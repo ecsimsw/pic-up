@@ -1,11 +1,14 @@
 package ecsimsw.picup.presentation;
 
-import ecsimsw.picup.auth.*;
+import ecsimsw.picup.config.*;
 import ecsimsw.picup.controller.GlobalControllerAdvice;
 import ecsimsw.picup.controller.MemberController;
+import ecsimsw.picup.domain.AuthTokens;
+import ecsimsw.picup.domain.LoginUser;
 import ecsimsw.picup.dto.MemberResponse;
 import ecsimsw.picup.dto.SignInRequest;
 import ecsimsw.picup.dto.SignUpRequest;
+import ecsimsw.picup.exception.UnauthorizedException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
@@ -14,8 +17,8 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import javax.servlet.http.Cookie;
 
-import static ecsimsw.picup.auth.AuthTokenConfig.ACCESS_TOKEN_COOKIE_NAME;
-import static ecsimsw.picup.auth.AuthTokenConfig.REFRESH_TOKEN_COOKIE_NAME;
+import static ecsimsw.picup.config.AuthTokenConfig.ACCESS_TOKEN_COOKIE_NAME;
+import static ecsimsw.picup.config.AuthTokenConfig.REFRESH_TOKEN_COOKIE_NAME;
 import static ecsimsw.picup.utils.MemberFixture.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;

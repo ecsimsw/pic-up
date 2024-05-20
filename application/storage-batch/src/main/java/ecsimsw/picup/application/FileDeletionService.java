@@ -31,9 +31,7 @@ public class FileDeletionService {
         backoff = @Backoff(delayExpression = "${batch.retry.backoff.ms:500}")
     )
     public void delete(FileResource resource) {
-        var path = resourceService.filePath(resource);
-        storageService.delete(path);
-        fileResourceRepository.delete(resource);
+        resourceService.deleteFromStorage(resource);
     }
 
     @Recover

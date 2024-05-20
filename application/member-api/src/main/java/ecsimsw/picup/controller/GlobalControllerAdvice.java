@@ -1,8 +1,8 @@
 package ecsimsw.picup.controller;
 
-import ecsimsw.picup.auth.UnauthorizedException;
 import ecsimsw.picup.exception.LoginFailedException;
 import ecsimsw.picup.exception.MemberException;
+import ecsimsw.picup.exception.UnauthorizedException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

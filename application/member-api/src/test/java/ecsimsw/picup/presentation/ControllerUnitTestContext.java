@@ -2,7 +2,7 @@ package ecsimsw.picup.presentation;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import ecsimsw.picup.auth.AuthTokenService;
+import ecsimsw.picup.service.AuthTokenService;
 import ecsimsw.picup.service.MemberService;
 
 import static ecsimsw.picup.utils.MemberFixture.USER_ID;

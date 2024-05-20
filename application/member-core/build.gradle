@@ -1,7 +1,4 @@
 dependencies {
-    // module
-    implementation project(':common-core')
-
     // mysql, h2, flyway
     runtimeOnly 'com.mysql:mysql-connector-j'
     implementation 'org.flywaydb:flyway-core:6.4.2'

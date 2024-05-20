@@ -1,6 +1,7 @@
 package ecsimsw.picup.domain;
 
 import ecsimsw.picup.exception.AlbumException;
+import ecsimsw.picup.utils.AesStringConverter;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -22,7 +23,7 @@ public class Album {
     @Column(nullable = false)
     private Long userId;
 
-//    @Convert(converter = AesStringConverter.class)
+    @Convert(converter = AesStringConverter.class)
     @Column
     private String name;
 

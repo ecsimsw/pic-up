@@ -1,7 +1,7 @@
 package ecsimsw.picup.domain;
 
-import ecsimsw.picup.ecrypt.SHA256Utils;
 import ecsimsw.picup.exception.MemberException;
+import ecsimsw.picup.utils.Sha256Utils;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -29,8 +29,8 @@ public class Password {
     }
 
     public static Password initFrom(String plainPassword) {
-        var salt = SHA256Utils.getSalt();
-        var encrypted = SHA256Utils.encrypt(plainPassword, salt);
+        var salt = Sha256Utils.getSalt();
+        var encrypted = Sha256Utils.encrypt(plainPassword, salt);
         return new Password(encrypted, salt);
     }
 

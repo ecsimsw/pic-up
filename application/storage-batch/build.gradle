@@ -19,7 +19,3 @@ dependencies {
 test {
     useJUnitPlatform()
 }
-
-task prepareKotlinBuildScriptModel {
-
-}

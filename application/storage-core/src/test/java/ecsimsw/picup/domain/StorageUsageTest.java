@@ -1,6 +1,5 @@
 package ecsimsw.picup.domain;
 
-import ecsimsw.picup.domain.StorageUsage;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 

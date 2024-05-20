@@ -5,6 +5,7 @@ import ecsimsw.picup.domain.FileResource;
 import ecsimsw.picup.domain.Picture;
 import ecsimsw.picup.domain.ResourceKey;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static ecsimsw.picup.domain.StorageType.THUMBNAIL;
@@ -21,13 +22,13 @@ public class AlbumFixture {
 
     public static final Long USER_ID = 1L;
 
-    public static Album ALBUM = new Album(USER_ID, ALBUM_NAME, RESOURCE_KEY);
+    public static Album ALBUM = new Album(1L, USER_ID, ALBUM_NAME, RESOURCE_KEY);
 
     public static final FileResource THUMBNAIL_FILE = new FileResource(THUMBNAIL, RESOURCE_KEY, FILE_SIZE, false);
     public static Picture PICTURE = new Picture(ALBUM, RESOURCE_KEY, FILE_SIZE);
 
     public static Picture PICTURE(Album album) {
-        return new Picture(album, RESOURCE_KEY, FILE_SIZE);
+        return new Picture(1L, album, RESOURCE_KEY, false, FILE_SIZE, LocalDateTime.now());
     }
 
     public static List<ResourceKey> getResourceKeys(List<Picture> pictures) {

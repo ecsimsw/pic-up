@@ -11,17 +11,17 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import ecsimsw.picup.auth.LoginUser;
 import ecsimsw.picup.controller.GlobalControllerAdvice;
 import ecsimsw.picup.controller.PictureController;
 import ecsimsw.picup.controller.RemoteIpArgumentResolver;
 import ecsimsw.picup.controller.ResourceKeyArgumentResolver;
 import ecsimsw.picup.controller.SearchCursorArgumentResolver;
+import ecsimsw.picup.domain.LoginUser;
 import ecsimsw.picup.dto.PictureResponse;
 import ecsimsw.picup.dto.PictureSearchCursor;
 import ecsimsw.picup.dto.PicturesDeleteRequest;
-import ecsimsw.picup.auth.AuthTokenArgumentResolver;
-import ecsimsw.picup.auth.AuthTokenInterceptor;
+import ecsimsw.picup.config.AuthTokenArgumentResolver;
+import ecsimsw.picup.config.AuthTokenInterceptor;
 import ecsimsw.picup.domain.FileResource;
 import ecsimsw.picup.dto.PreUploadUrlResponse;
 import java.time.LocalDateTime;

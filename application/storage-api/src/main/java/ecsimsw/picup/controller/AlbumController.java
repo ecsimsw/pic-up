@@ -1,8 +1,8 @@
 package ecsimsw.picup.controller;
 
 import ecsimsw.picup.annotation.RemoteIp;
-import ecsimsw.picup.auth.LoginUser;
-import ecsimsw.picup.auth.TokenPayload;
+import ecsimsw.picup.annotation.TokenPayload;
+import ecsimsw.picup.domain.LoginUser;
 import ecsimsw.picup.dto.AlbumResponse;
 import ecsimsw.picup.dto.FileUploadContent;
 import ecsimsw.picup.exception.AlbumException;
