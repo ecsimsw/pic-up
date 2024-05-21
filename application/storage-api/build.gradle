@@ -10,6 +10,8 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'
     implementation 'org.springframework.retry:spring-retry'
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
 
     // mysql, h2, flyway
     runtimeOnly 'com.mysql:mysql-connector-j'
@@ -23,12 +25,10 @@ dependencies {
     implementation 'io.findify:s3mock_2.13:0.2.6'
 
     // redis. redisson
-    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
     implementation 'org.redisson:redisson-spring-boot-starter:3.17.0'
     testImplementation 'com.github.codemonstur:embedded-redis:1.4.2'
 
     // monitoring
-    implementation 'org.springframework.boot:spring-boot-starter-actuator'
     implementation 'io.micrometer:micrometer-registry-prometheus'
 }
 
