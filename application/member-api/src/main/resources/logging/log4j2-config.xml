@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Configuration xmlns:xi="http://www.w3.org/2001/XInclude">
   <Properties>
-    <Property name="BASE_DIR">album-logs</Property>
+    <Property name="BASE_DIR">member-logs</Property>
     <Property name="FILE_LOG_DAY_INTERVAL">7</Property>
     <Property name="FILE_DELETE_DAY_INTERVAL">15</Property>
   </Properties>
