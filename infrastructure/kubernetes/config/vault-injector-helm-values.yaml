@@ -1,7 +1,4 @@
-# Copyright (c) HashiCorp, Inc.
-# SPDX-License-Identifier: MPL-2.0
-
-# Available parameters and their default values for the Vault chart.
+# https://github.com/hashicorp/vault-helm/blob/main/values.yaml
 
 global:
   # External vault server address for the injector and CSI provider to use.
@@ -14,3 +11,9 @@ injector:
   port: 8200
   # Deprecated: Please use global.externalVaultAddr instead.
   externalVaultAddr: "http://192.168.0.4:8200"
+  agentImage:
+    repository: "hashicorp/vault"
+    tag: "1.16.1"
+  agentDefaults:
+    cpuRequest: "50m"
+    memRequest: "64Mi"

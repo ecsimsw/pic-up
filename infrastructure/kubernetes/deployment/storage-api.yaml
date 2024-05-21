@@ -64,4 +64,4 @@ spec:
       volumes:
         - name: picup-data
           persistentVolumeClaim:
-            claimName: picup-pvc
+            claimName: storage-pvc
