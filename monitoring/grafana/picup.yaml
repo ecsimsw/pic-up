@@ -176,7 +176,7 @@
           },
           "editorMode": "code",
           "expr": "sum(jvm_memory_max_bytes{application=\"$application\", instance=\"$instance\", area=\"heap\"})",
-          "hide": true,
+          "hide": false,
           "instant": false,
           "legendFormat": "max",
           "range": true,
@@ -422,7 +422,7 @@
           },
           "disableTextWrap": false,
           "editorMode": "code",
-          "expr": "rate(http_server_requests_seconds_sum[1m]) / rate(http_server_requests_seconds_count[1m])",
+          "expr": "rate(http_server_requests_seconds_sum{instance=\"$instance\"}[1m]) / rate(http_server_requests_seconds_count[1m])",
           "format": "time_series",
           "fullMetaSearch": false,
           "hide": false,
@@ -432,19 +432,6 @@
           "range": true,
           "refId": "A",
           "useBackend": false
-        },
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "d6140073-55ce-44a6-b297-f3abde26064f"
-          },
-          "editorMode": "code",
-          "expr": "max(http_server_requests_seconds_max{application=\"$application\", instance=\"$instance\", status!~\"5..\"})",
-          "hide": true,
-          "instant": false,
-          "legendFormat": "HTTP - MAX",
-          "range": true,
-          "refId": "B"
         }
       ],
       "title": "Response time - was",
@@ -468,7 +455,7 @@
             "axisPlacement": "auto",
             "barAlignment": 0,
             "drawStyle": "line",
-            "fillOpacity": 10,
+            "fillOpacity": 8,
             "gradientMode": "none",
             "hideFrom": {
               "legend": false,
@@ -477,15 +464,12 @@
             },
             "insertNulls": false,
             "lineInterpolation": "linear",
-            "lineStyle": {
-              "fill": "solid"
-            },
             "lineWidth": 1,
             "pointSize": 5,
             "scaleDistribution": {
               "type": "linear"
             },
-            "showPoints": "always",
+            "showPoints": "auto",
             "spanNulls": false,
             "stacking": {
               "group": "A",
@@ -495,9 +479,7 @@
               "mode": "off"
             }
           },
-          "fieldMinMax": false,
           "mappings": [],
-          "noValue": "0",
           "thresholds": {
             "mode": "absolute",
             "steps": [
@@ -510,8 +492,7 @@
                 "value": 80
               }
             ]
-          },
-          "unit": "s"
+          }
         },
         "overrides": []
       },
@@ -521,7 +502,7 @@
         "x": 12,
         "y": 20
       },
-      "id": 211,
+      "id": 205,
       "options": {
         "legend": {
           "calcs": [],
@@ -540,28 +521,19 @@
             "type": "prometheus",
             "uid": "d6140073-55ce-44a6-b297-f3abde26064f"
           },
-          "editorMode": "code",
-          "expr": "sum(rate(nginx_http_response_time_seconds_sum[1m])) / sum(rate(nginx_http_response_time_seconds_count[1m])) ",
+          "disableTextWrap": false,
+          "editorMode": "builder",
+          "expr": "sum(rate(nginx_http_response_time_seconds_count[1m]))",
+          "fullMetaSearch": false,
+          "includeNullMetadata": true,
           "instant": false,
-          "legendFormat": "avg",
+          "legendFormat": "{{label_name}}",
           "range": true,
-          "refId": "A"
-        },
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "d6140073-55ce-44a6-b297-f3abde26064f"
-          },
-          "editorMode": "code",
-          "expr": "nginx_http_response_time_seconds{quantile=\"0.90\"}",
-          "hide": true,
-          "instant": false,
-          "legendFormat": "__auto",
-          "range": true,
-          "refId": "B"
+          "refId": "A",
+          "useBackend": false
         }
       ],
-      "title": "Response time - nginx",
+      "title": "Request count per sec - nginx",
       "type": "timeseries"
     },
     {
@@ -682,7 +654,7 @@
             "axisPlacement": "auto",
             "barAlignment": 0,
             "drawStyle": "line",
-            "fillOpacity": 8,
+            "fillOpacity": 10,
             "gradientMode": "none",
             "hideFrom": {
               "legend": false,
@@ -691,12 +663,15 @@
             },
             "insertNulls": false,
             "lineInterpolation": "linear",
+            "lineStyle": {
+              "fill": "solid"
+            },
             "lineWidth": 1,
             "pointSize": 5,
             "scaleDistribution": {
               "type": "linear"
             },
-            "showPoints": "auto",
+            "showPoints": "always",
             "spanNulls": false,
             "stacking": {
               "group": "A",
@@ -706,7 +681,9 @@
               "mode": "off"
             }
           },
+          "fieldMinMax": false,
           "mappings": [],
+          "noValue": "0",
           "thresholds": {
             "mode": "absolute",
             "steps": [
@@ -719,7 +696,8 @@
                 "value": 80
               }
             ]
-          }
+          },
+          "unit": "s"
         },
         "overrides": []
       },
@@ -729,7 +707,7 @@
         "x": 12,
         "y": 27
       },
-      "id": 205,
+      "id": 211,
       "options": {
         "legend": {
           "calcs": [],
@@ -748,19 +726,28 @@
             "type": "prometheus",
             "uid": "d6140073-55ce-44a6-b297-f3abde26064f"
           },
-          "disableTextWrap": false,
-          "editorMode": "builder",
-          "expr": "sum(rate(nginx_http_response_time_seconds_count[1m]))",
-          "fullMetaSearch": false,
-          "includeNullMetadata": true,
+          "editorMode": "code",
+          "expr": "sum(rate(nginx_http_response_time_seconds_sum[1m])) / sum(rate(nginx_http_response_time_seconds_count[1m])) ",
           "instant": false,
-          "legendFormat": "{{label_name}}",
+          "legendFormat": "avg",
           "range": true,
-          "refId": "A",
-          "useBackend": false
+          "refId": "A"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "d6140073-55ce-44a6-b297-f3abde26064f"
+          },
+          "editorMode": "code",
+          "expr": "nginx_http_response_time_seconds{quantile=\"0.90\"}",
+          "hide": true,
+          "instant": false,
+          "legendFormat": "__auto",
+          "range": true,
+          "refId": "B"
         }
       ],
-      "title": "Request count per sec - nginx",
+      "title": "Response time - nginx",
       "type": "timeseries"
     },
     {
@@ -805,7 +792,7 @@
             "uid": "b3a6352c-c038-4089-971d-6d2e9f4f3971"
           },
           "editorMode": "builder",
-          "expr": "{job=\"application\"} |= ``",
+          "expr": "{filename=\"/member/logs/application/application.log\"} |= ``",
           "queryType": "range",
           "refId": "A"
         }
@@ -843,7 +830,7 @@
             "uid": "b3a6352c-c038-4089-971d-6d2e9f4f3971"
           },
           "editorMode": "builder",
-          "expr": "{job=\"error\"} |= ``",
+          "expr": "{filename=\"error\"} |= ``",
           "queryType": "range",
           "refId": "A"
         }
@@ -1265,7 +1252,7 @@
       {
         "allFormat": "glob",
         "current": {
-          "selected": false,
+          "selected": true,
           "text": "192.168.0.101:30884",
           "value": "192.168.0.101:30884"
         },
@@ -1381,7 +1368,7 @@
     ]
   },
   "time": {
-    "from": "now-5m",
+    "from": "now-30m",
     "to": "now"
   },
   "timepicker": {
@@ -1413,6 +1400,6 @@
   "timezone": "browser",
   "title": "picup",
   "uid": "ca44fa95-b558-49c4-a8a3-e38797abe519",
-  "version": 14,
+  "version": 18,
   "weekStart": ""
 }
