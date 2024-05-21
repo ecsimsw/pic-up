@@ -19,8 +19,8 @@ public class MemberApplication {
         app.setAdditionalProfiles(profiles(
             "member-api",
             "member-core",
-            "auth-api",
-            "logging-api"
+            "auth",
+            "logging"
         ));
         app.run(args);
     }

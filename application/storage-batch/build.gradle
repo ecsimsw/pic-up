@@ -1,7 +1,7 @@
 dependencies {
     // modules
     implementation project(':storage-core')
-    implementation project(':common-utils')
+    implementation project(':common')
 
     // retry
     implementation 'org.springframework.retry:spring-retry'

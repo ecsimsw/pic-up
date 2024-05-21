@@ -1,6 +1,6 @@
 dependencies {
     // modules
-    implementation project(':common-utils')
+    implementation project(':common')
 
     // spring
     implementation 'org.springframework.boot:spring-boot-starter-validation'

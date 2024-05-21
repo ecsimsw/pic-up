@@ -13,9 +13,9 @@ public class StorageApiApplication {
         app.setAdditionalProfiles(profiles(
             "storage-api",
             "storage-core",
-            "auth-api",
-            "logging-api")
-        );
+            "auth",
+            "logging"
+        ));
         app.run(args);
     }
 }

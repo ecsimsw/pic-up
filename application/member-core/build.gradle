@@ -1,6 +1,6 @@
 dependencies {
     // modules
-    implementation project(':common-utils')
+    implementation project(':common')
 
     // mysql, h2, flyway
     runtimeOnly 'com.mysql:mysql-connector-j'
