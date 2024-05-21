@@ -3,6 +3,7 @@ dependencies {
     implementation project(':auth-api')
     implementation project(':logging-api')
     implementation project(':storage-core')
+    implementation project(':common-utils')
 
     // spring
     implementation 'org.springframework.boot:spring-boot-starter-validation'

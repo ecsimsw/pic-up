@@ -2,25 +2,19 @@ package ecsimsw.picup;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.core.env.AbstractEnvironment;
-
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Stream;
+import org.springframework.retry.annotation.EnableRetry;
 
 import static ecsimsw.picup.profile.ProfileUtils.profiles;
 
+@EnableRetry
 @SpringBootApplication
-public class MemberApplication {
-
+public class StorageBatchApplication {
 
     public static void main(String[] args) {
-        var app = new SpringApplication(MemberApplication.class);
+        var app = new SpringApplication(StorageBatchApplication.class);
         app.setAdditionalProfiles(profiles(
-            "member-api",
-            "member-core",
-            "auth-api",
-            "logging-api"
+            "storage-batch",
+            "storage-core"
         ));
         app.run(args);
     }

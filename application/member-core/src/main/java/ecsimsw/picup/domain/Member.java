@@ -1,8 +1,8 @@
 package ecsimsw.picup.domain;
 
+import ecsimsw.picup.encrypt.Sha256Utils;
 import ecsimsw.picup.exception.LoginFailedException;
 import ecsimsw.picup.exception.MemberException;
-import ecsimsw.picup.utils.Sha256Utils;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -27,7 +27,7 @@ public class Member {
     private Password password;
 
     public Member(Long id, String username, Password password) {
-        if(username.isBlank() || password == null) {
+        if (username.isBlank() || password == null) {
             throw new MemberException("Invalid member format");
         }
         this.id = id;
@@ -40,14 +40,14 @@ public class Member {
     }
 
     public void authenticate(Password password) {
-        if(!this.password.equals(password)) {
+        if (!this.password.equals(password)) {
             throw new LoginFailedException("Invalid authenticate");
         }
     }
 
     public void authenticate(String inputPassword) {
         var input = Sha256Utils.encrypt(inputPassword, password.getSalt());
-        if(!this.password.getEncrypted().equals(input)) {
+        if (!this.password.getEncrypted().equals(input)) {
             throw new LoginFailedException("Invalid authenticate");
         }
     }

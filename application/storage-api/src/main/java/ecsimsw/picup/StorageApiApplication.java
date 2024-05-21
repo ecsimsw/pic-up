@@ -2,26 +2,20 @@ package ecsimsw.picup;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.core.env.AbstractEnvironment;
-
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Stream;
 
 import static ecsimsw.picup.profile.ProfileUtils.profiles;
 
 @SpringBootApplication
-public class MemberApplication {
-
+public class StorageApiApplication {
 
     public static void main(String[] args) {
-        var app = new SpringApplication(MemberApplication.class);
+        var app = new SpringApplication(StorageApiApplication.class);
         app.setAdditionalProfiles(profiles(
-            "member-api",
-            "member-core",
+            "storage-api",
+            "storage-core",
             "auth-api",
-            "logging-api"
-        ));
+            "logging-api")
+        );
         app.run(args);
     }
 }

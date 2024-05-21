@@ -1,7 +1,7 @@
 package ecsimsw.picup.domain;
 
+import ecsimsw.picup.encrypt.Sha256Utils;
 import ecsimsw.picup.exception.MemberException;
-import ecsimsw.picup.utils.Sha256Utils;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 

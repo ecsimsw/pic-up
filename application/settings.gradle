@@ -7,3 +7,5 @@ include 'member-api'
 include 'member-core'
 include 'auth-api'
 include 'logging-api'
+include 'common-utils'
+

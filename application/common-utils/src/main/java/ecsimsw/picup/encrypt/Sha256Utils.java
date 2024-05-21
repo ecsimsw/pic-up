@@ -1,4 +1,4 @@
-package ecsimsw.picup.utils;
+package ecsimsw.picup.encrypt;
 
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;

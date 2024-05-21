@@ -1,10 +1,10 @@
-package ecsimsw.picup.utils;
+package ecsimsw.picup.encrypt;
 
-import java.nio.charset.StandardCharsets;
-import java.util.Base64;
 import javax.crypto.Cipher;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 
 public class Aes256Utils {
 
@@ -12,6 +12,9 @@ public class Aes256Utils {
 
     public static String encrypt(String origin, String key, String iv) {
         try {
+            if(iv == null || key == null) {
+                return origin;
+            }
             IvParameterSpec ivParamSpec = new IvParameterSpec(iv.getBytes());
             SecretKeySpec secretKeySpec = new SecretKeySpec(key.getBytes(), "AES");
             Cipher cipher = Cipher.getInstance(algorithm);
@@ -19,13 +22,15 @@ public class Aes256Utils {
             byte[] encrypted = cipher.doFinal(origin.getBytes(StandardCharsets.UTF_8));
             return Base64.getEncoder().encodeToString(encrypted);
         } catch (Exception e) {
-            e.printStackTrace();
             throw new IllegalArgumentException("Failed to encrypt with AES");
         }
     }
 
     public static String decrypt(String encrypted, String key, String iv) {
         try {
+            if(iv == null || key == null) {
+                return encrypted;
+            }
             IvParameterSpec ivParamSpec = new IvParameterSpec(iv.getBytes());
             SecretKeySpec secretKeySpec = new SecretKeySpec(key.getBytes(), "AES");
             Cipher cipher = Cipher.getInstance(algorithm);

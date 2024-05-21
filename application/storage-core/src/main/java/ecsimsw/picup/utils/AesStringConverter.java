@@ -1,5 +1,7 @@
 package ecsimsw.picup.utils;
 
+import ecsimsw.picup.encrypt.Aes256Utils;
+
 import static ecsimsw.picup.config.EncryptConfig.AES_IV;
 import static ecsimsw.picup.config.EncryptConfig.AES_KEY;
 
