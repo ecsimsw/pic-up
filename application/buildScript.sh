@@ -1,6 +1,8 @@
 #!/bin/bash
 
-PROJECT_NAME=storage-api
+PROJECT_NAME=$1
+cd ${PROJECT_NAME}
+
 PROJECT_VERSION=$(../gradlew properties -q | awk '/^version:/ {print $2}')
 CONTAINER_REGISTRY_URL=ghcr.io/ecsimsw/picup/"$PROJECT_NAME"
 
