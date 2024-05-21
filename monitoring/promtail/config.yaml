@@ -9,15 +9,27 @@ clients:
   - url: http://host.docker.internal:3100/loki/api/v1/push
 
 scrape_configs:
-  - job_name: picup-album
+  - job_name: picup-storage
     static_configs:
       - targets:
-          - picup-album-application
+          - picup-storage-application
         labels:
           job: application
           __path__: /logs/application/*.log
       - targets:
-          - picup-album-error
+          - picup-storage-error
+        labels:
+          job: error
+          __path__: /logs/error/*.log
+  - job_name: picup-member
+    static_configs:
+      - targets:
+          - picup-member-application
+        labels:
+          job: application
+          __path__: /logs/application/*.log
+      - targets:
+          - picup-member-error
         labels:
           job: error
           __path__: /logs/error/*.log
