@@ -42,3 +42,15 @@ services:
       -config.file=/etc/promtail/config.yaml
     extra_hosts:
       - "host.docker.internal:host-gateway"
+  nginx-log-exporter:
+    image: ghcr.io/martin-helmich/prometheus-nginxlog-exporter/exporter:v1.11-amd64
+    volumes:
+      - ~/dev/data/nginx:/var/log/nginx
+      - ./exporter/prometheus-nginxlog-exporter.yaml:/config/prometheus-nginxlog-exporter.yaml
+    command:
+      - -config-file
+      - /config/prometheus-nginxlog-exporter.yaml
+    ports:
+      - "4040:4040"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
