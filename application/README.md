@@ -1,7 +1,8 @@
 ## Application
 
+### Build and publish container image
 ```
-./buildScript.sh storage-api
-./buildScript.sh storage-batch
-./buildScript.sh member-api
+./buildScript.sh storage-api prod
+./buildScript.sh storage-batch prod
+./buildScript.sh member-api prod
 ```
