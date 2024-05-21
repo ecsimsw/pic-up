@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: server-album-pvc
+  name: picup-pvc
   namespace: picup
 spec:
   accessModes:

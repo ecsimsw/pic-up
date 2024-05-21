@@ -1,7 +1,7 @@
 apiVersion: batch/v1
 kind: CronJob
 metadata:
-  name: server-batch
+  name: storage-batch
   namespace: picup
 spec:
   schedule: "*/1 * * * *"     # every minute
@@ -23,16 +23,13 @@ spec:
         spec:
           containers:
             - name: server-batch
-              image: ghcr.io/ecsimsw/picup/server-batch:latest
-              imagePullPolicy: Always        # check container hub if image not present, 'name+tag+digest'
+              image: ghcr.io/ecsimsw/picup/storage-batch:latest
+              imagePullPolicy: Always
               volumeMounts:
                 - name: picup-data
                   mountPath: /ext-data       # READ private_key.pem
-#              envFrom:
-#                - secretRef:
-#                    name: server-common-secret
           restartPolicy: Never
           volumes:
             - name: picup-data
               persistentVolumeClaim:
-                claimName: server-album-pvc
+                claimName: picup-pvc

@@ -1,17 +1,17 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: server-album
+  name: storage-api
   namespace: picup
 spec:
   selector:
     matchLabels:
-      app: server-album
+      app: storage-api
   replicas: 1
   template:
     metadata:
       labels:
-        app: server-album
+        app: storage-api
       annotations:
         vault.hashicorp.com/role: internal-app
         vault.hashicorp.com/agent-inject: "true"
@@ -24,8 +24,8 @@ spec:
           {{end}}{{end}}
     spec:
       containers:
-        - name: server-album
-          image: ghcr.io/ecsimsw/picup/server-album:latest
+        - name: storage-api
+          image: ghcr.io/ecsimsw/picup/storage-api:latest
           imagePullPolicy: Always
           resources:
             requests:
@@ -64,4 +64,4 @@ spec:
       volumes:
         - name: picup-data
           persistentVolumeClaim:
-            claimName: server-album-pvc
+            claimName: picup-pvc

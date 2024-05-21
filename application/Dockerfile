@@ -14,4 +14,6 @@ ENV JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
 
 COPY $JAR_FILE_PATH $TARGET_JAR_FILE_PATH
 
+ENV TARGET_JAR_FILE_PATH $TARGET_JAR_FILE_PATH
+ENV SPRING_PROFILE $SPRING_PROFILE
 CMD ["/bin/bash", "-c", "cat /vault/secrets/picup && source /vault/secrets/picup && java -Dspring.profiles.active=$SPRING_PROFILE -jar $TARGET_JAR_FILE_PATH"]

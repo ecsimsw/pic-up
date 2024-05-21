@@ -1,1 +1,0 @@
-create index idx_createdAt on file_resource (created_at);

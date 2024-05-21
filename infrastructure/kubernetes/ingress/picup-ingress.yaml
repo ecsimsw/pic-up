@@ -12,13 +12,6 @@ spec:
             pathType: Prefix
             backend:
               service:
-                name: server-album
+                name: storage-api
                 port:
                   number: 30884
-          - path: /
-            pathType: Prefix
-            backend:
-              service:
-                name: test-nginx
-                port:
-                  number: 30883
