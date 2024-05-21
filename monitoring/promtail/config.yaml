@@ -15,21 +15,21 @@ scrape_configs:
           - picup-storage-application
         labels:
           job: application
-          __path__: /logs/application/*.log
+          __path__: /storage/logs/application/*.log
       - targets:
           - picup-storage-error
         labels:
           job: error
-          __path__: /logs/error/*.log
+          __path__: /storage/logs/error/*.log
   - job_name: picup-member
     static_configs:
       - targets:
           - picup-member-application
         labels:
           job: application
-          __path__: /logs/application/*.log
+          __path__: /member/logs/application/*.log
       - targets:
           - picup-member-error
         labels:
           job: error
-          __path__: /logs/error/*.log
+          __path__: /member/logs/error/*.log
