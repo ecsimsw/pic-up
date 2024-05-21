@@ -46,7 +46,7 @@ services:
     image: ghcr.io/martin-helmich/prometheus-nginxlog-exporter/exporter:v1.11-amd64
     volumes:
       - ~/dev/data/nginx:/var/log/nginx
-      - ./exporter/nginxlog-exporter.yaml:/config/nginxlog-exporter.yaml
+      - ./nginxlog-exporter/nginxlog-exporter.yaml:/config/nginxlog-exporter.yaml
     command:
       - -config-file
       - /config/nginxlog-exporter.yaml
