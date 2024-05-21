@@ -1,17 +1,17 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: storage-api
+  name: member-api
   namespace: picup
 spec:
   selector:
     matchLabels:
-      app: storage-api
+      app: member-api
   replicas: 1
   template:
     metadata:
       labels:
-        app: storage-api
+        app: member-api
       annotations:
         vault.hashicorp.com/role: internal-app
         vault.hashicorp.com/agent-inject: "true"
@@ -24,8 +24,8 @@ spec:
           {{end}}{{end}}
     spec:
       containers:
-        - name: storage-api
-          image: ghcr.io/ecsimsw/picup/storage-api:latest
+        - name: member-api
+          image: ghcr.io/ecsimsw/picup/member-api:latest
           imagePullPolicy: Always
           resources:
             requests:
@@ -34,27 +34,25 @@ spec:
               memory: "500Mi"
           volumeMounts:
             - name: picup-data
-              mountPath: /storage-logs  # WRITE logs
-            - name: picup-data
-              mountPath: /ext-data    # READ private_key.pem
+              mountPath: /member-logs  # WRITE logs
           ports:
             - containerPort: 8084
           startupProbe:
             httpGet:
               path: /actuator/health
-              port: 8084
+              port: 8083
             failureThreshold: 100
             periodSeconds: 2
           readinessProbe:
             httpGet:
               path: /actuator/health
-              port: 8084
+              port: 8083
             failureThreshold: 2
             periodSeconds: 100
           livenessProbe:
             httpGet:
               path: /actuator/health
-              port: 8084
+              port: 8083
             failureThreshold: 2
             periodSeconds: 100
           lifecycle:

@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: member-api
+  namespace: picup
+spec:
+  selector:
+    app: member-api
+  ports:
+    - protocol: TCP
+      port: 30883            # port of service
+      targetPort: 8083       # to pod
+      nodePort: 30883
+  type: NodePort
