@@ -45,25 +45,13 @@ public class PictureFacadeServiceTest {
     class CheckAbleToUpload {
 
         private final long albumId = ALBUM_ID;
-        private final long fileSize = FILE_SIZE;
-
-        @DisplayName("권한, 스토리지 사용 공간 조회로 업로드 가능 여부를 확인한다.")
-        @Test
-        void checkAbleToUpload() {
-            // when
-            pictureFacadeService.checkAbleToUpload(userId, albumId, fileSize);
-
-            // then
-//            verify(pictureService).checkAbleToStore(userId, albumId);
-//            verify(storageUsageService).isAbleToStore(userId, fileSize);
-        }
 
         @DisplayName("권한이 없는 경우 예외를 반환한다.")
         @Test
         void NotAvailableToUpload1() {
             // given
             doThrow(new AlbumException("User doesn't have permission on this album"))
-                .when(pictureService).validateAlbumOwner(userId, albumId);
+                .when(pictureService).checkAbleToStore(userId, albumId, FILE_SIZE);
 
             // when, then
             assertThatThrownBy(
@@ -76,7 +64,7 @@ public class PictureFacadeServiceTest {
         void NotAvailableToUpload2() {
             // given
             doThrow(new AlbumException("Lack of storage space"))
-                .when(storageUsageService).isAbleToStore(userId, fileSize);
+                .when(storageUsageService).getUsage(userId);
 
             // when, then
             assertThatThrownBy(

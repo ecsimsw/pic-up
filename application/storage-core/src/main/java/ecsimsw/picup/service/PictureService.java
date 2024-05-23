@@ -80,7 +80,7 @@ public class PictureService {
         var album = getUserAlbum(userId, albumId);
         album.authorize(userId);
         if(storageUsageService.getUsage(userId).isAbleToStore(size)) {
-            throw new AlbumException("Not enough file storage");
+            throw new AlbumException("Lack of storage space");
         }
     }
 
