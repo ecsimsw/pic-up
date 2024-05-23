@@ -33,11 +33,11 @@ public class AlbumFacadeService {
         resourceService.deleteAsync(thumbnailFile);
     }
 
-    public AlbumInfo read(Long userId, Long albumId) {
-        return albumService.readAlbum(userId, albumId);
+    public AlbumInfo findById(Long userId, Long albumId) {
+        return albumService.findById(userId, albumId);
     }
 
-    public List<AlbumInfo> readAll(Long userId) {
-        return albumService.readAlbums(userId);
+    public List<AlbumInfo> findAll(Long userId) {
+        return albumService.findAllByUser(userId);
     }
 }

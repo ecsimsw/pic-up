@@ -2,7 +2,7 @@ package ecsimsw.picup.service;
 
 import ecsimsw.picup.domain.AuthTokens;
 import ecsimsw.picup.domain.AuthTokensCacheRepository;
-import ecsimsw.picup.domain.LoginUser;
+import ecsimsw.picup.domain.AuthToken;
 import ecsimsw.picup.exception.UnauthorizedException;
 import ecsimsw.picup.config.AuthTokenConfig;
 import ecsimsw.picup.utils.JwtUtils;
@@ -22,7 +22,7 @@ public class AuthTokenService {
 
     private final AuthTokensCacheRepository authTokensCacheRepository;
 
-    public AuthTokens issue(LoginUser payload) {
+    public AuthTokens issue(AuthToken payload) {
         var accessToken = createToken(payload, ACCESS_TOKEN_JWT_EXPIRE_TIME);
         var refreshToken = createToken(payload, REFRESH_TOKEN_JWT_EXPIRE_TIME);
         var authTokens = AuthTokens.of(payload, accessToken, refreshToken);
@@ -48,7 +48,7 @@ public class AuthTokenService {
         return issue(payload);
     }
 
-    public LoginUser tokenPayload(String token) {
+    public AuthToken tokenPayload(String token) {
         return JwtUtils.tokenValue(JWT_SECRET_KEY, token, TOKEN_PAYLOAD_NAME);
     }
 
@@ -97,7 +97,7 @@ public class AuthTokenService {
         }
     }
 
-    private String createToken(LoginUser payload, int expiredTime) {
+    private String createToken(AuthToken payload, int expiredTime) {
         return JwtUtils.createToken(JWT_SECRET_KEY, Map.of(TOKEN_PAYLOAD_NAME, payload), expiredTime);
     }
 }

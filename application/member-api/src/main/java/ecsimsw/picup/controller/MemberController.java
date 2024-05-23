@@ -1,14 +1,14 @@
 package ecsimsw.picup.controller;
 
-import ecsimsw.picup.annotation.TokenPayload;
-import ecsimsw.picup.domain.LoginUser;
+import ecsimsw.picup.annotation.LoginUser;
+import ecsimsw.picup.domain.AuthToken;
 import ecsimsw.picup.dto.MemberResponse;
 import ecsimsw.picup.dto.SignInRequest;
 import ecsimsw.picup.dto.SignUpRequest;
-import ecsimsw.picup.service.AuthTokenService;
-import ecsimsw.picup.service.MemberService;
+import ecsimsw.picup.service.MemberFacadeService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -21,38 +21,40 @@ import javax.validation.Valid;
 @RestController
 public class MemberController {
 
-    private final MemberService memberService;
-    private final AuthTokenService authTokenService;
+    private final MemberFacadeService memberFacadeService;
 
     @PostMapping("/api/member/signin")
     public ResponseEntity<MemberResponse> signIn(
-        @Valid @RequestBody SignInRequest request,
+        @Valid @RequestBody SignInRequest signInRequest,
         HttpServletResponse response
     ) {
-        var memberInfo = memberService.signIn(request);
-        var tokens = authTokenService.issue(new LoginUser(memberInfo.id(), memberInfo.username()));
-        response.addCookie(authTokenService.accessTokenCookie(tokens));
-        response.addCookie(authTokenService.refreshTokenCookie(tokens));
+        var memberInfo = memberFacadeService.signIn(signInRequest, response);
         return ResponseEntity.ok(memberInfo);
     }
 
     @PostMapping("/api/member/signup")
     public ResponseEntity<MemberResponse> signUp(
-        @Valid @RequestBody SignUpRequest request,
+        @Valid @RequestBody SignUpRequest signUpRequest,
         HttpServletResponse response
     ) {
-        var memberInfo = memberService.signUp(request);
-        var tokens = authTokenService.issue(new LoginUser(memberInfo.id(), memberInfo.username()));
-        response.addCookie(authTokenService.accessTokenCookie(tokens));
-        response.addCookie(authTokenService.refreshTokenCookie(tokens));
+        var memberInfo = memberFacadeService.signUp(signUpRequest, response);
         return ResponseEntity.ok(memberInfo);
     }
 
     @GetMapping("/api/member/me")
     public ResponseEntity<MemberResponse> me(
-        @TokenPayload LoginUser userInfo
+        @LoginUser AuthToken user,
+        HttpServletResponse response
     ) {
-        var memberInfo = memberService.me(userInfo.username());
+        var memberInfo = memberFacadeService.me(user.id(), response);
         return ResponseEntity.ok(memberInfo);
+    }
+
+    @DeleteMapping("/api/member/me")
+    public ResponseEntity<MemberResponse> me(
+        @LoginUser AuthToken user
+    ) {
+        memberFacadeService.delete(user.id());
+        return ResponseEntity.ok().build();
     }
 }

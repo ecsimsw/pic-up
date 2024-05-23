@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class StorageFacadeService {
 
-    private final AlbumFacadeService albumService;
+    private final AlbumFacadeService albumFacadeService;
     private final PictureFacadeService pictureFacadeService;
     private final ResourceService resourceService;
     private final StorageService storageService;
@@ -22,7 +22,7 @@ public class StorageFacadeService {
         storageService.upload(thumbnailFile, thumbnail.value());
         resourceService.commit(thumbnail);
         try {
-            return albumService.init(userId, name, thumbnail);
+            return albumFacadeService.init(userId, name, thumbnail);
         } catch (Exception e) {
             resourceService.deleteAsync(thumbnail);
             throw e;
@@ -32,7 +32,7 @@ public class StorageFacadeService {
     public void deleteAlbum(long userId, long albumId) {
         userLockService.isolate(
             userId,
-            () -> albumService.delete(userId, albumId)
+            () -> albumFacadeService.delete(userId, albumId)
         );
     }
 
@@ -53,5 +53,12 @@ public class StorageFacadeService {
             userId,
             () -> pictureFacadeService.deletePictures(userId, albumId, pictureIds)
         );
+    }
+
+    public void deleteAllFromUser(Long userId) {
+        var albums = albumFacadeService.findAll(userId);
+        for(var album : albums) {
+            albumFacadeService.delete(userId, album.id());
+        }
     }
 }

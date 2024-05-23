@@ -120,10 +120,10 @@ class AlbumFacadeServiceTest {
         @Test
         void read() {
             // given
-            when(albumService.readAlbum(userId, albumId)).thenReturn(albumInfo);
+            when(albumService.findById(userId, albumId)).thenReturn(albumInfo);
 
             // when
-            var albumResponse = albumFacadeService.read(userId, albumId);
+            var albumResponse = albumFacadeService.findById(userId, albumId);
 
             // then
             assertAll(
@@ -137,10 +137,10 @@ class AlbumFacadeServiceTest {
         void readAll() {
             // given
             var expectedAlbums = List.of(albumInfo);
-            when(albumService.readAlbums(userId)).thenReturn(expectedAlbums);
+            when(albumService.findAllByUser(userId)).thenReturn(expectedAlbums);
 
             // when
-            var albumResponses = albumFacadeService.readAll(userId);
+            var albumResponses = albumFacadeService.findAll(userId);
 
             // then
             assertThat(albumResponses.size()).isEqualTo(expectedAlbums.size());

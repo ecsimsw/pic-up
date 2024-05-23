@@ -2,8 +2,7 @@ package ecsimsw.picup.service;
 
 import ecsimsw.picup.domain.Member;
 import ecsimsw.picup.domain.MemberRepository;
-import ecsimsw.picup.domain.Password;
-import ecsimsw.picup.dto.MemberResponse;
+import ecsimsw.picup.dto.MemberInfo;
 import ecsimsw.picup.dto.SignInRequest;
 import ecsimsw.picup.dto.SignUpRequest;
 import ecsimsw.picup.exception.MemberException;
@@ -16,40 +15,38 @@ import org.springframework.transaction.annotation.Transactional;
 public class MemberService {
 
     private final MemberRepository memberRepository;
-//    private final StorageUsageService storageUsageService;
 
     @Transactional
-    public MemberResponse signIn(SignInRequest request) {
+    public MemberInfo signIn(SignInRequest request) {
         try {
-            var member = getMember(request.username());
+            var member = memberRepository.findByUsername(request.username())
+                .orElseThrow(() -> new MemberException("Invalid login info"));
             member.authenticate(request.password());
-            return MemberResponse.of(member);
+            return MemberInfo.of(member);
         } catch (Exception e) {
             throw new MemberException("Invalid login info");
         }
     }
 
     @Transactional
-    public MemberResponse signUp(SignUpRequest request) {
+    public MemberInfo signUp(SignUpRequest request) {
         if (memberRepository.existsByUsername(request.username())) {
             throw new MemberException("Duplicated username");
         }
-        var password = Password.initFrom(request.password());
-        var member = new Member(request.username(), password);
+        var member = Member.signUp(request.username(), request.password());
         memberRepository.save(member);
-//        var usage = storageUsageService.init(member.getId());
-//        return MemberResponse.of(member, usage);
-        return MemberResponse.of(member);
+        return MemberInfo.of(member);
+    }
+
+    @Transactional
+    public void delete(Long userId) {
+        memberRepository.deleteById(userId);
     }
 
     @Transactional(readOnly = true)
-    public MemberResponse me(String username) {
-        var member = getMember(username);
-        return MemberResponse.of(member);
-    }
-
-    private Member getMember(String username) {
-        return memberRepository.findByUsername(username)
+    public MemberInfo me(long userId) {
+        var member = memberRepository.findById(userId)
             .orElseThrow(() -> new MemberException("Invalid login info"));
+        return MemberInfo.of(member);
     }
 }

@@ -1,6 +1,5 @@
 package ecsimsw.picup.presentation;
 
-import static ecsimsw.picup.domain.StorageType.STORAGE;
 import static ecsimsw.picup.utils.AlbumFixture.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
@@ -17,10 +16,10 @@ import ecsimsw.picup.dto.PictureInfo;
 import ecsimsw.picup.resolver.RemoteIpArgumentResolver;
 import ecsimsw.picup.resolver.ResourceKeyArgumentResolver;
 import ecsimsw.picup.resolver.SearchCursorArgumentResolver;
-import ecsimsw.picup.domain.LoginUser;
+import ecsimsw.picup.domain.AuthToken;
 import ecsimsw.picup.dto.PictureSearchCursor;
 import ecsimsw.picup.dto.PicturesDeleteRequest;
-import ecsimsw.picup.config.AuthTokenArgumentResolver;
+import ecsimsw.picup.service.AuthTokenArgumentResolver;
 import ecsimsw.picup.config.AuthTokenInterceptor;
 import ecsimsw.picup.domain.FileResource;
 import ecsimsw.picup.dto.PreUploadUrlResponse;
@@ -55,7 +54,7 @@ class PictureControllerUnitTest extends ControllerUnitTestContext {
     @BeforeEach
     void init() {
         when(authTokenService.tokenPayload(any()))
-            .thenReturn(new LoginUser(USER_ID, USER_NAME));
+            .thenReturn(new AuthToken(USER_ID, USER_NAME));
     }
 
     @Transactional

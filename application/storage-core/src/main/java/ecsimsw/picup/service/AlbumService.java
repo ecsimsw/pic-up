@@ -32,13 +32,13 @@ public class AlbumService {
     }
 
     @Transactional(readOnly = true)
-    public AlbumInfo readAlbum(Long userId, Long albumId) {
+    public AlbumInfo findById(Long userId, Long albumId) {
         var album = getUserAlbum(userId, albumId);
         return AlbumInfo.of(album);
     }
 
     @Transactional(readOnly = true)
-    public List<AlbumInfo> readAlbums(Long userId) {
+    public List<AlbumInfo> findAllByUser(Long userId) {
         var albums = albumRepository.findAllByUserIdOrderByCreatedAtDesc(userId);
         return AlbumInfo.listOf(albums);
     }

@@ -2,9 +2,8 @@ package ecsimsw.picup.config;
 
 import ecsimsw.picup.service.AuthTokenService;
 import ecsimsw.picup.exception.UnauthorizedException;
-import ecsimsw.picup.annotation.TokenPayload;
+import ecsimsw.picup.annotation.LoginUser;
 import java.util.Arrays;
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -24,18 +23,18 @@ public class AuthTokenInterceptor implements HandlerInterceptor {
             if (!(handler instanceof HandlerMethod) || !isLoginNeeded((HandlerMethod) handler)) {
                 return true;
             }
+            if(request.getCookies() == null) {
+                throw new UnauthorizedException("Login token not exists");
+            }
             authTokenService.authenticate(request);
             return true;
         } catch (UnauthorizedException invalidAccessToken) {
-            var reissue = authTokenService.reissue(request);
+            var reissued = authTokenService.reissue(request);
 
-            var atCookie = new Cookie(AuthTokenConfig.ACCESS_TOKEN_COOKIE_NAME, reissue.getAccessToken());
-            atCookie.setHttpOnly(true);
-            atCookie.setMaxAge(AuthTokenConfig.ACCESS_TOKEN_JWT_EXPIRE_TIME);
-
-            var rtCookie = new Cookie(AuthTokenConfig.REFRESH_TOKEN_COOKIE_NAME, reissue.getAccessToken());
-            rtCookie.setHttpOnly(true);
-            rtCookie.setMaxAge(AuthTokenConfig.REFRESH_TOKEN_JWT_EXPIRE_TIME);
+            var atCookie = authTokenService.accessTokenCookie(reissued);
+            var rtCookie = authTokenService.refreshTokenCookie(reissued);
+            response.addCookie(atCookie);
+            response.addCookie(rtCookie);
 
             response.setHeader("Location", request.getRequestURI());
             response.setStatus(HttpStatus.PERMANENT_REDIRECT.value());
@@ -45,6 +44,6 @@ public class AuthTokenInterceptor implements HandlerInterceptor {
 
     private boolean isLoginNeeded(HandlerMethod method) {
         return Arrays.stream(method.getMethodParameters())
-            .anyMatch(methodParameter -> methodParameter.hasParameterAnnotation(TokenPayload.class));
+            .anyMatch(methodParameter -> methodParameter.hasParameterAnnotation(LoginUser.class));
     }
 }

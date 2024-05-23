@@ -1,7 +1,7 @@
 package ecsimsw.picup.utils;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import ecsimsw.picup.domain.LoginUser;
+import ecsimsw.picup.domain.AuthToken;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Header;
 import io.jsonwebtoken.Jwts;
@@ -37,15 +37,15 @@ public class JwtUtils {
             .compact();
     }
 
-    public static LoginUser tokenValue(Key key, String token, String claimName) {
+    public static AuthToken tokenValue(Key key, String token, String claimName) {
         try {
             return Jwts.parser()
-                .deserializeJsonWith(new JacksonDeserializer(Maps.of(claimName, LoginUser.class).build()))
+                .deserializeJsonWith(new JacksonDeserializer(Maps.of(claimName, AuthToken.class).build()))
                 .setSigningKey(key)
                 .build()
                 .parseClaimsJws(token)
                 .getBody()
-                .get(claimName, LoginUser.class);
+                .get(claimName, AuthToken.class);
         } catch (ExpiredJwtException e) {
             throw new IllegalArgumentException("Is not lived token", e);
         } catch (Exception e) {

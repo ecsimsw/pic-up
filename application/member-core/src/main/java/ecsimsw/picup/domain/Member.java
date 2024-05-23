@@ -3,6 +3,7 @@ package ecsimsw.picup.domain;
 import ecsimsw.picup.encrypt.Sha256Utils;
 import ecsimsw.picup.exception.LoginFailedException;
 import ecsimsw.picup.exception.MemberException;
+import ecsimsw.picup.utils.AesStringConverter;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -20,11 +21,16 @@ public class Member {
     @Id
     private Long id;
 
+    @Convert(converter = AesStringConverter.class)
     @Column(unique = true, nullable = false, length = 30)
     private String username;
 
     @Embedded
     private Password password;
+
+    public static Member signUp(String username, String password) {
+        return new Member(username, Password.initFrom(password));
+    }
 
     public Member(Long id, String username, Password password) {
         if (username.isBlank() || password == null) {

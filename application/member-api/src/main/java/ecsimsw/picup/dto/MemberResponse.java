@@ -1,16 +1,18 @@
 package ecsimsw.picup.dto;
 
-import ecsimsw.picup.domain.Member;
-
 public record MemberResponse(
     Long id,
-    String username
+    String username,
+    long limitAsByte,
+    long usageAsByte
 ) {
 
-    public static MemberResponse of(Member member) {
+    public static MemberResponse of(MemberInfo member, StorageUsageResponse usage) {
         return new MemberResponse(
-            member.getId(),
-            member.getUsername()
+            member.id(),
+            member.username(),
+            usage.limitAsByte(),
+            usage.usageAsByte()
         );
     }
 }

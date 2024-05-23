@@ -1,0 +1,643 @@
+[m2024-05-24T06:40:37,986[m [32mINFO  [m[[1;34mbackground-preinit[m] [1;33mo.h.v.i.u.Version[m: HV000001: Hibernate Validator 6.2.5.Final
+[m2024-05-24T06:40:38,008[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.b.StartupInfoLogger[m: Starting MemberApplication using Java 17.0.1 on gimjinhwan-ui-Macmini.local with PID 51871 (/Users/kimjinhwan/IdeaProjects/pic-up/application/member-api/build/classes/java/main started by kimjinhwan in /Users/kimjinhwan/IdeaProjects/pic-up)
+[m2024-05-24T06:40:38,009[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.b.SpringApplication[m: The following 4 profiles are active: "member-api-dev", "member-core-dev", "auth-dev", "logging-dev"
+[m2024-05-24T06:40:38,584[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.d.r.c.RepositoryConfigurationDelegate[m: Multiple Spring Data modules found, entering strict repository configuration mode
+[m2024-05-24T06:40:38,585[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.d.r.c.RepositoryConfigurationDelegate[m: Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+[m2024-05-24T06:40:38,728[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.d.r.c.RepositoryConfigurationExtensionSupport[m: Spring Data JPA - Could not safely identify store assignment for repository candidate interface ecsimsw.picup.domain.AuthTokensCacheRepository; If you want this repository to be a JPA repository, consider annotating your entities with one of these annotations: javax.persistence.Entity, javax.persistence.MappedSuperclass (preferred), or consider extending one of the following types with your repository: org.springframework.data.jpa.repository.JpaRepository
+[m2024-05-24T06:40:38,735[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.d.r.c.RepositoryConfigurationDelegate[m: Finished Spring Data repository scanning in 145 ms. Found 1 JPA repository interfaces.
+[m2024-05-24T06:40:38,742[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.d.r.c.RepositoryConfigurationDelegate[m: Multiple Spring Data modules found, entering strict repository configuration mode
+[m2024-05-24T06:40:38,743[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.d.r.c.RepositoryConfigurationDelegate[m: Bootstrapping Spring Data Redis repositories in DEFAULT mode.
+[m2024-05-24T06:40:38,750[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.d.r.c.RepositoryConfigurationExtensionSupport[m: Spring Data Redis - Could not safely identify store assignment for repository candidate interface ecsimsw.picup.domain.MemberRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+[m2024-05-24T06:40:38,753[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.d.r.c.RepositoryConfigurationDelegate[m: Finished Spring Data repository scanning in 5 ms. Found 1 Redis repository interfaces.
+[m2024-05-24T06:40:38,867[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.c.c.s.GenericScope[m: BeanFactory id=2ec706e6-e72a-31b6-aca5-419325f036e6
+[m2024-05-24T06:40:39,085[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.b.w.e.t.TomcatWebServer[m: Tomcat initialized with port(s): 8083 (http)
+[m2024-05-24T06:40:39,095[m [32mINFO  [m[[1;34mmain[m] [1;33mo.a.j.l.DirectJDKLog[m: Initializing ProtocolHandler ["http-nio-8083"]
+[m2024-05-24T06:40:39,095[m [32mINFO  [m[[1;34mmain[m] [1;33mo.a.j.l.DirectJDKLog[m: Starting service [Tomcat]
+[m2024-05-24T06:40:39,095[m [32mINFO  [m[[1;34mmain[m] [1;33mo.a.j.l.DirectJDKLog[m: Starting Servlet engine: [Apache Tomcat/9.0.71]
+[m2024-05-24T06:40:39,172[m [32mINFO  [m[[1;34mmain[m] [1;33mo.a.j.l.DirectJDKLog[m: Initializing Spring embedded WebApplicationContext
+[m2024-05-24T06:40:39,172[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.b.w.s.c.ServletWebServerApplicationContext[m: Root WebApplicationContext: initialization completed in 1145 ms
+[m2024-05-24T06:40:39,234[m [32mINFO  [m[[1;34mmain[m] [1;33mc.z.h.HikariDataSource[m: HikariPool-1 - Starting...
+[m2024-05-24T06:40:39,307[m [32mINFO  [m[[1;34mmain[m] [1;33mc.z.h.HikariDataSource[m: HikariPool-1 - Start completed.
+[m2024-05-24T06:40:39,312[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.b.a.h.H2ConsoleAutoConfiguration[m: H2 console available at '/h2-console'. Database available at 'jdbc:h2:mem:test'
+[m2024-05-24T06:40:39,389[m [32mINFO  [m[[1;34mmain[m] [1;33mo.h.j.i.u.LogHelper[m: HHH000204: Processing PersistenceUnitInfo [name: default]
+[m2024-05-24T06:40:39,416[m [32mINFO  [m[[1;34mmain[m] [1;33mo.h.Version[m: HHH000412: Hibernate ORM core version 5.6.15.Final
+[m2024-05-24T06:40:39,492[m [32mINFO  [m[[1;34mmain[m] [1;33mo.h.a.c.r.j.JavaReflectionManager[m: HCANN000001: Hibernate Commons Annotations {5.1.2.Final}
+[m2024-05-24T06:40:39,555[m [32mINFO  [m[[1;34mmain[m] [1;33mo.h.d.Dialect[m: HHH000400: Using dialect: org.hibernate.dialect.H2Dialect
+[m2024-05-24T06:40:39,850[m [32mINFO  [m[[1;34mmain[m] [1;33mo.h.e.t.j.p.i.JtaPlatformInitiator[m: HHH000490: Using JtaPlatform implementation: [org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform]
+[m2024-05-24T06:40:39,855[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.o.j.AbstractEntityManagerFactoryBean[m: Initialized JPA EntityManagerFactory for persistence unit 'default'
+[m2024-05-24T06:40:40,111[m [32mINFO  [m[[1;34mmain[m] [1;33mo.r.Version[m: Redisson 3.17.0
+[m2024-05-24T06:40:40,125[m [33mWARN  [m[[1;34mmain[m] [1;33mi.n.r.d.DnsServerAddressStreamProviders[m: Can not find io.netty.resolver.dns.macos.MacOSDnsServerAddressStreamProvider in the classpath, fallback to system defaults. This may result in incorrect DNS resolutions on MacOS. Check whether you have a dependency on 'io.netty:netty-resolver-dns-native-macos'
+[m2024-05-24T06:40:40,243[m [32mINFO  [m[[1;34mredisson-netty-2-24[m] [1;33mo.r.c.p.ConnectionPool$1[m: 1 connections initialized for localhost/127.0.0.1:6379
+[m2024-05-24T06:40:40,264[m [32mINFO  [m[[1;34mredisson-netty-2-20[m] [1;33mo.r.c.p.ConnectionPool$1[m: 24 connections initialized for localhost/127.0.0.1:6379
+[m2024-05-24T06:40:40,529[m [33mWARN  [m[[1;34mmain[m] [1;33mo.s.c.s.AbstractApplicationContext[m: Exception encountered during context initialization - cancelling refresh attempt: org.springframework.beans.factory.UnsatisfiedDependencyException: Error creating bean with name 'memberController' defined in file [/Users/kimjinhwan/IdeaProjects/pic-up/application/member-api/build/classes/java/main/ecsimsw/picup/controller/MemberController.class]: Unsatisfied dependency expressed through constructor parameter 2; nested exception is org.springframework.beans.factory.UnsatisfiedDependencyException: Error creating bean with name 'memberFacadeService' defined in file [/Users/kimjinhwan/IdeaProjects/pic-up/application/member-api/build/classes/java/main/ecsimsw/picup/service/MemberFacadeService.class]: Unsatisfied dependency expressed through constructor parameter 2; nested exception is org.springframework.beans.factory.NoSuchBeanDefinitionException: No qualifying bean of type 'ecsimsw.picup.service.StorageUsageClient' available: expected at least 1 bean which qualifies as autowire candidate. Dependency annotations: {}
+[m2024-05-24T06:40:40,538[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.o.j.AbstractEntityManagerFactoryBean[m: Closing JPA EntityManagerFactory for persistence unit 'default'
+[m2024-05-24T06:40:40,540[m [32mINFO  [m[[1;34mmain[m] [1;33mc.z.h.HikariDataSource[m: HikariPool-1 - Shutdown initiated...
+[m2024-05-24T06:40:40,541[m [32mINFO  [m[[1;34mmain[m] [1;33mc.z.h.HikariDataSource[m: HikariPool-1 - Shutdown completed.
+[m2024-05-24T06:40:40,542[m [32mINFO  [m[[1;34mmain[m] [1;33mo.a.j.l.DirectJDKLog[m: Stopping service [Tomcat]
+[m2024-05-24T06:40:40,552[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.b.a.l.ConditionEvaluationReportLoggingListener[m: 
+
+Error starting ApplicationContext. To display the conditions report re-run your application with 'debug' enabled.
+[m2024-05-24T06:40:40,562[m [1;31mERROR [m[[1;34mmain[m] [1;33mo.s.b.d.LoggingFailureAnalysisReporter[m: 
+
+***************************
+APPLICATION FAILED TO START
+***************************
+
+Description:
+
+Parameter 2 of constructor in ecsimsw.picup.service.MemberFacadeService required a bean of type 'ecsimsw.picup.service.StorageUsageClient' that could not be found.
+
+
+Action:
+
+Consider defining a bean of type 'ecsimsw.picup.service.StorageUsageClient' in your configuration.
+
+[m2024-05-24T06:44:04,415[m [32mINFO  [m[[1;34mbackground-preinit[m] [1;33mo.h.v.i.u.Version[m: HV000001: Hibernate Validator 6.2.5.Final
+[m2024-05-24T06:44:04,442[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.b.StartupInfoLogger[m: Starting MemberApplication using Java 17.0.1 on gimjinhwan-ui-Macmini.local with PID 51934 (/Users/kimjinhwan/IdeaProjects/pic-up/application/member-api/build/classes/java/main started by kimjinhwan in /Users/kimjinhwan/IdeaProjects/pic-up)
+[m2024-05-24T06:44:04,443[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.b.SpringApplication[m: The following 4 profiles are active: "member-api-dev", "member-core-dev", "auth-dev", "logging-dev"
+[m2024-05-24T06:44:04,831[m [1;31mERROR [m[[1;34mmain[m] [1;33mo.s.b.SpringApplication[m: Application run failed
+java.lang.IllegalStateException: Either 'name' or 'value' must be provided in @FeignClient
+	at org.springframework.cloud.openfeign.FeignClientsRegistrar.getClientName(FeignClientsRegistrar.java:406)
+	at org.springframework.cloud.openfeign.FeignClientsRegistrar.registerFeignClients(FeignClientsRegistrar.java:199)
+	at org.springframework.cloud.openfeign.FeignClientsRegistrar.registerBeanDefinitions(FeignClientsRegistrar.java:151)
+	at org.springframework.context.annotation.ImportBeanDefinitionRegistrar.registerBeanDefinitions(ImportBeanDefinitionRegistrar.java:86)
+	at org.springframework.context.annotation.ConfigurationClassBeanDefinitionReader.lambda$loadBeanDefinitionsFromRegistrars$1(ConfigurationClassBeanDefinitionReader.java:396)
+	at java.base/java.util.LinkedHashMap.forEach(LinkedHashMap.java:721)
+	at org.springframework.context.annotation.ConfigurationClassBeanDefinitionReader.loadBeanDefinitionsFromRegistrars(ConfigurationClassBeanDefinitionReader.java:395)
+	at org.springframework.context.annotation.ConfigurationClassBeanDefinitionReader.loadBeanDefinitionsForConfigurationClass(ConfigurationClassBeanDefinitionReader.java:157)
+	at org.springframework.context.annotation.ConfigurationClassBeanDefinitionReader.loadBeanDefinitions(ConfigurationClassBeanDefinitionReader.java:129)
+	at org.springframework.context.annotation.ConfigurationClassPostProcessor.processConfigBeanDefinitions(ConfigurationClassPostProcessor.java:343)
+	at org.springframework.context.annotation.ConfigurationClassPostProcessor.postProcessBeanDefinitionRegistry(ConfigurationClassPostProcessor.java:247)
+	at org.springframework.context.support.PostProcessorRegistrationDelegate.invokeBeanDefinitionRegistryPostProcessors(PostProcessorRegistrationDelegate.java:311)
+	at org.springframework.context.support.PostProcessorRegistrationDelegate.invokeBeanFactoryPostProcessors(PostProcessorRegistrationDelegate.java:112)
+	at org.springframework.context.support.AbstractApplicationContext.invokeBeanFactoryPostProcessors(AbstractApplicationContext.java:746)
+	at org.springframework.context.support.AbstractApplicationContext.refresh(AbstractApplicationContext.java:564)
+	at org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext.refresh(ServletWebServerApplicationContext.java:147)
+	at org.springframework.boot.SpringApplication.refresh(SpringApplication.java:731)
+	at org.springframework.boot.SpringApplication.refreshContext(SpringApplication.java:408)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:307)
+	at ecsimsw.picup.MemberApplication.main(MemberApplication.java:21)
+[m2024-05-24T06:44:30,765[m [32mINFO  [m[[1;34mbackground-preinit[m] [1;33mo.h.v.i.u.Version[m: HV000001: Hibernate Validator 6.2.5.Final
+[m2024-05-24T06:44:30,790[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.b.StartupInfoLogger[m: Starting MemberApplication using Java 17.0.1 on gimjinhwan-ui-Macmini.local with PID 51952 (/Users/kimjinhwan/IdeaProjects/pic-up/application/member-api/build/classes/java/main started by kimjinhwan in /Users/kimjinhwan/IdeaProjects/pic-up)
+[m2024-05-24T06:44:30,791[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.b.SpringApplication[m: The following 4 profiles are active: "member-api-dev", "member-core-dev", "auth-dev", "logging-dev"
+[m2024-05-24T06:44:31,183[m [1;31mERROR [m[[1;34mmain[m] [1;33mo.s.b.SpringApplication[m: Application run failed
+java.lang.IllegalStateException: Service id not legal hostname (storage_usage)
+	at org.springframework.util.Assert.state(Assert.java:76)
+	at org.springframework.cloud.openfeign.FeignClientsRegistrar.getName(FeignClientsRegistrar.java:111)
+	at org.springframework.cloud.openfeign.FeignClientsRegistrar.getName(FeignClientsRegistrar.java:282)
+	at org.springframework.cloud.openfeign.FeignClientsRegistrar.getName(FeignClientsRegistrar.java:270)
+	at org.springframework.cloud.openfeign.FeignClientsRegistrar.getContextId(FeignClientsRegistrar.java:288)
+	at org.springframework.cloud.openfeign.FeignClientsRegistrar.registerFeignClient(FeignClientsRegistrar.java:213)
+	at org.springframework.cloud.openfeign.FeignClientsRegistrar.registerFeignClients(FeignClientsRegistrar.java:202)
+	at org.springframework.cloud.openfeign.FeignClientsRegistrar.registerBeanDefinitions(FeignClientsRegistrar.java:151)
+	at org.springframework.context.annotation.ImportBeanDefinitionRegistrar.registerBeanDefinitions(ImportBeanDefinitionRegistrar.java:86)
+	at org.springframework.context.annotation.ConfigurationClassBeanDefinitionReader.lambda$loadBeanDefinitionsFromRegistrars$1(ConfigurationClassBeanDefinitionReader.java:396)
+	at java.base/java.util.LinkedHashMap.forEach(LinkedHashMap.java:721)
+	at org.springframework.context.annotation.ConfigurationClassBeanDefinitionReader.loadBeanDefinitionsFromRegistrars(ConfigurationClassBeanDefinitionReader.java:395)
+	at org.springframework.context.annotation.ConfigurationClassBeanDefinitionReader.loadBeanDefinitionsForConfigurationClass(ConfigurationClassBeanDefinitionReader.java:157)
+	at org.springframework.context.annotation.ConfigurationClassBeanDefinitionReader.loadBeanDefinitions(ConfigurationClassBeanDefinitionReader.java:129)
+	at org.springframework.context.annotation.ConfigurationClassPostProcessor.processConfigBeanDefinitions(ConfigurationClassPostProcessor.java:343)
+	at org.springframework.context.annotation.ConfigurationClassPostProcessor.postProcessBeanDefinitionRegistry(ConfigurationClassPostProcessor.java:247)
+	at org.springframework.context.support.PostProcessorRegistrationDelegate.invokeBeanDefinitionRegistryPostProcessors(PostProcessorRegistrationDelegate.java:311)
+	at org.springframework.context.support.PostProcessorRegistrationDelegate.invokeBeanFactoryPostProcessors(PostProcessorRegistrationDelegate.java:112)
+	at org.springframework.context.support.AbstractApplicationContext.invokeBeanFactoryPostProcessors(AbstractApplicationContext.java:746)
+	at org.springframework.context.support.AbstractApplicationContext.refresh(AbstractApplicationContext.java:564)
+	at org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext.refresh(ServletWebServerApplicationContext.java:147)
+	at org.springframework.boot.SpringApplication.refresh(SpringApplication.java:731)
+	at org.springframework.boot.SpringApplication.refreshContext(SpringApplication.java:408)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:307)
+	at ecsimsw.picup.MemberApplication.main(MemberApplication.java:21)
+[m2024-05-24T06:45:05,833[m [32mINFO  [m[[1;34mbackground-preinit[m] [1;33mo.h.v.i.u.Version[m: HV000001: Hibernate Validator 6.2.5.Final
+[m2024-05-24T06:45:05,854[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.b.StartupInfoLogger[m: Starting MemberApplication using Java 17.0.1 on gimjinhwan-ui-Macmini.local with PID 51957 (/Users/kimjinhwan/IdeaProjects/pic-up/application/member-api/build/classes/java/main started by kimjinhwan in /Users/kimjinhwan/IdeaProjects/pic-up)
+[m2024-05-24T06:45:05,856[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.b.SpringApplication[m: The following 4 profiles are active: "member-api-dev", "member-core-dev", "auth-dev", "logging-dev"
+[m2024-05-24T06:45:06,339[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.d.r.c.RepositoryConfigurationDelegate[m: Multiple Spring Data modules found, entering strict repository configuration mode
+[m2024-05-24T06:45:06,340[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.d.r.c.RepositoryConfigurationDelegate[m: Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+[m2024-05-24T06:45:06,491[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.d.r.c.RepositoryConfigurationExtensionSupport[m: Spring Data JPA - Could not safely identify store assignment for repository candidate interface ecsimsw.picup.domain.AuthTokensCacheRepository; If you want this repository to be a JPA repository, consider annotating your entities with one of these annotations: javax.persistence.Entity, javax.persistence.MappedSuperclass (preferred), or consider extending one of the following types with your repository: org.springframework.data.jpa.repository.JpaRepository
+[m2024-05-24T06:45:06,498[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.d.r.c.RepositoryConfigurationDelegate[m: Finished Spring Data repository scanning in 152 ms. Found 1 JPA repository interfaces.
+[m2024-05-24T06:45:06,505[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.d.r.c.RepositoryConfigurationDelegate[m: Multiple Spring Data modules found, entering strict repository configuration mode
+[m2024-05-24T06:45:06,506[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.d.r.c.RepositoryConfigurationDelegate[m: Bootstrapping Spring Data Redis repositories in DEFAULT mode.
+[m2024-05-24T06:45:06,513[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.d.r.c.RepositoryConfigurationExtensionSupport[m: Spring Data Redis - Could not safely identify store assignment for repository candidate interface ecsimsw.picup.domain.MemberRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+[m2024-05-24T06:45:06,516[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.d.r.c.RepositoryConfigurationDelegate[m: Finished Spring Data repository scanning in 5 ms. Found 1 Redis repository interfaces.
+[m2024-05-24T06:45:06,630[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.c.c.s.GenericScope[m: BeanFactory id=47fb2665-b92e-3843-8024-c0f5746a500a
+[m2024-05-24T06:45:06,826[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.b.w.e.t.TomcatWebServer[m: Tomcat initialized with port(s): 8083 (http)
+[m2024-05-24T06:45:06,834[m [32mINFO  [m[[1;34mmain[m] [1;33mo.a.j.l.DirectJDKLog[m: Initializing ProtocolHandler ["http-nio-8083"]
+[m2024-05-24T06:45:06,834[m [32mINFO  [m[[1;34mmain[m] [1;33mo.a.j.l.DirectJDKLog[m: Starting service [Tomcat]
+[m2024-05-24T06:45:06,834[m [32mINFO  [m[[1;34mmain[m] [1;33mo.a.j.l.DirectJDKLog[m: Starting Servlet engine: [Apache Tomcat/9.0.71]
+[m2024-05-24T06:45:06,904[m [32mINFO  [m[[1;34mmain[m] [1;33mo.a.j.l.DirectJDKLog[m: Initializing Spring embedded WebApplicationContext
+[m2024-05-24T06:45:06,904[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.b.w.s.c.ServletWebServerApplicationContext[m: Root WebApplicationContext: initialization completed in 1031 ms
+[m2024-05-24T06:45:06,963[m [32mINFO  [m[[1;34mmain[m] [1;33mc.z.h.HikariDataSource[m: HikariPool-1 - Starting...
+[m2024-05-24T06:45:07,036[m [32mINFO  [m[[1;34mmain[m] [1;33mc.z.h.HikariDataSource[m: HikariPool-1 - Start completed.
+[m2024-05-24T06:45:07,041[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.b.a.h.H2ConsoleAutoConfiguration[m: H2 console available at '/h2-console'. Database available at 'jdbc:h2:mem:test'
+[m2024-05-24T06:45:07,120[m [32mINFO  [m[[1;34mmain[m] [1;33mo.h.j.i.u.LogHelper[m: HHH000204: Processing PersistenceUnitInfo [name: default]
+[m2024-05-24T06:45:07,147[m [32mINFO  [m[[1;34mmain[m] [1;33mo.h.Version[m: HHH000412: Hibernate ORM core version 5.6.15.Final
+[m2024-05-24T06:45:07,221[m [32mINFO  [m[[1;34mmain[m] [1;33mo.h.a.c.r.j.JavaReflectionManager[m: HCANN000001: Hibernate Commons Annotations {5.1.2.Final}
+[m2024-05-24T06:45:07,286[m [32mINFO  [m[[1;34mmain[m] [1;33mo.h.d.Dialect[m: HHH000400: Using dialect: org.hibernate.dialect.H2Dialect
+[m2024-05-24T06:45:07,570[m [32mINFO  [m[[1;34mmain[m] [1;33mo.h.e.t.j.p.i.JtaPlatformInitiator[m: HHH000490: Using JtaPlatform implementation: [org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform]
+[m2024-05-24T06:45:07,574[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.o.j.AbstractEntityManagerFactoryBean[m: Initialized JPA EntityManagerFactory for persistence unit 'default'
+[m2024-05-24T06:45:07,811[m [32mINFO  [m[[1;34mmain[m] [1;33mo.r.Version[m: Redisson 3.17.0
+[m2024-05-24T06:45:07,824[m [33mWARN  [m[[1;34mmain[m] [1;33mi.n.r.d.DnsServerAddressStreamProviders[m: Can not find io.netty.resolver.dns.macos.MacOSDnsServerAddressStreamProvider in the classpath, fallback to system defaults. This may result in incorrect DNS resolutions on MacOS. Check whether you have a dependency on 'io.netty:netty-resolver-dns-native-macos'
+[m2024-05-24T06:45:07,939[m [32mINFO  [m[[1;34mredisson-netty-2-16[m] [1;33mo.r.c.p.ConnectionPool$1[m: 1 connections initialized for localhost/127.0.0.1:6379
+[m2024-05-24T06:45:07,956[m [32mINFO  [m[[1;34mredisson-netty-2-17[m] [1;33mo.r.c.p.ConnectionPool$1[m: 24 connections initialized for localhost/127.0.0.1:6379
+[m2024-05-24T06:45:08,576[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.b.a.e.w.EndpointLinksResolver[m: Exposing 1 endpoint(s) beneath base path '/actuator'
+[m2024-05-24T06:45:08,608[m [32mINFO  [m[[1;34mmain[m] [1;33mo.a.j.l.DirectJDKLog[m: Starting ProtocolHandler ["http-nio-8083"]
+[m2024-05-24T06:45:08,614[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.b.w.e.t.TomcatWebServer[m: Tomcat started on port(s): 8083 (http) with context path ''
+[m2024-05-24T06:45:08,624[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.b.StartupInfoLogger[m: Started MemberApplication in 2.97 seconds (JVM running for 3.328)
+[m2024-05-24T06:45:09,123[m [32mINFO  [m[[1;34mRMI TCP Connection(2)-127.0.0.1[m] [1;33mo.a.j.l.DirectJDKLog[m: Initializing Spring DispatcherServlet 'dispatcherServlet'
+[m2024-05-24T06:45:09,124[m [32mINFO  [m[[1;34mRMI TCP Connection(2)-127.0.0.1[m] [1;33mo.s.w.s.FrameworkServlet[m: Initializing Servlet 'dispatcherServlet'
+[m2024-05-24T06:45:09,125[m [32mINFO  [m[[1;34mRMI TCP Connection(2)-127.0.0.1[m] [1;33mo.s.w.s.FrameworkServlet[m: Completed initialization in 1 ms
+[m2024-05-24T06:45:25,242[m [32mINFO  [m[[1;34mSpringApplicationShutdownHook[m] [1;33mo.s.o.j.AbstractEntityManagerFactoryBean[m: Closing JPA EntityManagerFactory for persistence unit 'default'
+[m2024-05-24T06:45:25,247[m [32mINFO  [m[[1;34mSpringApplicationShutdownHook[m] [1;33mc.z.h.HikariDataSource[m: HikariPool-1 - Shutdown initiated...
+[m2024-05-24T06:45:25,251[m [32mINFO  [m[[1;34mSpringApplicationShutdownHook[m] [1;33mc.z.h.HikariDataSource[m: HikariPool-1 - Shutdown completed.
+[m2024-05-24T06:45:27,756[m [32mINFO  [m[[1;34mbackground-preinit[m] [1;33mo.h.v.i.u.Version[m: HV000001: Hibernate Validator 6.2.5.Final
+[m2024-05-24T06:45:27,782[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.b.StartupInfoLogger[m: Starting MemberApplication using Java 17.0.1 on gimjinhwan-ui-Macmini.local with PID 51969 (/Users/kimjinhwan/IdeaProjects/pic-up/application/member-api/build/classes/java/main started by kimjinhwan in /Users/kimjinhwan/IdeaProjects/pic-up)
+[m2024-05-24T06:45:27,784[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.b.SpringApplication[m: The following 4 profiles are active: "member-api-dev", "member-core-dev", "auth-dev", "logging-dev"
+[m2024-05-24T06:45:28,304[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.d.r.c.RepositoryConfigurationDelegate[m: Multiple Spring Data modules found, entering strict repository configuration mode
+[m2024-05-24T06:45:28,305[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.d.r.c.RepositoryConfigurationDelegate[m: Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+[m2024-05-24T06:45:28,457[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.d.r.c.RepositoryConfigurationExtensionSupport[m: Spring Data JPA - Could not safely identify store assignment for repository candidate interface ecsimsw.picup.domain.AuthTokensCacheRepository; If you want this repository to be a JPA repository, consider annotating your entities with one of these annotations: javax.persistence.Entity, javax.persistence.MappedSuperclass (preferred), or consider extending one of the following types with your repository: org.springframework.data.jpa.repository.JpaRepository
+[m2024-05-24T06:45:28,463[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.d.r.c.RepositoryConfigurationDelegate[m: Finished Spring Data repository scanning in 155 ms. Found 1 JPA repository interfaces.
+[m2024-05-24T06:45:28,469[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.d.r.c.RepositoryConfigurationDelegate[m: Multiple Spring Data modules found, entering strict repository configuration mode
+[m2024-05-24T06:45:28,470[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.d.r.c.RepositoryConfigurationDelegate[m: Bootstrapping Spring Data Redis repositories in DEFAULT mode.
+[m2024-05-24T06:45:28,476[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.d.r.c.RepositoryConfigurationExtensionSupport[m: Spring Data Redis - Could not safely identify store assignment for repository candidate interface ecsimsw.picup.domain.MemberRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+[m2024-05-24T06:45:28,479[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.d.r.c.RepositoryConfigurationDelegate[m: Finished Spring Data repository scanning in 4 ms. Found 1 Redis repository interfaces.
+[m2024-05-24T06:45:28,569[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.c.c.s.GenericScope[m: BeanFactory id=47fb2665-b92e-3843-8024-c0f5746a500a
+[m2024-05-24T06:45:28,767[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.b.w.e.t.TomcatWebServer[m: Tomcat initialized with port(s): 8083 (http)
+[m2024-05-24T06:45:28,776[m [32mINFO  [m[[1;34mmain[m] [1;33mo.a.j.l.DirectJDKLog[m: Initializing ProtocolHandler ["http-nio-8083"]
+[m2024-05-24T06:45:28,776[m [32mINFO  [m[[1;34mmain[m] [1;33mo.a.j.l.DirectJDKLog[m: Starting service [Tomcat]
+[m2024-05-24T06:45:28,777[m [32mINFO  [m[[1;34mmain[m] [1;33mo.a.j.l.DirectJDKLog[m: Starting Servlet engine: [Apache Tomcat/9.0.71]
+[m2024-05-24T06:45:28,848[m [32mINFO  [m[[1;34mmain[m] [1;33mo.a.j.l.DirectJDKLog[m: Initializing Spring embedded WebApplicationContext
+[m2024-05-24T06:45:28,849[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.b.w.s.c.ServletWebServerApplicationContext[m: Root WebApplicationContext: initialization completed in 1046 ms
+[m2024-05-24T06:45:28,913[m [32mINFO  [m[[1;34mmain[m] [1;33mc.z.h.HikariDataSource[m: HikariPool-1 - Starting...
+[m2024-05-24T06:45:28,988[m [32mINFO  [m[[1;34mmain[m] [1;33mc.z.h.HikariDataSource[m: HikariPool-1 - Start completed.
+[m2024-05-24T06:45:28,994[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.b.a.h.H2ConsoleAutoConfiguration[m: H2 console available at '/h2-console'. Database available at 'jdbc:h2:mem:test'
+[m2024-05-24T06:45:29,064[m [32mINFO  [m[[1;34mmain[m] [1;33mo.h.j.i.u.LogHelper[m: HHH000204: Processing PersistenceUnitInfo [name: default]
+[m2024-05-24T06:45:29,088[m [32mINFO  [m[[1;34mmain[m] [1;33mo.h.Version[m: HHH000412: Hibernate ORM core version 5.6.15.Final
+[m2024-05-24T06:45:29,189[m [32mINFO  [m[[1;34mmain[m] [1;33mo.h.a.c.r.j.JavaReflectionManager[m: HCANN000001: Hibernate Commons Annotations {5.1.2.Final}
+[m2024-05-24T06:45:29,253[m [32mINFO  [m[[1;34mmain[m] [1;33mo.h.d.Dialect[m: HHH000400: Using dialect: org.hibernate.dialect.H2Dialect
+[m2024-05-24T06:45:29,549[m [32mINFO  [m[[1;34mmain[m] [1;33mo.h.e.t.j.p.i.JtaPlatformInitiator[m: HHH000490: Using JtaPlatform implementation: [org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform]
+[m2024-05-24T06:45:29,554[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.o.j.AbstractEntityManagerFactoryBean[m: Initialized JPA EntityManagerFactory for persistence unit 'default'
+[m2024-05-24T06:45:29,782[m [32mINFO  [m[[1;34mmain[m] [1;33mo.r.Version[m: Redisson 3.17.0
+[m2024-05-24T06:45:29,794[m [33mWARN  [m[[1;34mmain[m] [1;33mi.n.r.d.DnsServerAddressStreamProviders[m: Can not find io.netty.resolver.dns.macos.MacOSDnsServerAddressStreamProvider in the classpath, fallback to system defaults. This may result in incorrect DNS resolutions on MacOS. Check whether you have a dependency on 'io.netty:netty-resolver-dns-native-macos'
+[m2024-05-24T06:45:29,893[m [32mINFO  [m[[1;34mredisson-netty-2-23[m] [1;33mo.r.c.p.ConnectionPool$1[m: 1 connections initialized for localhost/127.0.0.1:6379
+[m2024-05-24T06:45:29,918[m [32mINFO  [m[[1;34mredisson-netty-2-20[m] [1;33mo.r.c.p.ConnectionPool$1[m: 24 connections initialized for localhost/127.0.0.1:6379
+[m2024-05-24T06:45:30,617[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.b.a.e.w.EndpointLinksResolver[m: Exposing 1 endpoint(s) beneath base path '/actuator'
+[m2024-05-24T06:45:30,649[m [32mINFO  [m[[1;34mmain[m] [1;33mo.a.j.l.DirectJDKLog[m: Starting ProtocolHandler ["http-nio-8083"]
+[m2024-05-24T06:45:30,655[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.b.w.e.t.TomcatWebServer[m: Tomcat started on port(s): 8083 (http) with context path ''
+[m2024-05-24T06:45:30,665[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.b.StartupInfoLogger[m: Started MemberApplication in 3.091 seconds (JVM running for 3.435)
+[m2024-05-24T06:45:31,009[m [32mINFO  [m[[1;34mRMI TCP Connection(3)-127.0.0.1[m] [1;33mo.a.j.l.DirectJDKLog[m: Initializing Spring DispatcherServlet 'dispatcherServlet'
+[m2024-05-24T06:45:31,009[m [32mINFO  [m[[1;34mRMI TCP Connection(3)-127.0.0.1[m] [1;33mo.s.w.s.FrameworkServlet[m: Initializing Servlet 'dispatcherServlet'
+[m2024-05-24T06:45:31,010[m [32mINFO  [m[[1;34mRMI TCP Connection(3)-127.0.0.1[m] [1;33mo.s.w.s.FrameworkServlet[m: Completed initialization in 1 ms
+[m2024-05-24T06:46:20,588[m [32mINFO  [m[[1;34mSpringApplicationShutdownHook[m] [1;33mo.s.o.j.AbstractEntityManagerFactoryBean[m: Closing JPA EntityManagerFactory for persistence unit 'default'
+[m2024-05-24T06:46:20,591[m [32mINFO  [m[[1;34mSpringApplicationShutdownHook[m] [1;33mc.z.h.HikariDataSource[m: HikariPool-1 - Shutdown initiated...
+[m2024-05-24T06:46:20,592[m [32mINFO  [m[[1;34mSpringApplicationShutdownHook[m] [1;33mc.z.h.HikariDataSource[m: HikariPool-1 - Shutdown completed.
+[m2024-05-24T06:46:23,402[m [32mINFO  [m[[1;34mbackground-preinit[m] [1;33mo.h.v.i.u.Version[m: HV000001: Hibernate Validator 6.2.5.Final
+[m2024-05-24T06:46:23,427[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.b.StartupInfoLogger[m: Starting MemberApplication using Java 17.0.1 on gimjinhwan-ui-Macmini.local with PID 51992 (/Users/kimjinhwan/IdeaProjects/pic-up/application/member-api/build/classes/java/main started by kimjinhwan in /Users/kimjinhwan/IdeaProjects/pic-up)
+[m2024-05-24T06:46:23,429[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.b.SpringApplication[m: The following 4 profiles are active: "member-api-dev", "member-core-dev", "auth-dev", "logging-dev"
+[m2024-05-24T06:46:23,920[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.d.r.c.RepositoryConfigurationDelegate[m: Multiple Spring Data modules found, entering strict repository configuration mode
+[m2024-05-24T06:46:23,921[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.d.r.c.RepositoryConfigurationDelegate[m: Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+[m2024-05-24T06:46:24,075[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.d.r.c.RepositoryConfigurationExtensionSupport[m: Spring Data JPA - Could not safely identify store assignment for repository candidate interface ecsimsw.picup.domain.AuthTokensCacheRepository; If you want this repository to be a JPA repository, consider annotating your entities with one of these annotations: javax.persistence.Entity, javax.persistence.MappedSuperclass (preferred), or consider extending one of the following types with your repository: org.springframework.data.jpa.repository.JpaRepository
+[m2024-05-24T06:46:24,081[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.d.r.c.RepositoryConfigurationDelegate[m: Finished Spring Data repository scanning in 156 ms. Found 1 JPA repository interfaces.
+[m2024-05-24T06:46:24,087[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.d.r.c.RepositoryConfigurationDelegate[m: Multiple Spring Data modules found, entering strict repository configuration mode
+[m2024-05-24T06:46:24,088[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.d.r.c.RepositoryConfigurationDelegate[m: Bootstrapping Spring Data Redis repositories in DEFAULT mode.
+[m2024-05-24T06:46:24,094[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.d.r.c.RepositoryConfigurationExtensionSupport[m: Spring Data Redis - Could not safely identify store assignment for repository candidate interface ecsimsw.picup.domain.MemberRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+[m2024-05-24T06:46:24,096[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.d.r.c.RepositoryConfigurationDelegate[m: Finished Spring Data repository scanning in 4 ms. Found 1 Redis repository interfaces.
+[m2024-05-24T06:46:24,192[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.c.c.s.GenericScope[m: BeanFactory id=9c6f6619-6427-3dd2-8b56-9d47443336f7
+[m2024-05-24T06:46:24,384[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.b.w.e.t.TomcatWebServer[m: Tomcat initialized with port(s): 8083 (http)
+[m2024-05-24T06:46:24,392[m [32mINFO  [m[[1;34mmain[m] [1;33mo.a.j.l.DirectJDKLog[m: Initializing ProtocolHandler ["http-nio-8083"]
+[m2024-05-24T06:46:24,392[m [32mINFO  [m[[1;34mmain[m] [1;33mo.a.j.l.DirectJDKLog[m: Starting service [Tomcat]
+[m2024-05-24T06:46:24,392[m [32mINFO  [m[[1;34mmain[m] [1;33mo.a.j.l.DirectJDKLog[m: Starting Servlet engine: [Apache Tomcat/9.0.71]
+[m2024-05-24T06:46:24,460[m [32mINFO  [m[[1;34mmain[m] [1;33mo.a.j.l.DirectJDKLog[m: Initializing Spring embedded WebApplicationContext
+[m2024-05-24T06:46:24,461[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.b.w.s.c.ServletWebServerApplicationContext[m: Root WebApplicationContext: initialization completed in 1015 ms
+[m2024-05-24T06:46:24,521[m [32mINFO  [m[[1;34mmain[m] [1;33mc.z.h.HikariDataSource[m: HikariPool-1 - Starting...
+[m2024-05-24T06:46:24,591[m [32mINFO  [m[[1;34mmain[m] [1;33mc.z.h.HikariDataSource[m: HikariPool-1 - Start completed.
+[m2024-05-24T06:46:24,596[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.b.a.h.H2ConsoleAutoConfiguration[m: H2 console available at '/h2-console'. Database available at 'jdbc:h2:mem:test'
+[m2024-05-24T06:46:24,662[m [32mINFO  [m[[1;34mmain[m] [1;33mo.h.j.i.u.LogHelper[m: HHH000204: Processing PersistenceUnitInfo [name: default]
+[m2024-05-24T06:46:24,687[m [32mINFO  [m[[1;34mmain[m] [1;33mo.h.Version[m: HHH000412: Hibernate ORM core version 5.6.15.Final
+[m2024-05-24T06:46:24,761[m [32mINFO  [m[[1;34mmain[m] [1;33mo.h.a.c.r.j.JavaReflectionManager[m: HCANN000001: Hibernate Commons Annotations {5.1.2.Final}
+[m2024-05-24T06:46:24,817[m [32mINFO  [m[[1;34mmain[m] [1;33mo.h.d.Dialect[m: HHH000400: Using dialect: org.hibernate.dialect.H2Dialect
+[m2024-05-24T06:46:25,100[m [32mINFO  [m[[1;34mmain[m] [1;33mo.h.e.t.j.p.i.JtaPlatformInitiator[m: HHH000490: Using JtaPlatform implementation: [org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform]
+[m2024-05-24T06:46:25,111[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.o.j.AbstractEntityManagerFactoryBean[m: Initialized JPA EntityManagerFactory for persistence unit 'default'
+[m2024-05-24T06:46:25,335[m [32mINFO  [m[[1;34mmain[m] [1;33mo.r.Version[m: Redisson 3.17.0
+[m2024-05-24T06:46:25,347[m [33mWARN  [m[[1;34mmain[m] [1;33mi.n.r.d.DnsServerAddressStreamProviders[m: Can not find io.netty.resolver.dns.macos.MacOSDnsServerAddressStreamProvider in the classpath, fallback to system defaults. This may result in incorrect DNS resolutions on MacOS. Check whether you have a dependency on 'io.netty:netty-resolver-dns-native-macos'
+[m2024-05-24T06:46:25,438[m [32mINFO  [m[[1;34mredisson-netty-2-14[m] [1;33mo.r.c.p.ConnectionPool$1[m: 1 connections initialized for localhost/127.0.0.1:6379
+[m2024-05-24T06:46:25,465[m [32mINFO  [m[[1;34mredisson-netty-2-20[m] [1;33mo.r.c.p.ConnectionPool$1[m: 24 connections initialized for localhost/127.0.0.1:6379
+[m2024-05-24T06:46:26,079[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.b.a.e.w.EndpointLinksResolver[m: Exposing 1 endpoint(s) beneath base path '/actuator'
+[m2024-05-24T06:46:26,111[m [32mINFO  [m[[1;34mmain[m] [1;33mo.a.j.l.DirectJDKLog[m: Starting ProtocolHandler ["http-nio-8083"]
+[m2024-05-24T06:46:26,116[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.b.w.e.t.TomcatWebServer[m: Tomcat started on port(s): 8083 (http) with context path ''
+[m2024-05-24T06:46:26,126[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.b.StartupInfoLogger[m: Started MemberApplication in 2.908 seconds (JVM running for 3.508)
+[m2024-05-24T06:46:26,572[m [32mINFO  [m[[1;34mRMI TCP Connection(3)-127.0.0.1[m] [1;33mo.a.j.l.DirectJDKLog[m: Initializing Spring DispatcherServlet 'dispatcherServlet'
+[m2024-05-24T06:46:26,572[m [32mINFO  [m[[1;34mRMI TCP Connection(3)-127.0.0.1[m] [1;33mo.s.w.s.FrameworkServlet[m: Initializing Servlet 'dispatcherServlet'
+[m2024-05-24T06:46:26,574[m [32mINFO  [m[[1;34mRMI TCP Connection(3)-127.0.0.1[m] [1;33mo.s.w.s.FrameworkServlet[m: Completed initialization in 2 ms
+[m2024-05-24T06:48:19,364[m [32mINFO  [m[[1;34mSpringApplicationShutdownHook[m] [1;33mo.s.o.j.AbstractEntityManagerFactoryBean[m: Closing JPA EntityManagerFactory for persistence unit 'default'
+[m2024-05-24T06:48:19,367[m [32mINFO  [m[[1;34mSpringApplicationShutdownHook[m] [1;33mc.z.h.HikariDataSource[m: HikariPool-1 - Shutdown initiated...
+[m2024-05-24T06:48:19,369[m [32mINFO  [m[[1;34mSpringApplicationShutdownHook[m] [1;33mc.z.h.HikariDataSource[m: HikariPool-1 - Shutdown completed.
+[m2024-05-24T06:48:22,028[m [32mINFO  [m[[1;34mbackground-preinit[m] [1;33mo.h.v.i.u.Version[m: HV000001: Hibernate Validator 6.2.5.Final
+[m2024-05-24T06:48:22,062[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.b.StartupInfoLogger[m: Starting MemberApplication using Java 17.0.1 on gimjinhwan-ui-Macmini.local with PID 52029 (/Users/kimjinhwan/IdeaProjects/pic-up/application/member-api/build/classes/java/main started by kimjinhwan in /Users/kimjinhwan/IdeaProjects/pic-up)
+[m2024-05-24T06:48:22,064[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.b.SpringApplication[m: The following 4 profiles are active: "member-api-dev", "member-core-dev", "auth-dev", "logging-dev"
+[m2024-05-24T06:48:22,624[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.d.r.c.RepositoryConfigurationDelegate[m: Multiple Spring Data modules found, entering strict repository configuration mode
+[m2024-05-24T06:48:22,625[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.d.r.c.RepositoryConfigurationDelegate[m: Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+[m2024-05-24T06:48:22,776[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.d.r.c.RepositoryConfigurationExtensionSupport[m: Spring Data JPA - Could not safely identify store assignment for repository candidate interface ecsimsw.picup.domain.AuthTokensCacheRepository; If you want this repository to be a JPA repository, consider annotating your entities with one of these annotations: javax.persistence.Entity, javax.persistence.MappedSuperclass (preferred), or consider extending one of the following types with your repository: org.springframework.data.jpa.repository.JpaRepository
+[m2024-05-24T06:48:22,783[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.d.r.c.RepositoryConfigurationDelegate[m: Finished Spring Data repository scanning in 154 ms. Found 1 JPA repository interfaces.
+[m2024-05-24T06:48:22,789[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.d.r.c.RepositoryConfigurationDelegate[m: Multiple Spring Data modules found, entering strict repository configuration mode
+[m2024-05-24T06:48:22,789[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.d.r.c.RepositoryConfigurationDelegate[m: Bootstrapping Spring Data Redis repositories in DEFAULT mode.
+[m2024-05-24T06:48:22,796[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.d.r.c.RepositoryConfigurationExtensionSupport[m: Spring Data Redis - Could not safely identify store assignment for repository candidate interface ecsimsw.picup.domain.MemberRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+[m2024-05-24T06:48:22,798[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.d.r.c.RepositoryConfigurationDelegate[m: Finished Spring Data repository scanning in 4 ms. Found 1 Redis repository interfaces.
+[m2024-05-24T06:48:22,889[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.c.c.s.GenericScope[m: BeanFactory id=9c6f6619-6427-3dd2-8b56-9d47443336f7
+[m2024-05-24T06:48:23,082[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.b.w.e.t.TomcatWebServer[m: Tomcat initialized with port(s): 8083 (http)
+[m2024-05-24T06:48:23,090[m [32mINFO  [m[[1;34mmain[m] [1;33mo.a.j.l.DirectJDKLog[m: Initializing ProtocolHandler ["http-nio-8083"]
+[m2024-05-24T06:48:23,090[m [32mINFO  [m[[1;34mmain[m] [1;33mo.a.j.l.DirectJDKLog[m: Starting service [Tomcat]
+[m2024-05-24T06:48:23,090[m [32mINFO  [m[[1;34mmain[m] [1;33mo.a.j.l.DirectJDKLog[m: Starting Servlet engine: [Apache Tomcat/9.0.71]
+[m2024-05-24T06:48:23,158[m [32mINFO  [m[[1;34mmain[m] [1;33mo.a.j.l.DirectJDKLog[m: Initializing Spring embedded WebApplicationContext
+[m2024-05-24T06:48:23,158[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.b.w.s.c.ServletWebServerApplicationContext[m: Root WebApplicationContext: initialization completed in 1055 ms
+[m2024-05-24T06:48:23,219[m [32mINFO  [m[[1;34mmain[m] [1;33mc.z.h.HikariDataSource[m: HikariPool-1 - Starting...
+[m2024-05-24T06:48:23,301[m [32mINFO  [m[[1;34mmain[m] [1;33mc.z.h.HikariDataSource[m: HikariPool-1 - Start completed.
+[m2024-05-24T06:48:23,306[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.b.a.h.H2ConsoleAutoConfiguration[m: H2 console available at '/h2-console'. Database available at 'jdbc:h2:mem:test'
+[m2024-05-24T06:48:23,385[m [32mINFO  [m[[1;34mmain[m] [1;33mo.h.j.i.u.LogHelper[m: HHH000204: Processing PersistenceUnitInfo [name: default]
+[m2024-05-24T06:48:23,411[m [32mINFO  [m[[1;34mmain[m] [1;33mo.h.Version[m: HHH000412: Hibernate ORM core version 5.6.15.Final
+[m2024-05-24T06:48:23,489[m [32mINFO  [m[[1;34mmain[m] [1;33mo.h.a.c.r.j.JavaReflectionManager[m: HCANN000001: Hibernate Commons Annotations {5.1.2.Final}
+[m2024-05-24T06:48:23,542[m [32mINFO  [m[[1;34mmain[m] [1;33mo.h.d.Dialect[m: HHH000400: Using dialect: org.hibernate.dialect.H2Dialect
+[m2024-05-24T06:48:23,834[m [32mINFO  [m[[1;34mmain[m] [1;33mo.h.e.t.j.p.i.JtaPlatformInitiator[m: HHH000490: Using JtaPlatform implementation: [org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform]
+[m2024-05-24T06:48:23,839[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.o.j.AbstractEntityManagerFactoryBean[m: Initialized JPA EntityManagerFactory for persistence unit 'default'
+[m2024-05-24T06:48:24,066[m [32mINFO  [m[[1;34mmain[m] [1;33mo.r.Version[m: Redisson 3.17.0
+[m2024-05-24T06:48:24,078[m [33mWARN  [m[[1;34mmain[m] [1;33mi.n.r.d.DnsServerAddressStreamProviders[m: Can not find io.netty.resolver.dns.macos.MacOSDnsServerAddressStreamProvider in the classpath, fallback to system defaults. This may result in incorrect DNS resolutions on MacOS. Check whether you have a dependency on 'io.netty:netty-resolver-dns-native-macos'
+[m2024-05-24T06:48:24,192[m [32mINFO  [m[[1;34mredisson-netty-2-15[m] [1;33mo.r.c.p.ConnectionPool$1[m: 1 connections initialized for localhost/127.0.0.1:6379
+[m2024-05-24T06:48:24,206[m [32mINFO  [m[[1;34mredisson-netty-2-20[m] [1;33mo.r.c.p.ConnectionPool$1[m: 24 connections initialized for localhost/127.0.0.1:6379
+[m2024-05-24T06:48:24,830[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.b.a.e.w.EndpointLinksResolver[m: Exposing 1 endpoint(s) beneath base path '/actuator'
+[m2024-05-24T06:48:24,865[m [32mINFO  [m[[1;34mmain[m] [1;33mo.a.j.l.DirectJDKLog[m: Starting ProtocolHandler ["http-nio-8083"]
+[m2024-05-24T06:48:24,871[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.b.w.e.t.TomcatWebServer[m: Tomcat started on port(s): 8083 (http) with context path ''
+[m2024-05-24T06:48:24,881[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.b.StartupInfoLogger[m: Started MemberApplication in 3.278 seconds (JVM running for 3.726)
+[m2024-05-24T06:48:25,011[m [32mINFO  [m[[1;34mRMI TCP Connection(2)-127.0.0.1[m] [1;33mo.a.j.l.DirectJDKLog[m: Initializing Spring DispatcherServlet 'dispatcherServlet'
+[m2024-05-24T06:48:25,011[m [32mINFO  [m[[1;34mRMI TCP Connection(2)-127.0.0.1[m] [1;33mo.s.w.s.FrameworkServlet[m: Initializing Servlet 'dispatcherServlet'
+[m2024-05-24T06:48:25,013[m [32mINFO  [m[[1;34mRMI TCP Connection(2)-127.0.0.1[m] [1;33mo.s.w.s.FrameworkServlet[m: Completed initialization in 1 ms
+[m2024-05-24T06:48:38,973[m [32mINFO  [m[[1;34mSpringApplicationShutdownHook[m] [1;33mo.s.o.j.AbstractEntityManagerFactoryBean[m: Closing JPA EntityManagerFactory for persistence unit 'default'
+[m2024-05-24T06:48:38,977[m [32mINFO  [m[[1;34mSpringApplicationShutdownHook[m] [1;33mc.z.h.HikariDataSource[m: HikariPool-1 - Shutdown initiated...
+[m2024-05-24T06:48:38,978[m [32mINFO  [m[[1;34mSpringApplicationShutdownHook[m] [1;33mc.z.h.HikariDataSource[m: HikariPool-1 - Shutdown completed.
+[m2024-05-24T06:48:41,252[m [32mINFO  [m[[1;34mbackground-preinit[m] [1;33mo.h.v.i.u.Version[m: HV000001: Hibernate Validator 6.2.5.Final
+[m2024-05-24T06:48:41,272[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.b.StartupInfoLogger[m: Starting MemberApplication using Java 17.0.1 on gimjinhwan-ui-Macmini.local with PID 52052 (/Users/kimjinhwan/IdeaProjects/pic-up/application/member-api/build/classes/java/main started by kimjinhwan in /Users/kimjinhwan/IdeaProjects/pic-up)
+[m2024-05-24T06:48:41,274[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.b.SpringApplication[m: The following 4 profiles are active: "member-api-dev", "member-core-dev", "auth-dev", "logging-dev"
+[m2024-05-24T06:48:41,761[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.d.r.c.RepositoryConfigurationDelegate[m: Multiple Spring Data modules found, entering strict repository configuration mode
+[m2024-05-24T06:48:41,762[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.d.r.c.RepositoryConfigurationDelegate[m: Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+[m2024-05-24T06:48:41,907[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.d.r.c.RepositoryConfigurationExtensionSupport[m: Spring Data JPA - Could not safely identify store assignment for repository candidate interface ecsimsw.picup.domain.AuthTokensCacheRepository; If you want this repository to be a JPA repository, consider annotating your entities with one of these annotations: javax.persistence.Entity, javax.persistence.MappedSuperclass (preferred), or consider extending one of the following types with your repository: org.springframework.data.jpa.repository.JpaRepository
+[m2024-05-24T06:48:41,913[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.d.r.c.RepositoryConfigurationDelegate[m: Finished Spring Data repository scanning in 148 ms. Found 1 JPA repository interfaces.
+[m2024-05-24T06:48:41,920[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.d.r.c.RepositoryConfigurationDelegate[m: Multiple Spring Data modules found, entering strict repository configuration mode
+[m2024-05-24T06:48:41,921[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.d.r.c.RepositoryConfigurationDelegate[m: Bootstrapping Spring Data Redis repositories in DEFAULT mode.
+[m2024-05-24T06:48:41,928[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.d.r.c.RepositoryConfigurationExtensionSupport[m: Spring Data Redis - Could not safely identify store assignment for repository candidate interface ecsimsw.picup.domain.MemberRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+[m2024-05-24T06:48:41,931[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.d.r.c.RepositoryConfigurationDelegate[m: Finished Spring Data repository scanning in 6 ms. Found 1 Redis repository interfaces.
+[m2024-05-24T06:48:42,023[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.c.c.s.GenericScope[m: BeanFactory id=9c6f6619-6427-3dd2-8b56-9d47443336f7
+[m2024-05-24T06:48:42,219[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.b.w.e.t.TomcatWebServer[m: Tomcat initialized with port(s): 8083 (http)
+[m2024-05-24T06:48:42,228[m [32mINFO  [m[[1;34mmain[m] [1;33mo.a.j.l.DirectJDKLog[m: Initializing ProtocolHandler ["http-nio-8083"]
+[m2024-05-24T06:48:42,228[m [32mINFO  [m[[1;34mmain[m] [1;33mo.a.j.l.DirectJDKLog[m: Starting service [Tomcat]
+[m2024-05-24T06:48:42,228[m [32mINFO  [m[[1;34mmain[m] [1;33mo.a.j.l.DirectJDKLog[m: Starting Servlet engine: [Apache Tomcat/9.0.71]
+[m2024-05-24T06:48:42,294[m [32mINFO  [m[[1;34mmain[m] [1;33mo.a.j.l.DirectJDKLog[m: Initializing Spring embedded WebApplicationContext
+[m2024-05-24T06:48:42,295[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.b.w.s.c.ServletWebServerApplicationContext[m: Root WebApplicationContext: initialization completed in 998 ms
+[m2024-05-24T06:48:42,354[m [32mINFO  [m[[1;34mmain[m] [1;33mc.z.h.HikariDataSource[m: HikariPool-1 - Starting...
+[m2024-05-24T06:48:42,424[m [32mINFO  [m[[1;34mmain[m] [1;33mc.z.h.HikariDataSource[m: HikariPool-1 - Start completed.
+[m2024-05-24T06:48:42,429[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.b.a.h.H2ConsoleAutoConfiguration[m: H2 console available at '/h2-console'. Database available at 'jdbc:h2:mem:test'
+[m2024-05-24T06:48:42,501[m [32mINFO  [m[[1;34mmain[m] [1;33mo.h.j.i.u.LogHelper[m: HHH000204: Processing PersistenceUnitInfo [name: default]
+[m2024-05-24T06:48:42,524[m [32mINFO  [m[[1;34mmain[m] [1;33mo.h.Version[m: HHH000412: Hibernate ORM core version 5.6.15.Final
+[m2024-05-24T06:48:42,599[m [32mINFO  [m[[1;34mmain[m] [1;33mo.h.a.c.r.j.JavaReflectionManager[m: HCANN000001: Hibernate Commons Annotations {5.1.2.Final}
+[m2024-05-24T06:48:42,657[m [32mINFO  [m[[1;34mmain[m] [1;33mo.h.d.Dialect[m: HHH000400: Using dialect: org.hibernate.dialect.H2Dialect
+[m2024-05-24T06:48:42,940[m [32mINFO  [m[[1;34mmain[m] [1;33mo.h.e.t.j.p.i.JtaPlatformInitiator[m: HHH000490: Using JtaPlatform implementation: [org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform]
+[m2024-05-24T06:48:42,945[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.o.j.AbstractEntityManagerFactoryBean[m: Initialized JPA EntityManagerFactory for persistence unit 'default'
+[m2024-05-24T06:48:43,175[m [32mINFO  [m[[1;34mmain[m] [1;33mo.r.Version[m: Redisson 3.17.0
+[m2024-05-24T06:48:43,186[m [33mWARN  [m[[1;34mmain[m] [1;33mi.n.r.d.DnsServerAddressStreamProviders[m: Can not find io.netty.resolver.dns.macos.MacOSDnsServerAddressStreamProvider in the classpath, fallback to system defaults. This may result in incorrect DNS resolutions on MacOS. Check whether you have a dependency on 'io.netty:netty-resolver-dns-native-macos'
+[m2024-05-24T06:48:43,302[m [32mINFO  [m[[1;34mredisson-netty-2-19[m] [1;33mo.r.c.p.ConnectionPool$1[m: 1 connections initialized for localhost/127.0.0.1:6379
+[m2024-05-24T06:48:43,313[m [32mINFO  [m[[1;34mredisson-netty-2-20[m] [1;33mo.r.c.p.ConnectionPool$1[m: 24 connections initialized for localhost/127.0.0.1:6379
+[m2024-05-24T06:48:43,933[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.b.a.e.w.EndpointLinksResolver[m: Exposing 1 endpoint(s) beneath base path '/actuator'
+[m2024-05-24T06:48:43,966[m [32mINFO  [m[[1;34mmain[m] [1;33mo.a.j.l.DirectJDKLog[m: Starting ProtocolHandler ["http-nio-8083"]
+[m2024-05-24T06:48:43,972[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.b.w.e.t.TomcatWebServer[m: Tomcat started on port(s): 8083 (http) with context path ''
+[m2024-05-24T06:48:43,982[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.b.StartupInfoLogger[m: Started MemberApplication in 2.908 seconds (JVM running for 3.241)
+[m2024-05-24T06:48:44,497[m [32mINFO  [m[[1;34mRMI TCP Connection(1)-127.0.0.1[m] [1;33mo.a.j.l.DirectJDKLog[m: Initializing Spring DispatcherServlet 'dispatcherServlet'
+[m2024-05-24T06:48:44,497[m [32mINFO  [m[[1;34mRMI TCP Connection(1)-127.0.0.1[m] [1;33mo.s.w.s.FrameworkServlet[m: Initializing Servlet 'dispatcherServlet'
+[m2024-05-24T06:48:44,498[m [32mINFO  [m[[1;34mRMI TCP Connection(1)-127.0.0.1[m] [1;33mo.s.w.s.FrameworkServlet[m: Completed initialization in 1 ms
+[m2024-05-24T06:49:48,770[m [32mINFO  [m[[1;34mSpringApplicationShutdownHook[m] [1;33mo.s.o.j.AbstractEntityManagerFactoryBean[m: Closing JPA EntityManagerFactory for persistence unit 'default'
+[m2024-05-24T06:49:48,779[m [32mINFO  [m[[1;34mSpringApplicationShutdownHook[m] [1;33mc.z.h.HikariDataSource[m: HikariPool-1 - Shutdown initiated...
+[m2024-05-24T06:49:48,780[m [32mINFO  [m[[1;34mSpringApplicationShutdownHook[m] [1;33mc.z.h.HikariDataSource[m: HikariPool-1 - Shutdown completed.
+[m2024-05-24T06:49:51,050[m [32mINFO  [m[[1;34mbackground-preinit[m] [1;33mo.h.v.i.u.Version[m: HV000001: Hibernate Validator 6.2.5.Final
+[m2024-05-24T06:49:51,071[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.b.StartupInfoLogger[m: Starting MemberApplication using Java 17.0.1 on gimjinhwan-ui-Macmini.local with PID 52084 (/Users/kimjinhwan/IdeaProjects/pic-up/application/member-api/build/classes/java/main started by kimjinhwan in /Users/kimjinhwan/IdeaProjects/pic-up)
+[m2024-05-24T06:49:51,072[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.b.SpringApplication[m: The following 4 profiles are active: "member-api-dev", "member-core-dev", "auth-dev", "logging-dev"
+[m2024-05-24T06:49:51,555[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.d.r.c.RepositoryConfigurationDelegate[m: Multiple Spring Data modules found, entering strict repository configuration mode
+[m2024-05-24T06:49:51,555[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.d.r.c.RepositoryConfigurationDelegate[m: Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+[m2024-05-24T06:49:51,740[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.d.r.c.RepositoryConfigurationExtensionSupport[m: Spring Data JPA - Could not safely identify store assignment for repository candidate interface ecsimsw.picup.domain.AuthTokensCacheRepository; If you want this repository to be a JPA repository, consider annotating your entities with one of these annotations: javax.persistence.Entity, javax.persistence.MappedSuperclass (preferred), or consider extending one of the following types with your repository: org.springframework.data.jpa.repository.JpaRepository
+[m2024-05-24T06:49:51,750[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.d.r.c.RepositoryConfigurationDelegate[m: Finished Spring Data repository scanning in 190 ms. Found 1 JPA repository interfaces.
+[m2024-05-24T06:49:51,760[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.d.r.c.RepositoryConfigurationDelegate[m: Multiple Spring Data modules found, entering strict repository configuration mode
+[m2024-05-24T06:49:51,761[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.d.r.c.RepositoryConfigurationDelegate[m: Bootstrapping Spring Data Redis repositories in DEFAULT mode.
+[m2024-05-24T06:49:51,777[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.d.r.c.RepositoryConfigurationExtensionSupport[m: Spring Data Redis - Could not safely identify store assignment for repository candidate interface ecsimsw.picup.domain.MemberRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+[m2024-05-24T06:49:51,783[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.d.r.c.RepositoryConfigurationDelegate[m: Finished Spring Data repository scanning in 11 ms. Found 1 Redis repository interfaces.
+[m2024-05-24T06:49:51,882[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.c.c.s.GenericScope[m: BeanFactory id=9c6f6619-6427-3dd2-8b56-9d47443336f7
+[m2024-05-24T06:49:52,074[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.b.w.e.t.TomcatWebServer[m: Tomcat initialized with port(s): 8083 (http)
+[m2024-05-24T06:49:52,081[m [32mINFO  [m[[1;34mmain[m] [1;33mo.a.j.l.DirectJDKLog[m: Initializing ProtocolHandler ["http-nio-8083"]
+[m2024-05-24T06:49:52,082[m [32mINFO  [m[[1;34mmain[m] [1;33mo.a.j.l.DirectJDKLog[m: Starting service [Tomcat]
+[m2024-05-24T06:49:52,082[m [32mINFO  [m[[1;34mmain[m] [1;33mo.a.j.l.DirectJDKLog[m: Starting Servlet engine: [Apache Tomcat/9.0.71]
+[m2024-05-24T06:49:52,145[m [32mINFO  [m[[1;34mmain[m] [1;33mo.a.j.l.DirectJDKLog[m: Initializing Spring embedded WebApplicationContext
+[m2024-05-24T06:49:52,145[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.b.w.s.c.ServletWebServerApplicationContext[m: Root WebApplicationContext: initialization completed in 1054 ms
+[m2024-05-24T06:49:52,207[m [32mINFO  [m[[1;34mmain[m] [1;33mc.z.h.HikariDataSource[m: HikariPool-1 - Starting...
+[m2024-05-24T06:49:52,287[m [32mINFO  [m[[1;34mmain[m] [1;33mc.z.h.HikariDataSource[m: HikariPool-1 - Start completed.
+[m2024-05-24T06:49:52,293[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.b.a.h.H2ConsoleAutoConfiguration[m: H2 console available at '/h2-console'. Database available at 'jdbc:h2:mem:test'
+[m2024-05-24T06:49:52,385[m [32mINFO  [m[[1;34mmain[m] [1;33mo.h.j.i.u.LogHelper[m: HHH000204: Processing PersistenceUnitInfo [name: default]
+[m2024-05-24T06:49:52,423[m [32mINFO  [m[[1;34mmain[m] [1;33mo.h.Version[m: HHH000412: Hibernate ORM core version 5.6.15.Final
+[m2024-05-24T06:49:52,510[m [32mINFO  [m[[1;34mmain[m] [1;33mo.h.a.c.r.j.JavaReflectionManager[m: HCANN000001: Hibernate Commons Annotations {5.1.2.Final}
+[m2024-05-24T06:49:52,576[m [32mINFO  [m[[1;34mmain[m] [1;33mo.h.d.Dialect[m: HHH000400: Using dialect: org.hibernate.dialect.H2Dialect
+[m2024-05-24T06:49:52,940[m [32mINFO  [m[[1;34mmain[m] [1;33mo.h.e.t.j.p.i.JtaPlatformInitiator[m: HHH000490: Using JtaPlatform implementation: [org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform]
+[m2024-05-24T06:49:52,945[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.o.j.AbstractEntityManagerFactoryBean[m: Initialized JPA EntityManagerFactory for persistence unit 'default'
+[m2024-05-24T06:49:53,228[m [32mINFO  [m[[1;34mmain[m] [1;33mo.r.Version[m: Redisson 3.17.0
+[m2024-05-24T06:49:53,242[m [33mWARN  [m[[1;34mmain[m] [1;33mi.n.r.d.DnsServerAddressStreamProviders[m: Can not find io.netty.resolver.dns.macos.MacOSDnsServerAddressStreamProvider in the classpath, fallback to system defaults. This may result in incorrect DNS resolutions on MacOS. Check whether you have a dependency on 'io.netty:netty-resolver-dns-native-macos'
+[m2024-05-24T06:49:53,394[m [32mINFO  [m[[1;34mredisson-netty-2-21[m] [1;33mo.r.c.p.ConnectionPool$1[m: 1 connections initialized for localhost/127.0.0.1:6379
+[m2024-05-24T06:49:53,412[m [32mINFO  [m[[1;34mredisson-netty-2-20[m] [1;33mo.r.c.p.ConnectionPool$1[m: 24 connections initialized for localhost/127.0.0.1:6379
+[m2024-05-24T06:49:54,197[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.b.a.e.w.EndpointLinksResolver[m: Exposing 1 endpoint(s) beneath base path '/actuator'
+[m2024-05-24T06:49:54,234[m [32mINFO  [m[[1;34mmain[m] [1;33mo.a.j.l.DirectJDKLog[m: Starting ProtocolHandler ["http-nio-8083"]
+[m2024-05-24T06:49:54,240[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.b.w.e.t.TomcatWebServer[m: Tomcat started on port(s): 8083 (http) with context path ''
+[m2024-05-24T06:49:54,251[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.b.StartupInfoLogger[m: Started MemberApplication in 3.385 seconds (JVM running for 3.718)
+[m2024-05-24T06:49:54,396[m [32mINFO  [m[[1;34mRMI TCP Connection(2)-127.0.0.1[m] [1;33mo.a.j.l.DirectJDKLog[m: Initializing Spring DispatcherServlet 'dispatcherServlet'
+[m2024-05-24T06:49:54,397[m [32mINFO  [m[[1;34mRMI TCP Connection(2)-127.0.0.1[m] [1;33mo.s.w.s.FrameworkServlet[m: Initializing Servlet 'dispatcherServlet'
+[m2024-05-24T06:49:54,399[m [32mINFO  [m[[1;34mRMI TCP Connection(2)-127.0.0.1[m] [1;33mo.s.w.s.FrameworkServlet[m: Completed initialization in 2 ms
+[m2024-05-24T06:49:57,979[m [32mINFO  [m[[1;34mSpringApplicationShutdownHook[m] [1;33mo.s.o.j.AbstractEntityManagerFactoryBean[m: Closing JPA EntityManagerFactory for persistence unit 'default'
+[m2024-05-24T06:49:57,982[m [32mINFO  [m[[1;34mSpringApplicationShutdownHook[m] [1;33mc.z.h.HikariDataSource[m: HikariPool-1 - Shutdown initiated...
+[m2024-05-24T06:49:57,984[m [32mINFO  [m[[1;34mSpringApplicationShutdownHook[m] [1;33mc.z.h.HikariDataSource[m: HikariPool-1 - Shutdown completed.
+[m2024-05-24T06:50:00,091[m [32mINFO  [m[[1;34mbackground-preinit[m] [1;33mo.h.v.i.u.Version[m: HV000001: Hibernate Validator 6.2.5.Final
+[m2024-05-24T06:50:00,111[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.b.StartupInfoLogger[m: Starting MemberApplication using Java 17.0.1 on gimjinhwan-ui-Macmini.local with PID 52093 (/Users/kimjinhwan/IdeaProjects/pic-up/application/member-api/build/classes/java/main started by kimjinhwan in /Users/kimjinhwan/IdeaProjects/pic-up)
+[m2024-05-24T06:50:00,112[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.b.SpringApplication[m: The following 4 profiles are active: "member-api-dev", "member-core-dev", "auth-dev", "logging-dev"
+[m2024-05-24T06:50:00,597[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.d.r.c.RepositoryConfigurationDelegate[m: Multiple Spring Data modules found, entering strict repository configuration mode
+[m2024-05-24T06:50:00,598[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.d.r.c.RepositoryConfigurationDelegate[m: Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+[m2024-05-24T06:50:00,752[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.d.r.c.RepositoryConfigurationExtensionSupport[m: Spring Data JPA - Could not safely identify store assignment for repository candidate interface ecsimsw.picup.domain.AuthTokensCacheRepository; If you want this repository to be a JPA repository, consider annotating your entities with one of these annotations: javax.persistence.Entity, javax.persistence.MappedSuperclass (preferred), or consider extending one of the following types with your repository: org.springframework.data.jpa.repository.JpaRepository
+[m2024-05-24T06:50:00,758[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.d.r.c.RepositoryConfigurationDelegate[m: Finished Spring Data repository scanning in 156 ms. Found 1 JPA repository interfaces.
+[m2024-05-24T06:50:00,764[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.d.r.c.RepositoryConfigurationDelegate[m: Multiple Spring Data modules found, entering strict repository configuration mode
+[m2024-05-24T06:50:00,765[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.d.r.c.RepositoryConfigurationDelegate[m: Bootstrapping Spring Data Redis repositories in DEFAULT mode.
+[m2024-05-24T06:50:00,774[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.d.r.c.RepositoryConfigurationExtensionSupport[m: Spring Data Redis - Could not safely identify store assignment for repository candidate interface ecsimsw.picup.domain.MemberRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+[m2024-05-24T06:50:00,777[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.d.r.c.RepositoryConfigurationDelegate[m: Finished Spring Data repository scanning in 6 ms. Found 1 Redis repository interfaces.
+[m2024-05-24T06:50:00,862[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.c.c.s.GenericScope[m: BeanFactory id=9c6f6619-6427-3dd2-8b56-9d47443336f7
+[m2024-05-24T06:50:01,053[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.b.w.e.t.TomcatWebServer[m: Tomcat initialized with port(s): 8083 (http)
+[m2024-05-24T06:50:01,062[m [32mINFO  [m[[1;34mmain[m] [1;33mo.a.j.l.DirectJDKLog[m: Initializing ProtocolHandler ["http-nio-8083"]
+[m2024-05-24T06:50:01,062[m [32mINFO  [m[[1;34mmain[m] [1;33mo.a.j.l.DirectJDKLog[m: Starting service [Tomcat]
+[m2024-05-24T06:50:01,062[m [32mINFO  [m[[1;34mmain[m] [1;33mo.a.j.l.DirectJDKLog[m: Starting Servlet engine: [Apache Tomcat/9.0.71]
+[m2024-05-24T06:50:01,139[m [32mINFO  [m[[1;34mmain[m] [1;33mo.a.j.l.DirectJDKLog[m: Initializing Spring embedded WebApplicationContext
+[m2024-05-24T06:50:01,140[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.b.w.s.c.ServletWebServerApplicationContext[m: Root WebApplicationContext: initialization completed in 1010 ms
+[m2024-05-24T06:50:01,206[m [32mINFO  [m[[1;34mmain[m] [1;33mc.z.h.HikariDataSource[m: HikariPool-1 - Starting...
+[m2024-05-24T06:50:01,276[m [32mINFO  [m[[1;34mmain[m] [1;33mc.z.h.HikariDataSource[m: HikariPool-1 - Start completed.
+[m2024-05-24T06:50:01,281[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.b.a.h.H2ConsoleAutoConfiguration[m: H2 console available at '/h2-console'. Database available at 'jdbc:h2:mem:test'
+[m2024-05-24T06:50:01,344[m [32mINFO  [m[[1;34mmain[m] [1;33mo.h.j.i.u.LogHelper[m: HHH000204: Processing PersistenceUnitInfo [name: default]
+[m2024-05-24T06:50:01,367[m [32mINFO  [m[[1;34mmain[m] [1;33mo.h.Version[m: HHH000412: Hibernate ORM core version 5.6.15.Final
+[m2024-05-24T06:50:01,440[m [32mINFO  [m[[1;34mmain[m] [1;33mo.h.a.c.r.j.JavaReflectionManager[m: HCANN000001: Hibernate Commons Annotations {5.1.2.Final}
+[m2024-05-24T06:50:01,496[m [32mINFO  [m[[1;34mmain[m] [1;33mo.h.d.Dialect[m: HHH000400: Using dialect: org.hibernate.dialect.H2Dialect
+[m2024-05-24T06:50:01,778[m [32mINFO  [m[[1;34mmain[m] [1;33mo.h.e.t.j.p.i.JtaPlatformInitiator[m: HHH000490: Using JtaPlatform implementation: [org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform]
+[m2024-05-24T06:50:01,782[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.o.j.AbstractEntityManagerFactoryBean[m: Initialized JPA EntityManagerFactory for persistence unit 'default'
+[m2024-05-24T06:50:02,018[m [32mINFO  [m[[1;34mmain[m] [1;33mo.r.Version[m: Redisson 3.17.0
+[m2024-05-24T06:50:02,030[m [33mWARN  [m[[1;34mmain[m] [1;33mi.n.r.d.DnsServerAddressStreamProviders[m: Can not find io.netty.resolver.dns.macos.MacOSDnsServerAddressStreamProvider in the classpath, fallback to system defaults. This may result in incorrect DNS resolutions on MacOS. Check whether you have a dependency on 'io.netty:netty-resolver-dns-native-macos'
+[m2024-05-24T06:50:02,130[m [32mINFO  [m[[1;34mredisson-netty-2-20[m] [1;33mo.r.c.p.ConnectionPool$1[m: 1 connections initialized for localhost/127.0.0.1:6379
+[m2024-05-24T06:50:02,148[m [32mINFO  [m[[1;34mredisson-netty-2-19[m] [1;33mo.r.c.p.ConnectionPool$1[m: 24 connections initialized for localhost/127.0.0.1:6379
+[m2024-05-24T06:50:02,767[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.b.a.e.w.EndpointLinksResolver[m: Exposing 1 endpoint(s) beneath base path '/actuator'
+[m2024-05-24T06:50:02,798[m [32mINFO  [m[[1;34mmain[m] [1;33mo.a.j.l.DirectJDKLog[m: Starting ProtocolHandler ["http-nio-8083"]
+[m2024-05-24T06:50:02,804[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.b.w.e.t.TomcatWebServer[m: Tomcat started on port(s): 8083 (http) with context path ''
+[m2024-05-24T06:50:02,814[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.b.StartupInfoLogger[m: Started MemberApplication in 2.91 seconds (JVM running for 3.232)
+[m2024-05-24T06:50:03,325[m [32mINFO  [m[[1;34mRMI TCP Connection(3)-127.0.0.1[m] [1;33mo.a.j.l.DirectJDKLog[m: Initializing Spring DispatcherServlet 'dispatcherServlet'
+[m2024-05-24T06:50:03,325[m [32mINFO  [m[[1;34mRMI TCP Connection(3)-127.0.0.1[m] [1;33mo.s.w.s.FrameworkServlet[m: Initializing Servlet 'dispatcherServlet'
+[m2024-05-24T06:50:03,328[m [32mINFO  [m[[1;34mRMI TCP Connection(3)-127.0.0.1[m] [1;33mo.s.w.s.FrameworkServlet[m: Completed initialization in 2 ms
+[m2024-05-24T06:51:37,157[m [32mINFO  [m[[1;34mSpringApplicationShutdownHook[m] [1;33mo.s.o.j.AbstractEntityManagerFactoryBean[m: Closing JPA EntityManagerFactory for persistence unit 'default'
+[m2024-05-24T06:51:37,161[m [32mINFO  [m[[1;34mSpringApplicationShutdownHook[m] [1;33mc.z.h.HikariDataSource[m: HikariPool-1 - Shutdown initiated...
+[m2024-05-24T06:51:37,162[m [32mINFO  [m[[1;34mSpringApplicationShutdownHook[m] [1;33mc.z.h.HikariDataSource[m: HikariPool-1 - Shutdown completed.
+[m2024-05-24T06:51:39,071[m [32mINFO  [m[[1;34mbackground-preinit[m] [1;33mo.h.v.i.u.Version[m: HV000001: Hibernate Validator 6.2.5.Final
+[m2024-05-24T06:51:39,092[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.b.StartupInfoLogger[m: Starting MemberApplication using Java 17.0.1 on gimjinhwan-ui-Macmini.local with PID 52148 (/Users/kimjinhwan/IdeaProjects/pic-up/application/member-api/build/classes/java/main started by kimjinhwan in /Users/kimjinhwan/IdeaProjects/pic-up)
+[m2024-05-24T06:51:39,093[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.b.SpringApplication[m: The following 4 profiles are active: "member-api-dev", "member-core-dev", "auth-dev", "logging-dev"
+[m2024-05-24T06:51:39,586[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.d.r.c.RepositoryConfigurationDelegate[m: Multiple Spring Data modules found, entering strict repository configuration mode
+[m2024-05-24T06:51:39,587[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.d.r.c.RepositoryConfigurationDelegate[m: Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+[m2024-05-24T06:51:39,737[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.d.r.c.RepositoryConfigurationExtensionSupport[m: Spring Data JPA - Could not safely identify store assignment for repository candidate interface ecsimsw.picup.domain.AuthTokensCacheRepository; If you want this repository to be a JPA repository, consider annotating your entities with one of these annotations: javax.persistence.Entity, javax.persistence.MappedSuperclass (preferred), or consider extending one of the following types with your repository: org.springframework.data.jpa.repository.JpaRepository
+[m2024-05-24T06:51:39,743[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.d.r.c.RepositoryConfigurationDelegate[m: Finished Spring Data repository scanning in 152 ms. Found 1 JPA repository interfaces.
+[m2024-05-24T06:51:39,750[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.d.r.c.RepositoryConfigurationDelegate[m: Multiple Spring Data modules found, entering strict repository configuration mode
+[m2024-05-24T06:51:39,750[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.d.r.c.RepositoryConfigurationDelegate[m: Bootstrapping Spring Data Redis repositories in DEFAULT mode.
+[m2024-05-24T06:51:39,756[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.d.r.c.RepositoryConfigurationExtensionSupport[m: Spring Data Redis - Could not safely identify store assignment for repository candidate interface ecsimsw.picup.domain.MemberRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+[m2024-05-24T06:51:39,759[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.d.r.c.RepositoryConfigurationDelegate[m: Finished Spring Data repository scanning in 4 ms. Found 1 Redis repository interfaces.
+[m2024-05-24T06:51:39,865[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.c.c.s.GenericScope[m: BeanFactory id=9c6f6619-6427-3dd2-8b56-9d47443336f7
+[m2024-05-24T06:51:40,066[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.b.w.e.t.TomcatWebServer[m: Tomcat initialized with port(s): 8083 (http)
+[m2024-05-24T06:51:40,074[m [32mINFO  [m[[1;34mmain[m] [1;33mo.a.j.l.DirectJDKLog[m: Initializing ProtocolHandler ["http-nio-8083"]
+[m2024-05-24T06:51:40,075[m [32mINFO  [m[[1;34mmain[m] [1;33mo.a.j.l.DirectJDKLog[m: Starting service [Tomcat]
+[m2024-05-24T06:51:40,075[m [32mINFO  [m[[1;34mmain[m] [1;33mo.a.j.l.DirectJDKLog[m: Starting Servlet engine: [Apache Tomcat/9.0.71]
+[m2024-05-24T06:51:40,140[m [32mINFO  [m[[1;34mmain[m] [1;33mo.a.j.l.DirectJDKLog[m: Initializing Spring embedded WebApplicationContext
+[m2024-05-24T06:51:40,141[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.b.w.s.c.ServletWebServerApplicationContext[m: Root WebApplicationContext: initialization completed in 1030 ms
+[m2024-05-24T06:51:40,198[m [32mINFO  [m[[1;34mmain[m] [1;33mc.z.h.HikariDataSource[m: HikariPool-1 - Starting...
+[m2024-05-24T06:51:40,270[m [32mINFO  [m[[1;34mmain[m] [1;33mc.z.h.HikariDataSource[m: HikariPool-1 - Start completed.
+[m2024-05-24T06:51:40,275[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.b.a.h.H2ConsoleAutoConfiguration[m: H2 console available at '/h2-console'. Database available at 'jdbc:h2:mem:test'
+[m2024-05-24T06:51:40,342[m [32mINFO  [m[[1;34mmain[m] [1;33mo.h.j.i.u.LogHelper[m: HHH000204: Processing PersistenceUnitInfo [name: default]
+[m2024-05-24T06:51:40,370[m [32mINFO  [m[[1;34mmain[m] [1;33mo.h.Version[m: HHH000412: Hibernate ORM core version 5.6.15.Final
+[m2024-05-24T06:51:40,447[m [32mINFO  [m[[1;34mmain[m] [1;33mo.h.a.c.r.j.JavaReflectionManager[m: HCANN000001: Hibernate Commons Annotations {5.1.2.Final}
+[m2024-05-24T06:51:40,502[m [32mINFO  [m[[1;34mmain[m] [1;33mo.h.d.Dialect[m: HHH000400: Using dialect: org.hibernate.dialect.H2Dialect
+[m2024-05-24T06:51:40,780[m [32mINFO  [m[[1;34mmain[m] [1;33mo.h.e.t.j.p.i.JtaPlatformInitiator[m: HHH000490: Using JtaPlatform implementation: [org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform]
+[m2024-05-24T06:51:40,784[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.o.j.AbstractEntityManagerFactoryBean[m: Initialized JPA EntityManagerFactory for persistence unit 'default'
+[m2024-05-24T06:51:41,006[m [32mINFO  [m[[1;34mmain[m] [1;33mo.r.Version[m: Redisson 3.17.0
+[m2024-05-24T06:51:41,018[m [33mWARN  [m[[1;34mmain[m] [1;33mi.n.r.d.DnsServerAddressStreamProviders[m: Can not find io.netty.resolver.dns.macos.MacOSDnsServerAddressStreamProvider in the classpath, fallback to system defaults. This may result in incorrect DNS resolutions on MacOS. Check whether you have a dependency on 'io.netty:netty-resolver-dns-native-macos'
+[m2024-05-24T06:51:41,121[m [32mINFO  [m[[1;34mredisson-netty-2-24[m] [1;33mo.r.c.p.ConnectionPool$1[m: 1 connections initialized for localhost/127.0.0.1:6379
+[m2024-05-24T06:51:41,130[m [32mINFO  [m[[1;34mredisson-netty-2-20[m] [1;33mo.r.c.p.ConnectionPool$1[m: 24 connections initialized for localhost/127.0.0.1:6379
+[m2024-05-24T06:51:41,751[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.b.a.e.w.EndpointLinksResolver[m: Exposing 1 endpoint(s) beneath base path '/actuator'
+[m2024-05-24T06:51:41,784[m [32mINFO  [m[[1;34mmain[m] [1;33mo.a.j.l.DirectJDKLog[m: Starting ProtocolHandler ["http-nio-8083"]
+[m2024-05-24T06:51:41,790[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.b.w.e.t.TomcatWebServer[m: Tomcat started on port(s): 8083 (http) with context path ''
+[m2024-05-24T06:51:41,800[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.b.StartupInfoLogger[m: Started MemberApplication in 2.919 seconds (JVM running for 3.256)
+[m2024-05-24T06:51:42,286[m [32mINFO  [m[[1;34mRMI TCP Connection(3)-127.0.0.1[m] [1;33mo.a.j.l.DirectJDKLog[m: Initializing Spring DispatcherServlet 'dispatcherServlet'
+[m2024-05-24T06:51:42,286[m [32mINFO  [m[[1;34mRMI TCP Connection(3)-127.0.0.1[m] [1;33mo.s.w.s.FrameworkServlet[m: Initializing Servlet 'dispatcherServlet'
+[m2024-05-24T06:51:42,288[m [32mINFO  [m[[1;34mRMI TCP Connection(3)-127.0.0.1[m] [1;33mo.s.w.s.FrameworkServlet[m: Completed initialization in 1 ms
+[m2024-05-24T06:52:06,118[m [32mINFO  [m[[1;34mSpringApplicationShutdownHook[m] [1;33mo.s.o.j.AbstractEntityManagerFactoryBean[m: Closing JPA EntityManagerFactory for persistence unit 'default'
+[m2024-05-24T06:52:06,133[m [32mINFO  [m[[1;34mSpringApplicationShutdownHook[m] [1;33mc.z.h.HikariDataSource[m: HikariPool-1 - Shutdown initiated...
+[m2024-05-24T06:52:06,135[m [32mINFO  [m[[1;34mSpringApplicationShutdownHook[m] [1;33mc.z.h.HikariDataSource[m: HikariPool-1 - Shutdown completed.
+[m2024-05-24T06:52:08,053[m [32mINFO  [m[[1;34mbackground-preinit[m] [1;33mo.h.v.i.u.Version[m: HV000001: Hibernate Validator 6.2.5.Final
+[m2024-05-24T06:52:08,075[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.b.StartupInfoLogger[m: Starting MemberApplication using Java 17.0.1 on gimjinhwan-ui-Macmini.local with PID 52160 (/Users/kimjinhwan/IdeaProjects/pic-up/application/member-api/build/classes/java/main started by kimjinhwan in /Users/kimjinhwan/IdeaProjects/pic-up)
+[m2024-05-24T06:52:08,076[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.b.SpringApplication[m: The following 4 profiles are active: "member-api-dev", "member-core-dev", "auth-dev", "logging-dev"
+[m2024-05-24T06:52:08,545[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.d.r.c.RepositoryConfigurationDelegate[m: Multiple Spring Data modules found, entering strict repository configuration mode
+[m2024-05-24T06:52:08,546[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.d.r.c.RepositoryConfigurationDelegate[m: Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+[m2024-05-24T06:52:08,688[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.d.r.c.RepositoryConfigurationExtensionSupport[m: Spring Data JPA - Could not safely identify store assignment for repository candidate interface ecsimsw.picup.domain.AuthTokensCacheRepository; If you want this repository to be a JPA repository, consider annotating your entities with one of these annotations: javax.persistence.Entity, javax.persistence.MappedSuperclass (preferred), or consider extending one of the following types with your repository: org.springframework.data.jpa.repository.JpaRepository
+[m2024-05-24T06:52:08,694[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.d.r.c.RepositoryConfigurationDelegate[m: Finished Spring Data repository scanning in 144 ms. Found 1 JPA repository interfaces.
+[m2024-05-24T06:52:08,701[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.d.r.c.RepositoryConfigurationDelegate[m: Multiple Spring Data modules found, entering strict repository configuration mode
+[m2024-05-24T06:52:08,701[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.d.r.c.RepositoryConfigurationDelegate[m: Bootstrapping Spring Data Redis repositories in DEFAULT mode.
+[m2024-05-24T06:52:08,708[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.d.r.c.RepositoryConfigurationExtensionSupport[m: Spring Data Redis - Could not safely identify store assignment for repository candidate interface ecsimsw.picup.domain.MemberRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+[m2024-05-24T06:52:08,710[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.d.r.c.RepositoryConfigurationDelegate[m: Finished Spring Data repository scanning in 5 ms. Found 1 Redis repository interfaces.
+[m2024-05-24T06:52:08,798[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.c.c.s.GenericScope[m: BeanFactory id=9c6f6619-6427-3dd2-8b56-9d47443336f7
+[m2024-05-24T06:52:08,993[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.b.w.e.t.TomcatWebServer[m: Tomcat initialized with port(s): 8083 (http)
+[m2024-05-24T06:52:09,001[m [32mINFO  [m[[1;34mmain[m] [1;33mo.a.j.l.DirectJDKLog[m: Initializing ProtocolHandler ["http-nio-8083"]
+[m2024-05-24T06:52:09,001[m [32mINFO  [m[[1;34mmain[m] [1;33mo.a.j.l.DirectJDKLog[m: Starting service [Tomcat]
+[m2024-05-24T06:52:09,001[m [32mINFO  [m[[1;34mmain[m] [1;33mo.a.j.l.DirectJDKLog[m: Starting Servlet engine: [Apache Tomcat/9.0.71]
+[m2024-05-24T06:52:09,066[m [32mINFO  [m[[1;34mmain[m] [1;33mo.a.j.l.DirectJDKLog[m: Initializing Spring embedded WebApplicationContext
+[m2024-05-24T06:52:09,067[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.b.w.s.c.ServletWebServerApplicationContext[m: Root WebApplicationContext: initialization completed in 973 ms
+[m2024-05-24T06:52:09,129[m [32mINFO  [m[[1;34mmain[m] [1;33mc.z.h.HikariDataSource[m: HikariPool-1 - Starting...
+[m2024-05-24T06:52:09,191[m [32mINFO  [m[[1;34mmain[m] [1;33mc.z.h.HikariDataSource[m: HikariPool-1 - Start completed.
+[m2024-05-24T06:52:09,195[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.b.a.h.H2ConsoleAutoConfiguration[m: H2 console available at '/h2-console'. Database available at 'jdbc:h2:mem:test'
+[m2024-05-24T06:52:09,268[m [32mINFO  [m[[1;34mmain[m] [1;33mo.h.j.i.u.LogHelper[m: HHH000204: Processing PersistenceUnitInfo [name: default]
+[m2024-05-24T06:52:09,293[m [32mINFO  [m[[1;34mmain[m] [1;33mo.h.Version[m: HHH000412: Hibernate ORM core version 5.6.15.Final
+[m2024-05-24T06:52:09,367[m [32mINFO  [m[[1;34mmain[m] [1;33mo.h.a.c.r.j.JavaReflectionManager[m: HCANN000001: Hibernate Commons Annotations {5.1.2.Final}
+[m2024-05-24T06:52:09,419[m [32mINFO  [m[[1;34mmain[m] [1;33mo.h.d.Dialect[m: HHH000400: Using dialect: org.hibernate.dialect.H2Dialect
+[m2024-05-24T06:52:09,698[m [32mINFO  [m[[1;34mmain[m] [1;33mo.h.e.t.j.p.i.JtaPlatformInitiator[m: HHH000490: Using JtaPlatform implementation: [org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform]
+[m2024-05-24T06:52:09,702[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.o.j.AbstractEntityManagerFactoryBean[m: Initialized JPA EntityManagerFactory for persistence unit 'default'
+[m2024-05-24T06:52:09,931[m [32mINFO  [m[[1;34mmain[m] [1;33mo.r.Version[m: Redisson 3.17.0
+[m2024-05-24T06:52:09,943[m [33mWARN  [m[[1;34mmain[m] [1;33mi.n.r.d.DnsServerAddressStreamProviders[m: Can not find io.netty.resolver.dns.macos.MacOSDnsServerAddressStreamProvider in the classpath, fallback to system defaults. This may result in incorrect DNS resolutions on MacOS. Check whether you have a dependency on 'io.netty:netty-resolver-dns-native-macos'
+[m2024-05-24T06:52:10,051[m [32mINFO  [m[[1;34mredisson-netty-2-23[m] [1;33mo.r.c.p.ConnectionPool$1[m: 1 connections initialized for localhost/127.0.0.1:6379
+[m2024-05-24T06:52:10,066[m [32mINFO  [m[[1;34mredisson-netty-2-20[m] [1;33mo.r.c.p.ConnectionPool$1[m: 24 connections initialized for localhost/127.0.0.1:6379
+[m2024-05-24T06:52:10,684[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.b.a.e.w.EndpointLinksResolver[m: Exposing 1 endpoint(s) beneath base path '/actuator'
+[m2024-05-24T06:52:10,720[m [32mINFO  [m[[1;34mmain[m] [1;33mo.a.j.l.DirectJDKLog[m: Starting ProtocolHandler ["http-nio-8083"]
+[m2024-05-24T06:52:10,725[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.b.w.e.t.TomcatWebServer[m: Tomcat started on port(s): 8083 (http) with context path ''
+[m2024-05-24T06:52:10,736[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.b.StartupInfoLogger[m: Started MemberApplication in 2.878 seconds (JVM running for 3.198)
+[m2024-05-24T06:52:11,290[m [32mINFO  [m[[1;34mRMI TCP Connection(3)-127.0.0.1[m] [1;33mo.a.j.l.DirectJDKLog[m: Initializing Spring DispatcherServlet 'dispatcherServlet'
+[m2024-05-24T06:52:11,291[m [32mINFO  [m[[1;34mRMI TCP Connection(3)-127.0.0.1[m] [1;33mo.s.w.s.FrameworkServlet[m: Initializing Servlet 'dispatcherServlet'
+[m2024-05-24T06:52:11,292[m [32mINFO  [m[[1;34mRMI TCP Connection(3)-127.0.0.1[m] [1;33mo.s.w.s.FrameworkServlet[m: Completed initialization in 1 ms
+[m2024-05-24T06:53:12,512[m [1;31mERROR [m[[1;34mhttp-nio-8083-exec-2[m] [1;33me.p.c.GlobalControllerAdvice[m: [UNHANDLED] : [401] during [POST] to [http://localhost:8084/api/storage] [StorageUsageClient#init(String)]: [Unauthorized request]
+[m2024-05-24T06:57:02,265[m [32mINFO  [m[[1;34mSpringApplicationShutdownHook[m] [1;33mo.s.o.j.AbstractEntityManagerFactoryBean[m: Closing JPA EntityManagerFactory for persistence unit 'default'
+[m2024-05-24T06:57:02,270[m [32mINFO  [m[[1;34mSpringApplicationShutdownHook[m] [1;33mc.z.h.HikariDataSource[m: HikariPool-1 - Shutdown initiated...
+[m2024-05-24T06:57:02,271[m [32mINFO  [m[[1;34mSpringApplicationShutdownHook[m] [1;33mc.z.h.HikariDataSource[m: HikariPool-1 - Shutdown completed.
+[m2024-05-24T06:57:05,547[m [32mINFO  [m[[1;34mbackground-preinit[m] [1;33mo.h.v.i.u.Version[m: HV000001: Hibernate Validator 6.2.5.Final
+[m2024-05-24T06:57:05,568[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.b.StartupInfoLogger[m: Starting MemberApplication using Java 17.0.1 on gimjinhwan-ui-Macmini.local with PID 52278 (/Users/kimjinhwan/IdeaProjects/pic-up/application/member-api/build/classes/java/main started by kimjinhwan in /Users/kimjinhwan/IdeaProjects/pic-up)
+[m2024-05-24T06:57:05,569[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.b.SpringApplication[m: The following 4 profiles are active: "member-api-dev", "member-core-dev", "auth-dev", "logging-dev"
+[m2024-05-24T06:57:06,121[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.d.r.c.RepositoryConfigurationDelegate[m: Multiple Spring Data modules found, entering strict repository configuration mode
+[m2024-05-24T06:57:06,122[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.d.r.c.RepositoryConfigurationDelegate[m: Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+[m2024-05-24T06:57:06,272[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.d.r.c.RepositoryConfigurationExtensionSupport[m: Spring Data JPA - Could not safely identify store assignment for repository candidate interface ecsimsw.picup.domain.AuthTokensCacheRepository; If you want this repository to be a JPA repository, consider annotating your entities with one of these annotations: javax.persistence.Entity, javax.persistence.MappedSuperclass (preferred), or consider extending one of the following types with your repository: org.springframework.data.jpa.repository.JpaRepository
+[m2024-05-24T06:57:06,279[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.d.r.c.RepositoryConfigurationDelegate[m: Finished Spring Data repository scanning in 153 ms. Found 1 JPA repository interfaces.
+[m2024-05-24T06:57:06,286[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.d.r.c.RepositoryConfigurationDelegate[m: Multiple Spring Data modules found, entering strict repository configuration mode
+[m2024-05-24T06:57:06,287[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.d.r.c.RepositoryConfigurationDelegate[m: Bootstrapping Spring Data Redis repositories in DEFAULT mode.
+[m2024-05-24T06:57:06,293[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.d.r.c.RepositoryConfigurationExtensionSupport[m: Spring Data Redis - Could not safely identify store assignment for repository candidate interface ecsimsw.picup.domain.MemberRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+[m2024-05-24T06:57:06,296[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.d.r.c.RepositoryConfigurationDelegate[m: Finished Spring Data repository scanning in 4 ms. Found 1 Redis repository interfaces.
+[m2024-05-24T06:57:06,388[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.c.c.s.GenericScope[m: BeanFactory id=9c6f6619-6427-3dd2-8b56-9d47443336f7
+[m2024-05-24T06:57:06,590[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.b.w.e.t.TomcatWebServer[m: Tomcat initialized with port(s): 8083 (http)
+[m2024-05-24T06:57:06,599[m [32mINFO  [m[[1;34mmain[m] [1;33mo.a.j.l.DirectJDKLog[m: Initializing ProtocolHandler ["http-nio-8083"]
+[m2024-05-24T06:57:06,599[m [32mINFO  [m[[1;34mmain[m] [1;33mo.a.j.l.DirectJDKLog[m: Starting service [Tomcat]
+[m2024-05-24T06:57:06,599[m [32mINFO  [m[[1;34mmain[m] [1;33mo.a.j.l.DirectJDKLog[m: Starting Servlet engine: [Apache Tomcat/9.0.71]
+[m2024-05-24T06:57:06,695[m [32mINFO  [m[[1;34mmain[m] [1;33mo.a.j.l.DirectJDKLog[m: Initializing Spring embedded WebApplicationContext
+[m2024-05-24T06:57:06,695[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.b.w.s.c.ServletWebServerApplicationContext[m: Root WebApplicationContext: initialization completed in 1108 ms
+[m2024-05-24T06:57:06,784[m [32mINFO  [m[[1;34mmain[m] [1;33mc.z.h.HikariDataSource[m: HikariPool-1 - Starting...
+[m2024-05-24T06:57:06,869[m [32mINFO  [m[[1;34mmain[m] [1;33mc.z.h.HikariDataSource[m: HikariPool-1 - Start completed.
+[m2024-05-24T06:57:06,873[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.b.a.h.H2ConsoleAutoConfiguration[m: H2 console available at '/h2-console'. Database available at 'jdbc:h2:mem:test'
+[m2024-05-24T06:57:06,947[m [32mINFO  [m[[1;34mmain[m] [1;33mo.h.j.i.u.LogHelper[m: HHH000204: Processing PersistenceUnitInfo [name: default]
+[m2024-05-24T06:57:06,974[m [32mINFO  [m[[1;34mmain[m] [1;33mo.h.Version[m: HHH000412: Hibernate ORM core version 5.6.15.Final
+[m2024-05-24T06:57:07,055[m [32mINFO  [m[[1;34mmain[m] [1;33mo.h.a.c.r.j.JavaReflectionManager[m: HCANN000001: Hibernate Commons Annotations {5.1.2.Final}
+[m2024-05-24T06:57:07,112[m [32mINFO  [m[[1;34mmain[m] [1;33mo.h.d.Dialect[m: HHH000400: Using dialect: org.hibernate.dialect.H2Dialect
+[m2024-05-24T06:57:07,507[m [32mINFO  [m[[1;34mmain[m] [1;33mo.h.e.t.j.p.i.JtaPlatformInitiator[m: HHH000490: Using JtaPlatform implementation: [org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform]
+[m2024-05-24T06:57:07,514[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.o.j.AbstractEntityManagerFactoryBean[m: Initialized JPA EntityManagerFactory for persistence unit 'default'
+[m2024-05-24T06:57:07,818[m [32mINFO  [m[[1;34mmain[m] [1;33mo.r.Version[m: Redisson 3.17.0
+[m2024-05-24T06:57:07,835[m [33mWARN  [m[[1;34mmain[m] [1;33mi.n.r.d.DnsServerAddressStreamProviders[m: Can not find io.netty.resolver.dns.macos.MacOSDnsServerAddressStreamProvider in the classpath, fallback to system defaults. This may result in incorrect DNS resolutions on MacOS. Check whether you have a dependency on 'io.netty:netty-resolver-dns-native-macos'
+[m2024-05-24T06:57:07,949[m [32mINFO  [m[[1;34mredisson-netty-2-24[m] [1;33mo.r.c.p.ConnectionPool$1[m: 1 connections initialized for localhost/127.0.0.1:6379
+[m2024-05-24T06:57:07,960[m [32mINFO  [m[[1;34mredisson-netty-2-20[m] [1;33mo.r.c.p.ConnectionPool$1[m: 24 connections initialized for localhost/127.0.0.1:6379
+[m2024-05-24T06:57:08,766[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.b.a.e.w.EndpointLinksResolver[m: Exposing 1 endpoint(s) beneath base path '/actuator'
+[m2024-05-24T06:57:08,813[m [32mINFO  [m[[1;34mmain[m] [1;33mo.a.j.l.DirectJDKLog[m: Starting ProtocolHandler ["http-nio-8083"]
+[m2024-05-24T06:57:08,825[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.b.w.e.t.TomcatWebServer[m: Tomcat started on port(s): 8083 (http) with context path ''
+[m2024-05-24T06:57:08,840[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.b.StartupInfoLogger[m: Started MemberApplication in 3.507 seconds (JVM running for 4.158)
+[m2024-05-24T06:57:09,045[m [32mINFO  [m[[1;34mRMI TCP Connection(2)-127.0.0.1[m] [1;33mo.a.j.l.DirectJDKLog[m: Initializing Spring DispatcherServlet 'dispatcherServlet'
+[m2024-05-24T06:57:09,046[m [32mINFO  [m[[1;34mRMI TCP Connection(2)-127.0.0.1[m] [1;33mo.s.w.s.FrameworkServlet[m: Initializing Servlet 'dispatcherServlet'
+[m2024-05-24T06:57:09,048[m [32mINFO  [m[[1;34mRMI TCP Connection(2)-127.0.0.1[m] [1;33mo.s.w.s.FrameworkServlet[m: Completed initialization in 2 ms
+[m2024-05-24T06:58:21,125[m [32mINFO  [m[[1;34mSpringApplicationShutdownHook[m] [1;33mo.s.o.j.AbstractEntityManagerFactoryBean[m: Closing JPA EntityManagerFactory for persistence unit 'default'
+[m2024-05-24T06:58:21,128[m [32mINFO  [m[[1;34mSpringApplicationShutdownHook[m] [1;33mc.z.h.HikariDataSource[m: HikariPool-1 - Shutdown initiated...
+[m2024-05-24T06:58:21,131[m [32mINFO  [m[[1;34mSpringApplicationShutdownHook[m] [1;33mc.z.h.HikariDataSource[m: HikariPool-1 - Shutdown completed.
+[m2024-05-24T06:58:23,859[m [32mINFO  [m[[1;34mbackground-preinit[m] [1;33mo.h.v.i.u.Version[m: HV000001: Hibernate Validator 6.2.5.Final
+[m2024-05-24T06:58:23,881[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.b.StartupInfoLogger[m: Starting MemberApplication using Java 17.0.1 on gimjinhwan-ui-Macmini.local with PID 52305 (/Users/kimjinhwan/IdeaProjects/pic-up/application/member-api/build/classes/java/main started by kimjinhwan in /Users/kimjinhwan/IdeaProjects/pic-up)
+[m2024-05-24T06:58:23,883[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.b.SpringApplication[m: The following 4 profiles are active: "member-api-dev", "member-core-dev", "auth-dev", "logging-dev"
+[m2024-05-24T06:58:24,369[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.d.r.c.RepositoryConfigurationDelegate[m: Multiple Spring Data modules found, entering strict repository configuration mode
+[m2024-05-24T06:58:24,371[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.d.r.c.RepositoryConfigurationDelegate[m: Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+[m2024-05-24T06:58:24,541[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.d.r.c.RepositoryConfigurationExtensionSupport[m: Spring Data JPA - Could not safely identify store assignment for repository candidate interface ecsimsw.picup.domain.AuthTokensCacheRepository; If you want this repository to be a JPA repository, consider annotating your entities with one of these annotations: javax.persistence.Entity, javax.persistence.MappedSuperclass (preferred), or consider extending one of the following types with your repository: org.springframework.data.jpa.repository.JpaRepository
+[m2024-05-24T06:58:24,550[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.d.r.c.RepositoryConfigurationDelegate[m: Finished Spring Data repository scanning in 175 ms. Found 1 JPA repository interfaces.
+[m2024-05-24T06:58:24,557[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.d.r.c.RepositoryConfigurationDelegate[m: Multiple Spring Data modules found, entering strict repository configuration mode
+[m2024-05-24T06:58:24,557[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.d.r.c.RepositoryConfigurationDelegate[m: Bootstrapping Spring Data Redis repositories in DEFAULT mode.
+[m2024-05-24T06:58:24,564[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.d.r.c.RepositoryConfigurationExtensionSupport[m: Spring Data Redis - Could not safely identify store assignment for repository candidate interface ecsimsw.picup.domain.MemberRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+[m2024-05-24T06:58:24,566[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.d.r.c.RepositoryConfigurationDelegate[m: Finished Spring Data repository scanning in 5 ms. Found 1 Redis repository interfaces.
+[m2024-05-24T06:58:24,664[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.c.c.s.GenericScope[m: BeanFactory id=9c6f6619-6427-3dd2-8b56-9d47443336f7
+[m2024-05-24T06:58:24,855[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.b.w.e.t.TomcatWebServer[m: Tomcat initialized with port(s): 8083 (http)
+[m2024-05-24T06:58:24,864[m [32mINFO  [m[[1;34mmain[m] [1;33mo.a.j.l.DirectJDKLog[m: Initializing ProtocolHandler ["http-nio-8083"]
+[m2024-05-24T06:58:24,864[m [32mINFO  [m[[1;34mmain[m] [1;33mo.a.j.l.DirectJDKLog[m: Starting service [Tomcat]
+[m2024-05-24T06:58:24,864[m [32mINFO  [m[[1;34mmain[m] [1;33mo.a.j.l.DirectJDKLog[m: Starting Servlet engine: [Apache Tomcat/9.0.71]
+[m2024-05-24T06:58:24,932[m [32mINFO  [m[[1;34mmain[m] [1;33mo.a.j.l.DirectJDKLog[m: Initializing Spring embedded WebApplicationContext
+[m2024-05-24T06:58:24,932[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.b.w.s.c.ServletWebServerApplicationContext[m: Root WebApplicationContext: initialization completed in 1028 ms
+[m2024-05-24T06:58:24,991[m [32mINFO  [m[[1;34mmain[m] [1;33mc.z.h.HikariDataSource[m: HikariPool-1 - Starting...
+[m2024-05-24T06:58:25,061[m [32mINFO  [m[[1;34mmain[m] [1;33mc.z.h.HikariDataSource[m: HikariPool-1 - Start completed.
+[m2024-05-24T06:58:25,067[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.b.a.h.H2ConsoleAutoConfiguration[m: H2 console available at '/h2-console'. Database available at 'jdbc:h2:mem:test'
+[m2024-05-24T06:58:25,134[m [32mINFO  [m[[1;34mmain[m] [1;33mo.h.j.i.u.LogHelper[m: HHH000204: Processing PersistenceUnitInfo [name: default]
+[m2024-05-24T06:58:25,161[m [32mINFO  [m[[1;34mmain[m] [1;33mo.h.Version[m: HHH000412: Hibernate ORM core version 5.6.15.Final
+[m2024-05-24T06:58:25,244[m [32mINFO  [m[[1;34mmain[m] [1;33mo.h.a.c.r.j.JavaReflectionManager[m: HCANN000001: Hibernate Commons Annotations {5.1.2.Final}
+[m2024-05-24T06:58:25,297[m [32mINFO  [m[[1;34mmain[m] [1;33mo.h.d.Dialect[m: HHH000400: Using dialect: org.hibernate.dialect.H2Dialect
+[m2024-05-24T06:58:25,695[m [32mINFO  [m[[1;34mmain[m] [1;33mo.h.e.t.j.p.i.JtaPlatformInitiator[m: HHH000490: Using JtaPlatform implementation: [org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform]
+[m2024-05-24T06:58:25,700[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.o.j.AbstractEntityManagerFactoryBean[m: Initialized JPA EntityManagerFactory for persistence unit 'default'
+[m2024-05-24T06:58:25,975[m [32mINFO  [m[[1;34mmain[m] [1;33mo.r.Version[m: Redisson 3.17.0
+[m2024-05-24T06:58:25,987[m [33mWARN  [m[[1;34mmain[m] [1;33mi.n.r.d.DnsServerAddressStreamProviders[m: Can not find io.netty.resolver.dns.macos.MacOSDnsServerAddressStreamProvider in the classpath, fallback to system defaults. This may result in incorrect DNS resolutions on MacOS. Check whether you have a dependency on 'io.netty:netty-resolver-dns-native-macos'
+[m2024-05-24T06:58:26,097[m [32mINFO  [m[[1;34mredisson-netty-2-14[m] [1;33mo.r.c.p.ConnectionPool$1[m: 1 connections initialized for localhost/127.0.0.1:6379
+[m2024-05-24T06:58:26,111[m [32mINFO  [m[[1;34mredisson-netty-2-19[m] [1;33mo.r.c.p.ConnectionPool$1[m: 24 connections initialized for localhost/127.0.0.1:6379
+[m2024-05-24T06:58:26,866[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.b.a.e.w.EndpointLinksResolver[m: Exposing 1 endpoint(s) beneath base path '/actuator'
+[m2024-05-24T06:58:26,902[m [32mINFO  [m[[1;34mmain[m] [1;33mo.a.j.l.DirectJDKLog[m: Starting ProtocolHandler ["http-nio-8083"]
+[m2024-05-24T06:58:26,907[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.b.w.e.t.TomcatWebServer[m: Tomcat started on port(s): 8083 (http) with context path ''
+[m2024-05-24T06:58:26,918[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.b.StartupInfoLogger[m: Started MemberApplication in 3.239 seconds (JVM running for 3.573)
+[m2024-05-24T06:58:27,175[m [32mINFO  [m[[1;34mRMI TCP Connection(5)-127.0.0.1[m] [1;33mo.a.j.l.DirectJDKLog[m: Initializing Spring DispatcherServlet 'dispatcherServlet'
+[m2024-05-24T06:58:27,176[m [32mINFO  [m[[1;34mRMI TCP Connection(5)-127.0.0.1[m] [1;33mo.s.w.s.FrameworkServlet[m: Initializing Servlet 'dispatcherServlet'
+[m2024-05-24T06:58:27,179[m [32mINFO  [m[[1;34mRMI TCP Connection(5)-127.0.0.1[m] [1;33mo.s.w.s.FrameworkServlet[m: Completed initialization in 2 ms
+[m2024-05-24T06:59:43,267[m [32mINFO  [m[[1;34mSpringApplicationShutdownHook[m] [1;33mo.s.o.j.AbstractEntityManagerFactoryBean[m: Closing JPA EntityManagerFactory for persistence unit 'default'
+[m2024-05-24T06:59:43,270[m [32mINFO  [m[[1;34mSpringApplicationShutdownHook[m] [1;33mc.z.h.HikariDataSource[m: HikariPool-1 - Shutdown initiated...
+[m2024-05-24T06:59:43,271[m [32mINFO  [m[[1;34mSpringApplicationShutdownHook[m] [1;33mc.z.h.HikariDataSource[m: HikariPool-1 - Shutdown completed.
+[m2024-05-24T06:59:45,992[m [32mINFO  [m[[1;34mbackground-preinit[m] [1;33mo.h.v.i.u.Version[m: HV000001: Hibernate Validator 6.2.5.Final
+[m2024-05-24T06:59:46,011[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.b.StartupInfoLogger[m: Starting MemberApplication using Java 17.0.1 on gimjinhwan-ui-Macmini.local with PID 52327 (/Users/kimjinhwan/IdeaProjects/pic-up/application/member-api/build/classes/java/main started by kimjinhwan in /Users/kimjinhwan/IdeaProjects/pic-up)
+[m2024-05-24T06:59:46,012[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.b.SpringApplication[m: The following 4 profiles are active: "member-api-dev", "member-core-dev", "auth-dev", "logging-dev"
+[m2024-05-24T06:59:46,511[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.d.r.c.RepositoryConfigurationDelegate[m: Multiple Spring Data modules found, entering strict repository configuration mode
+[m2024-05-24T06:59:46,512[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.d.r.c.RepositoryConfigurationDelegate[m: Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+[m2024-05-24T06:59:46,650[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.d.r.c.RepositoryConfigurationExtensionSupport[m: Spring Data JPA - Could not safely identify store assignment for repository candidate interface ecsimsw.picup.domain.AuthTokensCacheRepository; If you want this repository to be a JPA repository, consider annotating your entities with one of these annotations: javax.persistence.Entity, javax.persistence.MappedSuperclass (preferred), or consider extending one of the following types with your repository: org.springframework.data.jpa.repository.JpaRepository
+[m2024-05-24T06:59:46,656[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.d.r.c.RepositoryConfigurationDelegate[m: Finished Spring Data repository scanning in 141 ms. Found 1 JPA repository interfaces.
+[m2024-05-24T06:59:46,662[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.d.r.c.RepositoryConfigurationDelegate[m: Multiple Spring Data modules found, entering strict repository configuration mode
+[m2024-05-24T06:59:46,663[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.d.r.c.RepositoryConfigurationDelegate[m: Bootstrapping Spring Data Redis repositories in DEFAULT mode.
+[m2024-05-24T06:59:46,669[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.d.r.c.RepositoryConfigurationExtensionSupport[m: Spring Data Redis - Could not safely identify store assignment for repository candidate interface ecsimsw.picup.domain.MemberRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+[m2024-05-24T06:59:46,671[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.d.r.c.RepositoryConfigurationDelegate[m: Finished Spring Data repository scanning in 4 ms. Found 1 Redis repository interfaces.
+[m2024-05-24T06:59:46,759[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.c.c.s.GenericScope[m: BeanFactory id=9c6f6619-6427-3dd2-8b56-9d47443336f7
+[m2024-05-24T06:59:46,955[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.b.w.e.t.TomcatWebServer[m: Tomcat initialized with port(s): 8083 (http)
+[m2024-05-24T06:59:46,963[m [32mINFO  [m[[1;34mmain[m] [1;33mo.a.j.l.DirectJDKLog[m: Initializing ProtocolHandler ["http-nio-8083"]
+[m2024-05-24T06:59:46,964[m [32mINFO  [m[[1;34mmain[m] [1;33mo.a.j.l.DirectJDKLog[m: Starting service [Tomcat]
+[m2024-05-24T06:59:46,964[m [32mINFO  [m[[1;34mmain[m] [1;33mo.a.j.l.DirectJDKLog[m: Starting Servlet engine: [Apache Tomcat/9.0.71]
+[m2024-05-24T06:59:47,029[m [32mINFO  [m[[1;34mmain[m] [1;33mo.a.j.l.DirectJDKLog[m: Initializing Spring embedded WebApplicationContext
+[m2024-05-24T06:59:47,029[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.b.w.s.c.ServletWebServerApplicationContext[m: Root WebApplicationContext: initialization completed in 998 ms
+[m2024-05-24T06:59:47,090[m [32mINFO  [m[[1;34mmain[m] [1;33mc.z.h.HikariDataSource[m: HikariPool-1 - Starting...
+[m2024-05-24T06:59:47,155[m [32mINFO  [m[[1;34mmain[m] [1;33mc.z.h.HikariDataSource[m: HikariPool-1 - Start completed.
+[m2024-05-24T06:59:47,160[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.b.a.h.H2ConsoleAutoConfiguration[m: H2 console available at '/h2-console'. Database available at 'jdbc:h2:mem:test'
+[m2024-05-24T06:59:47,231[m [32mINFO  [m[[1;34mmain[m] [1;33mo.h.j.i.u.LogHelper[m: HHH000204: Processing PersistenceUnitInfo [name: default]
+[m2024-05-24T06:59:47,255[m [32mINFO  [m[[1;34mmain[m] [1;33mo.h.Version[m: HHH000412: Hibernate ORM core version 5.6.15.Final
+[m2024-05-24T06:59:47,332[m [32mINFO  [m[[1;34mmain[m] [1;33mo.h.a.c.r.j.JavaReflectionManager[m: HCANN000001: Hibernate Commons Annotations {5.1.2.Final}
+[m2024-05-24T06:59:47,385[m [32mINFO  [m[[1;34mmain[m] [1;33mo.h.d.Dialect[m: HHH000400: Using dialect: org.hibernate.dialect.H2Dialect
+[m2024-05-24T06:59:47,665[m [32mINFO  [m[[1;34mmain[m] [1;33mo.h.e.t.j.p.i.JtaPlatformInitiator[m: HHH000490: Using JtaPlatform implementation: [org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform]
+[m2024-05-24T06:59:47,670[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.o.j.AbstractEntityManagerFactoryBean[m: Initialized JPA EntityManagerFactory for persistence unit 'default'
+[m2024-05-24T06:59:47,895[m [32mINFO  [m[[1;34mmain[m] [1;33mo.r.Version[m: Redisson 3.17.0
+[m2024-05-24T06:59:47,907[m [33mWARN  [m[[1;34mmain[m] [1;33mi.n.r.d.DnsServerAddressStreamProviders[m: Can not find io.netty.resolver.dns.macos.MacOSDnsServerAddressStreamProvider in the classpath, fallback to system defaults. This may result in incorrect DNS resolutions on MacOS. Check whether you have a dependency on 'io.netty:netty-resolver-dns-native-macos'
+[m2024-05-24T06:59:48,045[m [32mINFO  [m[[1;34mredisson-netty-2-5[m] [1;33mo.r.c.p.ConnectionPool$1[m: 1 connections initialized for localhost/127.0.0.1:6379
+[m2024-05-24T06:59:48,051[m [32mINFO  [m[[1;34mredisson-netty-2-20[m] [1;33mo.r.c.p.ConnectionPool$1[m: 24 connections initialized for localhost/127.0.0.1:6379
+[m2024-05-24T06:59:48,664[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.b.a.e.w.EndpointLinksResolver[m: Exposing 1 endpoint(s) beneath base path '/actuator'
+[m2024-05-24T06:59:48,696[m [32mINFO  [m[[1;34mmain[m] [1;33mo.a.j.l.DirectJDKLog[m: Starting ProtocolHandler ["http-nio-8083"]
+[m2024-05-24T06:59:48,702[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.b.w.e.t.TomcatWebServer[m: Tomcat started on port(s): 8083 (http) with context path ''
+[m2024-05-24T06:59:48,712[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.b.StartupInfoLogger[m: Started MemberApplication in 2.958 seconds (JVM running for 3.778)
+[m2024-05-24T06:59:48,906[m [32mINFO  [m[[1;34mRMI TCP Connection(2)-127.0.0.1[m] [1;33mo.a.j.l.DirectJDKLog[m: Initializing Spring DispatcherServlet 'dispatcherServlet'
+[m2024-05-24T06:59:48,906[m [32mINFO  [m[[1;34mRMI TCP Connection(2)-127.0.0.1[m] [1;33mo.s.w.s.FrameworkServlet[m: Initializing Servlet 'dispatcherServlet'
+[m2024-05-24T06:59:48,908[m [32mINFO  [m[[1;34mRMI TCP Connection(2)-127.0.0.1[m] [1;33mo.s.w.s.FrameworkServlet[m: Completed initialization in 2 ms
+[m2024-05-24T07:00:22,850[m [32mINFO  [m[[1;34mSpringApplicationShutdownHook[m] [1;33mo.s.o.j.AbstractEntityManagerFactoryBean[m: Closing JPA EntityManagerFactory for persistence unit 'default'
+[m2024-05-24T07:00:22,854[m [32mINFO  [m[[1;34mSpringApplicationShutdownHook[m] [1;33mc.z.h.HikariDataSource[m: HikariPool-1 - Shutdown initiated...
+[m2024-05-24T07:00:22,856[m [32mINFO  [m[[1;34mSpringApplicationShutdownHook[m] [1;33mc.z.h.HikariDataSource[m: HikariPool-1 - Shutdown completed.
+[m2024-05-24T07:00:25,129[m [32mINFO  [m[[1;34mbackground-preinit[m] [1;33mo.h.v.i.u.Version[m: HV000001: Hibernate Validator 6.2.5.Final
+[m2024-05-24T07:00:25,149[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.b.StartupInfoLogger[m: Starting MemberApplication using Java 17.0.1 on gimjinhwan-ui-Macmini.local with PID 52336 (/Users/kimjinhwan/IdeaProjects/pic-up/application/member-api/build/classes/java/main started by kimjinhwan in /Users/kimjinhwan/IdeaProjects/pic-up)
+[m2024-05-24T07:00:25,150[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.b.SpringApplication[m: The following 4 profiles are active: "member-api-dev", "member-core-dev", "auth-dev", "logging-dev"
+[m2024-05-24T07:00:25,615[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.d.r.c.RepositoryConfigurationDelegate[m: Multiple Spring Data modules found, entering strict repository configuration mode
+[m2024-05-24T07:00:25,616[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.d.r.c.RepositoryConfigurationDelegate[m: Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+[m2024-05-24T07:00:25,759[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.d.r.c.RepositoryConfigurationExtensionSupport[m: Spring Data JPA - Could not safely identify store assignment for repository candidate interface ecsimsw.picup.domain.AuthTokensCacheRepository; If you want this repository to be a JPA repository, consider annotating your entities with one of these annotations: javax.persistence.Entity, javax.persistence.MappedSuperclass (preferred), or consider extending one of the following types with your repository: org.springframework.data.jpa.repository.JpaRepository
+[m2024-05-24T07:00:25,765[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.d.r.c.RepositoryConfigurationDelegate[m: Finished Spring Data repository scanning in 146 ms. Found 1 JPA repository interfaces.
+[m2024-05-24T07:00:25,771[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.d.r.c.RepositoryConfigurationDelegate[m: Multiple Spring Data modules found, entering strict repository configuration mode
+[m2024-05-24T07:00:25,771[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.d.r.c.RepositoryConfigurationDelegate[m: Bootstrapping Spring Data Redis repositories in DEFAULT mode.
+[m2024-05-24T07:00:25,777[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.d.r.c.RepositoryConfigurationExtensionSupport[m: Spring Data Redis - Could not safely identify store assignment for repository candidate interface ecsimsw.picup.domain.MemberRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+[m2024-05-24T07:00:25,780[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.d.r.c.RepositoryConfigurationDelegate[m: Finished Spring Data repository scanning in 5 ms. Found 1 Redis repository interfaces.
+[m2024-05-24T07:00:25,870[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.c.c.s.GenericScope[m: BeanFactory id=9c6f6619-6427-3dd2-8b56-9d47443336f7
+[m2024-05-24T07:00:26,057[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.b.w.e.t.TomcatWebServer[m: Tomcat initialized with port(s): 8083 (http)
+[m2024-05-24T07:00:26,066[m [32mINFO  [m[[1;34mmain[m] [1;33mo.a.j.l.DirectJDKLog[m: Initializing ProtocolHandler ["http-nio-8083"]
+[m2024-05-24T07:00:26,066[m [32mINFO  [m[[1;34mmain[m] [1;33mo.a.j.l.DirectJDKLog[m: Starting service [Tomcat]
+[m2024-05-24T07:00:26,066[m [32mINFO  [m[[1;34mmain[m] [1;33mo.a.j.l.DirectJDKLog[m: Starting Servlet engine: [Apache Tomcat/9.0.71]
+[m2024-05-24T07:00:26,132[m [32mINFO  [m[[1;34mmain[m] [1;33mo.a.j.l.DirectJDKLog[m: Initializing Spring embedded WebApplicationContext
+[m2024-05-24T07:00:26,133[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.b.w.s.c.ServletWebServerApplicationContext[m: Root WebApplicationContext: initialization completed in 966 ms
+[m2024-05-24T07:00:26,188[m [32mINFO  [m[[1;34mmain[m] [1;33mc.z.h.HikariDataSource[m: HikariPool-1 - Starting...
+[m2024-05-24T07:00:26,255[m [32mINFO  [m[[1;34mmain[m] [1;33mc.z.h.HikariDataSource[m: HikariPool-1 - Start completed.
+[m2024-05-24T07:00:26,260[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.b.a.h.H2ConsoleAutoConfiguration[m: H2 console available at '/h2-console'. Database available at 'jdbc:h2:mem:test'
+[m2024-05-24T07:00:26,324[m [32mINFO  [m[[1;34mmain[m] [1;33mo.h.j.i.u.LogHelper[m: HHH000204: Processing PersistenceUnitInfo [name: default]
+[m2024-05-24T07:00:26,348[m [32mINFO  [m[[1;34mmain[m] [1;33mo.h.Version[m: HHH000412: Hibernate ORM core version 5.6.15.Final
+[m2024-05-24T07:00:26,420[m [32mINFO  [m[[1;34mmain[m] [1;33mo.h.a.c.r.j.JavaReflectionManager[m: HCANN000001: Hibernate Commons Annotations {5.1.2.Final}
+[m2024-05-24T07:00:26,475[m [32mINFO  [m[[1;34mmain[m] [1;33mo.h.d.Dialect[m: HHH000400: Using dialect: org.hibernate.dialect.H2Dialect
+[m2024-05-24T07:00:26,747[m [32mINFO  [m[[1;34mmain[m] [1;33mo.h.e.t.j.p.i.JtaPlatformInitiator[m: HHH000490: Using JtaPlatform implementation: [org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform]
+[m2024-05-24T07:00:26,751[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.o.j.AbstractEntityManagerFactoryBean[m: Initialized JPA EntityManagerFactory for persistence unit 'default'
+[m2024-05-24T07:00:26,985[m [32mINFO  [m[[1;34mmain[m] [1;33mo.r.Version[m: Redisson 3.17.0
+[m2024-05-24T07:00:26,997[m [33mWARN  [m[[1;34mmain[m] [1;33mi.n.r.d.DnsServerAddressStreamProviders[m: Can not find io.netty.resolver.dns.macos.MacOSDnsServerAddressStreamProvider in the classpath, fallback to system defaults. This may result in incorrect DNS resolutions on MacOS. Check whether you have a dependency on 'io.netty:netty-resolver-dns-native-macos'
+[m2024-05-24T07:00:27,086[m [32mINFO  [m[[1;34mredisson-netty-2-14[m] [1;33mo.r.c.p.ConnectionPool$1[m: 1 connections initialized for localhost/127.0.0.1:6379
+[m2024-05-24T07:00:27,110[m [32mINFO  [m[[1;34mredisson-netty-2-18[m] [1;33mo.r.c.p.ConnectionPool$1[m: 24 connections initialized for localhost/127.0.0.1:6379
+[m2024-05-24T07:00:27,712[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.b.a.e.w.EndpointLinksResolver[m: Exposing 1 endpoint(s) beneath base path '/actuator'
+[m2024-05-24T07:00:27,743[m [32mINFO  [m[[1;34mmain[m] [1;33mo.a.j.l.DirectJDKLog[m: Starting ProtocolHandler ["http-nio-8083"]
+[m2024-05-24T07:00:27,749[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.b.w.e.t.TomcatWebServer[m: Tomcat started on port(s): 8083 (http) with context path ''
+[m2024-05-24T07:00:27,759[m [32mINFO  [m[[1;34mmain[m] [1;33mo.s.b.StartupInfoLogger[m: Started MemberApplication in 2.811 seconds (JVM running for 3.131)
+[m2024-05-24T07:00:27,874[m [32mINFO  [m[[1;34mRMI TCP Connection(2)-127.0.0.1[m] [1;33mo.a.j.l.DirectJDKLog[m: Initializing Spring DispatcherServlet 'dispatcherServlet'
+[m2024-05-24T07:00:27,874[m [32mINFO  [m[[1;34mRMI TCP Connection(2)-127.0.0.1[m] [1;33mo.s.w.s.FrameworkServlet[m: Initializing Servlet 'dispatcherServlet'
+[m2024-05-24T07:00:27,875[m [32mINFO  [m[[1;34mRMI TCP Connection(2)-127.0.0.1[m] [1;33mo.s.w.s.FrameworkServlet[m: Completed initialization in 1 ms
+[m2024-05-24T07:58:53,860[m [32mINFO  [m[[1;34mSpringApplicationShutdownHook[m] [1;33mo.s.o.j.AbstractEntityManagerFactoryBean[m: Closing JPA EntityManagerFactory for persistence unit 'default'
+[m2024-05-24T07:58:53,939[m [32mINFO  [m[[1;34mSpringApplicationShutdownHook[m] [1;33mc.z.h.HikariDataSource[m: HikariPool-1 - Shutdown initiated...
+[m2024-05-24T07:58:53,952[m [32mINFO  [m[[1;34mSpringApplicationShutdownHook[m] [1;33mc.z.h.HikariDataSource[m: HikariPool-1 - Shutdown completed.

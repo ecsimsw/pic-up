@@ -15,7 +15,7 @@ public class AuthTokens {
     private final String accessToken;
     private final String refreshToken;
 
-    public static AuthTokens of(LoginUser payload, String accessToken, String refreshToken) {
+    public static AuthTokens of(AuthToken payload, String accessToken, String refreshToken) {
         return new AuthTokens(
             payload.tokenKey(),
             accessToken,

@@ -3,8 +3,8 @@ package ecsimsw.picup.controller;
 import static ecsimsw.picup.domain.StorageType.STORAGE;
 
 import ecsimsw.picup.annotation.RemoteIp;
-import ecsimsw.picup.annotation.TokenPayload;
-import ecsimsw.picup.domain.LoginUser;
+import ecsimsw.picup.annotation.LoginUser;
+import ecsimsw.picup.domain.AuthToken;
 import ecsimsw.picup.dto.AlbumResponse;
 import ecsimsw.picup.dto.StorageUploadContent;
 import ecsimsw.picup.exception.AlbumException;
@@ -33,7 +33,7 @@ public class AlbumController {
 
     @PostMapping("/api/storage/album")
     public ResponseEntity<Long> createAlbum(
-        @TokenPayload LoginUser user,
+        @LoginUser AuthToken user,
         @RequestParam MultipartFile thumbnail,
         @RequestParam String name
     ) {
@@ -45,10 +45,10 @@ public class AlbumController {
     @GetMapping("/api/storage/album/{albumId}")
     public ResponseEntity<AlbumResponse> getAlbum(
         @RemoteIp String remoteIp,
-        @TokenPayload LoginUser user,
+        @LoginUser AuthToken user,
         @PathVariable Long albumId
     ) {
-        var albumInfo = albumService.read(user.id(), albumId);
+        var albumInfo = albumService.findById(user.id(), albumId);
         var thumbnailUrl = fileUrlService.fileUrl(STORAGE, remoteIp, albumInfo.thumbnail());
         var album = AlbumResponse.of(albumInfo, thumbnailUrl);
         return ResponseEntity.ok(album);
@@ -57,9 +57,9 @@ public class AlbumController {
     @GetMapping("/api/storage/album")
     public ResponseEntity<List<AlbumResponse>> getAlbums(
         @RemoteIp String remoteIp,
-        @TokenPayload LoginUser user
+        @LoginUser AuthToken user
     ) {
-        var albumInfos = albumService.readAll(user.id());
+        var albumInfos = albumService.findAll(user.id());
         var albums = albumInfos.stream()
             .map(albumInfo -> {
                 var thumbnailUrl = fileUrlService.fileUrl(STORAGE, remoteIp, albumInfo.thumbnail());
@@ -70,7 +70,7 @@ public class AlbumController {
 
     @DeleteMapping("/api/storage/album/{albumId}")
     public ResponseEntity<Void> deleteAlbum(
-        @TokenPayload LoginUser user,
+        @LoginUser AuthToken user,
         @PathVariable Long albumId
     ) {
         storageFacadeService.deleteAlbum(user.id(), albumId);

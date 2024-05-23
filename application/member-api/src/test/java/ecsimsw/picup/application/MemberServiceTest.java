@@ -139,7 +139,7 @@ class MemberServiceTest {
         @Test
         void me() {
             // then
-            var result = memberService.me(username);
+            var result = memberService.me(userId);
 
             // when
             assertAll(
@@ -156,7 +156,7 @@ class MemberServiceTest {
 
             // when
             assertThatThrownBy(
-                () -> memberService.me(other)
+                () -> memberService.me(Long.MAX_VALUE)
             ).isInstanceOf(MemberException.class);
         }
     }

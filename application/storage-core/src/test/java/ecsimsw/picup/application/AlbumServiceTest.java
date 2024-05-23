@@ -72,7 +72,7 @@ class AlbumServiceTest {
             albumService.deleteById(ownerUserId, savedAlbum.getId());
 
             // then
-            assertThat(albumService.readAlbums(ownerUserId)).isEmpty();
+            assertThat(albumService.findAllByUser(ownerUserId)).isEmpty();
         }
 
         @DisplayName("앨범 주인이 아닌 사용자는 앨범을 제거할 수 없다.")
@@ -106,7 +106,7 @@ class AlbumServiceTest {
         @Test
         void findAll() {
             // when
-            var result = albumService.readAlbums(ownerUserId);
+            var result = albumService.findAllByUser(ownerUserId);
 
             // then
             var expected = savedAlbums.stream()
@@ -122,7 +122,7 @@ class AlbumServiceTest {
             var findingAlbum = savedAlbums.get(0);
 
             // when
-            var result = albumService.readAlbum(ownerUserId, findingAlbum.getId());
+            var result = albumService.findById(ownerUserId, findingAlbum.getId());
 
             // then
             assertAll(
@@ -142,7 +142,7 @@ class AlbumServiceTest {
 
             // then
             assertThatThrownBy(
-                () -> albumService.readAlbum(otherUserId, findingAlbum.getId())
+                () -> albumService.findById(otherUserId, findingAlbum.getId())
             );
         }
     }

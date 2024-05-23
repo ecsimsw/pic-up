@@ -1,5 +1,6 @@
 package ecsimsw.picup.config;
 
+import ecsimsw.picup.service.AuthTokenArgumentResolver;
 import ecsimsw.picup.service.AuthTokenService;
 import ecsimsw.picup.utils.JwtUtils;
 import org.springframework.beans.factory.annotation.Value;
