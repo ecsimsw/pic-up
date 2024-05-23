@@ -23,8 +23,6 @@ public class MemberService {
         try {
             var member = getMember(request.username());
             member.authenticate(request.password());
-//            var usage = storageUsageService.getUsage(member.getId());
-//            return MemberResponse.of(member, usage);
             return MemberResponse.of(member);
         } catch (Exception e) {
             throw new MemberException("Invalid login info");
@@ -47,9 +45,7 @@ public class MemberService {
     @Transactional(readOnly = true)
     public MemberResponse me(String username) {
         var member = getMember(username);
-//        var usage = storageUsageService.getUsage(member.getId());
         return MemberResponse.of(member);
-//        return MemberResponse.of(member, usage);
     }
 
     private Member getMember(String username) {

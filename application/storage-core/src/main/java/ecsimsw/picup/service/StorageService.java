@@ -13,8 +13,8 @@ public class StorageService {
 
     private final AmazonS3 s3Client;
 
-    public void store(FileUploadContent file, String path) {
-        S3Utils.store(s3Client, S3Config.BUCKET, path, file);
+    public void upload(FileUploadContent file, String path) {
+        S3Utils.upload(s3Client, S3Config.BUCKET, path, file);
     }
 
     public void delete(String path) {

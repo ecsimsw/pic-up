@@ -45,7 +45,7 @@ public class PictureUploadScenarioTestService extends ServiceIntegrationTestCont
     @Test
     void createPicture(@Autowired FileResourceRepository fileResourceRepository) {
         // given
-        var preLoadedFile = fileResourceService.createToBeDeleted(STORAGE, RESOURCE_KEY.value(), FILE_SIZE);
+        var preLoadedFile = fileResourceService.prepare(STORAGE, RESOURCE_KEY.value(), FILE_SIZE);
 
         // when
         pictureFacadeService.commitPreUpload(USER_ID, albumId, preLoadedFile.getResourceKey());
@@ -62,7 +62,7 @@ public class PictureUploadScenarioTestService extends ServiceIntegrationTestCont
     ) {
         // given
         var uploadFileSize = FILE_SIZE;
-        var preLoadedFile = fileResourceService.createToBeDeleted(STORAGE, RESOURCE_KEY.value(), uploadFileSize);
+        var preLoadedFile = fileResourceService.prepare(STORAGE, RESOURCE_KEY.value(), uploadFileSize);
         var beforeUsage = storageUsageService.getUsage(USER_ID).getUsageAsByte();
 
         // when
@@ -87,7 +87,7 @@ public class PictureUploadScenarioTestService extends ServiceIntegrationTestCont
     @Test
     void withOverUsageFile() {
         // given
-        var overUsageFile = fileResourceService.createToBeDeleted(STORAGE, RESOURCE_KEY.value(), Long.MAX_VALUE);
+        var overUsageFile = fileResourceService.prepare(STORAGE, RESOURCE_KEY.value(), Long.MAX_VALUE);
 
         // when, then
         assertThatThrownBy(
@@ -102,7 +102,7 @@ public class PictureUploadScenarioTestService extends ServiceIntegrationTestCont
     ) {
         // given
         var otherUserId = USER_ID;
-        var preLoadedFile = fileResourceService.createToBeDeleted(STORAGE, RESOURCE_KEY.value(), FILE_SIZE);
+        var preLoadedFile = fileResourceService.prepare(STORAGE, RESOURCE_KEY.value(), FILE_SIZE);
         var otherUserAlbum = albumFacadeService.init(otherUserId, ALBUM_NAME, THUMBNAIL_FILE.getResourceKey());
 
         // when, then
@@ -116,7 +116,7 @@ public class PictureUploadScenarioTestService extends ServiceIntegrationTestCont
     @Test
     void withNonExistsAlbum() {
         // given
-        var preLoadedFile = fileResourceService.createToBeDeleted(STORAGE, RESOURCE_KEY.value(), FILE_SIZE);
+        var preLoadedFile = fileResourceService.prepare(STORAGE, RESOURCE_KEY.value(), FILE_SIZE);
 
         // when, then
         var nonExistsAlbumId = Long.MAX_VALUE;
@@ -129,7 +129,7 @@ public class PictureUploadScenarioTestService extends ServiceIntegrationTestCont
     @Test
     void fileResourceToBeDeleted() {
         // given
-        var preLoadedFile = fileResourceService.createToBeDeleted(STORAGE, RESOURCE_KEY.value(), FILE_SIZE);
+        var preLoadedFile = fileResourceService.prepare(STORAGE, RESOURCE_KEY.value(), FILE_SIZE);
 
         // when
         try {
@@ -150,7 +150,7 @@ public class PictureUploadScenarioTestService extends ServiceIntegrationTestCont
     ) {
         // given
         var uploadFileSize = FILE_SIZE;
-        var preLoadedFile = fileResourceService.createToBeDeleted(STORAGE, RESOURCE_KEY.value(), uploadFileSize);
+        var preLoadedFile = fileResourceService.prepare(STORAGE, RESOURCE_KEY.value(), uploadFileSize);
         var beforeUsage = storageUsageService.getUsage(USER_ID).getUsageAsByte();
 
         // when

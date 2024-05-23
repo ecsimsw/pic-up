@@ -18,7 +18,7 @@ import java.util.Date;
 @Slf4j
 public class S3Utils {
 
-    public static void store(AmazonS3 s3Client, String bucket, String path, FileUploadContent file) {
+    public static void upload(AmazonS3 s3Client, String bucket, String path, FileUploadContent file) {
         try {
             var start = System.currentTimeMillis();
             var metadata = new ObjectMetadata();

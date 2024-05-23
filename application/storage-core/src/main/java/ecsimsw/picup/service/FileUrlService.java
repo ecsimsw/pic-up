@@ -62,11 +62,11 @@ public class FileUrlService {
             .build();
     }
 
-    public PreUploadUrlResponse uploadUrl(StorageType storageType, FileResource resource) {
-        return uploadUrl(storageType, resource.getResourceKey());
+    public PreUploadUrlResponse preSignedUrl(FileResource resource) {
+        return preSignedUrl(resource.getStorageType(), resource.getResourceKey());
     }
 
-    public PreUploadUrlResponse uploadUrl(StorageType storageType, ResourceKey resourceKey) {
+    public PreUploadUrlResponse preSignedUrl(StorageType storageType, ResourceKey resourceKey) {
         var filePath = fileResourceService.filePath(storageType, resourceKey);
         var preSignedUrl = storageService.generatePreSignedUrl(filePath);
         return PreUploadUrlResponse.of(preSignedUrl, resourceKey);

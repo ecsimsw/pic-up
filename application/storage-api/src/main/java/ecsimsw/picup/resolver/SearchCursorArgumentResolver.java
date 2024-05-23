@@ -1,4 +1,4 @@
-package ecsimsw.picup.controller;
+package ecsimsw.picup.resolver;
 
 import ecsimsw.picup.annotation.SearchCursor;
 import ecsimsw.picup.dto.PictureSearchCursor;

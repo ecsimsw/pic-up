@@ -97,7 +97,7 @@ public class PictureFacadeServiceTest {
 
         @BeforeEach
         void given() {
-            when(fileResourceService.store(STORAGE, resourceKey))
+            when(fileResourceService.commit(STORAGE, resourceKey))
                 .thenAnswer(input -> new FileResource(STORAGE, resourceKey, fileSize, false));
 
             when(pictureService.create(userId, albumId, resourceKey, fileSize))
@@ -131,7 +131,7 @@ public class PictureFacadeServiceTest {
             pictureFacadeService.commitPreUpload(userId, albumId, resourceKey);
 
             // then
-            verify(fileResourceService).store(STORAGE, resourceKey);
+            verify(fileResourceService).commit(STORAGE, resourceKey);
         }
     }
 
@@ -149,7 +149,7 @@ public class PictureFacadeServiceTest {
             pictureFacadeService.setPictureThumbnail(resourceKey, fileSize);
 
             // then
-            verify(fileResourceService).store(THUMBNAIL, resourceKey, fileSize);
+            verify(fileResourceService).create(THUMBNAIL, resourceKey, fileSize);
         }
 
         @DisplayName("Picture 에 썸네일 파일이 생성되었음을 기록한다.")

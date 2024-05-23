@@ -4,45 +4,37 @@ import ecsimsw.picup.annotation.RemoteIp;
 import ecsimsw.picup.annotation.TokenPayload;
 import ecsimsw.picup.domain.LoginUser;
 import ecsimsw.picup.dto.AlbumResponse;
-import ecsimsw.picup.dto.FileUploadContent;
-import ecsimsw.picup.exception.AlbumException;
 import ecsimsw.picup.service.AlbumFacadeService;
-import ecsimsw.picup.service.FileResourceService;
-import ecsimsw.picup.service.UserLockService;
+import ecsimsw.picup.service.StorageFacadeService;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.io.IOException;
-import java.util.List;
 
 @RequiredArgsConstructor
 @RestController
 public class AlbumController {
 
-    private static final float ALBUM_THUMBNAIL_RESIZE_SCALE = 0.5f;
-
     private final AlbumFacadeService albumService;
-    private final UserLockService userLockService;
-    private final FileResourceService fileService;
+    private final StorageFacadeService storageFacadeService;
 
-    @PostMapping("/api/album")
+    @PostMapping("/api/storage/album")
     public ResponseEntity<Long> createAlbum(
         @TokenPayload LoginUser user,
         @RequestParam MultipartFile thumbnail,
         @RequestParam String name
     ) {
-        var fileContent = uploadContent(thumbnail);
-        var thumbnailResource = fileService.uploadThumbnail(fileContent, ALBUM_THUMBNAIL_RESIZE_SCALE);
-        var albumId = userLockService.<Long>isolate(
-            user.id(),
-            () -> albumService.init(user.id(), name, thumbnailResource.getResourceKey())
-        );
+        var albumId = storageFacadeService.createAlbum(user.id(), thumbnail, name);
         return ResponseEntity.ok(albumId);
     }
 
-    @GetMapping("/api/album/{albumId}")
+    @GetMapping("/api/storage/album/{albumId}")
     public ResponseEntity<AlbumResponse> getAlbum(
         @RemoteIp String remoteIp,
         @TokenPayload LoginUser user,
@@ -52,7 +44,7 @@ public class AlbumController {
         return ResponseEntity.ok(album);
     }
 
-    @GetMapping("/api/album")
+    @GetMapping("/api/storage/album")
     public ResponseEntity<List<AlbumResponse>> getAlbums(
         @RemoteIp String remoteIp,
         @TokenPayload LoginUser user
@@ -61,28 +53,12 @@ public class AlbumController {
         return ResponseEntity.ok(albumInfos);
     }
 
-    @DeleteMapping("/api/album/{albumId}")
+    @DeleteMapping("/api/storage/album/{albumId}")
     public ResponseEntity<Void> deleteAlbum(
         @TokenPayload LoginUser user,
         @PathVariable Long albumId
     ) {
-        userLockService.isolate(
-            user.id(),
-            () -> albumService.delete(user.id(), albumId)
-        );
+        storageFacadeService.deleteAlbum(user.id(), albumId);
         return ResponseEntity.ok().build();
-    }
-
-    private FileUploadContent uploadContent(MultipartFile thumbnail) {
-        try {
-            return new FileUploadContent(
-                thumbnail.getOriginalFilename(),
-                thumbnail.getContentType(),
-                thumbnail.getInputStream(),
-                thumbnail.getSize()
-            );
-        } catch (IOException e) {
-            throw new AlbumException("Invalid thumbnail file");
-        }
     }
 }

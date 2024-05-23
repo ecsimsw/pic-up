@@ -12,6 +12,9 @@ dependencies {
     implementation 'org.springframework.retry:spring-retry'
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 
+    implementation platform("org.springframework.cloud:spring-cloud-dependencies:2021.0.5")
+    implementation "org.springframework.cloud:spring-cloud-starter-openfeign"
+
     // mysql, h2, flyway
     runtimeOnly 'com.mysql:mysql-connector-j'
     implementation 'org.flywaydb:flyway-core:6.4.2'

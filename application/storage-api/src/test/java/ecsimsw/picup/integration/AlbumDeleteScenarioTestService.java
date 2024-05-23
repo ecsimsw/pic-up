@@ -59,7 +59,7 @@ public class AlbumDeleteScenarioTestService extends ServiceIntegrationTestContex
     @Test
     void deletePicturesIncluded(@Autowired PictureRepository pictureRepository) {
         // given
-        var file = fileResourceService.createToBeDeleted(STORAGE, FILE_NAME, FILE_SIZE);
+        var file = fileResourceService.prepare(STORAGE, FILE_NAME, FILE_SIZE);
         pictureFacadeService.commitPreUpload(USER_ID, savedAlbumId, file.getResourceKey());
 
         // when
@@ -73,7 +73,7 @@ public class AlbumDeleteScenarioTestService extends ServiceIntegrationTestContex
     @Test
     void deleteFilesIncluded(@Autowired FileResourceRepository fileResourceRepository) {
         // given
-        var file = fileResourceService.store(THUMBNAIL, THUMBNAIL_RESOURCE_KEY, FILE_SIZE);
+        var file = fileResourceService.create(THUMBNAIL, THUMBNAIL_RESOURCE_KEY, FILE_SIZE);
         savedAlbumId = albumFacadeService.init(USER_ID, ALBUM_NAME, file.getResourceKey());
 
         // when
@@ -89,7 +89,7 @@ public class AlbumDeleteScenarioTestService extends ServiceIntegrationTestContex
     void updateStorageUsage() {
         // given
         var deleteFileSize = FILE_SIZE;
-        var file = fileResourceService.createToBeDeleted(STORAGE, FILE_NAME, deleteFileSize);
+        var file = fileResourceService.prepare(STORAGE, FILE_NAME, deleteFileSize);
         pictureFacadeService.commitPreUpload(USER_ID, savedAlbumId, file.getResourceKey());
         var beforeUsage = storageUsageService.getUsage(USER_ID).getUsageAsByte();
 
@@ -129,7 +129,7 @@ public class AlbumDeleteScenarioTestService extends ServiceIntegrationTestContex
         @Autowired PictureRepository pictureRepository
     ) {
         // given
-        var file = fileResourceService.createToBeDeleted(STORAGE, FILE_NAME, FILE_SIZE);
+        var file = fileResourceService.prepare(STORAGE, FILE_NAME, FILE_SIZE);
         var pictureId = pictureFacadeService.commitPreUpload(USER_ID, savedAlbumId, file.getResourceKey());
 
         // when
@@ -146,7 +146,7 @@ public class AlbumDeleteScenarioTestService extends ServiceIntegrationTestContex
     @Test
     void deleteFailedStorageUsage() {
         // given
-        var file = fileResourceService.createToBeDeleted(STORAGE, FILE_NAME, FILE_SIZE);
+        var file = fileResourceService.prepare(STORAGE, FILE_NAME, FILE_SIZE);
         pictureFacadeService.commitPreUpload(USER_ID, savedAlbumId, file.getResourceKey());
         var beforeUsage = storageUsageService.getUsage(USER_ID).getUsageAsByte();
 
@@ -165,7 +165,7 @@ public class AlbumDeleteScenarioTestService extends ServiceIntegrationTestContex
     @Test
     void deleteFailedFileResources(@Autowired FileResourceRepository fileResourceRepository) {
         // given
-        var file = fileResourceService.store(THUMBNAIL, THUMBNAIL_RESOURCE_KEY, FILE_SIZE);
+        var file = fileResourceService.create(THUMBNAIL, THUMBNAIL_RESOURCE_KEY, FILE_SIZE);
         savedAlbumId = albumFacadeService.init(USER_ID, ALBUM_NAME, file.getResourceKey());
 
         // when

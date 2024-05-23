@@ -13,7 +13,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import ecsimsw.picup.controller.AlbumController;
 import ecsimsw.picup.controller.GlobalControllerAdvice;
-import ecsimsw.picup.controller.RemoteIpArgumentResolver;
+import ecsimsw.picup.resolver.RemoteIpArgumentResolver;
 import ecsimsw.picup.domain.LoginUser;
 import ecsimsw.picup.dto.AlbumResponse;
 import ecsimsw.picup.config.AuthTokenArgumentResolver;
@@ -36,7 +36,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 class AlbumControllerUnitTest extends ControllerUnitTestContext {
 
     private final MockMvc mockMvc = MockMvcBuilders
-        .standaloneSetup(new AlbumController(albumFacadeService, userLockService, fileResourceService))
+        .standaloneSetup(new AlbumController(albumFacadeService, storageFacadeService))
         .addInterceptors(new AuthTokenInterceptor(authTokenService))
         .setCustomArgumentResolvers(
             new AuthTokenArgumentResolver(authTokenService),
@@ -60,9 +60,6 @@ class AlbumControllerUnitTest extends ControllerUnitTestContext {
     @Test
     void createAlbum() throws Exception {
         var expectedAlbumInfo = 1L;
-
-        when(fileResourceService.uploadThumbnail(any(FileUploadContent.class), any(Float.class)))
-            .thenAnswer(input -> uploadFile);
 
         when(albumFacadeService.init(any(), any(), any()))
             .thenReturn(expectedAlbumInfo);

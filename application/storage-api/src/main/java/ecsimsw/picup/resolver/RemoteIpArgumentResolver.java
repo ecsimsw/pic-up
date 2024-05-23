@@ -1,4 +1,4 @@
-package ecsimsw.picup.controller;
+package ecsimsw.picup.resolver;
 
 import ecsimsw.picup.annotation.RemoteIp;
 import org.springframework.core.MethodParameter;
@@ -17,14 +17,11 @@ public class RemoteIpArgumentResolver implements HandlerMethodArgumentResolver {
     }
 
     @Override
-    public String resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer, NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
+    public String resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer, NativeWebRequest webRequest, WebDataBinderFactory binderFactory) {
         var headerName = parameter.getParameterAnnotation(RemoteIp.class).headerName();
         var request = (HttpServletRequest) webRequest.getNativeRequest();
         if(request.getHeader(headerName) != null) {
             return request.getHeader(headerName);
-        }
-        if(request.getHeader("X-Forwarded-For") != null) {
-            return request.getHeader("X-Forwarded-For");
         }
         return request.getRemoteAddr();
     }

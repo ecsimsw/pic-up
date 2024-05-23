@@ -13,9 +13,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import ecsimsw.picup.controller.GlobalControllerAdvice;
 import ecsimsw.picup.controller.PictureController;
-import ecsimsw.picup.controller.RemoteIpArgumentResolver;
-import ecsimsw.picup.controller.ResourceKeyArgumentResolver;
-import ecsimsw.picup.controller.SearchCursorArgumentResolver;
+import ecsimsw.picup.resolver.RemoteIpArgumentResolver;
+import ecsimsw.picup.resolver.ResourceKeyArgumentResolver;
+import ecsimsw.picup.resolver.SearchCursorArgumentResolver;
 import ecsimsw.picup.domain.LoginUser;
 import ecsimsw.picup.dto.PictureResponse;
 import ecsimsw.picup.dto.PictureSearchCursor;
@@ -39,7 +39,7 @@ import org.springframework.transaction.annotation.Transactional;
 class PictureControllerUnitTest extends ControllerUnitTestContext {
 
     private final MockMvc mockMvc = MockMvcBuilders
-        .standaloneSetup(new PictureController(userLockService, pictureFacadeService, fileUrlService, fileResourceService))
+        .standaloneSetup(new PictureController(pictureFacadeService, storageFacadeService))
         .addInterceptors(new AuthTokenInterceptor(authTokenService))
         .setCustomArgumentResolvers(
             new AuthTokenArgumentResolver(authTokenService),
@@ -67,10 +67,10 @@ class PictureControllerUnitTest extends ControllerUnitTestContext {
         var fileResource = new FileResource();
         var expectedPreSignedUrl = new PreUploadUrlResponse("preSignedUrl", RESOURCE_KEY.value());
 
-        when(fileResourceService.createToBeDeleted(STORAGE, fileName, fileSize))
+        when(fileResourceService.prepare(STORAGE, fileName, fileSize))
             .thenReturn(fileResource);
 
-        when(fileUrlService.uploadUrl(STORAGE, fileResource))
+        when(fileUrlService.preSignedUrl(fileResource))
             .thenReturn(expectedPreSignedUrl);
 
         mockMvc.perform(multipart("/api/album/" + albumId + "/picture/preUpload")

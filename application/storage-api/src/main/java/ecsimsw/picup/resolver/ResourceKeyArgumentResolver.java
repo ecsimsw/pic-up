@@ -1,4 +1,4 @@
-package ecsimsw.picup.controller;
+package ecsimsw.picup.resolver;
 
 import ecsimsw.picup.domain.ResourceKey;
 import org.springframework.core.MethodParameter;

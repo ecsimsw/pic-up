@@ -1,5 +1,7 @@
 package ecsimsw.picup.service;
 
+import static ecsimsw.picup.domain.StorageType.STORAGE;
+
 import ecsimsw.picup.domain.Picture;
 import ecsimsw.picup.domain.ResourceKey;
 import ecsimsw.picup.domain.StorageType;
@@ -57,7 +59,7 @@ public class AlbumFacadeService {
     }
 
     public AlbumResponse parseFileUrl(AlbumInfo albumInfo, String remoteIp) {
-        var thumbnailUrl = fileUrlService.fileUrl(StorageType.THUMBNAIL, remoteIp, albumInfo.thumbnail());
+        var thumbnailUrl = fileUrlService.fileUrl(STORAGE, remoteIp, albumInfo.thumbnail());
         return AlbumResponse.of(albumInfo, thumbnailUrl);
     }
 }
