@@ -4,7 +4,6 @@ import ecsimsw.picup.domain.Picture;
 import ecsimsw.picup.domain.ResourceKey;
 import ecsimsw.picup.domain.StorageType;
 import ecsimsw.picup.dto.PictureInfo;
-import ecsimsw.picup.dto.PictureResponse;
 import ecsimsw.picup.dto.PictureSearchCursor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -19,64 +18,39 @@ public class PictureFacadeService {
 
     private final PictureService pictureService;
     private final StorageUsageService storageUsageService;
-    private final FileResourceService fileResourceService;
-    private final FileUrlService fileUrlService;
+    private final ResourceService resourceService;
 
     @Transactional(readOnly = true)
     public void checkAbleToUpload(Long userId, Long albumId, Long fileSize) {
-        pictureService.validateAlbumOwner(userId, albumId);
-        storageUsageService.checkAbleToStore(userId, fileSize);
+        pictureService.checkAbleToStore(userId, albumId, fileSize);
     }
 
     @Transactional
-    public long commitPreUpload(long userId, long albumId, ResourceKey resourceKey) {
-        var file = fileResourceService.commit(StorageType.STORAGE, resourceKey);
+    public PictureInfo commitPreUpload(long userId, long albumId, ResourceKey resourceKey) {
+        var file = resourceService.commit(resourceKey);
         storageUsageService.addUsage(userId, file.getSize());
-        var picture = pictureService.create(userId, albumId, file.getResourceKey(), file.getSize());
-        return picture.id();
+        return pictureService.create(userId, albumId, file.getResourceKey(), file.getSize());
     }
 
     @Transactional
     public void setPictureThumbnail(ResourceKey resourceKey, long fileSize) {
-        fileResourceService.create(StorageType.THUMBNAIL, resourceKey, fileSize);
+        resourceService.createThumbnail(resourceKey, fileSize);
         pictureService.setThumbnail(resourceKey);
     }
 
     @Transactional
     public void deletePictures(long userId, long albumId, List<Long> pictureIds) {
-        var pictures = pictureService.deleteAll(userId, albumId, pictureIds);
+        var pictures = pictureService.deleteAllById(userId, albumId, pictureIds);
         var resourceKeys = pictures.stream()
             .map(Picture::getFileResource)
             .toList();
-        fileResourceService.deleteAllAsync(resourceKeys);
-
-        var usageSum = pictures.stream()
-                .mapToLong(Picture::getFileSize)
-                .sum();
-        storageUsageService.subtractAll(userId, usageSum);
+        resourceService.deleteAllAsync(resourceKeys);
     }
 
     @Transactional(readOnly = true)
-    public List<PictureResponse> readPicture(Long userId, String remoteIp, Long albumId, PictureSearchCursor cursor) {
+    public List<PictureInfo> readPicture(Long userId, Long albumId, PictureSearchCursor cursor) {
         var limit = cursor.limit();
         var cursorCreatedAt = cursor.createdAt().orElse(LocalDateTime.now());
-        var pictureInfos = pictureService.readAfter(userId, albumId, limit, cursorCreatedAt);
-        return pictureInfos.stream()
-            .map(pictureInfo -> parseFileUrl(pictureInfo, remoteIp))
-            .toList();
-    }
-
-    public PictureResponse parseFileUrl(PictureInfo pictureInfo, String remoteIp) {
-        if (!pictureInfo.hasThumbnail()) {
-            return PictureResponse.of(
-                pictureInfo,
-                fileUrlService.fileUrl(StorageType.STORAGE, remoteIp, pictureInfo.resourceKey())
-            );
-        }
-        return PictureResponse.of(
-            pictureInfo,
-            fileUrlService.fileUrl(StorageType.STORAGE, remoteIp, pictureInfo.resourceKey()),
-            fileUrlService.fileUrl(StorageType.THUMBNAIL, remoteIp, pictureInfo.resourceKey())
-        );
+        return pictureService.readAfter(userId, albumId, limit, cursorCreatedAt);
     }
 }

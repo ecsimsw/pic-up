@@ -10,7 +10,7 @@ import java.util.List;
 import ecsimsw.picup.domain.FileResource;
 import ecsimsw.picup.domain.FileResourceRepository;
 import ecsimsw.picup.domain.ResourceKey;
-import ecsimsw.picup.service.FileResourceService;
+import ecsimsw.picup.service.ResourceService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +20,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 class DummyFileSearchScenarioTest {
 
     @Autowired
-    private FileResourceService fileResourceService;
+    private ResourceService resourceService;
 
     @Autowired
     private FileResourceRepository fileResourceRepository;
@@ -38,7 +38,7 @@ class DummyFileSearchScenarioTest {
 
         // when
         var limit = 10;
-        var searched = fileResourceService.getDummyFiles(LocalDateTime.now(), limit);
+        var searched = resourceService.getDummyFiles(LocalDateTime.now(), limit);
 
         // then
         assertThat(searched).usingRecursiveComparison()
@@ -59,7 +59,7 @@ class DummyFileSearchScenarioTest {
 
         // when
         var limit = 10;
-        var searched = fileResourceService.getDummyFiles(LocalDateTime.now(), limit);
+        var searched = resourceService.getDummyFiles(LocalDateTime.now(), limit);
 
         // then
         assertThat(searched).doesNotContainAnyElementsOf(dummies);
@@ -79,7 +79,7 @@ class DummyFileSearchScenarioTest {
 
         // when
         var limit = 10;
-        var searched = fileResourceService.getDummyFiles(LocalDateTime.now(), limit);
+        var searched = resourceService.getDummyFiles(LocalDateTime.now(), limit);
 
         // then
         assertThat(searched).doesNotContainAnyElementsOf(dummies);

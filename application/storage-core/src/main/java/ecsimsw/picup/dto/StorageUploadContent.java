@@ -2,7 +2,7 @@ package ecsimsw.picup.dto;
 
 import java.io.InputStream;
 
-public record FileUploadContent(
+public record StorageUploadContent(
     String name,
     String contentType,
     InputStream inputStream,

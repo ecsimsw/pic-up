@@ -1,17 +1,11 @@
 package ecsimsw.picup.service;
 
-import static ecsimsw.picup.domain.StorageType.STORAGE;
-
+import ecsimsw.picup.domain.FileResource;
 import ecsimsw.picup.domain.ResourceKey;
-import ecsimsw.picup.dto.FileUploadContent;
-import ecsimsw.picup.dto.PicturesDeleteRequest;
-import ecsimsw.picup.dto.PreUploadUrlResponse;
-import ecsimsw.picup.exception.AlbumException;
-import java.io.IOException;
+import ecsimsw.picup.dto.StorageUploadContent;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
 @RequiredArgsConstructor
 @Service
@@ -19,19 +13,18 @@ public class StorageFacadeService {
 
     private final AlbumFacadeService albumService;
     private final PictureFacadeService pictureFacadeService;
-    private final FileResourceService fileResourceService;
-    private final FileUrlService fileUrlService;
-    private final UserLockService userLockService;
+    private final ResourceService resourceService;
     private final StorageService storageService;
+    private final UserLockService userLockService;
 
-    public Long createAlbum(long userId, MultipartFile thumbnail, String name) {
-        var thumbnailResource = fileResourceService.prepare(STORAGE, thumbnail.getOriginalFilename(), thumbnail.getSize());
-        storageService.upload(fileUploadContent(thumbnail), thumbnailResource.getResourceKey().value());
-        fileResourceService.commit(STORAGE, thumbnailResource.getResourceKey());
+    public Long createAlbum(long userId, StorageUploadContent thumbnailFile, String name) {
+        var thumbnail = resourceService.prepare(thumbnailFile.name(), thumbnailFile.size()).getResourceKey();
+        storageService.upload(thumbnailFile, thumbnail.value());
+        resourceService.commit(thumbnail);
         try {
-            return albumService.init(userId, name, thumbnailResource.getResourceKey());
+            return albumService.init(userId, name, thumbnail);
         } catch (Exception e) {
-            fileResourceService.deleteAsync(thumbnailResource.getResourceKey());
+            resourceService.deleteAsync(thumbnail);
             throw e;
         }
     }
@@ -43,16 +36,15 @@ public class StorageFacadeService {
         );
     }
 
-    public PreUploadUrlResponse preUploadUrl(long userId, long albumId, String fileName, long fileSize) {
+    public FileResource preUpload(long userId, long albumId, String fileName, long fileSize) {
         pictureFacadeService.checkAbleToUpload(userId, albumId, fileSize);
-        var fileResource = fileResourceService.prepare(STORAGE, fileName, fileSize);
-        return fileUrlService.preSignedUrl(fileResource);
+        return resourceService.prepare(fileName, fileSize);
     }
 
     public long commitPreUpload(long userId, long albumId, ResourceKey resourceKey) {
         return userLockService.<Long>isolate(
             userId,
-            () -> pictureFacadeService.commitPreUpload(userId, albumId, resourceKey)
+            () -> pictureFacadeService.commitPreUpload(userId, albumId, resourceKey).id()
         );
     }
 
@@ -61,18 +53,5 @@ public class StorageFacadeService {
             userId,
             () -> pictureFacadeService.deletePictures(userId, albumId, pictureIds)
         );
-    }
-
-    private FileUploadContent fileUploadContent(MultipartFile thumbnail) {
-        try {
-            return new FileUploadContent(
-                thumbnail.getOriginalFilename(),
-                thumbnail.getContentType(),
-                thumbnail.getInputStream(),
-                thumbnail.getSize()
-            );
-        } catch (IOException e) {
-            throw new AlbumException("Invalid thumbnail file");
-        }
     }
 }

@@ -8,7 +8,7 @@ import com.amazonaws.services.s3.model.GeneratePresignedUrlRequest;
 import com.amazonaws.services.s3.model.GetObjectRequest;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.util.IOUtils;
-import ecsimsw.picup.dto.FileUploadContent;
+import ecsimsw.picup.dto.StorageUploadContent;
 import ecsimsw.picup.exception.StorageException;
 import lombok.extern.slf4j.Slf4j;
 
@@ -18,7 +18,7 @@ import java.util.Date;
 @Slf4j
 public class S3Utils {
 
-    public static void upload(AmazonS3 s3Client, String bucket, String path, FileUploadContent file) {
+    public static void upload(AmazonS3 s3Client, String bucket, String path, StorageUploadContent file) {
         try {
             var start = System.currentTimeMillis();
             var metadata = new ObjectMetadata();

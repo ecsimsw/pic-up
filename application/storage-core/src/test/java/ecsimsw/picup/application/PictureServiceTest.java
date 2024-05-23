@@ -5,6 +5,7 @@ import ecsimsw.picup.domain.AlbumRepository;
 import ecsimsw.picup.domain.PictureRepository;
 import ecsimsw.picup.domain.ResourceKey;
 import ecsimsw.picup.service.PictureService;
+import ecsimsw.picup.service.StorageUsageService;
 import ecsimsw.picup.utils.AlbumFixture;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -27,9 +28,10 @@ class PictureServiceTest {
     @BeforeEach
     void init(
         @Autowired AlbumRepository albumRepository,
-        @Autowired PictureRepository pictureRepository
+        @Autowired PictureRepository pictureRepository,
+        @Autowired StorageUsageService storageUsageService
     ) {
-        pictureService = new PictureService(albumRepository, pictureRepository);
+        pictureService = new PictureService(albumRepository, pictureRepository, storageUsageService);
     }
 
     @DisplayName("Picture 생성 로직 검증")

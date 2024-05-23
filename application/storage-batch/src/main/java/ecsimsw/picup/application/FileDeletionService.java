@@ -4,7 +4,7 @@ import ecsimsw.picup.domain.FileDeletionFailedLog;
 import ecsimsw.picup.domain.FileDeletionFailedLogRepository;
 import ecsimsw.picup.domain.FileResource;
 import ecsimsw.picup.domain.FileResourceRepository;
-import ecsimsw.picup.service.FileResourceService;
+import ecsimsw.picup.service.ResourceService;
 import ecsimsw.picup.service.StorageService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,7 +21,7 @@ public class FileDeletionService {
     public static final int FILE_DELETION_RETRY_COUNTS = 5;
 
     private final StorageService storageService;
-    private final FileResourceService resourceService;
+    private final ResourceService resourceService;
     private final FileResourceRepository fileResourceRepository;
     private final FileDeletionFailedLogRepository fileDeletionFailedLogRepository;
 

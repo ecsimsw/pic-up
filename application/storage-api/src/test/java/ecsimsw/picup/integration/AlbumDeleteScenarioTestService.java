@@ -10,7 +10,7 @@ import ecsimsw.picup.domain.AlbumRepository;
 import ecsimsw.picup.domain.FileResourceRepository;
 import ecsimsw.picup.domain.PictureRepository;
 import ecsimsw.picup.service.AlbumFacadeService;
-import ecsimsw.picup.service.FileResourceService;
+import ecsimsw.picup.service.ResourceService;
 import ecsimsw.picup.service.PictureFacadeService;
 import ecsimsw.picup.service.StorageUsageService;
 import org.junit.jupiter.api.BeforeEach;
@@ -21,7 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 @DisplayName("앨범 제거 절차 검증")
 public class AlbumDeleteScenarioTestService extends ServiceIntegrationTestContext {
 
-    private final FileResourceService fileResourceService;
+    private final ResourceService resourceService;
     private final AlbumFacadeService albumFacadeService;
     private final PictureFacadeService pictureFacadeService;
     private final StorageUsageService storageUsageService;
@@ -30,12 +30,12 @@ public class AlbumDeleteScenarioTestService extends ServiceIntegrationTestContex
     public AlbumDeleteScenarioTestService(
         @Autowired AlbumFacadeService albumFacadeService,
         @Autowired PictureFacadeService pictureFacadeService,
-        @Autowired FileResourceService fileResourceService,
+        @Autowired ResourceService resourceService,
         @Autowired StorageUsageService storageUsageService
     ) {
         this.albumFacadeService = albumFacadeService;
         this.pictureFacadeService = pictureFacadeService;
-        this.fileResourceService = fileResourceService;
+        this.resourceService = resourceService;
         this.storageUsageService = storageUsageService;
     }
 
@@ -59,7 +59,7 @@ public class AlbumDeleteScenarioTestService extends ServiceIntegrationTestContex
     @Test
     void deletePicturesIncluded(@Autowired PictureRepository pictureRepository) {
         // given
-        var file = fileResourceService.prepare(STORAGE, FILE_NAME, FILE_SIZE);
+        var file = resourceService.prepare(FILE_NAME, FILE_SIZE);
         pictureFacadeService.commitPreUpload(USER_ID, savedAlbumId, file.getResourceKey());
 
         // when
@@ -73,7 +73,7 @@ public class AlbumDeleteScenarioTestService extends ServiceIntegrationTestContex
     @Test
     void deleteFilesIncluded(@Autowired FileResourceRepository fileResourceRepository) {
         // given
-        var file = fileResourceService.create(THUMBNAIL, THUMBNAIL_RESOURCE_KEY, FILE_SIZE);
+        var file = resourceService.createThumbnail(THUMBNAIL_RESOURCE_KEY, FILE_SIZE);
         savedAlbumId = albumFacadeService.init(USER_ID, ALBUM_NAME, file.getResourceKey());
 
         // when
@@ -89,7 +89,7 @@ public class AlbumDeleteScenarioTestService extends ServiceIntegrationTestContex
     void updateStorageUsage() {
         // given
         var deleteFileSize = FILE_SIZE;
-        var file = fileResourceService.prepare(STORAGE, FILE_NAME, deleteFileSize);
+        var file = resourceService.prepare(FILE_NAME, deleteFileSize);
         pictureFacadeService.commitPreUpload(USER_ID, savedAlbumId, file.getResourceKey());
         var beforeUsage = storageUsageService.getUsage(USER_ID).getUsageAsByte();
 
@@ -129,8 +129,8 @@ public class AlbumDeleteScenarioTestService extends ServiceIntegrationTestContex
         @Autowired PictureRepository pictureRepository
     ) {
         // given
-        var file = fileResourceService.prepare(STORAGE, FILE_NAME, FILE_SIZE);
-        var pictureId = pictureFacadeService.commitPreUpload(USER_ID, savedAlbumId, file.getResourceKey());
+        var file = resourceService.prepare(FILE_NAME, FILE_SIZE);
+        var picture = pictureFacadeService.commitPreUpload(USER_ID, savedAlbumId, file.getResourceKey());
 
         // when
         var nonExistsAlbumId = Long.MAX_VALUE;
@@ -139,14 +139,14 @@ public class AlbumDeleteScenarioTestService extends ServiceIntegrationTestContex
         );
 
         // then
-        assertThat(pictureRepository.existsById(pictureId)).isTrue();
+        assertThat(pictureRepository.existsById(picture.id())).isTrue();
     }
 
     @DisplayName("앨범 삭제를 실패하는 경우 스토리지 사용량은 이전 그대로 롤백된다.")
     @Test
     void deleteFailedStorageUsage() {
         // given
-        var file = fileResourceService.prepare(STORAGE, FILE_NAME, FILE_SIZE);
+        var file = resourceService.prepare(FILE_NAME, FILE_SIZE);
         pictureFacadeService.commitPreUpload(USER_ID, savedAlbumId, file.getResourceKey());
         var beforeUsage = storageUsageService.getUsage(USER_ID).getUsageAsByte();
 
@@ -165,7 +165,7 @@ public class AlbumDeleteScenarioTestService extends ServiceIntegrationTestContex
     @Test
     void deleteFailedFileResources(@Autowired FileResourceRepository fileResourceRepository) {
         // given
-        var file = fileResourceService.create(THUMBNAIL, THUMBNAIL_RESOURCE_KEY, FILE_SIZE);
+        var file = resourceService.createThumbnail(THUMBNAIL_RESOURCE_KEY, FILE_SIZE);
         savedAlbumId = albumFacadeService.init(USER_ID, ALBUM_NAME, file.getResourceKey());
 
         // when

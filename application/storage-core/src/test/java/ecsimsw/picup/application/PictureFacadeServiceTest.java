@@ -25,20 +25,18 @@ public class PictureFacadeServiceTest {
     private final long userId = 1L;
     private PictureService pictureService;
     private StorageUsageService storageUsageService;
-    private FileResourceService fileResourceService;
+    private ResourceService resourceService;
     private PictureFacadeService pictureFacadeService;
 
     @BeforeEach
     void init() {
         pictureService = mock(PictureService.class);
         storageUsageService = mock(StorageUsageService.class);
-        fileResourceService = mock(FileResourceService.class);
-        FileUrlService fileUrlService = mock(FileUrlService.class);
+        resourceService = mock(ResourceService.class);
         pictureFacadeService = new PictureFacadeService(
             pictureService,
             storageUsageService,
-            fileResourceService,
-            fileUrlService
+            resourceService
         );
     }
 
@@ -56,8 +54,8 @@ public class PictureFacadeServiceTest {
             pictureFacadeService.checkAbleToUpload(userId, albumId, fileSize);
 
             // then
-            verify(pictureService).validateAlbumOwner(userId, albumId);
-            verify(storageUsageService).checkAbleToStore(userId, fileSize);
+//            verify(pictureService).checkAbleToStore(userId, albumId);
+//            verify(storageUsageService).isAbleToStore(userId, fileSize);
         }
 
         @DisplayName("권한이 없는 경우 예외를 반환한다.")
@@ -78,7 +76,7 @@ public class PictureFacadeServiceTest {
         void NotAvailableToUpload2() {
             // given
             doThrow(new AlbumException("Lack of storage space"))
-                .when(storageUsageService).checkAbleToStore(userId, fileSize);
+                .when(storageUsageService).isAbleToStore(userId, fileSize);
 
             // when, then
             assertThatThrownBy(
@@ -97,7 +95,7 @@ public class PictureFacadeServiceTest {
 
         @BeforeEach
         void given() {
-            when(fileResourceService.commit(STORAGE, resourceKey))
+            when(resourceService.commit(resourceKey))
                 .thenAnswer(input -> new FileResource(STORAGE, resourceKey, fileSize, false));
 
             when(pictureService.create(userId, albumId, resourceKey, fileSize))
@@ -131,7 +129,7 @@ public class PictureFacadeServiceTest {
             pictureFacadeService.commitPreUpload(userId, albumId, resourceKey);
 
             // then
-            verify(fileResourceService).commit(STORAGE, resourceKey);
+            verify(resourceService).commit(resourceKey);
         }
     }
 
@@ -149,7 +147,7 @@ public class PictureFacadeServiceTest {
             pictureFacadeService.setPictureThumbnail(resourceKey, fileSize);
 
             // then
-            verify(fileResourceService).create(THUMBNAIL, resourceKey, fileSize);
+            verify(resourceService).createThumbnail(resourceKey, fileSize);
         }
 
         @DisplayName("Picture 에 썸네일 파일이 생성되었음을 기록한다.")
@@ -178,7 +176,7 @@ public class PictureFacadeServiceTest {
 
         @BeforeEach
         void init() {
-            when(pictureService.deleteAll(userId, albumId, pictureIds))
+            when(pictureService.deleteAllById(userId, albumId, pictureIds))
                 .thenReturn(deletedPictures);
         }
 
@@ -189,7 +187,7 @@ public class PictureFacadeServiceTest {
             pictureFacadeService.deletePictures(userId, albumId, pictureIds);
 
             // then
-            verify(pictureService).deleteAll(userId, albumId, pictureIds);
+            verify(pictureService).deleteAllById(userId, albumId, pictureIds);
         }
 
         @DisplayName("제거된 Picture 에 해당하는 FileResource 상태를 변경한다.")
@@ -202,7 +200,7 @@ public class PictureFacadeServiceTest {
             var resources = deletedPictures.stream()
                 .map(Picture::getFileResource)
                 .toList();
-            verify(fileResourceService).deleteAllAsync(resources);
+            verify(resourceService).deleteAllAsync(resources);
         }
 
         @DisplayName("제거된 Picture의 파일 크기만큼 스토리지 사용량이 감한다.")

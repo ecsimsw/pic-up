@@ -1,17 +1,12 @@
 package ecsimsw.picup.service;
 
-import static ecsimsw.picup.domain.StorageType.STORAGE;
-
 import ecsimsw.picup.domain.Picture;
 import ecsimsw.picup.domain.ResourceKey;
-import ecsimsw.picup.domain.StorageType;
 import ecsimsw.picup.dto.AlbumInfo;
-import ecsimsw.picup.dto.AlbumResponse;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 @RequiredArgsConstructor
 @Service
@@ -19,9 +14,7 @@ public class AlbumFacadeService {
 
     private final AlbumService albumService;
     private final PictureService pictureService;
-    private final StorageUsageService storageUsageService;
-    private final FileResourceService resourceService;
-    private final FileUrlService fileUrlService;
+    private final ResourceService resourceService;
 
     @Transactional
     public Long init(Long userId, String name, ResourceKey thumbnail) {
@@ -31,35 +24,20 @@ public class AlbumFacadeService {
     @Transactional
     public void delete(Long userId, Long albumId) {
         var pictures = pictureService.deleteAllInAlbum(userId, albumId);
-        if (!pictures.isEmpty()) {
-            var resourceKeys = pictures.stream()
-                .map(Picture::getFileResource)
-                .toList();
-            resourceService.deleteAllAsync(resourceKeys);
-
-            var usageSum = pictures.stream()
-                .mapToLong(Picture::getFileSize)
-                .sum();
-            storageUsageService.subtractAll(userId, usageSum);
-        }
-        var deletedAlbum = albumService.deleteById(userId, albumId);
-        resourceService.deleteAsync(deletedAlbum.thumbnail());
-    }
-
-    public AlbumResponse read(Long userId, String remoteIp, Long albumId) {
-        var albumInfo = albumService.readAlbum(userId, albumId);
-        return parseFileUrl(albumInfo, remoteIp);
-    }
-
-    public List<AlbumResponse> readAll(Long userId, String remoteIp) {
-        var albumInfos = albumService.readAlbums(userId);
-        return albumInfos.stream()
-            .map(info -> parseFileUrl(info, remoteIp))
+        var pictureFile = pictures.stream()
+            .map(Picture::getFileResource)
             .toList();
+        resourceService.deleteAllAsync(pictureFile);
+
+        var thumbnailFile = albumService.deleteById(userId, albumId).thumbnail();
+        resourceService.deleteAsync(thumbnailFile);
     }
 
-    public AlbumResponse parseFileUrl(AlbumInfo albumInfo, String remoteIp) {
-        var thumbnailUrl = fileUrlService.fileUrl(STORAGE, remoteIp, albumInfo.thumbnail());
-        return AlbumResponse.of(albumInfo, thumbnailUrl);
+    public AlbumInfo read(Long userId, Long albumId) {
+        return albumService.readAlbum(userId, albumId);
+    }
+
+    public List<AlbumInfo> readAll(Long userId) {
+        return albumService.readAlbums(userId);
     }
 }

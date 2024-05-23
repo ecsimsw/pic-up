@@ -46,12 +46,4 @@ public class StorageUsageService {
         usage.subtract(fileSize);
         storageUsageRepository.save(usage);
     }
-
-    @Transactional(readOnly = true)
-    public void checkAbleToStore(Long userId, Long fileSize) {
-        var currentUsage = getUsage(userId);
-        if(!currentUsage.isAbleToStore(fileSize)) {
-            throw new StorageException("Lack of storage space");
-        }
-    }
 }

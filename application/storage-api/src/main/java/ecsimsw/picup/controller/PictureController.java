@@ -5,10 +5,13 @@ import ecsimsw.picup.annotation.SearchCursor;
 import ecsimsw.picup.annotation.TokenPayload;
 import ecsimsw.picup.domain.LoginUser;
 import ecsimsw.picup.domain.ResourceKey;
+import ecsimsw.picup.domain.StorageType;
+import ecsimsw.picup.dto.PictureInfo;
 import ecsimsw.picup.dto.PictureResponse;
 import ecsimsw.picup.dto.PictureSearchCursor;
 import ecsimsw.picup.dto.PicturesDeleteRequest;
 import ecsimsw.picup.dto.PreUploadUrlResponse;
+import ecsimsw.picup.service.FileUrlService;
 import ecsimsw.picup.service.PictureFacadeService;
 import ecsimsw.picup.service.StorageFacadeService;
 import java.util.List;
@@ -29,6 +32,7 @@ public class PictureController {
 
     private final PictureFacadeService pictureFacadeService;
     private final StorageFacadeService storageFacadeService;
+    private final FileUrlService fileUrlService;
 
     @PostMapping("/api/storage/album/{albumId}/picture/preUpload")
     public ResponseEntity<PreUploadUrlResponse> preUpload(
@@ -37,7 +41,8 @@ public class PictureController {
         @RequestParam String fileName,
         @RequestParam Long fileSize
     ) {
-        var preSignedUrl = storageFacadeService.preUploadUrl(user.id(), albumId, fileName, fileSize);
+        var predUploadResource = storageFacadeService.preUpload(user.id(), albumId, fileName, fileSize);
+        var preSignedUrl = fileUrlService.preSignedUrl(predUploadResource.getResourceKey());
         return ResponseEntity.ok(preSignedUrl);
     }
 
@@ -67,7 +72,10 @@ public class PictureController {
         @PathVariable Long albumId,
         @SearchCursor PictureSearchCursor cursor
     ) {
-        var pictures = pictureFacadeService.readPicture(user.id(), remoteIp, albumId, cursor);
+        var pictureInfos = pictureFacadeService.readPicture(user.id(), albumId, cursor);
+        var pictures = pictureInfos.stream()
+            .map(pictureInfo -> parseFileUrl(pictureInfo, remoteIp))
+            .toList();
         return ResponseEntity.ok(pictures);
     }
 
@@ -80,5 +88,19 @@ public class PictureController {
     ) {
         storageFacadeService.deletePictures(user.id(), albumId, pictures.pictureIds());
         return ResponseEntity.ok().build();
+    }
+
+    public PictureResponse parseFileUrl(PictureInfo pictureInfo, String remoteIp) {
+        if (!pictureInfo.hasThumbnail()) {
+            return PictureResponse.of(
+                pictureInfo,
+                fileUrlService.fileUrl(StorageType.STORAGE, remoteIp, pictureInfo.resourceKey())
+            );
+        }
+        return PictureResponse.of(
+            pictureInfo,
+            fileUrlService.fileUrl(StorageType.STORAGE, remoteIp, pictureInfo.resourceKey()),
+            fileUrlService.fileUrl(StorageType.THUMBNAIL, remoteIp, pictureInfo.resourceKey())
+        );
     }
 }

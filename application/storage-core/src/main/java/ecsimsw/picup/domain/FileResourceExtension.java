@@ -1,11 +1,9 @@
 package ecsimsw.picup.domain;
 
-import ecsimsw.picup.dto.FileUploadContent;
 import ecsimsw.picup.exception.StorageException;
 import ecsimsw.picup.utils.FileUtils;
 
 import java.util.Arrays;
-import java.util.Objects;
 
 public enum FileResourceExtension {
     JPEG(false),
@@ -17,11 +15,6 @@ public enum FileResourceExtension {
 
     FileResourceExtension(boolean isVideo) {
         this.isVideo = isVideo;
-    }
-
-    public static FileResourceExtension fromFileName(String fileName) {
-        var extension = FileUtils.getExtensionFromName(fileName);
-        return of(extension);
     }
 
     public static FileResourceExtension of(String extension) {

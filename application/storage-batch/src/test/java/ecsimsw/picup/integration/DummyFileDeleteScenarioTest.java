@@ -14,7 +14,7 @@ import ecsimsw.picup.domain.FileDeletionFailedLogRepository;
 import ecsimsw.picup.domain.FileResource;
 import ecsimsw.picup.domain.FileResourceRepository;
 import ecsimsw.picup.domain.ResourceKey;
-import ecsimsw.picup.service.FileResourceService;
+import ecsimsw.picup.service.ResourceService;
 import ecsimsw.picup.service.StorageService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -28,7 +28,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 class DummyFileDeleteScenarioTest {
 
     @Autowired
-    private FileResourceService fileResourceService;
+    private ResourceService resourceService;
 
     @MockBean
     private StorageService storageService;
@@ -141,7 +141,7 @@ class DummyFileDeleteScenarioTest {
             fileDeletionService.delete(toBeDeleted);
 
             // then
-            var path = fileResourceService.filePath(toBeDeleted);
+            var path = resourceService.filePath(toBeDeleted);
             verify(storageService).delete(path);
         }
 

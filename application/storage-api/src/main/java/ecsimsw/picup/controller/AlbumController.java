@@ -1,11 +1,17 @@
 package ecsimsw.picup.controller;
 
+import static ecsimsw.picup.domain.StorageType.STORAGE;
+
 import ecsimsw.picup.annotation.RemoteIp;
 import ecsimsw.picup.annotation.TokenPayload;
 import ecsimsw.picup.domain.LoginUser;
 import ecsimsw.picup.dto.AlbumResponse;
+import ecsimsw.picup.dto.StorageUploadContent;
+import ecsimsw.picup.exception.AlbumException;
 import ecsimsw.picup.service.AlbumFacadeService;
+import ecsimsw.picup.service.FileUrlService;
 import ecsimsw.picup.service.StorageFacadeService;
+import java.io.IOException;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -23,6 +29,7 @@ public class AlbumController {
 
     private final AlbumFacadeService albumService;
     private final StorageFacadeService storageFacadeService;
+    private final FileUrlService fileUrlService;
 
     @PostMapping("/api/storage/album")
     public ResponseEntity<Long> createAlbum(
@@ -30,7 +37,8 @@ public class AlbumController {
         @RequestParam MultipartFile thumbnail,
         @RequestParam String name
     ) {
-        var albumId = storageFacadeService.createAlbum(user.id(), thumbnail, name);
+        var thumbnailUploadRequest = fileUploadContent(thumbnail);
+        var albumId = storageFacadeService.createAlbum(user.id(), thumbnailUploadRequest, name);
         return ResponseEntity.ok(albumId);
     }
 
@@ -40,7 +48,9 @@ public class AlbumController {
         @TokenPayload LoginUser user,
         @PathVariable Long albumId
     ) {
-        var album = albumService.read(user.id(), remoteIp, albumId);
+        var albumInfo = albumService.read(user.id(), albumId);
+        var thumbnailUrl = fileUrlService.fileUrl(STORAGE, remoteIp, albumInfo.thumbnail());
+        var album = AlbumResponse.of(albumInfo, thumbnailUrl);
         return ResponseEntity.ok(album);
     }
 
@@ -49,8 +59,13 @@ public class AlbumController {
         @RemoteIp String remoteIp,
         @TokenPayload LoginUser user
     ) {
-        var albumInfos = albumService.readAll(user.id(), remoteIp);
-        return ResponseEntity.ok(albumInfos);
+        var albumInfos = albumService.readAll(user.id());
+        var albums = albumInfos.stream()
+            .map(albumInfo -> {
+                var thumbnailUrl = fileUrlService.fileUrl(STORAGE, remoteIp, albumInfo.thumbnail());
+                return AlbumResponse.of(albumInfo, thumbnailUrl);
+            }).toList();
+        return ResponseEntity.ok(albums);
     }
 
     @DeleteMapping("/api/storage/album/{albumId}")
@@ -60,5 +75,18 @@ public class AlbumController {
     ) {
         storageFacadeService.deleteAlbum(user.id(), albumId);
         return ResponseEntity.ok().build();
+    }
+
+    private StorageUploadContent fileUploadContent(MultipartFile thumbnail) {
+        try {
+            return new StorageUploadContent(
+                thumbnail.getOriginalFilename(),
+                thumbnail.getContentType(),
+                thumbnail.getInputStream(),
+                thumbnail.getSize()
+            );
+        } catch (IOException e) {
+            throw new AlbumException("Invalid thumbnail file");
+        }
     }
 }

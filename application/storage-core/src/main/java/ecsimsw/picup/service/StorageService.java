@@ -2,7 +2,7 @@ package ecsimsw.picup.service;
 
 import com.amazonaws.services.s3.AmazonS3;
 import ecsimsw.picup.config.S3Config;
-import ecsimsw.picup.dto.FileUploadContent;
+import ecsimsw.picup.dto.StorageUploadContent;
 import ecsimsw.picup.utils.S3Utils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -13,7 +13,7 @@ public class StorageService {
 
     private final AmazonS3 s3Client;
 
-    public void upload(FileUploadContent file, String path) {
+    public void upload(StorageUploadContent file, String path) {
         S3Utils.upload(s3Client, S3Config.BUCKET, path, file);
     }
 

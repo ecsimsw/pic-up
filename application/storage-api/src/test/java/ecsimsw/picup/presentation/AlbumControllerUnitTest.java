@@ -13,6 +13,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import ecsimsw.picup.controller.AlbumController;
 import ecsimsw.picup.controller.GlobalControllerAdvice;
+import ecsimsw.picup.dto.AlbumInfo;
 import ecsimsw.picup.resolver.RemoteIpArgumentResolver;
 import ecsimsw.picup.domain.LoginUser;
 import ecsimsw.picup.dto.AlbumResponse;
@@ -25,7 +26,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.function.Supplier;
 
-import ecsimsw.picup.dto.FileUploadContent;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -36,7 +36,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 class AlbumControllerUnitTest extends ControllerUnitTestContext {
 
     private final MockMvc mockMvc = MockMvcBuilders
-        .standaloneSetup(new AlbumController(albumFacadeService, storageFacadeService))
+        .standaloneSetup(new AlbumController(albumFacadeService, storageFacadeService, fileUrlService))
         .addInterceptors(new AuthTokenInterceptor(authTokenService))
         .setCustomArgumentResolvers(
             new AuthTokenArgumentResolver(authTokenService),
@@ -79,10 +79,10 @@ class AlbumControllerUnitTest extends ControllerUnitTestContext {
     @Test
     void getAlbums() throws Exception {
         var expectedAlbumInfos = List.of(
-            new AlbumResponse(1L, ALBUM_NAME, THUMBNAIL_RESOURCE_KEY.value(), LocalDateTime.now())
+            new AlbumInfo(1L, ALBUM_NAME, THUMBNAIL_RESOURCE_KEY, LocalDateTime.now())
         );
 
-        when(albumFacadeService.readAll(loginUserId, remoteIp))
+        when(albumFacadeService.readAll(loginUserId))
             .thenReturn(expectedAlbumInfos);
 
         mockMvc.perform(get("/api/album").header("X-Forwarded-For", remoteIp))
@@ -94,9 +94,9 @@ class AlbumControllerUnitTest extends ControllerUnitTestContext {
     @Test
     void getAlbum() throws Exception {
         var albumId = 1L;
-        var expectedAlbumInfo = new AlbumResponse(1L, ALBUM_NAME, THUMBNAIL_RESOURCE_KEY.value(), LocalDateTime.now());
+        var expectedAlbumInfo = new AlbumInfo(1L, ALBUM_NAME, THUMBNAIL_RESOURCE_KEY, LocalDateTime.now());
 
-        when(albumFacadeService.read(loginUserId, remoteIp, albumId))
+        when(albumFacadeService.read(loginUserId, albumId))
             .thenReturn(expectedAlbumInfo);
 
         mockMvc.perform(get("/api/album/" + albumId).header("X-Forwarded-For", remoteIp)).andExpect(status().isOk())
@@ -108,7 +108,7 @@ class AlbumControllerUnitTest extends ControllerUnitTestContext {
     void getAlbumUnAuth() throws Exception {
         var invalidAlbumId = 1L;
 
-        when(albumFacadeService.read(loginUserId, remoteIp, invalidAlbumId))
+        when(albumFacadeService.read(loginUserId, invalidAlbumId))
             .thenThrow(UnauthorizedException.class);
 
         mockMvc.perform(get("/api/album/" + invalidAlbumId).header("X-Forwarded-For", remoteIp))

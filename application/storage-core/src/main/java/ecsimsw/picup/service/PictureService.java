@@ -1,16 +1,20 @@
 package ecsimsw.picup.service;
 
-import ecsimsw.picup.domain.*;
+import ecsimsw.picup.domain.Album;
+import ecsimsw.picup.domain.AlbumRepository;
+import ecsimsw.picup.domain.Picture;
+import ecsimsw.picup.domain.PictureRepository;
+import ecsimsw.picup.domain.Picture_;
+import ecsimsw.picup.domain.ResourceKey;
 import ecsimsw.picup.dto.PictureInfo;
 import ecsimsw.picup.exception.AlbumException;
+import java.time.LocalDateTime;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.time.LocalDateTime;
-import java.util.List;
 
 @RequiredArgsConstructor
 @Service
@@ -18,6 +22,7 @@ public class PictureService {
 
     private final AlbumRepository albumRepository;
     private final PictureRepository pictureRepository;
+    private final StorageUsageService storageUsageService;
 
     @Transactional
     public PictureInfo create(Long userId, Long albumId, ResourceKey fileResource, Long fileSize) {
@@ -35,19 +40,28 @@ public class PictureService {
     }
 
     @Transactional
-    public List<Picture> deleteAll(Long userId, Long albumId, List<Long> pictureIds) {
-        validateAlbumOwner(userId, albumId);
-        var pictures = pictureRepository.findAllById(pictureIds);
+    public List<Picture> deleteAll(Long userId, Album album, List<Picture> pictures) {
+        album.authorize(userId);
+        var usageSum = pictures.stream()
+            .mapToLong(Picture::getFileSize)
+            .sum();
+        storageUsageService.subtractAll(userId, usageSum);
         pictureRepository.deleteAll(pictures);
         return pictures;
     }
 
     @Transactional
+    public List<Picture> deleteAllById(Long userId, Long albumId, List<Long> pictureIds) {
+        var album = getUserAlbum(userId, albumId);
+        var pictures = pictureRepository.findAllById(pictureIds);
+        return deleteAll(userId, album, pictures);
+    }
+
+    @Transactional
     public List<Picture> deleteAllInAlbum(Long userId, Long albumId) {
-        validateAlbumOwner(userId, albumId);
+        var album = getUserAlbum(userId, albumId);
         var pictures = pictureRepository.findAllByAlbumId(albumId);
-        pictureRepository.deleteAll(pictures);
-        return pictures;
+        return deleteAll(userId, album, pictures);
     }
 
     @Transactional(readOnly = true)
@@ -62,9 +76,12 @@ public class PictureService {
     }
 
     @Transactional(readOnly = true)
-    public void validateAlbumOwner(Long userId, Long albumId) {
+    public void checkAbleToStore(Long userId, Long albumId, long size) {
         var album = getUserAlbum(userId, albumId);
         album.authorize(userId);
+        if(storageUsageService.getUsage(userId).isAbleToStore(size)) {
+            throw new AlbumException("Not enough file storage");
+        }
     }
 
     private Picture findPictureByResource(ResourceKey resourceKey) {

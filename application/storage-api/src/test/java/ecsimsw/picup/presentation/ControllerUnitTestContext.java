@@ -17,7 +17,7 @@ public class ControllerUnitTestContext {
     protected final AlbumFacadeService albumFacadeService = mock(AlbumFacadeService.class);
     protected final StorageFacadeService storageFacadeService = mock(StorageFacadeService.class);
     protected final UserLockService userLockService = mock(UserLockService.class);
-    protected final FileResourceService fileResourceService = mock(FileResourceService.class);
+    protected final ResourceService resourceService = mock(ResourceService.class);
     protected final AuthTokenService authTokenService = mock(AuthTokenService.class);
     protected final FileUrlService fileUrlService = mock(FileUrlService.class);
     protected final PictureFacadeService pictureFacadeService = mock(PictureFacadeService.class);

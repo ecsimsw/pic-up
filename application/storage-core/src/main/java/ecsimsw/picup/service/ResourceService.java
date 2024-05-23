@@ -1,8 +1,11 @@
 package ecsimsw.picup.service;
 
+import static ecsimsw.picup.config.S3Config.DEFAULT_VIDEO_THUMBNAIL_EXTENSION;
+import static ecsimsw.picup.config.S3Config.ROOT_PATH_PER_STORAGE_TYPE;
+import static ecsimsw.picup.config.S3Config.ROOT_PATH_STORAGE;
+import static ecsimsw.picup.domain.StorageType.STORAGE;
 import static ecsimsw.picup.domain.StorageType.THUMBNAIL;
 
-import ecsimsw.picup.config.S3Config;
 import ecsimsw.picup.domain.FileResource;
 import ecsimsw.picup.domain.FileResourceRepository;
 import ecsimsw.picup.domain.FileResource_;
@@ -22,26 +25,26 @@ import org.springframework.transaction.annotation.Transactional;
 @Slf4j
 @RequiredArgsConstructor
 @Service
-public class FileResourceService {
+public class ResourceService {
 
     private final FileResourceRepository fileResourceRepository;
 
     @Transactional
-    public FileResource create(StorageType type, ResourceKey resourceKey, long fileSize) {
-        var fileResource = FileResource.stored(type, resourceKey, fileSize);
+    public FileResource createThumbnail(ResourceKey resourceKey, long fileSize) {
+        var fileResource = FileResource.stored(THUMBNAIL, resourceKey, fileSize);
         return fileResourceRepository.save(fileResource);
     }
 
     @Transactional
-    public FileResource prepare(StorageType type, String fileName, long fileSize) {
+    public FileResource prepare(String fileName, long fileSize) {
         var resourceKey = ResourceKey.fromFileName(fileName);
-        var beDeleted = FileResource.toBeDeleted(type, resourceKey, fileSize);
+        var beDeleted = FileResource.toBeDeleted(STORAGE, resourceKey, fileSize);
         return fileResourceRepository.save(beDeleted);
     }
 
     @Transactional
-    public FileResource commit(StorageType type, ResourceKey resourceKey) {
-        var resource = fileResourceRepository.findByStorageTypeAndResourceKey(type, resourceKey)
+    public FileResource commit(ResourceKey resourceKey) {
+        var resource = fileResourceRepository.findByStorageTypeAndResourceKey(STORAGE, resourceKey)
             .orElseThrow(() -> new StorageException("Not exists resource"));
         resource.setToBeDeleted(false);
         return fileResourceRepository.save(resource);
@@ -54,6 +57,9 @@ public class FileResourceService {
 
     @Transactional
     public void deleteAllAsync(List<ResourceKey> resourceKeys) {
+        if(resourceKeys.isEmpty()) {
+            return;
+        }
         fileResourceRepository.setAllToBeDeleted(resourceKeys);
     }
 
@@ -70,10 +76,9 @@ public class FileResourceService {
     }
 
     public String filePath(StorageType type, ResourceKey resourceKey) {
-        var storageRootPath = S3Config.ROOT_PATH_PER_STORAGE_TYPE.getOrDefault(type, S3Config.ROOT_PATH_STORAGE);
+        var storageRootPath = ROOT_PATH_PER_STORAGE_TYPE.getOrDefault(type, ROOT_PATH_STORAGE);
         if (resourceKey.extension().isVideo && type == THUMBNAIL) {
-            return storageRootPath + FileUtils.changeExtensionTo(resourceKey.value(),
-                S3Config.DEFAULT_VIDEO_THUMBNAIL_EXTENSION);
+            return storageRootPath + FileUtils.changeExtensionTo(resourceKey.value(), DEFAULT_VIDEO_THUMBNAIL_EXTENSION);
         }
         return storageRootPath + resourceKey.value();
     }

@@ -1,5 +1,7 @@
 package ecsimsw.picup.service;
 
+import static ecsimsw.picup.domain.StorageType.STORAGE;
+
 import ecsimsw.picup.config.CacheType;
 import ecsimsw.picup.domain.FileResource;
 import ecsimsw.picup.domain.ResourceKey;
@@ -26,8 +28,6 @@ public class FileUrlService {
     private static final String CDN_PROTOCOL = "https";
     private static final int SIGNED_URL_EXPIRATION_AFTER_DAYS = 7;
 
-    private final CloudFrontUtilities cloudFrontUtilities = CloudFrontUtilities.create();
-
     @Value("${aws.cloudfront.domain}")
     private String domainName;
 
@@ -37,12 +37,13 @@ public class FileUrlService {
     @Value("${aws.cloudfront.privateKeyPath}")
     private String privateKeyPath;
 
-    private final FileResourceService fileResourceService;
+    private final CloudFrontUtilities cloudFrontUtilities = CloudFrontUtilities.create();
+    private final ResourceService resourceService;
     private final StorageService storageService;
 
     @Cacheable(value = CacheType.SIGNED_URL, key = "{#storageType, #remoteIp, #fileResource.value()}")
     public String fileUrl(StorageType storageType, String remoteIp, ResourceKey fileResource) {
-        var filePath = fileResourceService.filePath(storageType, fileResource);
+        var filePath = resourceService.filePath(storageType, fileResource);
         try {
             var sign = cannedSign(remoteIp, filePath);
             var signedUrl = cloudFrontUtilities.getSignedUrlWithCustomPolicy(sign);
@@ -62,12 +63,8 @@ public class FileUrlService {
             .build();
     }
 
-    public PreUploadUrlResponse preSignedUrl(FileResource resource) {
-        return preSignedUrl(resource.getStorageType(), resource.getResourceKey());
-    }
-
-    public PreUploadUrlResponse preSignedUrl(StorageType storageType, ResourceKey resourceKey) {
-        var filePath = fileResourceService.filePath(storageType, resourceKey);
+    public PreUploadUrlResponse preSignedUrl(ResourceKey resourceKey) {
+        var filePath = resourceService.filePath(STORAGE, resourceKey);
         var preSignedUrl = storageService.generatePreSignedUrl(filePath);
         return PreUploadUrlResponse.of(preSignedUrl, resourceKey);
     }

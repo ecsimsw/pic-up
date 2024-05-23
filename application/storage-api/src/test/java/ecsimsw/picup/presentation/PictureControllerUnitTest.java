@@ -13,11 +13,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import ecsimsw.picup.controller.GlobalControllerAdvice;
 import ecsimsw.picup.controller.PictureController;
+import ecsimsw.picup.dto.PictureInfo;
 import ecsimsw.picup.resolver.RemoteIpArgumentResolver;
 import ecsimsw.picup.resolver.ResourceKeyArgumentResolver;
 import ecsimsw.picup.resolver.SearchCursorArgumentResolver;
 import ecsimsw.picup.domain.LoginUser;
-import ecsimsw.picup.dto.PictureResponse;
 import ecsimsw.picup.dto.PictureSearchCursor;
 import ecsimsw.picup.dto.PicturesDeleteRequest;
 import ecsimsw.picup.config.AuthTokenArgumentResolver;
@@ -39,7 +39,7 @@ import org.springframework.transaction.annotation.Transactional;
 class PictureControllerUnitTest extends ControllerUnitTestContext {
 
     private final MockMvc mockMvc = MockMvcBuilders
-        .standaloneSetup(new PictureController(pictureFacadeService, storageFacadeService))
+        .standaloneSetup(new PictureController(pictureFacadeService, storageFacadeService, fileUrlService))
         .addInterceptors(new AuthTokenInterceptor(authTokenService))
         .setCustomArgumentResolvers(
             new AuthTokenArgumentResolver(authTokenService),
@@ -67,10 +67,10 @@ class PictureControllerUnitTest extends ControllerUnitTestContext {
         var fileResource = new FileResource();
         var expectedPreSignedUrl = new PreUploadUrlResponse("preSignedUrl", RESOURCE_KEY.value());
 
-        when(fileResourceService.prepare(STORAGE, fileName, fileSize))
+        when(resourceService.prepare(fileName, fileSize))
             .thenReturn(fileResource);
 
-        when(fileUrlService.preSignedUrl(fileResource))
+        when(fileUrlService.preSignedUrl(fileResource.getResourceKey()))
             .thenReturn(expectedPreSignedUrl);
 
         mockMvc.perform(multipart("/api/album/" + albumId + "/picture/preUpload")
@@ -102,11 +102,11 @@ class PictureControllerUnitTest extends ControllerUnitTestContext {
     @Test
     void getPicturesByCursor() throws Exception {
         var expectedCursorCreatedAt = LocalDateTime.of(2024, 4, 8, 10, 45, 12, 728721232);
-        var expectedPictures = List.of(new PictureResponse(
-            loginUserId, albumId, false, false, RESOURCE_KEY.value(), RESOURCE_KEY.value(), LocalDateTime.now()
+        var expectedPictures = List.of(new PictureInfo(
+            loginUserId, albumId, false, false, RESOURCE_KEY, LocalDateTime.now()
         ));
 
-        when(pictureFacadeService.readPicture(loginUserId, remoteIp, albumId,
+        when(pictureFacadeService.readPicture(loginUserId, albumId,
             PictureSearchCursor.from(10, Optional.of(expectedCursorCreatedAt))))
             .thenReturn(expectedPictures);
 
@@ -122,11 +122,11 @@ class PictureControllerUnitTest extends ControllerUnitTestContext {
     @Test
     void getPicturesWithLimit() throws Exception {
         var limit = 20;
-        var expectedPictures = List.of(new PictureResponse(
-            loginUserId, albumId, false, false, RESOURCE_KEY.value(), RESOURCE_KEY.value(), LocalDateTime.now()
+        var expectedPictures = List.of(new PictureInfo(
+            loginUserId, albumId, false, false, RESOURCE_KEY, LocalDateTime.now()
         ));
 
-        when(pictureFacadeService.readPicture(loginUserId, remoteIp, albumId,
+        when(pictureFacadeService.readPicture(loginUserId, albumId,
             PictureSearchCursor.from(limit, Optional.empty())))
             .thenReturn(expectedPictures);
 
