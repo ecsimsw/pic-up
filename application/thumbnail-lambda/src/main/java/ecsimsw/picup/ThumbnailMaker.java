@@ -54,7 +54,7 @@ public class ThumbnailMaker implements RequestHandler<S3Event, String> {
     private static final String JPG_MIME = "image/jpeg";
     private static final String PNG_MIME = "image/png";
 
-    private static final String APPLICATION_SERVER_URL = "https://www.ecsimsw.com:8082/api/picture/thumbnail";
+    private static final String APPLICATION_SERVER_URL = "https://www.ecsimsw.com:8082/api/storage/thumbnail";
 
     private static final Logger log = Logger.loggerFor(ThumbnailMaker.class);
 

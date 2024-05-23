@@ -24,7 +24,7 @@ document.addEventListener("DOMContentLoaded", function () {
         albumId = urlParams.get('albumId');
         addDropZone(albumId);
         setAlbumInfo();
-        fetchData(serverUrl + "/api/album/" + albumId + "/picture", function (pictures) {
+        fetchData(serverUrl + "/api/storage/album/" + albumId + "/picture", function (pictures) {
             addPicturesInPage(pictures);
             cursorId = pictures[pictures.length - 1].id
             cursorCreatedAt = pictures[pictures.length - 1].createdAt
@@ -42,7 +42,7 @@ function handleScroll() {
     const documentHeight = document.body.clientHeight;
     const isAlmostEndOfPage = scrollPosition > (documentHeight - viewportHeight) * 0.9;
     if (isAlmostEndOfPage) {
-        fetchData(serverUrl + "/api/album/" + albumId + "/picture" + "?cursorId=" + cursorId + "&cursorCreatedAt=" + cursorCreatedAt, function (pictures) {
+        fetchData(serverUrl + "/api/storage/album/" + albumId + "/picture" + "?cursorId=" + cursorId + "&cursorCreatedAt=" + cursorCreatedAt, function (pictures) {
             pictures.forEach(picture => {
                 if(inPagePictures.has(picture.id)) {
                     return
@@ -105,7 +105,7 @@ function addDropZone(albumId) {
             });
             this.on("success", function (file) {
                 console.log("upload success : " + file.name);
-                fetch(serverUrl + "/api/album/" + albumId + "/picture/commit?resourceKey=" + file.resourceKey, {
+                fetch(serverUrl + "/api/storage/album/" + albumId + "/picture/commit?resourceKey=" + file.resourceKey, {
                     method: "POST",
                     credentials: 'include',
                     headers: {
@@ -125,7 +125,7 @@ function addDropZone(albumId) {
 }
 
 const fetchPreSignedUrlFromBE = (file, done) => {
-    fetch(serverUrl + "/api/album/"+albumId + "/picture/preUpload?fileSize="+file.size+"&fileName="+file.name, {
+    fetch(serverUrl + "/api/storage/album/"+albumId + "/picture/preUpload?fileSize="+file.size+"&fileName="+file.name, {
         method: "POST",
         credentials: 'include',
         headers: {
@@ -144,7 +144,7 @@ const fetchPreSignedUrlFromBE = (file, done) => {
     })
 }
 function setAlbumInfo() {
-    fetchData(serverUrl + "/api/album/" + albumId, function (album) {
+    fetchData(serverUrl + "/api/storage/album/" + albumId, function (album) {
         const albumTitle = document.getElementById("album-title");
         albumTitle.innerText = album.name
     })
@@ -344,7 +344,7 @@ function callLoginApi(callback) {
 }
 
 function callDeleteApi(callback) {
-    fetch(serverUrl + "/api/album/" + albumId + "/picture", {
+    fetch(serverUrl + "/api/storage/album/" + albumId + "/picture", {
         method: "DELETE",
         credentials: 'include',
         headers: {

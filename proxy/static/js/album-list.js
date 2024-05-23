@@ -6,7 +6,7 @@ document.addEventListener("DOMContentLoaded", function () {
     callLoginApi(function (login) {
         initCreationPanel()
         fetchUserInfo();
-        fetchData(serverUrl + "/api/album", function (albums) {
+        fetchData(serverUrl + "/api/storage/album", function (albums) {
             albums.reverse()
             albums.forEach(async (album) => {
                 createAlbumArticle(album.id, album.name, album.thumbnailUrl)
@@ -27,7 +27,7 @@ document.getElementById("imageBoxButton").addEventListener('change', function ()
 
 document.getElementById('createAlbumForm').onsubmit = function (event) {
     const form = document.getElementById('createAlbumForm')
-    const url = serverUrl + "/api/album";
+    const url = serverUrl + "/api/storage/album";
     const formData = new FormData(form);
     event.preventDefault();
     fetch(url, {
