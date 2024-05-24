@@ -4,7 +4,7 @@ import static ecsimsw.picup.domain.StorageType.STORAGE;
 
 import ecsimsw.picup.annotation.RemoteIp;
 import ecsimsw.picup.annotation.LoginUser;
-import ecsimsw.picup.domain.AuthToken;
+import ecsimsw.picup.domain.TokenPayload;
 import ecsimsw.picup.dto.AlbumResponse;
 import ecsimsw.picup.dto.StorageUploadContent;
 import ecsimsw.picup.exception.AlbumException;
@@ -33,7 +33,7 @@ public class AlbumController {
 
     @PostMapping("/api/storage/album")
     public ResponseEntity<Long> createAlbum(
-        @LoginUser AuthToken user,
+        @LoginUser TokenPayload user,
         @RequestParam MultipartFile thumbnail,
         @RequestParam String name
     ) {
@@ -45,7 +45,7 @@ public class AlbumController {
     @GetMapping("/api/storage/album/{albumId}")
     public ResponseEntity<AlbumResponse> getAlbum(
         @RemoteIp String remoteIp,
-        @LoginUser AuthToken user,
+        @LoginUser TokenPayload user,
         @PathVariable Long albumId
     ) {
         var albumInfo = albumService.findById(user.id(), albumId);
@@ -57,7 +57,7 @@ public class AlbumController {
     @GetMapping("/api/storage/album")
     public ResponseEntity<List<AlbumResponse>> getAlbums(
         @RemoteIp String remoteIp,
-        @LoginUser AuthToken user
+        @LoginUser TokenPayload user
     ) {
         var albumInfos = albumService.findAll(user.id());
         var albums = albumInfos.stream()
@@ -70,7 +70,7 @@ public class AlbumController {
 
     @DeleteMapping("/api/storage/album/{albumId}")
     public ResponseEntity<Void> deleteAlbum(
-        @LoginUser AuthToken user,
+        @LoginUser TokenPayload user,
         @PathVariable Long albumId
     ) {
         storageFacadeService.deleteAlbum(user.id(), albumId);

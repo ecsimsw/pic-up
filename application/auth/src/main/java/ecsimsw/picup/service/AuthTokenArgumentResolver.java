@@ -1,7 +1,7 @@
 package ecsimsw.picup.service;
 
 import ecsimsw.picup.annotation.LoginUser;
-import ecsimsw.picup.domain.AuthToken;
+import ecsimsw.picup.domain.TokenPayload;
 import javax.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.MethodParameter;
@@ -21,7 +21,7 @@ public class AuthTokenArgumentResolver implements HandlerMethodArgumentResolver 
     }
 
     @Override
-    public AuthToken resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer, NativeWebRequest webRequest, WebDataBinderFactory binderFactory) {
+    public TokenPayload resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer, NativeWebRequest webRequest, WebDataBinderFactory binderFactory) {
         var request = (HttpServletRequest) webRequest.getNativeRequest();
         var accessToken = authTokenService.getAccessToken(request);
         return authTokenService.tokenPayload(accessToken);

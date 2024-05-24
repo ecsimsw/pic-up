@@ -18,8 +18,8 @@ public class AuthTokenConfig implements WebMvcConfigurer {
     public static final String ACCESS_TOKEN_COOKIE_NAME = "PICUP_AT";
     public static final String REFRESH_TOKEN_COOKIE_NAME = "PICUP_RT";
 
-    public static final int REFRESH_TOKEN_JWT_EXPIRE_TIME = 2 * 60 * 60;
-    public static final int ACCESS_TOKEN_JWT_EXPIRE_TIME = 30 * 60;
+    public static final int REFRESH_TOKEN_JWT_EXPIRE_TIME_SEC = 2 * 60 * 60;
+    public static final int ACCESS_TOKEN_JWT_EXPIRE_TIME_SEC = 30 * 60;
 
     public static final String TOKEN_PAYLOAD_NAME = "PICUP_MEMBER";
 

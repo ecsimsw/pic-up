@@ -1,7 +1,7 @@
 package ecsimsw.picup.controller;
 
 import ecsimsw.picup.annotation.LoginUser;
-import ecsimsw.picup.domain.AuthToken;
+import ecsimsw.picup.domain.TokenPayload;
 import ecsimsw.picup.dto.MemberResponse;
 import ecsimsw.picup.dto.SignInRequest;
 import ecsimsw.picup.dto.SignUpRequest;
@@ -42,18 +42,13 @@ public class MemberController {
     }
 
     @GetMapping("/api/member/me")
-    public ResponseEntity<MemberResponse> me(
-        @LoginUser AuthToken user,
-        HttpServletResponse response
-    ) {
-        var memberInfo = memberFacadeService.me(user.id(), response);
+    public ResponseEntity<MemberResponse> me(@LoginUser TokenPayload user) {
+        var memberInfo = memberFacadeService.me(user.id());
         return ResponseEntity.ok(memberInfo);
     }
 
     @DeleteMapping("/api/member/me")
-    public ResponseEntity<MemberResponse> me(
-        @LoginUser AuthToken user
-    ) {
+    public ResponseEntity<MemberResponse> delete(@LoginUser TokenPayload user) {
         memberFacadeService.delete(user.id());
         return ResponseEntity.ok().build();
     }

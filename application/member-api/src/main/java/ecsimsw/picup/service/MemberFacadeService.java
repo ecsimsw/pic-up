@@ -1,6 +1,6 @@
 package ecsimsw.picup.service;
 
-import ecsimsw.picup.domain.AuthToken;
+import ecsimsw.picup.domain.TokenPayload;
 import ecsimsw.picup.domain.AuthTokens;
 import ecsimsw.picup.dto.MemberInfo;
 import ecsimsw.picup.dto.MemberResponse;
@@ -13,6 +13,8 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 @Service
 public class MemberFacadeService {
+
+    private static final int STORAGE_SERVER_REQUEST_TOKEN_TIMEOUT_SEC = 5;
 
     private final MemberService memberService;
     private final AuthTokenService authTokenService;
@@ -37,23 +39,27 @@ public class MemberFacadeService {
         return MemberResponse.of(member, usage);
     }
 
-    public MemberResponse me(long userId, HttpServletResponse response) {
+    // TODO :: 분산 트랜잭션
+    public MemberResponse me(long userId) {
         var member = memberService.me(userId);
-        var tokens = issueAuthToken(response, member);
-        var usage = storageUsageClient.getUsage(tokens.getAccessToken());
+        var payload = new TokenPayload(member.id(), member.username());
+        var accessToken = authTokenService.createToken(payload, STORAGE_SERVER_REQUEST_TOKEN_TIMEOUT_SEC);
+        var usage = storageUsageClient.getUsage(accessToken);
         return MemberResponse.of(member, usage);
     }
 
-    public void delete(Long userId) {
+    public void delete(long userId) {
+        var member = memberService.me(userId);
+        var payload = new TokenPayload(member.id(), member.username());
+        var accessToken = authTokenService.createToken(payload, STORAGE_SERVER_REQUEST_TOKEN_TIMEOUT_SEC);
+        storageUsageClient.deleteAll(accessToken);
         memberService.delete(userId);
     }
 
     private AuthTokens issueAuthToken(HttpServletResponse response, MemberInfo member) {
-        var tokens = authTokenService.issue(new AuthToken(member.id(), member.username()));
-        var at = authTokenService.accessTokenCookie(tokens);
-        var rt = authTokenService.refreshTokenCookie(tokens);
-        response.addCookie(at);
-        response.addCookie(rt);
+        var tokens = authTokenService.issue(new TokenPayload(member.id(), member.username()));
+        response.addCookie(authTokenService.accessTokenCookie(tokens));
+        response.addCookie(authTokenService.refreshTokenCookie(tokens));
         return tokens;
     }
 }

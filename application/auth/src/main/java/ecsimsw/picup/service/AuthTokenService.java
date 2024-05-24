@@ -2,7 +2,7 @@ package ecsimsw.picup.service;
 
 import ecsimsw.picup.domain.AuthTokens;
 import ecsimsw.picup.domain.AuthTokensCacheRepository;
-import ecsimsw.picup.domain.AuthToken;
+import ecsimsw.picup.domain.TokenPayload;
 import ecsimsw.picup.exception.UnauthorizedException;
 import ecsimsw.picup.config.AuthTokenConfig;
 import ecsimsw.picup.utils.JwtUtils;
@@ -22,9 +22,9 @@ public class AuthTokenService {
 
     private final AuthTokensCacheRepository authTokensCacheRepository;
 
-    public AuthTokens issue(AuthToken payload) {
-        var accessToken = createToken(payload, ACCESS_TOKEN_JWT_EXPIRE_TIME);
-        var refreshToken = createToken(payload, REFRESH_TOKEN_JWT_EXPIRE_TIME);
+    public AuthTokens issue(TokenPayload payload) {
+        var accessToken = createToken(payload, ACCESS_TOKEN_JWT_EXPIRE_TIME_SEC);
+        var refreshToken = createToken(payload, REFRESH_TOKEN_JWT_EXPIRE_TIME_SEC);
         var authTokens = AuthTokens.of(payload, accessToken, refreshToken);
         authTokensCacheRepository.save(authTokens);
         return authTokens;
@@ -48,13 +48,13 @@ public class AuthTokenService {
         return issue(payload);
     }
 
-    public AuthToken tokenPayload(String token) {
+    public TokenPayload tokenPayload(String token) {
         return JwtUtils.tokenValue(JWT_SECRET_KEY, token, TOKEN_PAYLOAD_NAME);
     }
 
     public Cookie accessTokenCookie(AuthTokens tokens) {
         var cookie = new Cookie(ACCESS_TOKEN_COOKIE_NAME, tokens.getAccessToken());
-        cookie.setMaxAge(ACCESS_TOKEN_JWT_EXPIRE_TIME);
+        cookie.setMaxAge(ACCESS_TOKEN_JWT_EXPIRE_TIME_SEC);
         cookie.setHttpOnly(true);
         cookie.setPath("/");
         return cookie;
@@ -62,7 +62,7 @@ public class AuthTokenService {
 
     public Cookie refreshTokenCookie(AuthTokens tokens) {
         var cookie = new Cookie(AuthTokenConfig.REFRESH_TOKEN_COOKIE_NAME, tokens.getAccessToken());
-        cookie.setMaxAge(AuthTokenConfig.REFRESH_TOKEN_JWT_EXPIRE_TIME);
+        cookie.setMaxAge(AuthTokenConfig.REFRESH_TOKEN_JWT_EXPIRE_TIME_SEC);
         cookie.setHttpOnly(true);
         cookie.setPath("/");
         return cookie;
@@ -97,7 +97,7 @@ public class AuthTokenService {
         }
     }
 
-    private String createToken(AuthToken payload, int expiredTime) {
+    public String createToken(TokenPayload payload, int expiredTime) {
         return JwtUtils.createToken(JWT_SECRET_KEY, Map.of(TOKEN_PAYLOAD_NAME, payload), expiredTime);
     }
 }

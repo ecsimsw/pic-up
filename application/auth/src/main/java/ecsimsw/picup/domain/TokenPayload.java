@@ -1,6 +1,6 @@
 package ecsimsw.picup.domain;
 
-public record AuthToken(
+public record TokenPayload(
     Long id,
     String username
 ) {

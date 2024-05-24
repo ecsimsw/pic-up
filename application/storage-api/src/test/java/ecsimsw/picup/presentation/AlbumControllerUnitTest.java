@@ -15,7 +15,7 @@ import ecsimsw.picup.controller.AlbumController;
 import ecsimsw.picup.controller.GlobalControllerAdvice;
 import ecsimsw.picup.dto.AlbumInfo;
 import ecsimsw.picup.resolver.RemoteIpArgumentResolver;
-import ecsimsw.picup.domain.AuthToken;
+import ecsimsw.picup.domain.TokenPayload;
 import ecsimsw.picup.service.AuthTokenArgumentResolver;
 import ecsimsw.picup.config.AuthTokenInterceptor;
 import ecsimsw.picup.domain.FileResource;
@@ -49,7 +49,7 @@ class AlbumControllerUnitTest extends ControllerUnitTestContext {
     @BeforeEach
     void init() {
         when(authTokenService.tokenPayload(any()))
-            .thenReturn(new AuthToken(USER_ID, USER_NAME));
+            .thenReturn(new TokenPayload(USER_ID, USER_NAME));
 
         when(fileUrlService.fileUrl(any(), any(), any()))
             .thenAnswer(input -> ((ResourceKey) (input.getArguments()[2])).value());

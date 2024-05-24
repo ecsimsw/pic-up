@@ -2,6 +2,8 @@
 /storage-temp
 /logs
 album-logs
+storage-logs
+member-logs
 *.pem
 
 server-api/api-album/src/main/java/ecsimsw/picup/PicUpAlbumApplication.java

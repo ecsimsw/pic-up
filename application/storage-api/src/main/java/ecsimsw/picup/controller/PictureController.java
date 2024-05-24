@@ -3,7 +3,7 @@ package ecsimsw.picup.controller;
 import ecsimsw.picup.annotation.RemoteIp;
 import ecsimsw.picup.annotation.SearchCursor;
 import ecsimsw.picup.annotation.LoginUser;
-import ecsimsw.picup.domain.AuthToken;
+import ecsimsw.picup.domain.TokenPayload;
 import ecsimsw.picup.domain.ResourceKey;
 import ecsimsw.picup.domain.StorageType;
 import ecsimsw.picup.dto.PictureInfo;
@@ -36,7 +36,7 @@ public class PictureController {
 
     @PostMapping("/api/storage/album/{albumId}/picture/preUpload")
     public ResponseEntity<PreUploadUrlResponse> preUpload(
-        @LoginUser AuthToken user,
+        @LoginUser TokenPayload user,
         @PathVariable Long albumId,
         @RequestParam String fileName,
         @RequestParam Long fileSize
@@ -48,7 +48,7 @@ public class PictureController {
 
     @PostMapping("/api/storage/album/{albumId}/picture/commit")
     public ResponseEntity<Long> commit(
-        @LoginUser AuthToken user,
+        @LoginUser TokenPayload user,
         @PathVariable Long albumId,
         @RequestParam ResourceKey resourceKey
     ) {
@@ -68,7 +68,7 @@ public class PictureController {
     @GetMapping("/api/storage/album/{albumId}/picture")
     public ResponseEntity<List<PictureResponse>> getPictures(
         @RemoteIp String remoteIp,
-        @LoginUser AuthToken user,
+        @LoginUser TokenPayload user,
         @PathVariable Long albumId,
         @SearchCursor PictureSearchCursor cursor
     ) {
@@ -81,7 +81,7 @@ public class PictureController {
 
     @DeleteMapping("/api/storage/album/{albumId}/picture")
     public ResponseEntity<Void> deletePictures(
-        @LoginUser AuthToken user,
+        @LoginUser TokenPayload user,
         @PathVariable Long albumId,
         @Valid @RequestBody(required = false)
         PicturesDeleteRequest pictures

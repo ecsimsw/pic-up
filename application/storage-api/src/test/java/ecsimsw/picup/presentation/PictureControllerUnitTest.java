@@ -16,7 +16,7 @@ import ecsimsw.picup.dto.PictureInfo;
 import ecsimsw.picup.resolver.RemoteIpArgumentResolver;
 import ecsimsw.picup.resolver.ResourceKeyArgumentResolver;
 import ecsimsw.picup.resolver.SearchCursorArgumentResolver;
-import ecsimsw.picup.domain.AuthToken;
+import ecsimsw.picup.domain.TokenPayload;
 import ecsimsw.picup.dto.PictureSearchCursor;
 import ecsimsw.picup.dto.PicturesDeleteRequest;
 import ecsimsw.picup.service.AuthTokenArgumentResolver;
@@ -54,7 +54,7 @@ class PictureControllerUnitTest extends ControllerUnitTestContext {
     @BeforeEach
     void init() {
         when(authTokenService.tokenPayload(any()))
-            .thenReturn(new AuthToken(USER_ID, USER_NAME));
+            .thenReturn(new TokenPayload(USER_ID, USER_NAME));
     }
 
     @Transactional
