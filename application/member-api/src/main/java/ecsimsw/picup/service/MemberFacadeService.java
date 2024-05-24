@@ -20,11 +20,11 @@ public class MemberFacadeService {
     private final AuthTokenService authTokenService;
     private final StorageUsageClient storageUsageClient;
 
-    public MemberResponse signUp(SignUpRequest signUpRequest, HttpServletResponse response) {
+    public MemberResponse signUp(SignUpRequest signUpRequest) {
         var member = memberService.signUp(signUpRequest);
-        var tokens = issueAuthToken(response, member);
+        var accessToken = tempAccessToken(member);
         try {
-            var usage = storageUsageClient.init(tokens.getAccessToken());
+            var usage = storageUsageClient.init(accessToken);
             return MemberResponse.of(member, usage);
         } catch (Exception e) {
             memberService.delete(member.id());
@@ -32,34 +32,29 @@ public class MemberFacadeService {
         }
     }
 
-    public MemberResponse signIn(SignInRequest request, HttpServletResponse response) {
+    public MemberResponse signIn(SignInRequest request) {
         var member = memberService.signIn(request);
-        var tokens = issueAuthToken(response, member);
-        var usage = storageUsageClient.getUsage(tokens.getAccessToken());
+        var accessToken = tempAccessToken(member);
+        var usage = storageUsageClient.getUsage(accessToken);
         return MemberResponse.of(member, usage);
     }
 
-    // TODO :: 분산 트랜잭션
     public MemberResponse me(long userId) {
         var member = memberService.me(userId);
-        var payload = new TokenPayload(member.id(), member.username());
-        var accessToken = authTokenService.createToken(payload, STORAGE_SERVER_REQUEST_TOKEN_TIMEOUT_SEC);
+        var accessToken = tempAccessToken(member);
         var usage = storageUsageClient.getUsage(accessToken);
         return MemberResponse.of(member, usage);
     }
 
     public void delete(long userId) {
         var member = memberService.me(userId);
-        var payload = new TokenPayload(member.id(), member.username());
-        var accessToken = authTokenService.createToken(payload, STORAGE_SERVER_REQUEST_TOKEN_TIMEOUT_SEC);
+        var accessToken = tempAccessToken(member);
         storageUsageClient.deleteAll(accessToken);
         memberService.delete(userId);
     }
 
-    private AuthTokens issueAuthToken(HttpServletResponse response, MemberInfo member) {
-        var tokens = authTokenService.issue(new TokenPayload(member.id(), member.username()));
-        response.addCookie(authTokenService.accessTokenCookie(tokens));
-        response.addCookie(authTokenService.refreshTokenCookie(tokens));
-        return tokens;
+    private String tempAccessToken(MemberInfo member) {
+        var payload = new TokenPayload(member.id(), member.username());
+        return authTokenService.createToken(payload, STORAGE_SERVER_REQUEST_TOKEN_TIMEOUT_SEC);
     }
 }

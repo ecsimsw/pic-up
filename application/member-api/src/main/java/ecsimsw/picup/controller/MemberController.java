@@ -5,6 +5,7 @@ import ecsimsw.picup.domain.TokenPayload;
 import ecsimsw.picup.dto.MemberResponse;
 import ecsimsw.picup.dto.SignInRequest;
 import ecsimsw.picup.dto.SignUpRequest;
+import ecsimsw.picup.service.AuthTokenService;
 import ecsimsw.picup.service.MemberFacadeService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -22,14 +23,18 @@ import javax.validation.Valid;
 public class MemberController {
 
     private final MemberFacadeService memberFacadeService;
+    private final AuthTokenService authTokenService;
 
     @PostMapping("/api/member/signin")
     public ResponseEntity<MemberResponse> signIn(
         @Valid @RequestBody SignInRequest signInRequest,
         HttpServletResponse response
     ) {
-        var memberInfo = memberFacadeService.signIn(signInRequest, response);
-        return ResponseEntity.ok(memberInfo);
+        var member = memberFacadeService.signIn(signInRequest);
+        var tokens = authTokenService.issue(new TokenPayload(member.id(), member.username()));
+        response.addCookie(authTokenService.accessTokenCookie(tokens));
+        response.addCookie(authTokenService.refreshTokenCookie(tokens));
+        return ResponseEntity.ok(member);
     }
 
     @PostMapping("/api/member/signup")
@@ -37,8 +42,11 @@ public class MemberController {
         @Valid @RequestBody SignUpRequest signUpRequest,
         HttpServletResponse response
     ) {
-        var memberInfo = memberFacadeService.signUp(signUpRequest, response);
-        return ResponseEntity.ok(memberInfo);
+        var member = memberFacadeService.signUp(signUpRequest);
+        var tokens = authTokenService.issue(new TokenPayload(member.id(), member.username()));
+        response.addCookie(authTokenService.accessTokenCookie(tokens));
+        response.addCookie(authTokenService.refreshTokenCookie(tokens));
+        return ResponseEntity.ok(member);
     }
 
     @GetMapping("/api/member/me")
