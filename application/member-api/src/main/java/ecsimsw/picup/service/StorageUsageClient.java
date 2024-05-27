@@ -2,6 +2,7 @@ package ecsimsw.picup.service;
 
 import static ecsimsw.picup.config.AuthTokenConfig.ACCESS_TOKEN_COOKIE_NAME;
 
+import ecsimsw.picup.config.FeignClientConfig;
 import ecsimsw.picup.dto.StorageUsageResponse;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.CookieValue;
@@ -12,8 +13,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
 
-//@FeignClient(url = "${external.user-service.host}")
-@FeignClient(name = "StorageUsageClientOpenFeign", url = "localhost:8084")
+@FeignClient(name = "StorageUsageClientOpenFeign", url = "${external.storage.service.host}", configuration = FeignClientConfig.class)
 public interface StorageUsageClient {
 
     @GetMapping("/api/storage")
