@@ -1,13 +1,10 @@
 package ecsimsw.picup.service;
 
 import ecsimsw.picup.domain.TokenPayload;
-import ecsimsw.picup.domain.AuthTokens;
 import ecsimsw.picup.dto.MemberInfo;
 import ecsimsw.picup.dto.MemberResponse;
 import ecsimsw.picup.dto.SignInRequest;
 import ecsimsw.picup.dto.SignUpRequest;
-import feign.FeignException;
-import javax.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -21,40 +18,36 @@ public class MemberFacadeService {
     private final AuthTokenService authTokenService;
     private final StorageUsageClient storageUsageClient;
 
-    public MemberResponse signUp(SignUpRequest signUpRequest, HttpServletResponse response) {
+    public MemberResponse signUp(SignUpRequest signUpRequest) {
         var member = memberService.signUp(signUpRequest);
-        var tokens = issueAuthToken(response, member);
-        var usage = storageUsageClient.init(tokens.getAccessToken());
+        var accessToken = tempAccessToken(member);
+        var usage = storageUsageClient.init(accessToken);
         return MemberResponse.of(member, usage);
     }
 
-    public MemberResponse signIn(SignInRequest request, HttpServletResponse response) {
+    public MemberResponse signIn(SignInRequest request) {
         var member = memberService.signIn(request);
-        var tokens = issueAuthToken(response, member);
-        var usage = storageUsageClient.getUsage(tokens.getAccessToken());
+        var accessToken = tempAccessToken(member);
+        var usage = storageUsageClient.getUsage(accessToken);
         return MemberResponse.of(member, usage);
     }
 
     public MemberResponse me(long userId) {
         var member = memberService.me(userId);
-        var payload = new TokenPayload(member.id(), member.username());
-        var accessToken = authTokenService.createToken(payload, STORAGE_SERVER_REQUEST_TOKEN_TIMEOUT_SEC);
+        var accessToken = tempAccessToken(member);
         var usage = storageUsageClient.getUsage(accessToken);
         return MemberResponse.of(member, usage);
     }
 
     public void delete(long userId) {
         var member = memberService.me(userId);
-        var payload = new TokenPayload(member.id(), member.username());
-        var accessToken = authTokenService.createToken(payload, STORAGE_SERVER_REQUEST_TOKEN_TIMEOUT_SEC);
+        var accessToken = tempAccessToken(member);
         storageUsageClient.deleteAll(accessToken);
         memberService.delete(userId);
     }
 
-    private AuthTokens issueAuthToken(HttpServletResponse response, MemberInfo member) {
-        var tokens = authTokenService.issue(new TokenPayload(member.id(), member.username()));
-        response.addCookie(authTokenService.accessTokenCookie(tokens));
-        response.addCookie(authTokenService.refreshTokenCookie(tokens));
-        return tokens;
+    private String tempAccessToken(MemberInfo member) {
+        var payload = new TokenPayload(member.id(), member.username());
+        return authTokenService.createToken(payload, STORAGE_SERVER_REQUEST_TOKEN_TIMEOUT_SEC);
     }
 }
