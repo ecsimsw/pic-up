@@ -22,4 +22,10 @@ public class AuthTokens {
             refreshToken
         );
     }
+
+    public void checkRefreshToken(String refreshToken) {
+        if(!this.refreshToken.equals(refreshToken)) {
+            throw new IllegalArgumentException("Not registered refresh token");
+        }
+    }
 }

@@ -31,9 +31,9 @@ public class MemberController {
         HttpServletResponse response
     ) {
         var member = memberFacadeService.signIn(signInRequest);
-        var tokens = authTokenService.issue(new TokenPayload(member.id(), member.username()));
-        response.addCookie(authTokenService.accessTokenCookie(tokens));
-        response.addCookie(authTokenService.refreshTokenCookie(tokens));
+        var payload = new TokenPayload(member.id(), member.username());
+        var tokens = authTokenService.issue(payload);
+        authTokenService.responseAsCookies(tokens, response);
         return ResponseEntity.ok(member);
     }
 
@@ -43,9 +43,9 @@ public class MemberController {
         HttpServletResponse response
     ) {
         var member = memberFacadeService.signUp(signUpRequest);
-        var tokens = authTokenService.issue(new TokenPayload(member.id(), member.username()));
-        response.addCookie(authTokenService.accessTokenCookie(tokens));
-        response.addCookie(authTokenService.refreshTokenCookie(tokens));
+        var payload = new TokenPayload(member.id(), member.username());
+        var tokens = authTokenService.issue(payload);
+        authTokenService.responseAsCookies(tokens, response);
         return ResponseEntity.ok(member);
     }
 

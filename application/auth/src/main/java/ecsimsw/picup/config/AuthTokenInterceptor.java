@@ -26,15 +26,15 @@ public class AuthTokenInterceptor implements HandlerInterceptor {
             if(request.getCookies() == null) {
                 throw new UnauthorizedException("Login token not exists");
             }
-            authTokenService.authenticate(request);
+            var accessToken = authTokenService.getAccessToken(request);
+            authTokenService.validate(accessToken);
             return true;
         } catch (UnauthorizedException invalidAccessToken) {
-            var reissued = authTokenService.reissue(request);
+            var refreshToken = authTokenService.getRefreshToken(request);
+            authTokenService.validate(refreshToken);
 
-            var atCookie = authTokenService.accessTokenCookie(reissued);
-            var rtCookie = authTokenService.refreshTokenCookie(reissued);
-            response.addCookie(atCookie);
-            response.addCookie(rtCookie);
+            var reissued = authTokenService.reissue(refreshToken);
+            authTokenService.responseAsCookies(reissued, response);
 
             response.setHeader("Location", request.getRequestURI());
             response.setStatus(HttpStatus.PERMANENT_REDIRECT.value());

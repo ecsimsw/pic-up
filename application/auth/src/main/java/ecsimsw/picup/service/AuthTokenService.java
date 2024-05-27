@@ -1,26 +1,35 @@
 package ecsimsw.picup.service;
 
+import static ecsimsw.picup.config.AuthTokenConfig.ACCESS_TOKEN_COOKIE_NAME;
+import static ecsimsw.picup.config.AuthTokenConfig.ACCESS_TOKEN_JWT_EXPIRE_TIME_SEC;
+import static ecsimsw.picup.config.AuthTokenConfig.JWT_SECRET_KEY;
+import static ecsimsw.picup.config.AuthTokenConfig.REFRESH_TOKEN_JWT_EXPIRE_TIME_SEC;
+import static ecsimsw.picup.config.AuthTokenConfig.TOKEN_PAYLOAD_NAME;
+
+import ecsimsw.picup.config.AuthTokenConfig;
 import ecsimsw.picup.domain.AuthTokens;
 import ecsimsw.picup.domain.AuthTokensCacheRepository;
 import ecsimsw.picup.domain.TokenPayload;
 import ecsimsw.picup.exception.UnauthorizedException;
-import ecsimsw.picup.config.AuthTokenConfig;
 import ecsimsw.picup.utils.JwtUtils;
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
 import java.util.Arrays;
 import java.util.Map;
-
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
-
-import static ecsimsw.picup.config.AuthTokenConfig.*;
 
 @RequiredArgsConstructor
 @Component
 public class AuthTokenService {
 
     private final AuthTokensCacheRepository authTokensCacheRepository;
+
+    public String createToken(TokenPayload payload, int expiredTime) {
+        var payloads = Map.<String, Object>of(TOKEN_PAYLOAD_NAME, payload);
+        return JwtUtils.createToken(JWT_SECRET_KEY, payloads, expiredTime);
+    }
 
     public AuthTokens issue(TokenPayload payload) {
         var accessToken = createToken(payload, ACCESS_TOKEN_JWT_EXPIRE_TIME_SEC);
@@ -30,43 +39,28 @@ public class AuthTokenService {
         return authTokens;
     }
 
-    public void authenticate(HttpServletRequest request) {
-        var accessToken = getAccessToken(request);
-        if (!isValidToken(accessToken)) {
-            throw new UnauthorizedException("Access token is not available");
+    public AuthTokens reissue(String refreshToken) {
+        try {
+            var tokenPayload = tokenPayload(refreshToken);
+            authTokensCacheRepository.findById(tokenPayload.tokenKey())
+                .orElseThrow(() -> new IllegalArgumentException("Not registered refresh token"))
+                .checkRefreshToken(refreshToken);
+            return issue(tokenPayload);
+        } catch (Exception e) {
+            throw new UnauthorizedException("Refresh token is not available");
         }
     }
 
-    public AuthTokens reissue(HttpServletRequest request) {
-        var refreshToken = getRefreshToken(request);
-        if (!isValidToken(refreshToken)) {
-            throw new UnauthorizedException("Refresh token is not available");
-        }
-        var tokenKey = tokenPayload(refreshToken).tokenKey();
-        var currentCachedToken = authTokensCacheRepository.findById(tokenKey)
-            .orElseThrow(() -> new IllegalArgumentException("Not registered refresh token"));
-        var payload = tokenPayload(currentCachedToken.getRefreshToken());
-        return issue(payload);
+    public void validate(String token) {
+        tokenPayload(token);
     }
 
     public TokenPayload tokenPayload(String token) {
-        return JwtUtils.tokenValue(JWT_SECRET_KEY, token, TOKEN_PAYLOAD_NAME);
-    }
-
-    public Cookie accessTokenCookie(AuthTokens tokens) {
-        var cookie = new Cookie(ACCESS_TOKEN_COOKIE_NAME, tokens.getAccessToken());
-        cookie.setMaxAge(ACCESS_TOKEN_JWT_EXPIRE_TIME_SEC);
-        cookie.setHttpOnly(true);
-        cookie.setPath("/");
-        return cookie;
-    }
-
-    public Cookie refreshTokenCookie(AuthTokens tokens) {
-        var cookie = new Cookie(AuthTokenConfig.REFRESH_TOKEN_COOKIE_NAME, tokens.getAccessToken());
-        cookie.setMaxAge(AuthTokenConfig.REFRESH_TOKEN_JWT_EXPIRE_TIME_SEC);
-        cookie.setHttpOnly(true);
-        cookie.setPath("/");
-        return cookie;
+        try {
+            return JwtUtils.tokenValue(JWT_SECRET_KEY, token, TOKEN_PAYLOAD_NAME);
+        } catch (Exception e) {
+            throw new UnauthorizedException("Token is not available");
+        }
     }
 
     public String getAccessToken(HttpServletRequest request) {
@@ -89,16 +83,24 @@ public class AuthTokenService {
             .orElseThrow(() -> new UnauthorizedException("Token is not available"));
     }
 
-    private boolean isValidToken(String token) {
-        try {
-            JwtUtils.tokenValue(JWT_SECRET_KEY, token, TOKEN_PAYLOAD_NAME);
-            return true;
-        } catch (Exception e) {
-            return false;
-        }
+    public Cookie accessTokenCookie(AuthTokens tokens) {
+        var cookie = new Cookie(ACCESS_TOKEN_COOKIE_NAME, tokens.getAccessToken());
+        cookie.setMaxAge(ACCESS_TOKEN_JWT_EXPIRE_TIME_SEC);
+        cookie.setHttpOnly(true);
+        cookie.setPath("/");
+        return cookie;
     }
 
-    public String createToken(TokenPayload payload, int expiredTime) {
-        return JwtUtils.createToken(JWT_SECRET_KEY, Map.of(TOKEN_PAYLOAD_NAME, payload), expiredTime);
+    public Cookie refreshTokenCookie(AuthTokens tokens) {
+        var cookie = new Cookie(AuthTokenConfig.REFRESH_TOKEN_COOKIE_NAME, tokens.getAccessToken());
+        cookie.setMaxAge(AuthTokenConfig.REFRESH_TOKEN_JWT_EXPIRE_TIME_SEC);
+        cookie.setHttpOnly(true);
+        cookie.setPath("/");
+        return cookie;
+    }
+
+    public void responseAsCookies(AuthTokens authTokens, HttpServletResponse response) {
+        response.addCookie(accessTokenCookie(authTokens));
+        response.addCookie(refreshTokenCookie(authTokens));
     }
 }
