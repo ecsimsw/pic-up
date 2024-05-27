@@ -42,7 +42,8 @@ public class AuthTokenService {
         if (!isValidToken(refreshToken)) {
             throw new UnauthorizedException("Refresh token is not available");
         }
-        var currentCachedToken = authTokensCacheRepository.findById(refreshToken)
+        var tokenKey = tokenPayload(refreshToken).tokenKey();
+        var currentCachedToken = authTokensCacheRepository.findById(tokenKey)
             .orElseThrow(() -> new IllegalArgumentException("Not registered refresh token"));
         var payload = tokenPayload(currentCachedToken.getRefreshToken());
         return issue(payload);
