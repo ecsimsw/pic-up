@@ -42,6 +42,8 @@ public class FileUrlService {
 
     @Cacheable(value = SIGNED_URL, key = "{#storageType, #remoteIp, #fileResource.value()}")
     public String fileUrl(StorageType storageType, String remoteIp, ResourceKey fileResource) {
+        System.out.println(storageType);
+        System.out.println(remoteIp);
         var filePath = resourceService.filePath(storageType, fileResource);
         try {
             var sign = cannedSign(remoteIp, filePath);
