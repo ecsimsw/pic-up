@@ -28,22 +28,22 @@ public class MemberEvent {
 
     @Column(nullable = false)
     @Enumerated(value = EnumType.STRING)
-    private MemberEventType memberEventType;
+    private MemberEventType type;
 
     private final LocalDateTime createdAt = LocalDateTime.now();
 
-    public MemberEvent(Long id, long userId, long limitAsBytes, MemberEventType memberEventType) {
+    public MemberEvent(Long id, long userId, long limitAsBytes, MemberEventType type) {
         if(limitAsBytes < 0) {
             throw new IllegalArgumentException("Invalid sign up event");
         }
         this.id = id;
         this.userId = userId;
         this.limitAsBytes = limitAsBytes;
-        this.memberEventType = memberEventType;
+        this.type = type;
     }
 
-    public MemberEvent(long userId, long limitAsBytes, MemberEventType memberEventType) {
-        this(null, userId, limitAsBytes, memberEventType);
+    public MemberEvent(long userId, long limitAsBytes, MemberEventType type) {
+        this(null, userId, limitAsBytes, type);
     }
 
     public static MemberEvent created(long userId, long limitAsBytes) {
@@ -55,11 +55,11 @@ public class MemberEvent {
     }
 
     public boolean isDeletionEvent() {
-        return memberEventType == MemberEventType.DELETED;
+        return type == MemberEventType.DELETED;
     }
 
     public boolean isSignUpEvent() {
-        return memberEventType == MemberEventType.CREATED;
+        return type == MemberEventType.CREATED;
     }
 }
 
