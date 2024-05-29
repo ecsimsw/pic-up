@@ -19,9 +19,6 @@ public interface StorageUsageClient {
     @GetMapping("/api/storage")
     StorageUsageResponse getUsage(@CookieValue(ACCESS_TOKEN_COOKIE_NAME) String cookie);
 
-    @PostMapping("/api/storage")
-    StorageUsageResponse init(@CookieValue(ACCESS_TOKEN_COOKIE_NAME) String cookie);
-
     @DeleteMapping("/api/storage")
     void deleteAll(@CookieValue(ACCESS_TOKEN_COOKIE_NAME) String cookie);
 }

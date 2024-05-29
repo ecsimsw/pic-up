@@ -23,11 +23,14 @@ import org.springframework.data.redis.serializer.StringRedisSerializer;
 @Configuration
 public class CacheManagerConfig {
 
+    public static final int CACHE_ENTRY_TTL_HOURS = 2;
+    public static final String SIGNED_URL = "SIGNED_URL";
+
     @Bean
     public CacheManager redisCacheManager(RedisConnectionFactory redisConnectionFactory) {
         var configuration = RedisCacheConfiguration.defaultCacheConfig()
             .disableCachingNullValues()
-            .entryTtl(Duration.ofHours(CacheType.CACHE_ENTRY_TTL_HOURS))
+            .entryTtl(Duration.ofHours(CACHE_ENTRY_TTL_HOURS))
             .computePrefixWith(CacheKeyPrefix.simple())
             .serializeKeysWith(RedisSerializationContext.SerializationPair.fromSerializer(
                 new StringRedisSerializer())

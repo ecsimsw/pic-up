@@ -15,4 +15,13 @@ public record MemberResponse(
             usage.usageAsByte()
         );
     }
+
+    public static MemberResponse of(MemberInfo member) {
+        return new MemberResponse(
+            member.id(),
+            member.username(),
+            0,
+            0
+        );
+    }
 }

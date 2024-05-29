@@ -31,9 +31,7 @@ public class MemberController {
         HttpServletResponse response
     ) {
         var member = memberFacadeService.signIn(signInRequest);
-        var payload = new TokenPayload(member.id(), member.username());
-        var tokens = authTokenService.issue(payload);
-        authTokenService.responseAsCookies(tokens, response);
+        responseLoginToken(response, member);
         return ResponseEntity.ok(member);
     }
 
@@ -43,9 +41,11 @@ public class MemberController {
         HttpServletResponse response
     ) {
         var member = memberFacadeService.signUp(signUpRequest);
-        var payload = new TokenPayload(member.id(), member.username());
-        var tokens = authTokenService.issue(payload);
-        authTokenService.responseAsCookies(tokens, response);
+        try {
+            responseLoginToken(response, member);
+        } catch (Exception ignored) {
+
+        }
         return ResponseEntity.ok(member);
     }
 
@@ -59,5 +59,11 @@ public class MemberController {
     public ResponseEntity<MemberResponse> delete(@LoginUser TokenPayload user) {
         memberFacadeService.delete(user.id());
         return ResponseEntity.ok().build();
+    }
+
+    private void responseLoginToken(HttpServletResponse response, MemberResponse member) {
+        var payload = new TokenPayload(member.id(), member.username());
+        var tokens = authTokenService.issue(payload);
+        authTokenService.responseAsCookies(tokens, response);
     }
 }

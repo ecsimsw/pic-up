@@ -1,9 +1,8 @@
 package ecsimsw.picup.service;
 
+import static ecsimsw.picup.config.CacheManagerConfig.SIGNED_URL;
 import static ecsimsw.picup.domain.StorageType.STORAGE;
 
-import ecsimsw.picup.config.CacheType;
-import ecsimsw.picup.domain.FileResource;
 import ecsimsw.picup.domain.ResourceKey;
 import ecsimsw.picup.domain.StorageType;
 import ecsimsw.picup.dto.PreUploadUrlResponse;
@@ -41,7 +40,7 @@ public class FileUrlService {
     private final ResourceService resourceService;
     private final StorageService storageService;
 
-    @Cacheable(value = CacheType.SIGNED_URL, key = "{#storageType, #remoteIp, #fileResource.value()}")
+    @Cacheable(value = SIGNED_URL, key = "{#storageType, #remoteIp, #fileResource.value()}")
     public String fileUrl(StorageType storageType, String remoteIp, ResourceKey fileResource) {
         var filePath = resourceService.filePath(storageType, fileResource);
         try {

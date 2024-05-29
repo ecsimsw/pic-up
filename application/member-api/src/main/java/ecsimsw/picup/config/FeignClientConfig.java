@@ -1,7 +1,5 @@
 package ecsimsw.picup.config;
 
-import feign.Logger;
-import feign.Logger.Level;
 import feign.Request;
 import feign.Retryer;
 import java.util.concurrent.TimeUnit;

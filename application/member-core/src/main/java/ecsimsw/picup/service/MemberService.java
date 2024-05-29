@@ -1,6 +1,8 @@
 package ecsimsw.picup.service;
 
 import ecsimsw.picup.domain.Member;
+import ecsimsw.picup.domain.SignUpEvent;
+import ecsimsw.picup.domain.SignUpEventRepository;
 import ecsimsw.picup.domain.MemberRepository;
 import ecsimsw.picup.dto.MemberInfo;
 import ecsimsw.picup.dto.SignInRequest;
@@ -15,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class MemberService {
 
     private final MemberRepository memberRepository;
+    private final SignUpEventRepository signUpEventRepository;
 
     @Transactional
     public MemberInfo signIn(SignInRequest request) {
@@ -35,6 +38,8 @@ public class MemberService {
         }
         var member = Member.signUp(request.username(), request.password());
         memberRepository.save(member);
+
+        signUpEventRepository.save(SignUpEvent.from(member, Long.MAX_VALUE));
         return MemberInfo.of(member);
     }
 
