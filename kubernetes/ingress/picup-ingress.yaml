@@ -8,7 +8,7 @@ spec:
   rules:
     - http:
         paths:
-          - path: /api/album
+          - path: /api/storage
             pathType: Prefix
             backend:
               service:
@@ -19,6 +19,6 @@ spec:
             pathType: Prefix
             backend:
               service:
-                name: storage-api
+                name: member-api
                 port:
-                  number: 30884
+                  number: 30883

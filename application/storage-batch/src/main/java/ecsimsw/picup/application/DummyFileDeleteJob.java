@@ -30,10 +30,10 @@ class DummyFileDeleteJob implements ApplicationRunner {
                 expiration,
                 PageRequest.of(0, FILE_DELETE_SEGMENT, Direction.DESC, FileResource_.CREATED_AT)
             );
-            dummyFiles.forEach(fileDeletionService::delete);
             if (dummyFiles.isEmpty()) {
                 break;
             }
+            dummyFiles.forEach(fileDeletionService::delete);
             log.info("Delete dummy files : " + dummyFiles.size());
         }
     }

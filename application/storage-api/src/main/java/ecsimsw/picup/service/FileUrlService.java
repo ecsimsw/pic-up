@@ -38,7 +38,7 @@ public class FileUrlService {
 
     private final CloudFrontUtilities cloudFrontUtilities = CloudFrontUtilities.create();
     private final ResourceService resourceService;
-    private final StorageService storageService;
+    private final FileStorage fileStorage;
 
     @Cacheable(value = SIGNED_URL, key = "{#storageType, #remoteIp, #fileResource.value()}")
     public String fileUrl(StorageType storageType, String remoteIp, ResourceKey fileResource) {
@@ -64,7 +64,7 @@ public class FileUrlService {
 
     public PreUploadUrlResponse preSignedUrl(ResourceKey resourceKey) {
         var filePath = resourceService.filePath(STORAGE, resourceKey);
-        var preSignedUrl = storageService.generatePreSignedUrl(filePath);
+        var preSignedUrl = fileStorage.generatePreSignedUrl(filePath);
         return PreUploadUrlResponse.of(preSignedUrl, resourceKey);
     }
 }

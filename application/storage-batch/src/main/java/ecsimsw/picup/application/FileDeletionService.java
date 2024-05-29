@@ -5,7 +5,7 @@ import ecsimsw.picup.domain.FileDeletionFailedLogRepository;
 import ecsimsw.picup.domain.FileResource;
 import ecsimsw.picup.domain.FileResourceRepository;
 import ecsimsw.picup.service.ResourceService;
-import ecsimsw.picup.service.StorageService;
+import ecsimsw.picup.service.FileStorage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.retry.annotation.Backoff;
@@ -20,7 +20,7 @@ public class FileDeletionService {
 
     public static final int FILE_DELETION_RETRY_COUNTS = 5;
 
-    private final StorageService storageService;
+    private final FileStorage fileStorage;
     private final ResourceService resourceService;
     private final FileResourceRepository fileResourceRepository;
     private final FileDeletionFailedLogRepository fileDeletionFailedLogRepository;
@@ -32,14 +32,14 @@ public class FileDeletionService {
     )
     public void delete(FileResource resource) {
         var path = resourceService.filePath(resource);
-        storageService.delete(path);
+        fileStorage.delete(path);
         fileResourceRepository.delete(resource);
     }
 
     @Recover
     private void fileDeletionRecover(Exception e, FileResource resource) {
         var path = resourceService.filePath(resource);
-        if (storageService.hasContent(path)) {
+        if (fileStorage.hasContent(path)) {
             var failedLog = FileDeletionFailedLog.from(resource);
             fileDeletionFailedLogRepository.save(failedLog);
             log.error("Failed to delete file resource : " + path);

@@ -1,7 +1,10 @@
 package ecsimsw.picup.service;
 
+import static ecsimsw.picup.config.S3Config.ROOT_PATH_STORAGE;
+
 import ecsimsw.picup.domain.FileResource;
 import ecsimsw.picup.domain.ResourceKey;
+import ecsimsw.picup.domain.StorageType;
 import ecsimsw.picup.dto.StorageUploadContent;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -15,12 +18,13 @@ public class StorageFacadeService {
     private final PictureFacadeService pictureFacadeService;
     private final StorageUsageService storageUsageService;
     private final ResourceService resourceService;
-    private final StorageService storageService;
     private final UserLockService userLockService;
+    private final FileStorage fileStorage;
 
     public Long createAlbum(long userId, StorageUploadContent thumbnailFile, String name) {
         var thumbnail = resourceService.prepare(thumbnailFile.name(), thumbnailFile.size()).getResourceKey();
-        storageService.upload(thumbnailFile, thumbnail.value());
+        var uploadPath = ROOT_PATH_STORAGE + thumbnail.value();
+        fileStorage.upload(thumbnailFile, uploadPath);
         resourceService.commit(thumbnail);
         try {
             return albumFacadeService.init(userId, name, thumbnail);
