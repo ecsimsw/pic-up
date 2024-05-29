@@ -79,7 +79,7 @@ public class PictureService {
     public void checkAbleToStore(Long userId, Long albumId, long size) {
         var album = getUserAlbum(userId, albumId);
         album.authorize(userId);
-        if(storageUsageService.getUsage(userId).isAbleToStore(size)) {
+        if(!storageUsageService.isAbleToStore(userId, size)) {
             throw new AlbumException("Lack of storage space");
         }
     }

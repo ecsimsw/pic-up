@@ -40,6 +40,11 @@ public class StorageUsageService {
         storageUsageRepository.save(storageUsage);
     }
 
+    @Transactional(readOnly = true)
+    public boolean isAbleToStore(Long userId, long size) {
+        return getUsage(userId).isAbleToStore(size);
+    }
+
     @Transactional
     public void subtractAll(Long userId, long fileSize) {
         var usage = getUsage(userId);
