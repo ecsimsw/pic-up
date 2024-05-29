@@ -49,7 +49,7 @@ public class AlbumController {
         @PathVariable Long albumId
     ) {
         var albumInfo = albumService.findById(user.id(), albumId);
-        var thumbnailUrl = fileUrlService.fileUrl(STORAGE, remoteIp, albumInfo.thumbnail());
+        var thumbnailUrl = fileUrlService.cdnSignedUrl(STORAGE, remoteIp, albumInfo.thumbnail());
         var album = AlbumResponse.of(albumInfo, thumbnailUrl);
         return ResponseEntity.ok(album);
     }
@@ -62,7 +62,7 @@ public class AlbumController {
         var albumInfos = albumService.findAll(user.id());
         var albums = albumInfos.stream()
             .map(albumInfo -> {
-                var thumbnailUrl = fileUrlService.fileUrl(STORAGE, remoteIp, albumInfo.thumbnail());
+                var thumbnailUrl = fileUrlService.cdnSignedUrl(STORAGE, remoteIp, albumInfo.thumbnail());
                 return AlbumResponse.of(albumInfo, thumbnailUrl);
             }).toList();
         return ResponseEntity.ok(albums);

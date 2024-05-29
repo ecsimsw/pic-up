@@ -5,7 +5,7 @@ import static ecsimsw.picup.domain.StorageType.STORAGE;
 
 import ecsimsw.picup.domain.ResourceKey;
 import ecsimsw.picup.domain.StorageType;
-import ecsimsw.picup.dto.PreUploadUrlResponse;
+import ecsimsw.picup.dto.PreSignedUrlResponse;
 import ecsimsw.picup.exception.StorageException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -42,7 +42,7 @@ public class FileUrlService {
     private final FileStorage fileStorage;
 
     @Cacheable(value = SIGNED_URL, key = "{#storageType, #remoteIp, #fileResource.value()}")
-    public String fileUrl(StorageType storageType, String remoteIp, ResourceKey fileResource) {
+    public String cdnSignedUrl(StorageType storageType, String remoteIp, ResourceKey fileResource) {
         var filePath = resourceService.filePath(storageType, fileResource);
         var sign = cannedSign(remoteIp, filePath);
         var signedUrl = cloudFrontUtilities.getSignedUrlWithCustomPolicy(sign);
@@ -65,9 +65,9 @@ public class FileUrlService {
         }
     }
 
-    public PreUploadUrlResponse preSignedUrl(ResourceKey resourceKey) {
+    public PreSignedUrlResponse preSignedUrl(ResourceKey resourceKey) {
         var filePath = resourceService.filePath(STORAGE, resourceKey);
         var preSignedUrl = fileStorage.generatePreSignedUrl(filePath);
-        return PreUploadUrlResponse.of(preSignedUrl, resourceKey);
+        return PreSignedUrlResponse.of(preSignedUrl, resourceKey);
     }
 }

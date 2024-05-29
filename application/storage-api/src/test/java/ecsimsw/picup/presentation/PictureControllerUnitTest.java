@@ -22,7 +22,7 @@ import ecsimsw.picup.dto.PicturesDeleteRequest;
 import ecsimsw.picup.service.AuthTokenArgumentResolver;
 import ecsimsw.picup.service.AuthTokenInterceptor;
 import ecsimsw.picup.domain.FileResource;
-import ecsimsw.picup.dto.PreUploadUrlResponse;
+import ecsimsw.picup.dto.PreSignedUrlResponse;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -64,7 +64,7 @@ class PictureControllerUnitTest extends ControllerUnitTestContext {
         var fileName = "FILE_NAME";
         var fileSize = 1L;
         var fileResource = new FileResource();
-        var expectedPreSignedUrl = new PreUploadUrlResponse("preSignedUrl", RESOURCE_KEY.value());
+        var expectedPreSignedUrl = new PreSignedUrlResponse("preSignedUrl", RESOURCE_KEY.value());
 
         when(resourceService.prepare(fileName, fileSize))
             .thenReturn(fileResource);

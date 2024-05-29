@@ -10,7 +10,7 @@ import ecsimsw.picup.dto.PictureInfo;
 import ecsimsw.picup.dto.PictureResponse;
 import ecsimsw.picup.dto.PictureSearchCursor;
 import ecsimsw.picup.dto.PicturesDeleteRequest;
-import ecsimsw.picup.dto.PreUploadUrlResponse;
+import ecsimsw.picup.dto.PreSignedUrlResponse;
 import ecsimsw.picup.service.FileUrlService;
 import ecsimsw.picup.service.PictureFacadeService;
 import ecsimsw.picup.service.StorageFacadeService;
@@ -35,7 +35,7 @@ public class PictureController {
     private final FileUrlService fileUrlService;
 
     @PostMapping("/api/storage/album/{albumId}/picture/preUpload")
-    public ResponseEntity<PreUploadUrlResponse> preUpload(
+    public ResponseEntity<PreSignedUrlResponse> preUpload(
         @LoginUser TokenPayload user,
         @PathVariable Long albumId,
         @RequestParam String fileName,
@@ -94,13 +94,13 @@ public class PictureController {
         if (!pictureInfo.hasThumbnail()) {
             return PictureResponse.of(
                 pictureInfo,
-                fileUrlService.fileUrl(StorageType.STORAGE, remoteIp, pictureInfo.resourceKey())
+                fileUrlService.cdnSignedUrl(StorageType.STORAGE, remoteIp, pictureInfo.resourceKey())
             );
         }
         return PictureResponse.of(
             pictureInfo,
-            fileUrlService.fileUrl(StorageType.STORAGE, remoteIp, pictureInfo.resourceKey()),
-            fileUrlService.fileUrl(StorageType.THUMBNAIL, remoteIp, pictureInfo.resourceKey())
+            fileUrlService.cdnSignedUrl(StorageType.STORAGE, remoteIp, pictureInfo.resourceKey()),
+            fileUrlService.cdnSignedUrl(StorageType.THUMBNAIL, remoteIp, pictureInfo.resourceKey())
         );
     }
 }

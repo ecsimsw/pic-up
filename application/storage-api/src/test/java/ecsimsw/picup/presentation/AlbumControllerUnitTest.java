@@ -51,7 +51,7 @@ class AlbumControllerUnitTest extends ControllerUnitTestContext {
         when(authTokenService.tokenPayload(any()))
             .thenReturn(new TokenPayload(USER_ID, USER_NAME));
 
-        when(fileUrlService.fileUrl(any(), any(), any()))
+        when(fileUrlService.cdnSignedUrl(any(), any(), any()))
             .thenAnswer(input -> ((ResourceKey) (input.getArguments()[2])).value());
     }
 
