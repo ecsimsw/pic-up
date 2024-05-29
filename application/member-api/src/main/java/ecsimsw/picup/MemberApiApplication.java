@@ -14,9 +14,7 @@ public class MemberApiApplication {
 
     public static void main(String[] args) {
         var app = new SpringApplication(MemberApiApplication.class);
-        app.setAdditionalProfiles(
-            "member-api-dev", "member-core-dev", "auth-dev", "logging-dev"
-        );
+        app.setAdditionalProfiles(profilesFromModules(PROFILES));
         app.run(args);
     }
 }

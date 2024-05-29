@@ -12,9 +12,7 @@ public class StorageApiApplication {
 
     public static void main(String[] args) {
         var app = new SpringApplication(StorageApiApplication.class);
-        app.setAdditionalProfiles(
-            "storage-api-dev", "storage-core-dev", "auth-dev", "logging-dev"
-        );
+        app.setAdditionalProfiles(profilesFromModules(PROFILES));
         app.run(args);
     }
 }
