@@ -6,6 +6,7 @@ import static ecsimsw.picup.domain.StorageType.STORAGE;
 import ecsimsw.picup.domain.ResourceKey;
 import ecsimsw.picup.domain.StorageType;
 import ecsimsw.picup.dto.PreUploadUrlResponse;
+import ecsimsw.picup.exception.StorageException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -42,27 +43,27 @@ public class FileUrlService {
 
     @Cacheable(value = SIGNED_URL, key = "{#storageType, #remoteIp, #fileResource.value()}")
     public String fileUrl(StorageType storageType, String remoteIp, ResourceKey fileResource) {
-        System.out.println(storageType);
-        System.out.println(remoteIp);
+        System.out.println("type " + storageType);
+        System.out.println("remote ip " + remoteIp);
         var filePath = resourceService.filePath(storageType, fileResource);
-        try {
-            var sign = cannedSign(remoteIp, filePath);
-            var signedUrl = cloudFrontUtilities.getSignedUrlWithCustomPolicy(sign);
-            return signedUrl.url();
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new IllegalArgumentException("Failed to create cloudfront sign url from : " + filePath);
-        }
+        var sign = cannedSign(remoteIp, filePath);
+        var signedUrl = cloudFrontUtilities.getSignedUrlWithCustomPolicy(sign);
+        return signedUrl.url();
     }
 
-    private CustomSignerRequest cannedSign(String remoteIp, String resourcePath) throws Exception {
-        return CustomSignerRequest.builder()
-            .privateKey(Path.of(privateKeyPath))
-            .ipRange(remoteIp + "/32")
-            .resourceUrl(new URL(CDN_PROTOCOL, domainName, "/" + resourcePath).toString())
-            .keyPairId(publicKeyId)
-            .expirationDate(Instant.now().plus(SIGNED_URL_EXPIRATION_AFTER_DAYS, ChronoUnit.DAYS))
-            .build();
+    private CustomSignerRequest cannedSign(String remoteIp, String resourcePath) {
+        try {
+            return CustomSignerRequest.builder()
+                .privateKey(Path.of(privateKeyPath))
+                .ipRange(remoteIp + "/32")
+                .resourceUrl(new URL(CDN_PROTOCOL, domainName, "/" + resourcePath).toString())
+                .keyPairId(publicKeyId)
+                .expirationDate(Instant.now().plus(SIGNED_URL_EXPIRATION_AFTER_DAYS, ChronoUnit.DAYS))
+                .build();
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new StorageException("Failed to create cloudfront sign url from : " + remoteIp + ", " + resourcePath);
+        }
     }
 
     public PreUploadUrlResponse preSignedUrl(ResourceKey resourceKey) {
