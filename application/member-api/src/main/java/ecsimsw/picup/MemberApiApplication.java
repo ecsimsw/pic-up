@@ -14,7 +14,7 @@ public class MemberApiApplication {
 
     public static void main(String[] args) {
         var app = new SpringApplication(MemberApiApplication.class);
-        app.setAdditionalProfiles(profilesFromModules(PROFILES));
+        app.setAdditionalProfiles(PROFILES);
         app.run(args);
     }
 }
