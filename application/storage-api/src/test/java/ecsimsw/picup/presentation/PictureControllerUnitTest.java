@@ -20,7 +20,7 @@ import ecsimsw.picup.domain.TokenPayload;
 import ecsimsw.picup.dto.PictureSearchCursor;
 import ecsimsw.picup.dto.PicturesDeleteRequest;
 import ecsimsw.picup.service.AuthTokenArgumentResolver;
-import ecsimsw.picup.config.AuthTokenInterceptor;
+import ecsimsw.picup.service.AuthTokenInterceptor;
 import ecsimsw.picup.domain.FileResource;
 import ecsimsw.picup.dto.PreUploadUrlResponse;
 import java.time.LocalDateTime;

@@ -1,12 +1,10 @@
-package ecsimsw.picup.config;
+package ecsimsw.picup.service;
 
-import ecsimsw.picup.service.AuthTokenService;
-import ecsimsw.picup.exception.UnauthorizedException;
 import ecsimsw.picup.annotation.LoginUser;
+import ecsimsw.picup.exception.UnauthorizedException;
 import java.util.Arrays;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.method.HandlerMethod;
@@ -19,13 +17,13 @@ public class AuthTokenInterceptor implements HandlerInterceptor {
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
+        if (!(handler instanceof HandlerMethod) || !isLoginNeeded((HandlerMethod) handler)) {
+            return true;
+        }
+        if (request.getCookies() == null) {
+            throw new UnauthorizedException("Login token not exists");
+        }
         try {
-            if (!(handler instanceof HandlerMethod) || !isLoginNeeded((HandlerMethod) handler)) {
-                return true;
-            }
-            if(request.getCookies() == null) {
-                throw new UnauthorizedException("Login token not exists");
-            }
             var accessToken = authTokenService.getAccessToken(request);
             authTokenService.validate(accessToken);
             return true;

@@ -3,12 +3,15 @@ package ecsimsw.picup.service;
 import static ecsimsw.picup.config.AuthTokenConfig.ACCESS_TOKEN_COOKIE_NAME;
 import static ecsimsw.picup.config.AuthTokenConfig.ACCESS_TOKEN_JWT_EXPIRE_TIME_SEC;
 import static ecsimsw.picup.config.AuthTokenConfig.JWT_SECRET_KEY;
+import static ecsimsw.picup.config.AuthTokenConfig.REFRESH_TOKEN_COOKIE_NAME;
 import static ecsimsw.picup.config.AuthTokenConfig.REFRESH_TOKEN_JWT_EXPIRE_TIME_SEC;
 import static ecsimsw.picup.config.AuthTokenConfig.TOKEN_PAYLOAD_NAME;
 
 import ecsimsw.picup.config.AuthTokenConfig;
 import ecsimsw.picup.domain.AuthTokens;
-import ecsimsw.picup.domain.AuthTokensCacheRepository;
+import ecsimsw.picup.domain.AuthTokensRepository;
+import ecsimsw.picup.domain.BlockedToken;
+import ecsimsw.picup.domain.BlockedTokenRepository;
 import ecsimsw.picup.domain.TokenPayload;
 import ecsimsw.picup.exception.UnauthorizedException;
 import ecsimsw.picup.utils.JwtUtils;
@@ -24,7 +27,8 @@ import org.springframework.stereotype.Component;
 @Component
 public class AuthTokenService {
 
-    private final AuthTokensCacheRepository authTokensCacheRepository;
+    private final AuthTokensRepository authTokensRepository;
+    private final BlockedTokenRepository blockedTokenRepository;
 
     public String createToken(TokenPayload payload, int expiredTime) {
         var payloads = Map.<String, Object>of(TOKEN_PAYLOAD_NAME, payload);
@@ -35,14 +39,14 @@ public class AuthTokenService {
         var accessToken = createToken(payload, ACCESS_TOKEN_JWT_EXPIRE_TIME_SEC);
         var refreshToken = createToken(payload, REFRESH_TOKEN_JWT_EXPIRE_TIME_SEC);
         var authTokens = AuthTokens.of(payload, accessToken, refreshToken);
-        authTokensCacheRepository.save(authTokens);
+        authTokensRepository.save(authTokens);
         return authTokens;
     }
 
     public AuthTokens reissue(String refreshToken) {
         try {
             var tokenPayload = tokenPayload(refreshToken);
-            authTokensCacheRepository.findById(tokenPayload.tokenKey())
+            authTokensRepository.findById(tokenPayload.tokenKey())
                 .orElseThrow(() -> new IllegalArgumentException("Not registered refresh token"))
                 .checkRefreshToken(refreshToken);
             return issue(tokenPayload);
@@ -52,6 +56,9 @@ public class AuthTokenService {
     }
 
     public void validate(String token) {
+        if(blockedTokenRepository.existsById(token)) {
+            throw new UnauthorizedException("Token not usable");
+        }
         tokenPayload(token);
     }
 
@@ -102,5 +109,23 @@ public class AuthTokenService {
     public void responseAsCookies(AuthTokens authTokens, HttpServletResponse response) {
         response.addCookie(accessTokenCookie(authTokens));
         response.addCookie(refreshTokenCookie(authTokens));
+    }
+
+    public void removeTokenCookies(HttpServletResponse response) {
+        var atCookie = new Cookie(ACCESS_TOKEN_COOKIE_NAME, null);
+        atCookie.setMaxAge(0);
+        response.addCookie(atCookie);
+
+        var rtCookie = new Cookie(REFRESH_TOKEN_COOKIE_NAME, null);
+        rtCookie.setMaxAge(0);
+        response.addCookie(rtCookie);
+    }
+
+    public void blockTokens(HttpServletRequest request) {
+        var accessToken = getAccessToken(request);
+        blockedTokenRepository.save(new BlockedToken(accessToken));
+
+        var refreshToken = getRefreshToken(request);
+        blockedTokenRepository.save(new BlockedToken(refreshToken));
     }
 }

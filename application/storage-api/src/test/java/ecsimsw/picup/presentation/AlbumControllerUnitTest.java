@@ -17,7 +17,7 @@ import ecsimsw.picup.dto.AlbumInfo;
 import ecsimsw.picup.resolver.RemoteIpArgumentResolver;
 import ecsimsw.picup.domain.TokenPayload;
 import ecsimsw.picup.service.AuthTokenArgumentResolver;
-import ecsimsw.picup.config.AuthTokenInterceptor;
+import ecsimsw.picup.service.AuthTokenInterceptor;
 import ecsimsw.picup.domain.FileResource;
 import ecsimsw.picup.domain.ResourceKey;
 import ecsimsw.picup.exception.UnauthorizedException;

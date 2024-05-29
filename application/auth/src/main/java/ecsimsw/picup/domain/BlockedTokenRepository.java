@@ -4,5 +4,5 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface AuthTokensCacheRepository extends CrudRepository<AuthTokens, String> {
+public interface BlockedTokenRepository extends CrudRepository<BlockedToken, String> {
 }

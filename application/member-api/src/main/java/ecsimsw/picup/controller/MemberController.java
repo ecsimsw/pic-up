@@ -7,6 +7,7 @@ import ecsimsw.picup.dto.SignInRequest;
 import ecsimsw.picup.dto.SignUpRequest;
 import ecsimsw.picup.service.AuthTokenService;
 import ecsimsw.picup.service.MemberFacadeService;
+import javax.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -56,8 +57,17 @@ public class MemberController {
     }
 
     @DeleteMapping("/api/member/me")
-    public ResponseEntity<MemberResponse> delete(@LoginUser TokenPayload user) {
+    public ResponseEntity<MemberResponse> delete(
+        HttpServletRequest request, HttpServletResponse response,
+        @LoginUser TokenPayload user
+    ) {
         memberFacadeService.delete(user.id());
+        try {
+            authTokenService.removeTokenCookies(response);
+            authTokenService.blockTokens(request);
+        } catch (Exception ignored) {
+
+        }
         return ResponseEntity.ok().build();
     }
 
