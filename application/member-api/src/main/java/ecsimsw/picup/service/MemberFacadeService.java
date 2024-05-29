@@ -39,9 +39,6 @@ public class MemberFacadeService {
     }
 
     public void delete(long userId) {
-        var member = memberService.me(userId);
-        var accessToken = tempAccessToken(member);
-        storageUsageClient.deleteAll(accessToken);
         memberService.delete(userId);
     }
 

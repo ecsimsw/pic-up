@@ -30,3 +30,26 @@ rabbitmqadmin -u ${USERNAME} -p ${PASSWORD} declare binding \
       source=global_dlq_exchange \
       destination=sign_up_dlq \
       routing_key=sign_up_dead_letter
+
+# user_deletion_queue
+rabbitmqadmin -u ${USERNAME} -p ${PASSWORD} declare queue \
+      name=user_delete_queue \
+      durable=true \
+      arguments='{"x-dead-letter-exchange":"global_dlq_exchange","x-dead-letter-routing-key":"user_delete_dead_letter"}'
+
+# user_deletion_queue binding
+rabbitmqadmin -u ${USERNAME} -p ${PASSWORD} declare binding \
+      source=global_exchange \
+      destination=user_delete_queue \
+      routing_key=user_delete
+
+# user_deletion_dlq
+rabbitmqadmin -u ${USERNAME} -p ${PASSWORD} declare queue \
+      name=user_delete_dlq \
+      durable=true
+
+# user_deletion_dlq binding
+rabbitmqadmin -u ${USERNAME} -p ${PASSWORD} declare binding \
+      source=global_dlq_exchange \
+      destination=user_delete_dlq \
+      routing_key=user_delete_dead_letter

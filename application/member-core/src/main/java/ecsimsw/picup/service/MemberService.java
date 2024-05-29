@@ -1,8 +1,8 @@
 package ecsimsw.picup.service;
 
 import ecsimsw.picup.domain.Member;
-import ecsimsw.picup.domain.SignUpEvent;
-import ecsimsw.picup.domain.SignUpEventRepository;
+import ecsimsw.picup.domain.MemberEvent;
+import ecsimsw.picup.domain.MemberEventRepository;
 import ecsimsw.picup.domain.MemberRepository;
 import ecsimsw.picup.dto.MemberInfo;
 import ecsimsw.picup.dto.SignInRequest;
@@ -17,7 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class MemberService {
 
     private final MemberRepository memberRepository;
-    private final SignUpEventRepository signUpEventRepository;
+    private final MemberEventRepository memberEventRepository;
 
     @Transactional
     public MemberInfo signIn(SignInRequest request) {
@@ -38,13 +38,16 @@ public class MemberService {
         }
         var member = Member.signUp(request.username(), request.password());
         memberRepository.save(member);
-
-        signUpEventRepository.save(SignUpEvent.from(member, Long.MAX_VALUE));
+        memberEventRepository.save(MemberEvent.created(member.getId(), Long.MAX_VALUE));
         return MemberInfo.of(member);
     }
 
     @Transactional
     public void delete(Long userId) {
+        if(!memberRepository.existsById(userId)) {
+            throw new MemberException("Not exists member");
+        }
+        memberEventRepository.save(MemberEvent.deleted(userId));
         memberRepository.deleteById(userId);
     }
 

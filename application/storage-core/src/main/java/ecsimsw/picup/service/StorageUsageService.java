@@ -46,4 +46,9 @@ public class StorageUsageService {
         usage.subtract(fileSize);
         storageUsageRepository.save(usage);
     }
+
+    @Transactional
+    public void delete(Long userId) {
+        storageUsageRepository.deleteByUserId(userId);
+    }
 }

@@ -13,6 +13,7 @@ public class StorageFacadeService {
 
     private final AlbumFacadeService albumFacadeService;
     private final PictureFacadeService pictureFacadeService;
+    private final StorageUsageService storageUsageService;
     private final ResourceService resourceService;
     private final StorageService storageService;
     private final UserLockService userLockService;
@@ -60,5 +61,6 @@ public class StorageFacadeService {
         for(var album : albums) {
             albumFacadeService.delete(userId, album.id());
         }
+        storageUsageService.delete(userId);
     }
 }

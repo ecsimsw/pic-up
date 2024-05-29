@@ -1,7 +1,7 @@
 package ecsimsw.picup.application;
 
 import ecsimsw.picup.domain.MemberRepository;
-import ecsimsw.picup.domain.SignUpEventRepository;
+import ecsimsw.picup.domain.MemberEventRepository;
 import ecsimsw.picup.dto.SignInRequest;
 import ecsimsw.picup.dto.SignUpRequest;
 import ecsimsw.picup.exception.MemberException;
@@ -26,9 +26,9 @@ class MemberServiceTest {
     @BeforeEach
     void init(
         @Autowired MemberRepository memberRepository,
-        @Autowired SignUpEventRepository signUpEventRepository
+        @Autowired MemberEventRepository memberEventRepository
     ) {
-        memberService = new MemberService(memberRepository, signUpEventRepository);
+        memberService = new MemberService(memberRepository, memberEventRepository);
     }
 
     @DisplayName("회원 가입 로직 검증")

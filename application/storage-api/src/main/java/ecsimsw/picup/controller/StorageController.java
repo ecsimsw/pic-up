@@ -9,7 +9,6 @@ import ecsimsw.picup.service.StorageUsageService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -22,19 +21,17 @@ public class StorageController {
 
     @RabbitListener(queues = "sign_up_queue")
     public void init(SignUpEventMessage signUpEvent) {
-        System.out.println(signUpEvent);
         storageUsageService.init(signUpEvent.userId(), signUpEvent.storageLimit());
+    }
+
+    @RabbitListener(queues = "user_delete_queue")
+    public void deleteAllFromUser(Long userId) {
+        storageFacadeService.deleteAllFromUser(userId);
     }
 
     @GetMapping("/api/storage")
     public ResponseEntity<StorageUsageResponse> usage(@LoginUser TokenPayload user) {
         var usage = storageUsageService.getUsage(user.id());
         return ResponseEntity.ok(new StorageUsageResponse(usage.getLimitAsByte(), usage.getUsageAsByte()));
-    }
-
-    @DeleteMapping("/api/storage")
-    public ResponseEntity<Void> deleteAllFromUser(@LoginUser TokenPayload user) {
-        storageFacadeService.deleteAllFromUser(user.id());
-        return ResponseEntity.ok().build();
     }
 }
