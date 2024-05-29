@@ -43,8 +43,6 @@ public class FileUrlService {
 
     @Cacheable(value = SIGNED_URL, key = "{#storageType, #remoteIp, #fileResource.value()}")
     public String fileUrl(StorageType storageType, String remoteIp, ResourceKey fileResource) {
-        System.out.println("type " + storageType);
-        System.out.println("remote ip " + remoteIp);
         var filePath = resourceService.filePath(storageType, fileResource);
         var sign = cannedSign(remoteIp, filePath);
         var signedUrl = cloudFrontUtilities.getSignedUrlWithCustomPolicy(sign);
@@ -62,6 +60,7 @@ public class FileUrlService {
                 .build();
         } catch (Exception e) {
             e.printStackTrace();
+            log.error(e.getCause().toString());
             throw new StorageException("Failed to create cloudfront sign url from : " + remoteIp + ", " + resourcePath);
         }
     }
