@@ -94,7 +94,7 @@ public class PictureRepositoryTest {
             var result1 = pictureRepository.findAllByAlbumOrderThan(
                 savedAlbum,
                 stored.get(1).getCreatedAt(),
-                PageRequest.of(0, 10)
+                PageRequest.of(0, 10, Direction.DESC, Picture_.CREATED_AT)
             );
             assertThat(result1).contains(stored.get(0));
         }

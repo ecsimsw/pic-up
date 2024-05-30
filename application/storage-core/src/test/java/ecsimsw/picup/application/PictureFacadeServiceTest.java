@@ -35,7 +35,6 @@ public class PictureFacadeServiceTest {
         resourceService = mock(ResourceService.class);
         pictureFacadeService = new PictureFacadeService(
             pictureService,
-            storageUsageService,
             resourceService
         );
     }

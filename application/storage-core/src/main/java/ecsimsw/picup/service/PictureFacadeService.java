@@ -17,7 +17,6 @@ import java.util.List;
 public class PictureFacadeService {
 
     private final PictureService pictureService;
-    private final StorageUsageService storageUsageService;
     private final ResourceService resourceService;
 
     @Transactional(readOnly = true)
@@ -28,7 +27,6 @@ public class PictureFacadeService {
     @Transactional
     public PictureInfo commitPreUpload(long userId, long albumId, ResourceKey resourceKey) {
         var file = resourceService.commit(resourceKey);
-        storageUsageService.addUsage(userId, file.getSize());
         return pictureService.create(userId, albumId, file.getResourceKey(), file.getSize());
     }
 

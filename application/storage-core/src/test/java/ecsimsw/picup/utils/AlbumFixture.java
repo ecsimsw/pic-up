@@ -28,7 +28,7 @@ public class AlbumFixture {
     public static Picture PICTURE = new Picture(ALBUM, RESOURCE_KEY, FILE_SIZE);
 
     public static Picture PICTURE(Album album) {
-        return new Picture(1L, album, RESOURCE_KEY, false, FILE_SIZE, LocalDateTime.now());
+        return new Picture(album, RESOURCE_KEY, false, FILE_SIZE);
     }
 
     public static List<ResourceKey> getResourceKeys(List<Picture> pictures) {

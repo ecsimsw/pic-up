@@ -29,6 +29,7 @@ public class PictureService {
         var album = getUserAlbum(userId, albumId);
         var picture = new Picture(album, fileResource, fileSize);
         pictureRepository.save(picture);
+        storageUsageService.addUsage(userId, fileSize);
         return PictureInfo.of(picture);
     }
 
