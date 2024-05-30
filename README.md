@@ -1,6 +1,10 @@
 # Pic-up
 누구나 사용할 수 있는, 가장 쉬운 사진/동영상 앨범 스토리지를 만들고 있습니다.
 
+## 애플리케이션 구조
+
+<img width="600" alt="image" src="https://github.com/ecsimsw/pic-up/assets/46060746/c210c0bc-2bb8-4264-9984-281ace5fefbe">
+
 ## 기록
 
 #### 파일 삭제 이벤트와 DB 처리의 원자성 보장 
@@ -56,10 +60,25 @@
 - 모바일 환경과 데스크탑 환경에 사용하는 사진을 달리하는 것으로 페이지에 표시되는 정적 자원의 크기 축소
 - LCP를 5초에서 1.5로, 페이지 로딩 시간을 6초에서 0.5 ~ 1초로 개선
 
+## 인프라 구조
+
+<img width="600" alt="image" src="https://github.com/ecsimsw/pic-up/assets/46060746/cc14bf44-50fe-49da-830a-74c534a9020b">
+
+## 미리보기
+
+![미리보기](https://github.com/ecsimsw/pic-up/assets/46060746/a99d129c-cb66-433d-b680-3960b3fa002f)
+
+
+## Stacks
+- Framework : Java 17, Spring boot 2.7, Hibernate, JUnit5, Mokito
+- BE tools : Mysql, Redis, RabbitMQ, H2, Flyway
+- BE libray : S3Mock, Embedded Redis, Thumbnailator, Jcodec
+- FE library : Dropzone, lightGallery, video-js
+- On premise : Nginx, Kubernetes, Vault, NFS, Vagrant
+- Cloud : S3, Cloudfront, Route53, Lambda, Terraform
+- Monitoring : Grafana, Prometheus, Loki, Promtail
+
 ## 비용
-
-- 달에 3.3USD 예상
-
 1. Route53
 - Hosted zone : 1개 -> 0.5USD (개당 0.5USD)
 - Query 수 : 30,000 질의 -> 0.01USD (백만 쿼리당 0.4USD)
@@ -71,16 +90,4 @@
 - 버킷 크기 : 80GB -> 1.84USD (프리티어 5GB까지, 스탠다드 GB 당 0.023 USD)
 - CloudFront 로 데이터 전송 : 0USD (비용 청구 x)
 - S3에서 데이터 송신 : 0GB -> 0USD (GB 당 0.126USD)
-  
-</br>
-
-## Stacks
-- 프레임워크 : Java 17, Spring boot 2.7, Hibernate
-- 스토리지 : Mysql, Redis, S3, NFS
-- 테스트 환경 : JUnit5, Mockito, H2, S3Mock, Embedded Redis
-- 인프라 : Nginx, S3, Cloudfront, Route53(GSLB), Docker, Terraform
-- 모니터링 : Prometheus, Grafana, K6
-
-## 미리보기
-
-![미리보기](https://github.com/ecsimsw/pic-up/assets/46060746/a99d129c-cb66-433d-b680-3960b3fa002f)
+4. 달 예상 비용 : 3.3USD
