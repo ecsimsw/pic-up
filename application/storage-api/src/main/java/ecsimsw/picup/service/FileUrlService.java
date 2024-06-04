@@ -59,7 +59,6 @@ public class FileUrlService {
                 .expirationDate(Instant.now().plus(SIGNED_URL_EXPIRATION_AFTER_DAYS, ChronoUnit.DAYS))
                 .build();
         } catch (Exception e) {
-            e.printStackTrace();
             log.error(e.getCause().toString());
             throw new StorageException("Failed to create cloudfront sign url from : " + remoteIp + ", " + resourcePath);
         }
