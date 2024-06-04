@@ -12,6 +12,7 @@ import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Recover;
 import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -30,10 +31,12 @@ public class FileDeletionService {
         recover = "fileDeletionRecover",
         backoff = @Backoff(delayExpression = "${batch.retry.backoff.ms:500}")
     )
+    @Transactional
     public void delete(FileResource resource) {
         var path = resourceService.filePath(resource);
-        fileStorage.delete(path);
         fileResourceRepository.delete(resource);
+        fileStorage.delete(path);
+        log.info("delete : " + resource.getResourceKey() + ", " + resource.getCreatedAt().toString());
     }
 
     @Recover
