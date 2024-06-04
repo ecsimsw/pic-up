@@ -3,6 +3,8 @@ kind: Ingress
 metadata:
   name: picup-ingress
   namespace: picup
+  annotations:
+    nginx.ingress.kubernetes.io/proxy-body-size: 500m
 spec:
   ingressClassName: nginx
   rules:
