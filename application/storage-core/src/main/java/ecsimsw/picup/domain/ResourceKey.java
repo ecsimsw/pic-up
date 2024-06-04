@@ -1,8 +1,6 @@
 package ecsimsw.picup.domain;
 
 import ecsimsw.picup.exception.StorageException;
-import ecsimsw.picup.utils.AesStringConverter;
-import javax.persistence.Convert;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -15,7 +13,6 @@ import java.util.UUID;
 @Embeddable
 public class ResourceKey {
 
-    @Convert(converter = AesStringConverter.class)
     @Column(nullable = false)
     private String resourceKey;
 

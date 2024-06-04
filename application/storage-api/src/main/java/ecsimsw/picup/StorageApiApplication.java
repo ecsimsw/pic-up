@@ -8,10 +8,9 @@ import static ecsimsw.picup.profile.ProfileUtils.profilesFromModules;
 @SpringBootApplication
 public class StorageApiApplication {
 
-    private static final String[] PROFILES = profilesFromModules("storage-api", "storage-core", "auth", "logging");
+    private static final String[] PROFILES = profilesFromModules("storage-api", "storage-core", "auth", "logging", "common");
 
     public static void main(String[] args) {
-        System.out.println("storage-api");
         var app = new SpringApplication(StorageApiApplication.class);
         app.setAdditionalProfiles(PROFILES);
         app.run(args);
