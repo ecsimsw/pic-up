@@ -24,6 +24,7 @@ class DummyFileDeleteJob implements ApplicationRunner {
 
     @Override
     public void run(ApplicationArguments applicationArguments) {
+        log.info("Run delete job");
         var expiration = LocalDateTime.now().minusSeconds(FILE_EXPIRATION_BEFORE_SEC);
         while (true) {
             var dummyFiles = fileResourceRepository.findAllToBeDeletedCreatedBefore(
