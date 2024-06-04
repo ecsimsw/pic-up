@@ -12,6 +12,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import java.util.Map;
+import org.springframework.context.annotation.Primary;
 
 import static ecsimsw.picup.domain.StorageType.STORAGE;
 import static ecsimsw.picup.domain.StorageType.THUMBNAIL;
@@ -31,6 +32,7 @@ public class S3Config {
         THUMBNAIL, ROOT_PATH_THUMBNAIL
     );
 
+    @Primary
     @Bean
     public AmazonS3 objectStorageClient(
         @Value("${object.storage.credential.accessKey}")
