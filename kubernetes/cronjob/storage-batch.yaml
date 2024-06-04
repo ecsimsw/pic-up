@@ -26,10 +26,10 @@ spec:
               image: ghcr.io/ecsimsw/picup/storage-batch:latest
               imagePullPolicy: Always
               volumeMounts:
-                - name: picup-data
+                - name: storage-data
                   mountPath: /ext-data       # READ private_key.pem
           restartPolicy: Never
           volumes:
-            - name: picup-data
+            - name: storage-data
               persistentVolumeClaim:
-                claimName: picup-pvc
+                claimName: storage-pvc
