@@ -32,7 +32,6 @@ public class S3Config {
         THUMBNAIL, ROOT_PATH_THUMBNAIL
     );
 
-    @Primary
     @Bean
     public AmazonS3 objectStorageClient(
         @Value("${object.storage.credential.accessKey}")

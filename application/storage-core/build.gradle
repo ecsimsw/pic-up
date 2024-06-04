@@ -9,9 +9,9 @@ dependencies {
     testRuntimeOnly 'com.h2database:h2:1.4.199'
 
     // aws - s3, cloudfront, mock s3
-    implementation 'org.springframework.cloud:spring-cloud-starter-aws:2.2.6.RELEASE'
+    implementation 'software.amazon.awssdk:s3:1.11.294'
     implementation 'software.amazon.awssdk:cloudfront:2.25.27'
-//    implementation 'io.findify:s3mock_2.13:0.2.6'
+    implementation 'io.findify:s3mock_2.13:0.2.6'
 }
 
 test {
