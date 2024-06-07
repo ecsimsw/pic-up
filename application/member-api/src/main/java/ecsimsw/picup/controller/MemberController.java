@@ -8,6 +8,8 @@ import ecsimsw.picup.dto.SignUpRequest;
 import ecsimsw.picup.service.AuthTokenService;
 import ecsimsw.picup.service.MemberFacadeService;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -15,9 +17,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-
-import javax.servlet.http.HttpServletResponse;
-import javax.validation.Valid;
 
 @RequiredArgsConstructor
 @RestController
@@ -45,7 +44,6 @@ public class MemberController {
         try {
             responseLoginToken(response, member);
         } catch (Exception ignored) {
-
         }
         return ResponseEntity.ok(member);
     }
@@ -74,6 +72,7 @@ public class MemberController {
     private void responseLoginToken(HttpServletResponse response, MemberResponse member) {
         var payload = new TokenPayload(member.id(), member.username());
         var tokens = authTokenService.issue(payload);
-        authTokenService.responseAsCookies(tokens, response);
+        response.addCookie(authTokenService.accessTokenCookie(tokens));
+        response.addCookie(authTokenService.refreshTokenCookie(tokens));
     }
 }

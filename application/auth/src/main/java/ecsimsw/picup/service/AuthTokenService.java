@@ -56,7 +56,7 @@ public class AuthTokenService {
     }
 
     public void validate(String token) {
-        if(blockedTokenRepository.existsById(token)) {
+        if (blockedTokenRepository.existsById(token)) {
             throw new UnauthorizedException("Token not usable");
         }
         tokenPayload(token);
@@ -104,11 +104,6 @@ public class AuthTokenService {
         cookie.setHttpOnly(true);
         cookie.setPath("/");
         return cookie;
-    }
-
-    public void responseAsCookies(AuthTokens authTokens, HttpServletResponse response) {
-        response.addCookie(accessTokenCookie(authTokens));
-        response.addCookie(refreshTokenCookie(authTokens));
     }
 
     public void removeTokenCookies(HttpServletResponse response) {

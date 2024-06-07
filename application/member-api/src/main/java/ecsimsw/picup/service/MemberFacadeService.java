@@ -5,7 +5,6 @@ import ecsimsw.picup.dto.MemberInfo;
 import ecsimsw.picup.dto.MemberResponse;
 import ecsimsw.picup.dto.SignInRequest;
 import ecsimsw.picup.dto.SignUpRequest;
-import ecsimsw.picup.dto.StorageUsageResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -19,13 +18,13 @@ public class MemberFacadeService {
     private final AuthTokenService authTokenService;
     private final StorageUsageClient storageUsageClient;
 
-    public MemberResponse signUp(SignUpRequest signUpRequest) {
-        var member = memberService.signUp(signUpRequest);
+    public MemberResponse signUp(SignUpRequest request) {
+        var member = memberService.signUp(request.username(), request.password());
         return MemberResponse.of(member);
     }
 
     public MemberResponse signIn(SignInRequest request) {
-        var member = memberService.signIn(request);
+        var member = memberService.signIn(request.username(), request.password());
         var accessToken = tempAccessToken(member);
         var usage = storageUsageClient.getUsage(accessToken);
         return MemberResponse.of(member, usage);

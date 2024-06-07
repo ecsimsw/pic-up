@@ -29,7 +29,8 @@ public class AuthTokenInterceptor implements HandlerInterceptor {
             authTokenService.validate(refreshToken);
 
             var reissued = authTokenService.reissue(refreshToken);
-            authTokenService.responseAsCookies(reissued, response);
+            response.addCookie(authTokenService.accessTokenCookie(reissued));
+            response.addCookie(authTokenService.refreshTokenCookie(reissued));
 
             response.setHeader("Location", request.getRequestURI());
             response.setStatus(HttpStatus.PERMANENT_REDIRECT.value());

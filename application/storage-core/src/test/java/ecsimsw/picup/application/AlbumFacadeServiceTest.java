@@ -1,28 +1,39 @@
 package ecsimsw.picup.application;
 
-import ecsimsw.picup.domain.*;
+import static ecsimsw.picup.domain.StorageType.THUMBNAIL;
+import static ecsimsw.picup.utils.AlbumFixture.ALBUM_ID;
+import static ecsimsw.picup.utils.AlbumFixture.ALBUM_NAME;
+import static ecsimsw.picup.utils.AlbumFixture.FILE_SIZE;
+import static ecsimsw.picup.utils.AlbumFixture.PICTURE;
+import static ecsimsw.picup.utils.AlbumFixture.RESOURCE_KEY;
+import static ecsimsw.picup.utils.AlbumFixture.THUMBNAIL_RESOURCE_KEY;
+import static ecsimsw.picup.utils.AlbumFixture.getResourceKeys;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import ecsimsw.picup.domain.Album;
+import ecsimsw.picup.domain.FileResource;
+import ecsimsw.picup.domain.Picture;
 import ecsimsw.picup.dto.AlbumInfo;
-import ecsimsw.picup.service.*;
+import ecsimsw.picup.service.AlbumFacadeService;
+import ecsimsw.picup.service.AlbumService;
+import ecsimsw.picup.service.PictureService;
+import ecsimsw.picup.service.ResourceService;
+import java.time.LocalDateTime;
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-
-import java.time.LocalDateTime;
-import java.util.List;
-
-import static ecsimsw.picup.domain.StorageType.THUMBNAIL;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertAll;
-import static org.mockito.Mockito.*;
-import static ecsimsw.picup.utils.AlbumFixture.*;
 
 class AlbumFacadeServiceTest {
 
     private AlbumService albumService;
     private AlbumFacadeService albumFacadeService;
     private PictureService pictureService;
-    private StorageUsageService storageUsageService;
     private ResourceService resourceService;
 
     private final Long userId = 1L;
@@ -31,7 +42,6 @@ class AlbumFacadeServiceTest {
     void init() {
         albumService = mock(AlbumService.class);
         pictureService = mock(PictureService.class);
-        storageUsageService = mock(StorageUsageService.class);
         resourceService = mock(ResourceService.class);
         albumFacadeService = new AlbumFacadeService(
             albumService,
@@ -101,7 +111,8 @@ class AlbumFacadeServiceTest {
     class ReadAlbum {
 
         private final Long albumId = ALBUM_ID;
-        private final AlbumInfo albumInfo = new AlbumInfo(albumId, ALBUM_NAME, THUMBNAIL_RESOURCE_KEY, LocalDateTime.now());
+        private final AlbumInfo albumInfo = new AlbumInfo(albumId, ALBUM_NAME, THUMBNAIL_RESOURCE_KEY,
+            LocalDateTime.now());
 
         @DisplayName("단일 앨범 정보를 조회한다.")
         @Test

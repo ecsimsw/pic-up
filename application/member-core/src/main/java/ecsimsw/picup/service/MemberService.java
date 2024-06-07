@@ -5,8 +5,6 @@ import ecsimsw.picup.domain.MemberEvent;
 import ecsimsw.picup.domain.MemberEventRepository;
 import ecsimsw.picup.domain.MemberRepository;
 import ecsimsw.picup.dto.MemberInfo;
-import ecsimsw.picup.dto.SignInRequest;
-import ecsimsw.picup.dto.SignUpRequest;
 import ecsimsw.picup.exception.MemberException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -20,11 +18,11 @@ public class MemberService {
     private final MemberEventRepository memberEventRepository;
 
     @Transactional
-    public MemberInfo signIn(SignInRequest request) {
+    public MemberInfo signIn(String username, String password) {
         try {
-            var member = memberRepository.findByUsername(request.username())
+            var member = memberRepository.findByUsername(username)
                 .orElseThrow(() -> new MemberException("Invalid login info"));
-            member.authenticate(request.password());
+            member.authenticate(password);
             return MemberInfo.of(member);
         } catch (Exception e) {
             throw new MemberException("Invalid login info");
@@ -32,11 +30,11 @@ public class MemberService {
     }
 
     @Transactional
-    public MemberInfo signUp(SignUpRequest request) {
-        if (memberRepository.existsByUsername(request.username())) {
+    public MemberInfo signUp(String username, String password) {
+        if (memberRepository.existsByUsername(username)) {
             throw new MemberException("Duplicated username");
         }
-        var member = Member.signUp(request.username(), request.password());
+        var member = Member.signUp(username, password);
         memberRepository.save(member);
         memberEventRepository.save(MemberEvent.created(member.getId(), Long.MAX_VALUE));
         return MemberInfo.of(member);
@@ -44,7 +42,7 @@ public class MemberService {
 
     @Transactional
     public void delete(Long userId) {
-        if(!memberRepository.existsById(userId)) {
+        if (!memberRepository.existsById(userId)) {
             throw new MemberException("Not exists member");
         }
         memberEventRepository.save(MemberEvent.deleted(userId));

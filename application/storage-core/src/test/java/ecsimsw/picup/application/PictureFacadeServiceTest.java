@@ -1,37 +1,41 @@
 package ecsimsw.picup.application;
 
+import static ecsimsw.picup.domain.StorageType.STORAGE;
+import static ecsimsw.picup.utils.AlbumFixture.ALBUM;
+import static ecsimsw.picup.utils.AlbumFixture.ALBUM_ID;
+import static ecsimsw.picup.utils.AlbumFixture.FILE_SIZE;
+import static ecsimsw.picup.utils.AlbumFixture.RESOURCE_KEY;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 import ecsimsw.picup.domain.FileResource;
 import ecsimsw.picup.domain.Picture;
 import ecsimsw.picup.domain.ResourceKey;
 import ecsimsw.picup.dto.PictureInfo;
 import ecsimsw.picup.exception.AlbumException;
-import ecsimsw.picup.service.*;
+import ecsimsw.picup.service.PictureFacadeService;
+import ecsimsw.picup.service.PictureService;
+import ecsimsw.picup.service.ResourceService;
+import java.time.LocalDateTime;
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
-import java.time.LocalDateTime;
-import java.util.List;
-
-import static ecsimsw.picup.domain.StorageType.STORAGE;
-import static ecsimsw.picup.domain.StorageType.THUMBNAIL;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.Mockito.*;
-import static ecsimsw.picup.utils.AlbumFixture.*;
-
 public class PictureFacadeServiceTest {
 
     private final long userId = 1L;
     private PictureService pictureService;
-    private StorageUsageService storageUsageService;
     private ResourceService resourceService;
     private PictureFacadeService pictureFacadeService;
 
     @BeforeEach
     void init() {
         pictureService = mock(PictureService.class);
-        storageUsageService = mock(StorageUsageService.class);
         resourceService = mock(ResourceService.class);
         pictureFacadeService = new PictureFacadeService(
             pictureService,
@@ -86,7 +90,8 @@ public class PictureFacadeServiceTest {
                 .thenAnswer(input -> new FileResource(STORAGE, resourceKey, fileSize, false));
 
             when(pictureService.create(userId, albumId, resourceKey, fileSize))
-                .thenReturn(PictureInfo.of(new Picture(albumId, ALBUM, resourceKey, false, fileSize, LocalDateTime.now())));
+                .thenReturn(
+                    PictureInfo.of(new Picture(albumId, ALBUM, resourceKey, false, fileSize, LocalDateTime.now())));
         }
 
         @DisplayName("Commit 파일을 리소스로 하는 Picture 가 생성된다. ")
