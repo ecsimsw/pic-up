@@ -30,7 +30,7 @@ public class AuthTokenConfig implements WebMvcConfigurer {
 
     public AuthTokenConfig(
         AuthTokenService authTokenService,
-        @Value("${ecsimsw.token.secret.key}")
+        @Value("${picup.token.secret.key}")
         String tokenSecretKey
     ) {
         this.authTokenService = authTokenService;
