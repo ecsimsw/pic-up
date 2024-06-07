@@ -27,16 +27,22 @@ class DummyFileDeleteJob implements ApplicationRunner {
         log.info("Run delete job");
         var expiration = LocalDateTime.now().minusSeconds(FILE_EXPIRATION_BEFORE_SEC);
         while (true) {
-            var dummyFiles = fileResourceRepository.findAllToBeDeletedCreatedBefore(
-                expiration,
-                PageRequest.of(0, FILE_DELETE_SEGMENT, Direction.DESC, FileResource_.CREATED_AT)
-            );
-            log.info("Found dummies : " + dummyFiles.size());
-            if (dummyFiles.isEmpty()) {
+            try {
+                var dummyFiles = fileResourceRepository.findAllToBeDeletedCreatedBefore(
+                    expiration,
+                    PageRequest.of(0, FILE_DELETE_SEGMENT, Direction.DESC, FileResource_.CREATED_AT)
+                );
+                log.info("Found dummies : " + dummyFiles.size());
+                if (dummyFiles.isEmpty()) {
+                    break;
+                }
+                dummyFiles.forEach(fileDeletionService::delete);
+                log.info("Delete dummy files : " + dummyFiles.size());
+            } catch (Exception e) {
+                log.error("111");
+                e.printStackTrace();
                 break;
             }
-            dummyFiles.forEach(fileDeletionService::delete);
-            log.info("Delete dummy files : " + dummyFiles.size());
         }
     }
 }
