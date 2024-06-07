@@ -27,7 +27,7 @@ public class Member {
     private Password password;
 
     public static Member signUp(String username, String password) {
-        return new Member(username, Password.initFrom(password));
+        return new Member(username, Password.encryptFrom(password));
     }
 
     public Member(Long id, String username, Password password) {

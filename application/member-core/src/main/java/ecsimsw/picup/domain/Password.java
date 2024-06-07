@@ -28,7 +28,7 @@ public class Password {
         this.salt = salt;
     }
 
-    public static Password initFrom(String plainPassword) {
+    public static Password encryptFrom(String plainPassword) {
         var salt = Sha256Utils.getSalt();
         var encrypted = Sha256Utils.encrypt(plainPassword, salt);
         return new Password(encrypted, salt);

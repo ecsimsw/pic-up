@@ -40,7 +40,7 @@ class MemberTest {
     @DisplayName("입력받은 password 가 일치하는지 확인한다.")
     @Test
     void authenticate2() {
-        var password = Password.initFrom(plainPassword);
+        var password = Password.encryptFrom(plainPassword);
         var member = new Member(username, password);
         member.authenticate(plainPassword);
     }
@@ -48,7 +48,7 @@ class MemberTest {
     @DisplayName("입력받은 password 가 일치하는지 확인한다.")
     @Test
     void authenticate3() {
-        var password = Password.initFrom(plainPassword);
+        var password = Password.encryptFrom(plainPassword);
         var member = new Member(username, password);
         var invalidPassword = "invalid";
         assertThatThrownBy(

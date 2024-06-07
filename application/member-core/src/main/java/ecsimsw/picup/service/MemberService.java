@@ -6,6 +6,7 @@ import ecsimsw.picup.domain.MemberEventRepository;
 import ecsimsw.picup.domain.MemberRepository;
 import ecsimsw.picup.dto.MemberInfo;
 import ecsimsw.picup.exception.MemberException;
+import ecsimsw.picup.exception.UnauthorizedException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,7 +26,7 @@ public class MemberService {
             member.authenticate(password);
             return MemberInfo.of(member);
         } catch (Exception e) {
-            throw new MemberException("Invalid login info");
+            throw new UnauthorizedException("Invalid login info");
         }
     }
 
