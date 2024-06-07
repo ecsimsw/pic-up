@@ -32,8 +32,8 @@ public class FileDeletionService {
     )
     public void delete(FileResource resource) {
         var path = resourceService.filePath(resource);
-        fileResourceRepository.delete(resource);
         fileStorage.delete(path);
+        fileResourceRepository.delete(resource);
         log.info("delete : " + resource.getResourceKey() + ", " + resource.getCreatedAt().toString());
     }
 
