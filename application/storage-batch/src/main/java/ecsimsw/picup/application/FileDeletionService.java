@@ -31,14 +31,10 @@ public class FileDeletionService {
         backoff = @Backoff(delayExpression = "${batch.retry.backoff.ms:500}")
     )
     public void delete(FileResource resource) {
-        try {
-            var path = resourceService.filePath(resource);
-            fileResourceRepository.delete(resource);
-            fileStorage.delete(path);
-            log.info("delete : " + resource.getResourceKey() + ", " + resource.getCreatedAt().toString());
-        } catch (Exception e) {
-            log.error("2222");
-        }
+        var path = resourceService.filePath(resource);
+        fileResourceRepository.delete(resource);
+        fileStorage.delete(path);
+        log.info("delete : " + resource.getResourceKey() + ", " + resource.getCreatedAt().toString());
     }
 
     @Recover
