@@ -94,19 +94,6 @@ class AlbumFacadeServiceTest {
             verify(resourceService).deleteAllAsync(getResourceKeys(includedPictures));
             verify(resourceService).deleteAsync(album.getThumbnail());
         }
-
-        @DisplayName("앨범 제거시 앨범에 포함된 Picture 의 파일 크기만큼 사용량에서 제거된다.")
-        @Test
-        void updateStorageUsageByAlbumDelete() {
-            // when
-            albumFacadeService.delete(userId, album.getId());
-
-            // then
-            var expectSubtractSize = includedPictures.stream()
-                    .mapToLong(Picture::getFileSize)
-                    .sum();
-            verify(storageUsageService).subtractAll(userId, expectSubtractSize);
-        }
     }
 
     @DisplayName("앨범 정보 조회")

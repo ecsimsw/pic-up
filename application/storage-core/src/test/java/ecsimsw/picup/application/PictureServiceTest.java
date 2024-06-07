@@ -4,6 +4,8 @@ import ecsimsw.picup.domain.Album;
 import ecsimsw.picup.domain.AlbumRepository;
 import ecsimsw.picup.domain.PictureRepository;
 import ecsimsw.picup.domain.ResourceKey;
+import ecsimsw.picup.domain.StorageUsage;
+import ecsimsw.picup.domain.StorageUsageRepository;
 import ecsimsw.picup.service.PictureService;
 import ecsimsw.picup.service.StorageUsageService;
 import ecsimsw.picup.utils.AlbumFixture;
@@ -13,11 +15,13 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.test.context.ActiveProfiles;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
+@ActiveProfiles(value = {"storage-core-dev"})
 @DataJpaTest
 class PictureServiceTest {
 
@@ -29,9 +33,10 @@ class PictureServiceTest {
     void init(
         @Autowired AlbumRepository albumRepository,
         @Autowired PictureRepository pictureRepository,
-        @Autowired StorageUsageService storageUsageService
+        @Autowired StorageUsageRepository storageUsageRepository
     ) {
-        pictureService = new PictureService(albumRepository, pictureRepository, storageUsageService);
+        storageUsageRepository.save(new StorageUsage(savedUserId, Long.MAX_VALUE));
+        pictureService = new PictureService(albumRepository, pictureRepository, new StorageUsageService(storageUsageRepository));
     }
 
     @DisplayName("Picture 생성 로직 검증")

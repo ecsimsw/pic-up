@@ -63,7 +63,7 @@ public class PictureFacadeServiceTest {
         void NotAvailableToUpload2() {
             // given
             doThrow(new AlbumException("Lack of storage space"))
-                .when(storageUsageService).getUsage(userId);
+                .when(pictureService).checkAbleToStore(userId, albumId, FILE_SIZE);
 
             // when, then
             assertThatThrownBy(
@@ -97,16 +97,6 @@ public class PictureFacadeServiceTest {
 
             // then
             verify(pictureService).create(userId, albumId, resourceKey, fileSize);
-        }
-
-        @DisplayName("Commit 파일의 사이즈만큼 스토리지 사용량이 업데이트된다.")
-        @Test
-        void updateStorageUsage() {
-            // when
-            pictureFacadeService.commitPreUpload(userId, albumId, resourceKey);
-
-            // then
-            verify(storageUsageService).addUsage(userId, fileSize);
         }
 
         @DisplayName("Commit 파일에 해당하는 FileResource 를 생성한다.")
@@ -188,19 +178,6 @@ public class PictureFacadeServiceTest {
                 .map(Picture::getFileResource)
                 .toList();
             verify(resourceService).deleteAllAsync(resources);
-        }
-
-        @DisplayName("제거된 Picture의 파일 크기만큼 스토리지 사용량이 감한다.")
-        @Test
-        void updateStorageUsage() {
-            // when
-            pictureFacadeService.deletePictures(userId, albumId, pictureIds);
-
-            // then
-            var expectSubtractSize = deletedPictures.stream()
-                .mapToLong(Picture::getFileSize)
-                .sum();
-            verify(storageUsageService).subtractAll(userId, expectSubtractSize);
         }
     }
 }
