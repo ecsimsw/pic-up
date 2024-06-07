@@ -1,54 +1,56 @@
 package ecsimsw.picup.integration;
 
+import static ecsimsw.picup.domain.StorageType.STORAGE;
+import static ecsimsw.picup.utils.AlbumFixture.ALBUM_NAME;
+import static ecsimsw.picup.utils.AlbumFixture.FILE_SIZE;
+import static ecsimsw.picup.utils.AlbumFixture.RESOURCE_KEY;
+import static ecsimsw.picup.utils.AlbumFixture.THUMBNAIL_FILE;
+import static ecsimsw.picup.utils.AlbumFixture.USER_ID;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+
+import ecsimsw.picup.domain.Album;
 import ecsimsw.picup.domain.FileResource;
 import ecsimsw.picup.domain.FileResourceRepository;
+import ecsimsw.picup.domain.StorageUsage;
 import ecsimsw.picup.exception.AlbumException;
 import ecsimsw.picup.service.AlbumFacadeService;
-import ecsimsw.picup.service.ResourceService;
 import ecsimsw.picup.service.PictureFacadeService;
+import ecsimsw.picup.service.ResourceService;
 import ecsimsw.picup.service.StorageUsageService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import static ecsimsw.picup.domain.StorageType.STORAGE;
-import static ecsimsw.picup.utils.AlbumFixture.*;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-
 @DisplayName("Picture 업로드 절차 검증")
-public class PictureUploadScenarioTestService extends ServiceIntegrationTestContext {
+public class PictureUploadScenarioTest extends IntegrationApiTestContext {
 
-    private final PictureFacadeService pictureFacadeService;
-    private final ResourceService resourceService;
+    @Autowired
+    private PictureFacadeService pictureFacadeService;
+
+    @Autowired
+    private ResourceService resourceService;
+
+    private final long savedUserId = USER_ID;
     private long albumId;
 
-    public PictureUploadScenarioTestService(
-        @Autowired PictureFacadeService pictureFacadeService,
-        @Autowired ResourceService resourceService
-    ) {
-        this.pictureFacadeService = pictureFacadeService;
-        this.resourceService = resourceService;
-    }
-
     @BeforeEach
-    void initAlbum(
-        @Autowired AlbumFacadeService albumFacadeService,
-        @Autowired StorageUsageService storageUsageService
-    ){
-        storageUsageService.init(USER_ID);
-        albumId = albumFacadeService.init(USER_ID, ALBUM_NAME, THUMBNAIL_FILE.getResourceKey());
+    void initAlbum() {
+        storageUsageRepository.save(new StorageUsage(savedUserId, Long.MAX_VALUE));
+        var album = new Album(USER_ID, ALBUM_NAME, THUMBNAIL_FILE.getResourceKey());
+        albumRepository.save(album);
+        albumId = album.getId();
     }
 
-    @DisplayName("Picture 에 등록된 FileResource 의 toBeDeleted 상태를 변경한다.")
+    @DisplayName("Picture에 등록된 FileResource의 toBeDeleted 상태를 변경한다.")
     @Test
     void createPicture(@Autowired FileResourceRepository fileResourceRepository) {
         // given
         var preLoadedFile = resourceService.prepare(RESOURCE_KEY.value(), FILE_SIZE);
 
         // when
-        pictureFacadeService.commitPreUpload(USER_ID, albumId, preLoadedFile.getResourceKey());
+        pictureFacadeService.commitPreUpload(savedUserId, albumId, preLoadedFile.getResourceKey());
 
         // then
         var afterCommit = fileResourceRepository.findById(preLoadedFile.getId()).orElseThrow();

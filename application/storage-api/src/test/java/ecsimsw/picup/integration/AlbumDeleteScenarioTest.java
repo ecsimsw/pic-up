@@ -22,7 +22,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 @DisplayName("앨범 제거 절차 검증")
-public class AlbumDeleteScenarioTest extends ServiceIntegrationTestContext {
+public class AlbumDeleteScenarioTest extends IntegrationApiTestContext {
 
     private final ResourceService resourceService;
     private final AlbumFacadeService albumFacadeService;
