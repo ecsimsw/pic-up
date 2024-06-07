@@ -20,9 +20,6 @@ public class AuthTokenInterceptor implements HandlerInterceptor {
         if (!(handler instanceof HandlerMethod) || !isLoginNeeded((HandlerMethod) handler)) {
             return true;
         }
-        if (request.getCookies() == null) {
-            throw new UnauthorizedException("Login token not exists");
-        }
         try {
             var accessToken = authTokenService.getAccessToken(request);
             authTokenService.validate(accessToken);

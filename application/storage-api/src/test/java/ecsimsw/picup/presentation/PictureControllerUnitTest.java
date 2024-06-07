@@ -2,6 +2,7 @@ package ecsimsw.picup.presentation;
 
 import static ecsimsw.picup.utils.AlbumFixture.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -37,44 +38,24 @@ import org.springframework.transaction.annotation.Transactional;
 
 class PictureControllerUnitTest extends ControllerUnitTestContext {
 
-    private final MockMvc mockMvc = MockMvcBuilders
-        .standaloneSetup(new PictureController(pictureFacadeService, storageFacadeService, fileUrlService))
-        .addInterceptors(new AuthTokenInterceptor(authTokenService))
-        .setCustomArgumentResolvers(
-            new AuthTokenArgumentResolver(authTokenService),
-            new SearchCursorArgumentResolver(),
-            new RemoteIpArgumentResolver(),
-            new ResourceKeyArgumentResolver()
-        )
-        .setControllerAdvice(new GlobalControllerAdvice())
-        .build();
-
     private final Long albumId = 1L;
-
-    @BeforeEach
-    void init() {
-        when(authTokenService.tokenPayload(any()))
-            .thenReturn(new TokenPayload(USER_ID, USER_NAME));
-    }
 
     @Transactional
     @DisplayName("Picture 를 업로드할 수 있는 Signed url 을 반환한다.")
     @Test
     void getSignedUrl() throws Exception {
-        var fileName = "FILE_NAME";
-        var fileSize = 1L;
         var fileResource = new FileResource();
         var expectedPreSignedUrl = new PreSignedUrlResponse("preSignedUrl", RESOURCE_KEY.value());
 
-        when(resourceService.prepare(fileName, fileSize))
+        when(storageFacadeService.preUpload(loginUserId, albumId, FILE_NAME, FILE_SIZE))
             .thenReturn(fileResource);
 
         when(fileUrlService.preSignedUrl(fileResource.getResourceKey()))
             .thenReturn(expectedPreSignedUrl);
 
-        mockMvc.perform(multipart("/api/album/" + albumId + "/picture/preUpload")
-                .queryParam("fileName", fileName)
-                .queryParam("fileSize", String.valueOf(fileSize))
+        mockMvc.perform(multipart("/api/storage/album/" + albumId + "/picture/preUpload")
+                .queryParam("fileName", FILE_NAME)
+                .queryParam("fileSize", String.valueOf(FILE_SIZE))
             )
             .andExpect(status().isOk())
             .andExpect(content().string(OBJECT_MAPPER.writeValueAsString(expectedPreSignedUrl)));
@@ -83,7 +64,7 @@ class PictureControllerUnitTest extends ControllerUnitTestContext {
     @DisplayName("업로드 성공한 파일의 리소스 키를 요청 받는다.")
     @Test
     void commit() throws Exception {
-        mockMvc.perform(post("/api/album/" + albumId + "/picture/commit")
+        mockMvc.perform(post("/api/storage/album/" + albumId + "/picture/commit")
             .queryParam("resourceKey", RESOURCE_KEY.value())
         ).andExpect(status().isOk());
     }
@@ -109,7 +90,7 @@ class PictureControllerUnitTest extends ControllerUnitTestContext {
             PictureSearchCursor.from(10, Optional.of(expectedCursorCreatedAt))))
             .thenReturn(expectedPictures);
 
-        mockMvc.perform(get("/api/album/" + albumId + "/picture")
+        mockMvc.perform(get("/api/storage/album/" + albumId + "/picture")
                 .header("X-Forwarded-For", remoteIp)
                 .param("cursorCreatedAt", "2024-04-08T10:45:12.728721232Z")
             )
@@ -129,7 +110,7 @@ class PictureControllerUnitTest extends ControllerUnitTestContext {
             PictureSearchCursor.from(limit, Optional.empty())))
             .thenReturn(expectedPictures);
 
-        mockMvc.perform(get("/api/album/" + albumId + "/picture")
+        mockMvc.perform(get("/api/storage/album/" + albumId + "/picture")
                 .header("X-Forwarded-For", remoteIp)
                 .param("limit", String.valueOf(limit))
             )
@@ -142,7 +123,7 @@ class PictureControllerUnitTest extends ControllerUnitTestContext {
     void deletePictures() throws Exception {
         var pictureIds = List.of(1L, 2L, 3L);
 
-        mockMvc.perform(delete("/api/album/" + albumId + "/picture")
+        mockMvc.perform(delete("/api/storage/album/" + albumId + "/picture")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(OBJECT_MAPPER.writeValueAsString(new PicturesDeleteRequest(pictureIds)))
             )
