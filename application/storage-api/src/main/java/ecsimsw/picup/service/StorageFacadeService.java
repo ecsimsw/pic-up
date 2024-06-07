@@ -4,11 +4,13 @@ import static ecsimsw.picup.config.S3Config.ROOT_PATH_STORAGE;
 
 import ecsimsw.picup.domain.FileResource;
 import ecsimsw.picup.domain.ResourceKey;
-import ecsimsw.picup.domain.StorageType;
 import ecsimsw.picup.dto.StorageUploadContent;
+import ecsimsw.picup.exception.AlbumException;
+import java.io.IOException;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 @RequiredArgsConstructor
 @Service
@@ -20,6 +22,10 @@ public class StorageFacadeService {
     private final ResourceService resourceService;
     private final UserLockService userLockService;
     private final FileStorage fileStorage;
+
+    public Long createAlbum(long userId, MultipartFile multipartFile, String name) {
+        return createAlbum(userId, fileUploadContent(multipartFile), name);
+    }
 
     public Long createAlbum(long userId, StorageUploadContent thumbnailFile, String name) {
         var thumbnail = resourceService.prepare(thumbnailFile.name(), thumbnailFile.size()).getResourceKey();
@@ -62,9 +68,22 @@ public class StorageFacadeService {
 
     public void deleteAllFromUser(Long userId) {
         var albums = albumFacadeService.findAll(userId);
-        for(var album : albums) {
+        for (var album : albums) {
             albumFacadeService.delete(userId, album.id());
         }
         storageUsageService.delete(userId);
+    }
+
+    private StorageUploadContent fileUploadContent(MultipartFile thumbnail) {
+        try {
+            return new StorageUploadContent(
+                thumbnail.getOriginalFilename(),
+                thumbnail.getContentType(),
+                thumbnail.getInputStream(),
+                thumbnail.getSize()
+            );
+        } catch (IOException e) {
+            throw new AlbumException("Invalid thumbnail file");
+        }
     }
 }

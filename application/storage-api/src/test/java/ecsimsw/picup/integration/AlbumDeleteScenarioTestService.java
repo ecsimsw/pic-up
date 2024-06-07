@@ -1,8 +1,11 @@
 package ecsimsw.picup.integration;
 
-import static ecsimsw.picup.domain.StorageType.STORAGE;
-import static ecsimsw.picup.domain.StorageType.THUMBNAIL;
-import static ecsimsw.picup.utils.AlbumFixture.*;
+import static ecsimsw.picup.utils.AlbumFixture.ALBUM_NAME;
+import static ecsimsw.picup.utils.AlbumFixture.FILE_NAME;
+import static ecsimsw.picup.utils.AlbumFixture.FILE_SIZE;
+import static ecsimsw.picup.utils.AlbumFixture.THUMBNAIL_FILE;
+import static ecsimsw.picup.utils.AlbumFixture.THUMBNAIL_RESOURCE_KEY;
+import static ecsimsw.picup.utils.AlbumFixture.USER_ID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
@@ -10,8 +13,8 @@ import ecsimsw.picup.domain.AlbumRepository;
 import ecsimsw.picup.domain.FileResourceRepository;
 import ecsimsw.picup.domain.PictureRepository;
 import ecsimsw.picup.service.AlbumFacadeService;
-import ecsimsw.picup.service.ResourceService;
 import ecsimsw.picup.service.PictureFacadeService;
+import ecsimsw.picup.service.ResourceService;
 import ecsimsw.picup.service.StorageUsageService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;

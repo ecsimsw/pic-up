@@ -37,8 +37,7 @@ public class AlbumController {
         @RequestParam MultipartFile thumbnail,
         @RequestParam String name
     ) {
-        var thumbnailUploadRequest = fileUploadContent(thumbnail);
-        var albumId = storageFacadeService.createAlbum(user.id(), thumbnailUploadRequest, name);
+        var albumId = storageFacadeService.createAlbum(user.id(), thumbnail, name);
         return ResponseEntity.ok(albumId);
     }
 
@@ -75,18 +74,5 @@ public class AlbumController {
     ) {
         storageFacadeService.deleteAlbum(user.id(), albumId);
         return ResponseEntity.ok().build();
-    }
-
-    private StorageUploadContent fileUploadContent(MultipartFile thumbnail) {
-        try {
-            return new StorageUploadContent(
-                thumbnail.getOriginalFilename(),
-                thumbnail.getContentType(),
-                thumbnail.getInputStream(),
-                thumbnail.getSize()
-            );
-        } catch (IOException e) {
-            throw new AlbumException("Invalid thumbnail file");
-        }
     }
 }

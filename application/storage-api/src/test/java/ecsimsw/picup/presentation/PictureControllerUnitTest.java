@@ -1,8 +1,8 @@
 package ecsimsw.picup.presentation;
 
-import static ecsimsw.picup.utils.AlbumFixture.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doNothing;
+import static ecsimsw.picup.utils.AlbumFixture.FILE_NAME;
+import static ecsimsw.picup.utils.AlbumFixture.FILE_SIZE;
+import static ecsimsw.picup.utils.AlbumFixture.RESOURCE_KEY;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -11,29 +11,18 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import ecsimsw.picup.controller.GlobalControllerAdvice;
-import ecsimsw.picup.controller.PictureController;
+import ecsimsw.picup.domain.FileResource;
 import ecsimsw.picup.dto.PictureInfo;
-import ecsimsw.picup.resolver.RemoteIpArgumentResolver;
-import ecsimsw.picup.resolver.ResourceKeyArgumentResolver;
-import ecsimsw.picup.resolver.SearchCursorArgumentResolver;
-import ecsimsw.picup.domain.TokenPayload;
+import ecsimsw.picup.dto.PictureResponse;
 import ecsimsw.picup.dto.PictureSearchCursor;
 import ecsimsw.picup.dto.PicturesDeleteRequest;
-import ecsimsw.picup.service.AuthTokenArgumentResolver;
-import ecsimsw.picup.service.AuthTokenInterceptor;
-import ecsimsw.picup.domain.FileResource;
 import ecsimsw.picup.dto.PreSignedUrlResponse;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
-
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.annotation.Transactional;
 
 class PictureControllerUnitTest extends ControllerUnitTestContext {
@@ -72,50 +61,54 @@ class PictureControllerUnitTest extends ControllerUnitTestContext {
     @DisplayName("썸네일 생성에 성공한 파일의 리소스 키와 썸네일 파일 크기를 요청 받는다.")
     @Test
     void thumbnail() throws Exception {
-        mockMvc.perform(post("/api/picture/thumbnail")
+        mockMvc.perform(post("/api/storage/thumbnail")
             .queryParam("resourceKey", RESOURCE_KEY.value())
-            .queryParam("fileSize", "1")
+            .queryParam("fileSize", String.valueOf(FILE_SIZE))
         ).andExpect(status().isOk());
     }
 
     @DisplayName("앨범내 사진을 조회한다.")
     @Test
     void getPicturesByCursor() throws Exception {
-        var expectedCursorCreatedAt = LocalDateTime.of(2024, 4, 8, 10, 45, 12, 728721232);
-        var expectedPictures = List.of(new PictureInfo(
-            loginUserId, albumId, false, false, RESOURCE_KEY, LocalDateTime.now()
-        ));
+        var cursorCreatedAt = LocalDateTime.of(2024, 4, 8, 10, 45, 12, 728721232);
+        var readPictures = List.of(
+            new PictureInfo(loginUserId, albumId, false, false, RESOURCE_KEY, LocalDateTime.now())
+        );
+        var expectedResponse = readPictures.stream()
+            .map(it -> PictureResponse.of(readPictures.get(0), RESOURCE_KEY.value()))
+            .toList();
 
         when(pictureFacadeService.readPicture(loginUserId, albumId,
-            PictureSearchCursor.from(10, Optional.of(expectedCursorCreatedAt))))
-            .thenReturn(expectedPictures);
+            PictureSearchCursor.from(10, Optional.of(cursorCreatedAt))))
+            .thenReturn(readPictures);
 
         mockMvc.perform(get("/api/storage/album/" + albumId + "/picture")
-                .header("X-Forwarded-For", remoteIp)
-                .param("cursorCreatedAt", "2024-04-08T10:45:12.728721232Z")
+                .header("x-original-forwarded-for", remoteIp)
+                .param("cursorCreatedAt", cursorCreatedAt.toString())
             )
             .andExpect(status().isOk())
-            .andExpect(content().string(OBJECT_MAPPER.writeValueAsString(expectedPictures)));
+            .andExpect(content().string(OBJECT_MAPPER.writeValueAsString(expectedResponse)));
     }
 
     @DisplayName("조회할 Picture 의 개수 지정하여 요청할 수 있다.")
     @Test
     void getPicturesWithLimit() throws Exception {
         var limit = 20;
-        var expectedPictures = List.of(new PictureInfo(
-            loginUserId, albumId, false, false, RESOURCE_KEY, LocalDateTime.now()
-        ));
+        var readPictures = List.of(new PictureInfo(loginUserId, albumId, false, false, RESOURCE_KEY, LocalDateTime.now()));
+        var expectedResponse = readPictures.stream()
+            .map(it -> PictureResponse.of(readPictures.get(0), RESOURCE_KEY.value()))
+            .toList();
 
         when(pictureFacadeService.readPicture(loginUserId, albumId,
             PictureSearchCursor.from(limit, Optional.empty())))
-            .thenReturn(expectedPictures);
+            .thenReturn(readPictures);
 
         mockMvc.perform(get("/api/storage/album/" + albumId + "/picture")
-                .header("X-Forwarded-For", remoteIp)
+                .header("x-original-forwarded-for", remoteIp)
                 .param("limit", String.valueOf(limit))
             )
             .andExpect(status().isOk())
-            .andExpect(content().string(OBJECT_MAPPER.writeValueAsString(expectedPictures)));
+            .andExpect(content().string(OBJECT_MAPPER.writeValueAsString(expectedResponse)));
     }
 
     @DisplayName("id로 Picture 다중 제거를 요청한다.")
@@ -126,7 +119,6 @@ class PictureControllerUnitTest extends ControllerUnitTestContext {
         mockMvc.perform(delete("/api/storage/album/" + albumId + "/picture")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(OBJECT_MAPPER.writeValueAsString(new PicturesDeleteRequest(pictureIds)))
-            )
-            .andExpect(status().isOk());
+            ).andExpect(status().isOk());
     }
 }

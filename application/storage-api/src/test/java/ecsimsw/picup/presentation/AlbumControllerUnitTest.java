@@ -1,9 +1,9 @@
 package ecsimsw.picup.presentation;
 
-import static ecsimsw.picup.domain.StorageType.STORAGE;
-import static ecsimsw.picup.utils.AlbumFixture.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
+import static ecsimsw.picup.utils.AlbumFixture.ALBUM_ID;
+import static ecsimsw.picup.utils.AlbumFixture.ALBUM_NAME;
+import static ecsimsw.picup.utils.AlbumFixture.RESOURCE_KEY;
+import static ecsimsw.picup.utils.AlbumFixture.THUMBNAIL_RESOURCE_KEY;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -11,95 +11,67 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import ecsimsw.picup.controller.AlbumController;
-import ecsimsw.picup.controller.GlobalControllerAdvice;
 import ecsimsw.picup.dto.AlbumInfo;
-import ecsimsw.picup.resolver.RemoteIpArgumentResolver;
-import ecsimsw.picup.domain.TokenPayload;
-import ecsimsw.picup.service.AuthTokenArgumentResolver;
-import ecsimsw.picup.service.AuthTokenInterceptor;
-import ecsimsw.picup.domain.FileResource;
-import ecsimsw.picup.domain.ResourceKey;
+import ecsimsw.picup.dto.AlbumResponse;
 import ecsimsw.picup.exception.UnauthorizedException;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.function.Supplier;
-
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.mock.web.MockMultipartFile;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 class AlbumControllerUnitTest extends ControllerUnitTestContext {
-
-    private final MockMvc mockMvc = MockMvcBuilders
-        .standaloneSetup(new AlbumController(albumFacadeService, storageFacadeService, fileUrlService))
-        .addInterceptors(new AuthTokenInterceptor(authTokenService))
-        .setCustomArgumentResolvers(
-            new AuthTokenArgumentResolver(authTokenService),
-            new RemoteIpArgumentResolver()
-        )
-        .setControllerAdvice(new GlobalControllerAdvice())
-        .build();
-
-    private final FileResource uploadFile = FileResource.stored(STORAGE, RESOURCE_KEY, FILE_SIZE);
-
-    @BeforeEach
-    void init() {
-        when(authTokenService.tokenPayload(any()))
-            .thenReturn(new TokenPayload(USER_ID, USER_NAME));
-
-        when(fileUrlService.cdnSignedUrl(any(), any(), any()))
-            .thenAnswer(input -> ((ResourceKey) (input.getArguments()[2])).value());
-    }
 
     @DisplayName("앨범을 생성한다.")
     @Test
     void createAlbum() throws Exception {
-        var expectedAlbumInfo = 1L;
+        var mockMultipartFile = new MockMultipartFile("thumbnail", "thumb.jpg", "jpg", new byte[0]);
+        var expectedAlbumCreated = ALBUM_ID;
 
-        when(albumFacadeService.init(any(), any(), any()))
-            .thenReturn(expectedAlbumInfo);
+        when(storageFacadeService.createAlbum(loginUserId, mockMultipartFile, ALBUM_NAME))
+            .thenReturn(expectedAlbumCreated);
 
-        when(userLockService.<Long>isolate(anyLong(), any(Supplier.class)))
-            .thenAnswer(input -> ((Supplier) input.getArguments()[1]).get());
-
-        mockMvc.perform(multipart("/api/album/")
-                .file(new MockMultipartFile("thumbnail", "thumb.jpg", "jpg", new byte[0]))
+        mockMvc.perform(multipart("/api/storage/album/")
+                .file(mockMultipartFile)
                 .param("name", ALBUM_NAME)
             )
             .andExpect(status().isOk())
-            .andExpect(content().string(OBJECT_MAPPER.writeValueAsString(expectedAlbumInfo)));
+            .andExpect(content().string(OBJECT_MAPPER.writeValueAsString(expectedAlbumCreated)));
     }
 
     @DisplayName("로그인 유저의 앨범 목록을 조회한다.")
     @Test
     void getAlbums() throws Exception {
-        var expectedAlbumInfos = List.of(
-            new AlbumInfo(1L, ALBUM_NAME, THUMBNAIL_RESOURCE_KEY, LocalDateTime.now())
+        var readAlbums = List.of(
+            new AlbumInfo(1L, ALBUM_NAME, RESOURCE_KEY, LocalDateTime.now())
         );
+        var expectedResponse = readAlbums.stream()
+            .map(albumInfo -> AlbumResponse.of(albumInfo, albumInfo.thumbnail().getResourceKey()))
+            .toList();
 
         when(albumFacadeService.findAll(loginUserId))
-            .thenReturn(expectedAlbumInfos);
+            .thenReturn(readAlbums);
 
-        mockMvc.perform(get("/api/album").header("X-Forwarded-For", remoteIp))
+        mockMvc.perform(get("/api/storage/album")
+                .header("x-original-forwarded-for", remoteIp))
             .andExpect(status().isOk())
-            .andExpect(content().string(OBJECT_MAPPER.writeValueAsString(expectedAlbumInfos)));
+            .andExpect(content().string(OBJECT_MAPPER.writeValueAsString(expectedResponse)));
     }
 
     @DisplayName("앨범 정보를 조회한다.")
     @Test
     void getAlbum() throws Exception {
         var albumId = 1L;
-        var expectedAlbumInfo = new AlbumInfo(1L, ALBUM_NAME, THUMBNAIL_RESOURCE_KEY, LocalDateTime.now());
+        var readAlbumInfo = new AlbumInfo(1L, ALBUM_NAME, THUMBNAIL_RESOURCE_KEY, LocalDateTime.now());
+        var expectedResponse = AlbumResponse.of(readAlbumInfo, readAlbumInfo.thumbnail().getResourceKey());
 
         when(albumFacadeService.findById(loginUserId, albumId))
-            .thenReturn(expectedAlbumInfo);
+            .thenReturn(readAlbumInfo);
 
-        mockMvc.perform(get("/api/album/" + albumId).header("X-Forwarded-For", remoteIp)).andExpect(status().isOk())
-            .andExpect(content().string(OBJECT_MAPPER.writeValueAsString(expectedAlbumInfo)));
+        mockMvc.perform(get("/api/storage/album/" + albumId)
+                .header("x-original-forwarded-for", remoteIp))
+            .andExpect(status().isOk())
+            .andExpect(content().string(OBJECT_MAPPER.writeValueAsString(expectedResponse)));
     }
 
     @DisplayName("로그인한 유저와 다른 유저의 앨범 정보를 조회하는 경우, 401을 응답한다.")
@@ -110,7 +82,8 @@ class AlbumControllerUnitTest extends ControllerUnitTestContext {
         when(albumFacadeService.findById(loginUserId, invalidAlbumId))
             .thenThrow(UnauthorizedException.class);
 
-        mockMvc.perform(get("/api/album/" + invalidAlbumId).header("X-Forwarded-For", remoteIp))
+        mockMvc.perform(get("/api/storage/album/" + invalidAlbumId)
+                .header("x-original-forwarded-for", remoteIp))
             .andExpect(status().isUnauthorized());
     }
 
@@ -119,7 +92,7 @@ class AlbumControllerUnitTest extends ControllerUnitTestContext {
     void deleteAlbum() throws Exception {
         var albumId = 1L;
 
-        mockMvc.perform(delete("/api/album/" + albumId))
+        mockMvc.perform(delete("/api/storage/album/" + albumId))
             .andExpect(status().isOk());
     }
 }
