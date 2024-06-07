@@ -21,6 +21,6 @@ public enum FileResourceExtension {
         return Arrays.stream(values())
             .filter(it -> it.name().equalsIgnoreCase(extension))
             .findAny()
-            .orElseThrow(() -> new StorageException("Invalid file type"));
+            .orElseThrow(() -> new StorageException("Invalid file type : " + extension));
     }
 }
