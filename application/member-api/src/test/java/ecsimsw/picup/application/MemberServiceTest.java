@@ -9,6 +9,7 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 import ecsimsw.picup.domain.MemberEventRepository;
 import ecsimsw.picup.domain.MemberRepository;
 import ecsimsw.picup.exception.MemberException;
+import ecsimsw.picup.exception.UnauthorizedException;
 import ecsimsw.picup.service.MemberService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -104,7 +105,7 @@ class MemberServiceTest {
             // then
             assertThatThrownBy(
                 () -> memberService.signIn(USER_NAME, invalidPassword)
-            ).isInstanceOf(MemberException.class);
+            ).isInstanceOf(UnauthorizedException.class);
         }
     }
 
