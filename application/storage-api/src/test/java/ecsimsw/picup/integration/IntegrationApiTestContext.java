@@ -11,7 +11,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
-@ActiveProfiles(value = {"storage-core-dev", "auth-dev"})
+@ActiveProfiles(value = {"storage-api-dev", "storage-core-dev", "auth-dev"})
 @SpringBootTest(classes = {RedisConfig.class})
 @AutoConfigureMockMvc
 public class IntegrationApiTestContext {
@@ -19,7 +19,10 @@ public class IntegrationApiTestContext {
     @Autowired
     protected MockMvc mockMvc;
 
+    @Autowired
     protected AlbumRepository albumRepository;
+
+    @Autowired
     protected StorageUsageRepository storageUsageRepository;
 
     @AfterEach

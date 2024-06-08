@@ -15,7 +15,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static ecsimsw.picup.utils.AlbumFixture.USER_ID;
 
-@ActiveProfiles(value = {"storage-core-dev"})
+@ActiveProfiles(value = {"storage-core-dev", "auth-core"})
 @DataJpaTest
 public class StorageUsageServiceTest {
 

@@ -21,7 +21,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static ecsimsw.picup.utils.AlbumFixture.*;
 
-@ActiveProfiles(value = {"storage-core-dev"})
+@ActiveProfiles(value = {"storage-core-dev", "auth-core"})
 @DataJpaTest
 class AlbumServiceTest {
 

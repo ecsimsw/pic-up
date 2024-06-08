@@ -21,7 +21,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
-@ActiveProfiles(value = {"storage-core-dev"})
+@ActiveProfiles(value = {"storage-core-dev", "auth-core"})
 @DataJpaTest
 class PictureServiceTest {
 
