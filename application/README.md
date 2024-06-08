@@ -1,14 +1,16 @@
 ## Application
 
 #### 모듈 구조
-- auth : 로그인 토큰 인증 편의를 위한 Interceptor, Access/Refresh token 발급 서비스, JWT 토큰 유틸 
-- common : 서버 간 통신 규약 (DTO), 사용자 정보 DB 암호화 유틸 
-- logging : Http access log, Slow response alert, 로깅 편의를 위한 커스텀 유틸 
-- member-api : 회원 관리 서비스 Rest API  
-- member-core : 회원 관리 서비스 
-- storage-api : 사용자 파일 기록, 스토리지 공간 관리, CDN 암호화 Rest API  
-- storage-batch : 파일 스토리지 삭제 처리 Job 
-- storage-core : 사용자 파일 기록, 스토리지 공간 관리 서비스
+```
+auth : 로그인 토큰 인증 편의를 위한 Interceptor, Access/Refresh token 발급 서비스, JWT 토큰 유틸 
+common : 서버 간 통신 규약 (DTO), 사용자 정보 DB 암호화 유틸 
+logging : Http access log, Slow response alert, 로깅 편의를 위한 커스텀 유틸 
+member-api : 회원 관리 서비스 Rest API  
+member-core : 회원 관리 서비스 
+storage-api : 사용자 파일 기록, 스토리지 공간 관리, CDN 암호화 Rest API  
+storage-batch : 파일 스토리지 삭제 처리 Job 
+storage-core : 사용자 파일 기록, 스토리지 공간 관리 서비스
+```
 
 #### 개발 환경 구성
 - Dev envs : Redis, RabbitMQ, H2
