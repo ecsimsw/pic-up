@@ -4,7 +4,7 @@ import ecsimsw.picup.annotation.LoginUser;
 import ecsimsw.picup.domain.TokenPayload;
 import ecsimsw.picup.dto.SignUpEventMessage;
 import ecsimsw.picup.dto.StorageUsageResponse;
-import ecsimsw.picup.service.StorageFacadeService;
+import ecsimsw.picup.service.AlbumFacadeService;
 import ecsimsw.picup.service.StorageUsageService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class StorageController {
 
-    private final StorageFacadeService storageFacadeService;
+    private final AlbumFacadeService albumFacadeService;
     private final StorageUsageService storageUsageService;
 
     @RabbitListener(queues = "sign_up_queue")
@@ -26,7 +26,7 @@ public class StorageController {
 
     @RabbitListener(queues = "user_delete_queue")
     public void deleteAllFromUser(Long userId) {
-        storageFacadeService.deleteAllFromUser(userId);
+        albumFacadeService.deleteAllFromUser(userId);
     }
 
     @GetMapping("/api/storage")

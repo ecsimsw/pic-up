@@ -1,29 +1,21 @@
 package ecsimsw.picup.presentation;
 
-import static ecsimsw.picup.utils.AlbumFixture.FILE_NAME;
-import static ecsimsw.picup.utils.AlbumFixture.FILE_SIZE;
-import static ecsimsw.picup.utils.AlbumFixture.RESOURCE_KEY;
-import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
 import ecsimsw.picup.domain.FileResource;
-import ecsimsw.picup.dto.PictureInfo;
-import ecsimsw.picup.dto.PictureResponse;
-import ecsimsw.picup.dto.PictureSearchCursor;
-import ecsimsw.picup.dto.PicturesDeleteRequest;
-import ecsimsw.picup.dto.PreSignedUrlResponse;
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Optional;
+import ecsimsw.picup.dto.*;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Optional;
+
+import static ecsimsw.picup.utils.AlbumFixture.*;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 class PictureControllerUnitTest extends ControllerUnitTestContext {
 
@@ -34,9 +26,9 @@ class PictureControllerUnitTest extends ControllerUnitTestContext {
     @Test
     void getSignedUrl() throws Exception {
         var fileResource = new FileResource();
-        var expectedPreSignedUrl = new PreSignedUrlResponse("preSignedUrl", RESOURCE_KEY.value());
+        var expectedPreSignedUrl = new PreSignedUrlResponse(FILE_URL, RESOURCE_KEY.value());
 
-        when(storageFacadeService.preUpload(loginUserId, albumId, FILE_NAME, FILE_SIZE))
+        when(pictureFacadeService.preUpload(loginUserId, albumId, FILE_NAME, FILE_SIZE))
             .thenReturn(fileResource);
 
         when(fileUrlService.preSignedUrl(fileResource.getResourceKey()))
@@ -117,8 +109,8 @@ class PictureControllerUnitTest extends ControllerUnitTestContext {
         var pictureIds = List.of(1L, 2L, 3L);
 
         mockMvc.perform(delete("/api/storage/album/" + albumId + "/picture")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(OBJECT_MAPPER.writeValueAsString(new PicturesDeleteRequest(pictureIds)))
-            ).andExpect(status().isOk());
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(OBJECT_MAPPER.writeValueAsString(new PicturesDeleteRequest(pictureIds)))
+        ).andExpect(status().isOk());
     }
 }

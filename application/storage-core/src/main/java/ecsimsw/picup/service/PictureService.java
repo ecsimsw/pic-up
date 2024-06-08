@@ -1,20 +1,16 @@
 package ecsimsw.picup.service;
 
-import ecsimsw.picup.domain.Album;
-import ecsimsw.picup.domain.AlbumRepository;
-import ecsimsw.picup.domain.Picture;
-import ecsimsw.picup.domain.PictureRepository;
-import ecsimsw.picup.domain.Picture_;
-import ecsimsw.picup.domain.ResourceKey;
+import ecsimsw.picup.domain.*;
 import ecsimsw.picup.dto.PictureInfo;
 import ecsimsw.picup.exception.AlbumException;
-import java.time.LocalDateTime;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDateTime;
+import java.util.List;
 
 @RequiredArgsConstructor
 @Service
@@ -23,18 +19,31 @@ public class PictureService {
     private final AlbumRepository albumRepository;
     private final PictureRepository pictureRepository;
     private final StorageUsageService storageUsageService;
+    private final ResourceService resourceService;
 
     @Transactional
-    public PictureInfo create(Long userId, Long albumId, ResourceKey fileResource, Long fileSize) {
+    public FileResource prepare(Long userId, Long albumId, String fileName, long fileSize) {
         var album = getUserAlbum(userId, albumId);
-        var picture = new Picture(album, fileResource, fileSize);
+        album.authorize(userId);
+        if (!storageUsageService.isAbleToStore(userId, fileSize)) {
+            throw new AlbumException("Lack of storage space");
+        }
+        return resourceService.prepare(fileName, fileSize);
+    }
+
+    @Transactional
+    public PictureInfo create(Long userId, Long albumId, ResourceKey fileResource) {
+        var pictureFile = resourceService.commit(fileResource);
+        var album = getUserAlbum(userId, albumId);
+        var picture = new Picture(album, pictureFile);
         pictureRepository.save(picture);
-        storageUsageService.addUsage(userId, fileSize);
+        storageUsageService.addUsage(userId, pictureFile.getSize());
         return PictureInfo.of(picture);
     }
 
     @Transactional
-    public void setThumbnail(ResourceKey resourceKey) {
+    public void setThumbnail(ResourceKey resourceKey, long fileSize) {
+        resourceService.createThumbnail(resourceKey, fileSize);
         var picture = findPictureByResource(resourceKey);
         picture.setHasThumbnail(true);
         pictureRepository.save(picture);
@@ -48,6 +57,11 @@ public class PictureService {
             .sum();
         storageUsageService.subtractAll(userId, usageSum);
         pictureRepository.deleteAll(pictures);
+
+        var pictureFiles = pictures.stream()
+            .map(Picture::getFileResource)
+            .toList();
+        resourceService.deleteAllAsync(pictureFiles);
         return pictures;
     }
 
@@ -74,15 +88,6 @@ public class PictureService {
             PageRequest.of(0, limit, Direction.DESC, Picture_.CREATED_AT)
         );
         return PictureInfo.listOf(pictures);
-    }
-
-    @Transactional(readOnly = true)
-    public void checkAbleToStore(Long userId, Long albumId, long size) {
-        var album = getUserAlbum(userId, albumId);
-        album.authorize(userId);
-        if(!storageUsageService.isAbleToStore(userId, size)) {
-            throw new AlbumException("Lack of storage space");
-        }
     }
 
     private Picture findPictureByResource(ResourceKey resourceKey) {

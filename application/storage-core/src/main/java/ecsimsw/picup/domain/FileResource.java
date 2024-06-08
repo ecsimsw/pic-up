@@ -1,11 +1,11 @@
 package ecsimsw.picup.domain;
 
-import java.time.LocalDateTime;
-import javax.persistence.*;
-
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import javax.persistence.*;
+import java.time.LocalDateTime;
 
 @Getter
 @AllArgsConstructor
@@ -54,5 +54,9 @@ public class FileResource {
 
     public void setToBeDeleted(boolean toBeDeleted) {
         this.toBeDeleted = toBeDeleted;
+    }
+
+    public boolean isToBeDeleted() {
+        return toBeDeleted;
     }
 }

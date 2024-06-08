@@ -2,6 +2,8 @@ package ecsimsw.picup.utils;
 
 import ecsimsw.picup.domain.FileResource;
 import ecsimsw.picup.domain.ResourceKey;
+import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.web.multipart.MultipartFile;
 
 import static ecsimsw.picup.domain.StorageType.THUMBNAIL;
 
@@ -18,6 +20,6 @@ public class AlbumFixture {
     public static final long FILE_SIZE = 256L;
 
     public static final FileResource THUMBNAIL_FILE = new FileResource(THUMBNAIL, RESOURCE_KEY, FILE_SIZE, false);
-
+    public static final MultipartFile MULTIPART_FILE = new MockMultipartFile(FILE_NAME, FILE_NAME, "jpg", new byte[]{});
     public static final Long USER_ID = 1L;
 }

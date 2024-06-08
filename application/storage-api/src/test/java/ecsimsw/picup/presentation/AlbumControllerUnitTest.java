@@ -1,42 +1,42 @@
 package ecsimsw.picup.presentation;
 
-import static ecsimsw.picup.utils.AlbumFixture.ALBUM_ID;
-import static ecsimsw.picup.utils.AlbumFixture.ALBUM_NAME;
-import static ecsimsw.picup.utils.AlbumFixture.RESOURCE_KEY;
-import static ecsimsw.picup.utils.AlbumFixture.THUMBNAIL_RESOURCE_KEY;
-import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
+import ecsimsw.picup.domain.FileResource;
 import ecsimsw.picup.dto.AlbumInfo;
 import ecsimsw.picup.dto.AlbumResponse;
 import ecsimsw.picup.exception.UnauthorizedException;
-import java.time.LocalDateTime;
-import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.mock.web.MockMultipartFile;
+
+import java.time.LocalDateTime;
+import java.util.List;
+
+import static ecsimsw.picup.domain.StorageType.STORAGE;
+import static ecsimsw.picup.utils.AlbumFixture.*;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 class AlbumControllerUnitTest extends ControllerUnitTestContext {
 
     @DisplayName("앨범을 생성한다.")
     @Test
     void createAlbum() throws Exception {
-        var mockMultipartFile = new MockMultipartFile("thumbnail", "thumb.jpg", "jpg", new byte[0]);
-        var expectedAlbumCreated = ALBUM_ID;
+        var thumbnailFile = new MockMultipartFile("thumbnail", FILE_NAME, "jpg", new byte[0]);
 
-        when(storageFacadeService.createAlbum(loginUserId, mockMultipartFile, ALBUM_NAME))
-            .thenReturn(expectedAlbumCreated);
+        when(resourceService.prepare(thumbnailFile.getOriginalFilename(), thumbnailFile.getSize()))
+            .thenReturn(FileResource.stored(STORAGE, RESOURCE_KEY, thumbnailFile.getSize()));
+
+        when(albumFacadeService.create(loginUserId, ALBUM_NAME, RESOURCE_KEY))
+            .thenReturn(ALBUM_ID);
 
         mockMvc.perform(multipart("/api/storage/album/")
-                .file(mockMultipartFile)
+                .file(thumbnailFile)
                 .param("name", ALBUM_NAME)
             )
             .andExpect(status().isOk())
-            .andExpect(content().string(OBJECT_MAPPER.writeValueAsString(expectedAlbumCreated)));
+            .andExpect(content().string(OBJECT_MAPPER.writeValueAsString(ALBUM_ID)));
     }
 
     @DisplayName("로그인 유저의 앨범 목록을 조회한다.")

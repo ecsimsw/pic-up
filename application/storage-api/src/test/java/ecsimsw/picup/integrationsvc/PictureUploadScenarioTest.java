@@ -1,13 +1,4 @@
-//package ecsimsw.picup.integration;
-//
-//import static ecsimsw.picup.domain.StorageType.STORAGE;
-//import static ecsimsw.picup.utils.AlbumFixture.ALBUM_NAME;
-//import static ecsimsw.picup.utils.AlbumFixture.FILE_SIZE;
-//import static ecsimsw.picup.utils.AlbumFixture.RESOURCE_KEY;
-//import static ecsimsw.picup.utils.AlbumFixture.THUMBNAIL_FILE;
-//import static ecsimsw.picup.utils.AlbumFixture.USER_ID;
-//import static org.assertj.core.api.Assertions.assertThat;
-//import static org.assertj.core.api.Assertions.assertThatThrownBy;
+//package ecsimsw.picup.integrationsvc;
 //
 //import ecsimsw.picup.domain.Album;
 //import ecsimsw.picup.domain.FileResource;
@@ -22,6 +13,11 @@
 //import org.junit.jupiter.api.DisplayName;
 //import org.junit.jupiter.api.Test;
 //import org.springframework.beans.factory.annotation.Autowired;
+//
+//import static ecsimsw.picup.domain.StorageType.STORAGE;
+//import static ecsimsw.picup.utils.AlbumFixture.*;
+//import static org.assertj.core.api.Assertions.assertThat;
+//import static org.assertj.core.api.Assertions.assertThatThrownBy;
 //
 //@DisplayName("Picture 업로드 절차 검증")
 //public class PictureUploadScenarioTest extends IntegrationApiTestContext {
@@ -105,7 +101,7 @@
 //        // given
 //        var otherUserId = USER_ID;
 //        var preLoadedFile = resourceService.prepare(RESOURCE_KEY.value(), FILE_SIZE);
-//        var otherUserAlbum = albumFacadeService.createAlbum(otherUserId, ALBUM_NAME, THUMBNAIL_FILE);
+//        var otherUserAlbum = albumFacadeService.createAlbum(otherUserId, ALBUM_NAME, THUMBNAIL_FILE.getResourceKey());
 //
 //        // when, then
 //        var userId = USER_ID + 1;

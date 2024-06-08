@@ -16,19 +16,31 @@ import java.util.List;
 public class AlbumService {
 
     private final AlbumRepository albumRepository;
+    private final ResourceService resourceService;
+    private final PictureService pictureService;
 
     @Transactional
     public AlbumInfo create(Long userId, String name, ResourceKey thumbnail) {
         var album = new Album(userId, name, thumbnail);
         albumRepository.save(album);
+        resourceService.commit(thumbnail);
         return AlbumInfo.of(album);
     }
 
     @Transactional
-    public AlbumInfo deleteById(Long userId, Long albumId) {
+    public void deleteById(Long userId, Long albumId) {
         var album = getUserAlbum(userId, albumId);
+        pictureService.deleteAllInAlbum(userId, albumId);
+        resourceService.deleteAsync(album.getThumbnail());
         albumRepository.delete(album);
-        return AlbumInfo.of(album);
+    }
+
+    @Transactional
+    public void deleteAllFromUser(Long userId) {
+        var albums = findAllByUser(userId);
+        albums.forEach(
+            album -> deleteById(userId, album.id())
+        );
     }
 
     @Transactional(readOnly = true)

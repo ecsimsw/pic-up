@@ -1,4 +1,4 @@
-package ecsimsw.picup.integration;
+package ecsimsw.picup.integrationsvc;
 
 import ecsimsw.picup.domain.*;
 import ecsimsw.picup.service.*;
@@ -49,13 +49,13 @@ public class IntegrationApiTestContext {
     @Autowired
     protected AuthTokenService authTokenService;
 
-    protected long userId = USER_ID;
+    protected long savedUserId = USER_ID;
     protected Cookie accessCookie;
 
     @BeforeEach
     public void init() {
-        storageUsageRepository.save(new StorageUsage(userId, Long.MAX_VALUE));
-        var authToken = authTokenService.issue(new TokenPayload(userId, "USER_NAME"));
+        storageUsageRepository.save(new StorageUsage(USER_ID, Long.MAX_VALUE));
+        var authToken = authTokenService.issue(new TokenPayload(USER_ID, "USER_NAME"));
         accessCookie = authTokenService.accessTokenCookie(authToken);
     }
 
@@ -66,6 +66,4 @@ public class IntegrationApiTestContext {
         albumRepository.deleteAll();
         storageUsageRepository.deleteAll();
     }
-
-
 }

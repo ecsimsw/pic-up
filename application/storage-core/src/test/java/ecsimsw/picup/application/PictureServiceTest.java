@@ -1,100 +1,88 @@
 package ecsimsw.picup.application;
 
-import ecsimsw.picup.domain.Album;
-import ecsimsw.picup.domain.AlbumRepository;
-import ecsimsw.picup.domain.PictureRepository;
-import ecsimsw.picup.domain.ResourceKey;
-import ecsimsw.picup.domain.StorageUsage;
-import ecsimsw.picup.domain.StorageUsageRepository;
+import ecsimsw.picup.domain.*;
 import ecsimsw.picup.service.PictureService;
-import ecsimsw.picup.service.StorageUsageService;
-import ecsimsw.picup.utils.AlbumFixture;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
+import static ecsimsw.picup.domain.StorageType.STORAGE;
+import static ecsimsw.picup.utils.AlbumFixture.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 @ActiveProfiles(value = {"storage-core-dev", "auth-core"})
-@DataJpaTest
+@SpringBootTest
 class PictureServiceTest {
 
-    private final long savedUserId = 1L;
-
+    @Autowired
     private PictureService pictureService;
 
+    @Autowired
+    private PictureRepository pictureRepository;
+
+    @Autowired
+    private AlbumRepository albumRepository;
+
+    @Autowired
+    private FileResourceRepository fileResourceRepository;
+
+    @Autowired
+    private StorageUsageRepository storageUsageRepository;
+
+    private final Long userId = 1L;
+    private final ResourceKey savedFile = RESOURCE_KEY;
+
     @BeforeEach
-    void init(
-        @Autowired AlbumRepository albumRepository,
-        @Autowired PictureRepository pictureRepository,
-        @Autowired StorageUsageRepository storageUsageRepository
-    ) {
-        storageUsageRepository.save(new StorageUsage(savedUserId, Long.MAX_VALUE));
-        pictureService = new PictureService(albumRepository, pictureRepository, new StorageUsageService(storageUsageRepository));
+    public void init() {
+        fileResourceRepository.save(FileResource.stored(STORAGE, savedFile, FILE_SIZE));
+        storageUsageRepository.save(new StorageUsage(userId, Long.MAX_VALUE));
     }
 
-    @DisplayName("Picture 생성 로직 검증")
-    @Nested
-    class CreatePicture {
+    @DisplayName("앨범에 picture 를 생성한다.")
+    @Test
+    void create() {
+        // given
+        var album = albumRepository.save(new Album(userId, ALBUM_NAME, savedFile));
 
-        private final ResourceKey fileResource = AlbumFixture.RESOURCE_KEY;
-        private Album savedAlbum;
+        // when
+        var saved = pictureService.create(userId, album.getId(), savedFile);
 
-        @BeforeEach
-        void giveAlbum(@Autowired AlbumRepository albumRepository) {
-            savedAlbum = albumRepository.save(new Album(savedUserId, AlbumFixture.ALBUM_NAME, AlbumFixture.RESOURCE_KEY));
-        }
+        // then
+        var expected = pictureRepository.findById(saved.id()).orElseThrow();
+        assertAll(
+            () -> assertThat(expected.getId()).isNotNull(),
+            () -> assertThat(expected.getAlbum().getId()).isEqualTo(album.getId()),
+            () -> assertThat(expected.getFileResource()).isEqualTo(savedFile)
+        );
+    }
 
-        @DisplayName("앨범에 picture 를 생성한다.")
-        @Test
-        void create(@Autowired PictureRepository pictureRepository) {
-            // given
-            var fileResource = AlbumFixture.RESOURCE_KEY;
-            var fileSize = AlbumFixture.FILE_SIZE;
+    @DisplayName("다른 사용자의 Album 에 Picture 를 생성할 수 없다.")
+    @Test
+    void createInOthersAlbum(@Autowired AlbumRepository albumRepository) {
+        // given
+        var otherUserId = userId + 1;
+        var othersAlbum = albumRepository.save(new Album(otherUserId, ALBUM_NAME, savedFile));
 
-            // when
-            var saved = pictureService.create(savedUserId, savedAlbum.getId(), fileResource, fileSize);
+        // when, then
+        assertThatThrownBy(
+            () -> pictureService.create(userId, othersAlbum.getId(), savedFile)
+        );
+    }
 
-            // then
-            var expected = pictureRepository.findById(saved.id()).orElseThrow();
-            assertAll(
-                () -> assertThat(expected.getId()).isNotNull(),
-                () -> assertThat(expected.getAlbum().getId()).isEqualTo(savedAlbum.getId()),
-                () -> assertThat(expected.getAlbum().getUserId()).isEqualTo(savedUserId),
-                () -> assertThat(expected.getFileResource()).isEqualTo(fileResource)
-            );
-        }
+    @DisplayName("존재하지 않는 Album 에 Picture 를 생성할 수 없다.")
+    @Test
+    void createInNotExistsAlbum() {
+        // given
+        var notExistsAlbumId = Long.MAX_VALUE;
 
-        @DisplayName("다른 사용자의 Album 에 Picture 를 생성할 수 없다.")
-        @Test
-        void createInOthersAlbum(@Autowired AlbumRepository albumRepository) {
-            // given
-            var fileSize = AlbumFixture.FILE_SIZE;
-            var othersAlbum = albumRepository.save(new Album(savedUserId + 1, AlbumFixture.ALBUM_NAME, AlbumFixture.RESOURCE_KEY));
-
-            // then
-            assertThatThrownBy(
-                () -> pictureService.create(savedUserId, othersAlbum.getId(), fileResource, fileSize)
-            );
-        }
-
-        @DisplayName("존재하지 않는 Album 에 Picture 를 생성할 수 없다.")
-        @Test
-        void createInNotExistsAlbum() {
-            // given
-            var fileSize = AlbumFixture.FILE_SIZE;
-            var notExistsAlbumId = Long.MAX_VALUE;
-
-            // then
-            assertThatThrownBy(
-                () -> pictureService.create(savedUserId, notExistsAlbumId, fileResource, fileSize)
-            );
-        }
+        // when, then
+        assertThatThrownBy(
+            () -> pictureService.create(userId, notExistsAlbumId, savedFile)
+        );
     }
 }

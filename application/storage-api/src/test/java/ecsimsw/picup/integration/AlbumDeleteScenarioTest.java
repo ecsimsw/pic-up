@@ -1,184 +1,190 @@
 package ecsimsw.picup.integration;
 
-import static ecsimsw.picup.utils.AlbumFixture.ALBUM_NAME;
-import static ecsimsw.picup.utils.AlbumFixture.FILE_NAME;
-import static ecsimsw.picup.utils.AlbumFixture.FILE_SIZE;
-import static ecsimsw.picup.utils.AlbumFixture.THUMBNAIL_FILE;
-import static ecsimsw.picup.utils.AlbumFixture.THUMBNAIL_RESOURCE_KEY;
-import static ecsimsw.picup.utils.AlbumFixture.USER_ID;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-
-import ecsimsw.picup.domain.AlbumRepository;
 import ecsimsw.picup.domain.FileResourceRepository;
-import ecsimsw.picup.domain.PictureRepository;
-import ecsimsw.picup.service.AlbumFacadeService;
-import ecsimsw.picup.service.PictureFacadeService;
-import ecsimsw.picup.service.ResourceService;
-import ecsimsw.picup.service.StorageUsageService;
+import ecsimsw.picup.domain.ResourceKey;
+import ecsimsw.picup.domain.StorageUsage;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+
+import static ecsimsw.picup.domain.StorageType.STORAGE;
+import static ecsimsw.picup.utils.AlbumFixture.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @DisplayName("앨범 제거 절차 검증")
 public class AlbumDeleteScenarioTest extends IntegrationApiTestContext {
 
-    private final ResourceService resourceService;
-    private final AlbumFacadeService albumFacadeService;
-    private final PictureFacadeService pictureFacadeService;
-    private final StorageUsageService storageUsageService;
-    private long savedAlbumId;
-
-    public AlbumDeleteScenarioTest(
-        @Autowired AlbumFacadeService albumFacadeService,
-        @Autowired PictureFacadeService pictureFacadeService,
-        @Autowired ResourceService resourceService,
-        @Autowired StorageUsageService storageUsageService
-    ) {
-        this.albumFacadeService = albumFacadeService;
-        this.pictureFacadeService = pictureFacadeService;
-        this.resourceService = resourceService;
-        this.storageUsageService = storageUsageService;
-    }
+    private long albumId;
+    private ResourceKey thumbnail;
 
     @BeforeEach
     void initAlbum() {
-        storageUsageService.init(USER_ID);
-        savedAlbumId = albumFacadeService.init(USER_ID, ALBUM_NAME, THUMBNAIL_FILE.getResourceKey());
+        albumId = createAlbum(userId);
     }
 
     @DisplayName("앨범 정보를 제거한다.")
     @Test
-    void deleteAlbum(@Autowired AlbumRepository albumRepository) {
+    void deleteAlbum() throws Exception {
         // when
-        albumFacadeService.delete(USER_ID, savedAlbumId);
+        var response = mockMvc.perform(delete("/api/storage/album/" + albumId)
+            .cookie(accessCookie)
+            .contentType(MediaType.APPLICATION_JSON)
+        ).andReturn().getResponse();
 
         // then
-        assertThat(albumRepository.existsById(savedAlbumId)).isFalse();
+        assertAll(
+            () -> assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value()),
+            () -> assertThat(albumRepository.existsById(albumId)).isFalse()
+        );
     }
 
-    @DisplayName("포함된 Picture 가 제거된다.")
+    @DisplayName("앨범에 포함된 Picture가 제거된다.")
     @Test
-    void deletePicturesIncluded(@Autowired PictureRepository pictureRepository) {
-        // given
-        var file = resourceService.prepare(FILE_NAME, FILE_SIZE);
-        pictureFacadeService.commitPreUpload(USER_ID, savedAlbumId, file.getResourceKey());
-
+    void deletePicturesIncluded() throws Exception {
         // when
-        albumFacadeService.delete(USER_ID, savedAlbumId);
+        mockMvc.perform(delete("/api/storage/album/" + albumId)
+            .cookie(accessCookie)
+            .contentType(MediaType.APPLICATION_JSON)
+        );
 
         // then
-        assertThat(pictureRepository.existsById(file.getId())).isFalse();
+        assertThat(pictureRepository.findAllByAlbumId(albumId)).isEmpty();
     }
 
-    @DisplayName("앨범 썸네일 파일이 삭제 예정 상태가 된다.")
+    @DisplayName("앨범의 썸네일 파일이 삭제 예정 상태가 된다.")
     @Test
-    void deleteFilesIncluded(@Autowired FileResourceRepository fileResourceRepository) {
-        // given
-        var file = resourceService.createThumbnail(THUMBNAIL_RESOURCE_KEY, FILE_SIZE);
-        savedAlbumId = albumFacadeService.init(USER_ID, ALBUM_NAME, file.getResourceKey());
-
+    void deleteFilesIncluded() throws Exception {
         // when
-        albumFacadeService.delete(USER_ID, savedAlbumId);
+        mockMvc.perform(delete("/api/storage/album/" + albumId)
+            .cookie(accessCookie)
+            .contentType(MediaType.APPLICATION_JSON)
+        );
 
         // then
-        var thumbnailResource = fileResourceRepository.findById(file.getId()).orElseThrow();
-        assertThat(thumbnailResource.getToBeDeleted()).isTrue();
+        var albumFile = fileResourceRepository.findByStorageTypeAndResourceKey(STORAGE, thumbnail).orElseThrow();
+        assertThat(albumFile.isToBeDeleted()).isTrue();
     }
 
     @DisplayName("포함된 Picture 의 파일 사이즈만큼 스토리지 사용량이 감소한다.")
     @Test
-    void updateStorageUsage() {
+    void updateStorageUsage() throws Exception {
         // given
-        var deleteFileSize = FILE_SIZE;
-        var file = resourceService.prepare(FILE_NAME, deleteFileSize);
-        pictureFacadeService.commitPreUpload(USER_ID, savedAlbumId, file.getResourceKey());
-        var beforeUsage = storageUsageService.getUsage(USER_ID).getUsageAsByte();
+        var pictureId = uploadPicture(userId, albumId);
+        var fileSize = pictureRepository.findById(pictureId).orElseThrow().getFileSize();
+        var beforeUsage = storageUsageService.getUsage(userId).getUsageAsByte();
 
         // when
-        albumFacadeService.delete(USER_ID, savedAlbumId);
+        mockMvc.perform(delete("/api/storage/album/" + albumId)
+            .cookie(accessCookie)
+            .contentType(MediaType.APPLICATION_JSON)
+        );
 
         // then
-        var afterUsage = storageUsageService.getUsage(USER_ID).getUsageAsByte();
-        assertThat(beforeUsage - afterUsage).isEqualTo(deleteFileSize);
+        var afterUsage = storageUsageService.getUsage(userId).getUsageAsByte();
+        assertThat(beforeUsage - afterUsage).isEqualTo(fileSize);
     }
 
-    @DisplayName("유저 소유가 아닌 앨범을 삭제할 경우 예외가 발생한다.")
+    @DisplayName("유저 소유가 아닌 앨범을 실패를 응답한다.")
     @Test
-    void deleteAlbumOthers() {
+    void deleteAlbumOthers() throws Exception {
         // given
-        var otherUserId = USER_ID + 1;
+        var otherUserId = userId + 1;
+        var othersAlbumId = createAlbum(otherUserId);
 
         // when, then
-        assertThatThrownBy(
-            () -> albumFacadeService.delete(otherUserId, savedAlbumId)
-        );
+        mockMvc.perform(delete("/api/storage/album/" + othersAlbumId)
+            .cookie(accessCookie)
+            .contentType(MediaType.APPLICATION_JSON)
+        ).andExpect(status().isBadRequest());
     }
 
     @DisplayName("존재하지 않는 앨범을 삭제할 경우 예외가 발생한다.")
     @Test
-    void deleteAlbumNonExists() {
+    void deleteAlbumNonExists() throws Exception {
         // when, then
-        var nonExistsAlbumId = Long.MAX_VALUE;
-        assertThatThrownBy(
-            () -> albumFacadeService.delete(USER_ID, nonExistsAlbumId)
-        );
+        var notExistsAlbumId = Long.MAX_VALUE;
+        mockMvc.perform(delete("/api/storage/album/" + notExistsAlbumId)
+            .cookie(accessCookie)
+            .contentType(MediaType.APPLICATION_JSON)
+        ).andExpect(status().isBadRequest());
     }
 
-    @DisplayName("앨범 삭제를 실패하는 경우 앨범 내부 Picture 는 삭제되지 않는다.")
+    @DisplayName("앨범 삭제를 실패하는 경우 앨범 내부 Picture는 삭제되지 않는다.")
     @Test
-    void deleteFailedPictures(
-        @Autowired PictureRepository pictureRepository
-    ) {
+    void deleteFailedPictures() throws Exception {
         // given
-        var file = resourceService.prepare(FILE_NAME, FILE_SIZE);
-        var picture = pictureFacadeService.commitPreUpload(USER_ID, savedAlbumId, file.getResourceKey());
+        var otherUserId = userId + 1;
+        storageUsageRepository.save(new StorageUsage(otherUserId, Long.MAX_VALUE));
+        var othersAlbumId = createAlbum(otherUserId);
+        var pictureId = uploadPicture(otherUserId, othersAlbumId);
 
         // when
-        var nonExistsAlbumId = Long.MAX_VALUE;
-        assertThatThrownBy(
-            () -> albumFacadeService.delete(USER_ID, nonExistsAlbumId)
-        );
+        mockMvc.perform(delete("/api/storage/album/" + othersAlbumId)
+            .cookie(accessCookie)
+            .contentType(MediaType.APPLICATION_JSON)
+        ).andExpect(status().isBadRequest());
 
         // then
-        assertThat(pictureRepository.existsById(picture.id())).isTrue();
+        assertThat(pictureRepository.existsById(pictureId)).isTrue();
     }
 
     @DisplayName("앨범 삭제를 실패하는 경우 스토리지 사용량은 이전 그대로 롤백된다.")
     @Test
-    void deleteFailedStorageUsage() {
+    void deleteFailedStorageUsage() throws Exception {
         // given
-        var file = resourceService.prepare(FILE_NAME, FILE_SIZE);
-        pictureFacadeService.commitPreUpload(USER_ID, savedAlbumId, file.getResourceKey());
-        var beforeUsage = storageUsageService.getUsage(USER_ID).getUsageAsByte();
+        var otherUserId = userId + 1;
+        storageUsageRepository.save(new StorageUsage(otherUserId, Long.MAX_VALUE));
+
+        var othersAlbumId = createAlbum(otherUserId);
+        uploadPicture(otherUserId, othersAlbumId);
+        var beforeUsage = storageUsageService.getUsage(otherUserId).getUsageAsByte();
 
         // when
-        var nonExistsAlbumId = Long.MAX_VALUE;
-        assertThatThrownBy(
-            () -> albumFacadeService.delete(USER_ID, nonExistsAlbumId)
-        );
+        mockMvc.perform(delete("/api/storage/album/" + othersAlbumId)
+            .cookie(accessCookie)
+            .contentType(MediaType.APPLICATION_JSON)
+        ).andExpect(status().isBadRequest());
 
         // then
-        var afterUsage = storageUsageService.getUsage(USER_ID).getUsageAsByte();
-        assertThat(beforeUsage - afterUsage).isEqualTo(0);
+        var afterUsage = storageUsageService.getUsage(otherUserId).getUsageAsByte();
+        assertThat(afterUsage).isEqualTo(beforeUsage);
     }
 
     @DisplayName("앨범를 실패하는 경우 앨범에 포함된 파일들의 삭제 예정 상태는 이전 그대로 롤백된다.")
     @Test
-    void deleteFailedFileResources(@Autowired FileResourceRepository fileResourceRepository) {
+    void deleteFailedFileResources(@Autowired FileResourceRepository fileResourceRepository) throws Exception {
         // given
-        var file = resourceService.createThumbnail(THUMBNAIL_RESOURCE_KEY, FILE_SIZE);
-        savedAlbumId = albumFacadeService.init(USER_ID, ALBUM_NAME, file.getResourceKey());
+        var otherUserId = userId + 1;
+        storageUsageRepository.save(new StorageUsage(otherUserId, Long.MAX_VALUE));
+        var othersAlbumId = createAlbum(otherUserId);
+        var pictureId = uploadPicture(otherUserId, othersAlbumId);
 
         // when
-        var nonExistsAlbumId = Long.MAX_VALUE;
-        assertThatThrownBy(
-            () -> albumFacadeService.delete(USER_ID, nonExistsAlbumId)
-        );
+        mockMvc.perform(delete("/api/storage/album/" + othersAlbumId)
+            .cookie(accessCookie)
+            .contentType(MediaType.APPLICATION_JSON)
+        ).andExpect(status().isBadRequest());
 
         // then
-        var thumbnailResource = fileResourceRepository.findById(file.getId()).orElseThrow();
-        assertThat(thumbnailResource.getToBeDeleted()).isFalse();
+        var picture = pictureRepository.findById(pictureId).orElseThrow();
+        var fileResource = fileResourceRepository.findByStorageTypeAndResourceKey(STORAGE, picture.getFileResource()).orElseThrow();
+        assertThat(fileResource.isToBeDeleted()).isFalse();
+    }
+
+    private Long createAlbum(long userId) {
+        thumbnail = resourceService.prepare(FILE_NAME, FILE_SIZE).getResourceKey();
+        resourceService.commit(thumbnail);
+        return albumFacadeService.create(userId, ALBUM_NAME, thumbnail);
+    }
+
+    private Long uploadPicture(long userId, long albumId) {
+        var pictureFile = resourceService.prepare(FILE_NAME, FILE_SIZE);
+        return pictureFacadeService.commitPreUpload(userId, albumId, pictureFile.getResourceKey());
     }
 }

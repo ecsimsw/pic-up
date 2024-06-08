@@ -55,6 +55,10 @@ public class Picture {
         this(null, album, fileResource, false, fileSize, LocalDateTime.now());
     }
 
+    public Picture(Album album, FileResource fileResource) {
+        this(null, album, fileResource.getResourceKey(), false, fileResource.getSize(), LocalDateTime.now());
+    }
+
     public void setHasThumbnail(boolean hasThumbnail) {
         this.hasThumbnail = hasThumbnail;
     }

@@ -13,7 +13,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 
-@ActiveProfiles({"storage-core-dev", "auth-dev"})
+@ActiveProfiles({"storage-batch-dev", "storage-core-dev", "auth-dev"})
 @SpringBootTest
 public class IntegrationBatchTestContext {
 

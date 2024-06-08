@@ -1,8 +1,7 @@
 package ecsimsw.picup.service;
 
-import ecsimsw.picup.domain.Picture;
+import ecsimsw.picup.domain.FileResource;
 import ecsimsw.picup.domain.ResourceKey;
-import ecsimsw.picup.domain.StorageType;
 import ecsimsw.picup.dto.PictureInfo;
 import ecsimsw.picup.dto.PictureSearchCursor;
 import lombok.RequiredArgsConstructor;
@@ -17,32 +16,32 @@ import java.util.List;
 public class PictureFacadeService {
 
     private final PictureService pictureService;
-    private final ResourceService resourceService;
+    private final UserLockService userLockService;
 
-    @Transactional(readOnly = true)
-    public void checkAbleToUpload(Long userId, Long albumId, Long fileSize) {
-        pictureService.checkAbleToStore(userId, albumId, fileSize);
+    @Transactional
+    public FileResource preUpload(long userId, long albumId, String fileName, long fileSize) {
+        return pictureService.prepare(userId, albumId, fileName, fileSize);
     }
 
     @Transactional
-    public PictureInfo commitPreUpload(long userId, long albumId, ResourceKey resourceKey) {
-        var file = resourceService.commit(resourceKey);
-        return pictureService.create(userId, albumId, file.getResourceKey(), file.getSize());
+    public Long commitPreUpload(long userId, long albumId, ResourceKey resourceKey) {
+        return userLockService.<Long>isolate(
+            userId,
+            () -> pictureService.create(userId, albumId, resourceKey).id()
+        );
     }
 
     @Transactional
     public void setPictureThumbnail(ResourceKey resourceKey, long fileSize) {
-        resourceService.createThumbnail(resourceKey, fileSize);
-        pictureService.setThumbnail(resourceKey);
+        pictureService.setThumbnail(resourceKey, fileSize);
     }
 
     @Transactional
     public void deletePictures(long userId, long albumId, List<Long> pictureIds) {
-        var pictures = pictureService.deleteAllById(userId, albumId, pictureIds);
-        var resourceKeys = pictures.stream()
-            .map(Picture::getFileResource)
-            .toList();
-        resourceService.deleteAllAsync(resourceKeys);
+        userLockService.isolate(
+            userId,
+            () -> pictureService.deleteAllById(userId, albumId, pictureIds)
+        );
     }
 
     @Transactional(readOnly = true)

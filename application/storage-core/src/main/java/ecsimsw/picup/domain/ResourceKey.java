@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
+import java.util.Objects;
 import java.util.UUID;
 
 @Getter
@@ -24,8 +25,8 @@ public class ResourceKey {
     }
 
     public static ResourceKey fromFileName(String fileName) {
-        if(fileName == null || !fileName.contains(".")) {
-            throw new StorageException("Invalid file name");
+        if (fileName == null || !fileName.contains(".")) {
+            throw new StorageException("Invalid file name : " + fileName);
         }
         int indexOfExtension = fileName.lastIndexOf(".");
         var extension = fileName.substring(indexOfExtension + 1);
@@ -44,6 +45,19 @@ public class ResourceKey {
 
     public String value() {
         return resourceKey;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ResourceKey that = (ResourceKey) o;
+        return Objects.equals(resourceKey, that.resourceKey);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(resourceKey);
     }
 }
 

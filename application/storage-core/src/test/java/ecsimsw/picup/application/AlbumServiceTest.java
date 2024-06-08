@@ -1,35 +1,42 @@
 package ecsimsw.picup.application;
 
-import ecsimsw.picup.domain.Album;
-import ecsimsw.picup.domain.AlbumRepository;
-import ecsimsw.picup.domain.ResourceKey;
+import ecsimsw.picup.domain.*;
 import ecsimsw.picup.dto.AlbumInfo;
 import ecsimsw.picup.exception.AlbumException;
 import ecsimsw.picup.service.AlbumService;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-
-import java.util.List;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
+import java.util.List;
+
+import static ecsimsw.picup.domain.StorageType.STORAGE;
+import static ecsimsw.picup.utils.AlbumFixture.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
-import static ecsimsw.picup.utils.AlbumFixture.*;
 
 @ActiveProfiles(value = {"storage-core-dev", "auth-core"})
-@DataJpaTest
+@SpringBootTest
 class AlbumServiceTest {
 
+    @Autowired
     private AlbumService albumService;
 
+    @Autowired
+    private StorageUsageRepository storageUsageRepository;
+
+    @Autowired
+    private FileResourceRepository fileResourceRepository;
+
+    private final Long userId = 1L;
+    private final ResourceKey savedFile = RESOURCE_KEY;
+
     @BeforeEach
-    public void init(@Autowired AlbumRepository albumRepository) {
-        albumService = new AlbumService(albumRepository);
+    public void init() {
+        fileResourceRepository.save(FileResource.stored(STORAGE, savedFile, FILE_SIZE));
+        storageUsageRepository.save(new StorageUsage(userId, Long.MAX_VALUE));
     }
 
     @DisplayName("앨범을 생성한다.")
@@ -39,17 +46,15 @@ class AlbumServiceTest {
         @DisplayName("앨범 정보를 저장한다.")
         @Test
         void create() {
-            // given
-            var userId = 1L;
-
             // when
-            var albumInfo = albumService.create(userId, ALBUM_NAME, THUMBNAIL_RESOURCE_KEY);
+            var userId = 1L;
+            var albumInfo = albumService.create(userId, ALBUM_NAME, savedFile);
 
             // then
             assertAll(
                 () -> assertThat(albumInfo.id()).isGreaterThan(0),
                 () -> assertThat(albumInfo.name()).isEqualTo(ALBUM_NAME),
-                () -> assertThat(albumInfo.thumbnail()).isEqualTo(THUMBNAIL_RESOURCE_KEY)
+                () -> assertThat(albumInfo.thumbnail()).isEqualTo(savedFile)
             );
         }
     }
@@ -58,33 +63,28 @@ class AlbumServiceTest {
     @Nested
     class DeleteAlbum {
 
-        private Album savedAlbum;
-        private Long ownerUserId;
-
-        @BeforeEach
-        public void giveAlbum(@Autowired AlbumRepository albumRepository) {
-            savedAlbum = albumRepository.save(ALBUM);
-            ownerUserId = savedAlbum.getUserId();
-        }
-
         @DisplayName("앨범 정보를 제거한다.")
         @Test
         void delete() {
+            // given
+            var savedAlbum = albumService.create(userId, ALBUM_NAME, savedFile);
+
             // when
-            albumService.deleteById(ownerUserId, savedAlbum.getId());
+            albumService.deleteById(userId, savedAlbum.id());
 
             // then
-            assertThat(albumService.findAllByUser(ownerUserId)).isEmpty();
+            assertThat(albumService.findAllByUser(userId)).isEmpty();
         }
 
         @DisplayName("앨범 주인이 아닌 사용자는 앨범을 제거할 수 없다.")
         @Test
         void deleteWithInvalidUser() {
             // given
-            var otherUserId = ownerUserId + 1;
+            var savedAlbum = albumService.create(userId, ALBUM_NAME, savedFile);
 
-            // then
-            assertThatThrownBy(() -> albumService.deleteById(otherUserId, savedAlbum.getId()))
+            // when, then
+            var otherUserId = userId + 1;
+            assertThatThrownBy(() -> albumService.deleteById(otherUserId, savedAlbum.id()))
                 .isInstanceOf(AlbumException.class);
         }
     }
@@ -93,14 +93,16 @@ class AlbumServiceTest {
     @Nested
     class ReadAlbum {
 
-        private final Long ownerUserId = 1L;
-        private List<Album> savedAlbums;
+        private List<AlbumInfo> savedAlbums;
 
         @BeforeEach
-        public void giveAlbum(@Autowired AlbumRepository albumRepository) {
-            var album1 = albumRepository.save(new Album(ownerUserId, ALBUM_NAME, new ResourceKey("resourceKey1")));
-            var album2 = albumRepository.save(new Album(ownerUserId, ALBUM_NAME, new ResourceKey("resourceKey2")));
-            var album3 = albumRepository.save(new Album(ownerUserId, ALBUM_NAME, new ResourceKey("resourceKey3")));
+        public void giveAlbum() {
+            var file1 = fileResourceRepository.save(FileResource.stored(STORAGE, ResourceKey.fromFileName(FILE_NAME), FILE_SIZE));
+            var album1 = albumService.create(userId, ALBUM_NAME, file1.getResourceKey());
+            var file2 = fileResourceRepository.save(FileResource.stored(STORAGE, ResourceKey.fromFileName(FILE_NAME), FILE_SIZE));
+            var album2 = albumService.create(userId, ALBUM_NAME, file2.getResourceKey());
+            var file3 = fileResourceRepository.save(FileResource.stored(STORAGE, ResourceKey.fromFileName(FILE_NAME), FILE_SIZE));
+            var album3 = albumService.create(userId, ALBUM_NAME, file3.getResourceKey());
             savedAlbums = List.of(album3, album2, album1);
         }
 
@@ -108,44 +110,48 @@ class AlbumServiceTest {
         @Test
         void findAll() {
             // when
-            var result = albumService.findAllByUser(ownerUserId);
+            var result = albumService.findAllByUser(userId);
 
             // then
-            var expected = savedAlbums.stream()
-                .map(AlbumInfo::of)
-                .toList();
-            assertThat(result).isEqualTo(expected);
+            assertThat(result).isEqualTo(savedAlbums);
         }
 
         @DisplayName("단일 앨범 정보를 조회한다.")
         @Test
         void getUserAlbum() {
-            // given
-            var findingAlbum = savedAlbums.get(0);
-
             // when
-            var result = albumService.findById(ownerUserId, findingAlbum.getId());
+            var findingAlbum = savedAlbums.get(0);
+            var result = albumService.findById(userId, findingAlbum.id());
 
             // then
             assertAll(
-                () -> assertThat(result.id()).isEqualTo(findingAlbum.getId()),
-                () -> assertThat(result.name()).isEqualTo(findingAlbum.getName()),
-                () -> assertThat(result.thumbnail()).isEqualTo(findingAlbum.getThumbnail()),
-                () -> assertThat(result.createdAt()).isEqualTo(findingAlbum.getCreatedAt())
+                () -> assertThat(result.id()).isEqualTo(findingAlbum.id()),
+                () -> assertThat(result.name()).isEqualTo(findingAlbum.name()),
+                () -> assertThat(result.thumbnail()).isEqualTo(findingAlbum.thumbnail()),
+                () -> assertThat(result.createdAt()).isEqualTo(findingAlbum.createdAt())
             );
         }
 
         @DisplayName("다른 사용자의 앨범 정보를 조회할 수 없다.")
         @Test
         void getUserAlbumWithInvalidUser() {
-            // given
+            // when, then
             var findingAlbum = savedAlbums.get(0);
-            var otherUserId = ownerUserId + 1;
-
-            // then
+            var otherUserId = userId + 1;
             assertThatThrownBy(
-                () -> albumService.findById(otherUserId, findingAlbum.getId())
+                () -> albumService.findById(otherUserId, findingAlbum.id())
             );
         }
+    }
+
+    @AfterEach
+    public void tearDown(
+        @Autowired PictureRepository pictureRepository,
+        @Autowired AlbumRepository albumRepository,
+        @Autowired FileResourceRepository fileResourceRepository
+    ) {
+        pictureRepository.deleteAll();
+        fileResourceRepository.deleteAll();
+        albumRepository.deleteAll();
     }
 }

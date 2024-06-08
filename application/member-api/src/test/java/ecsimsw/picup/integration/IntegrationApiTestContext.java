@@ -1,7 +1,5 @@
 package ecsimsw.picup.integration;
 
-import static reactor.core.publisher.Mono.when;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import ecsimsw.picup.domain.MemberEventRepository;
@@ -9,8 +7,6 @@ import ecsimsw.picup.domain.MemberRepository;
 import ecsimsw.picup.service.AuthTokenService;
 import ecsimsw.picup.service.StorageUsageClient;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.mockito.Spy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
