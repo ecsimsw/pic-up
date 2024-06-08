@@ -25,21 +25,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 
-@ActiveProfiles(value = {"storage-core-dev", "auth-core"})
-@SpringBootTest
-class DummyFileDeleteScenarioTest {
-
-    @Autowired
-    private ResourceService resourceService;
-
-    @MockBean
-    private FileStorage fileStorage;
-
-    @Autowired
-    private FileDeletionService fileDeletionService;
-
-    @Autowired
-    private FileResourceRepository fileResourceRepository;
+class DummyFileDeleteScenarioTest extends IntegrationBatchTestContext {
 
     private FileResource toBeDeleted;
 

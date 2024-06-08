@@ -17,15 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
-@ActiveProfiles(value = {"storage-core-dev", "auth-core"})
-@SpringBootTest
-class DummyFileSearchScenarioTest {
-
-    @Autowired
-    private ResourceService resourceService;
-
-    @Autowired
-    private FileResourceRepository fileResourceRepository;
+class DummyFileSearchScenarioTest extends IntegrationBatchTestContext {
 
     @DisplayName("삭제 예정 상태의 FileResource 를 조회한다.")
     @Test
