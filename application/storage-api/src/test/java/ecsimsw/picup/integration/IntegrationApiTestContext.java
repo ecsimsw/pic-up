@@ -1,22 +1,31 @@
 package ecsimsw.picup.integration;
 
-import ecsimsw.picup.domain.*;
-import ecsimsw.picup.service.*;
+import static ecsimsw.picup.utils.AlbumFixture.USER_ID;
+
+import ecsimsw.picup.domain.AlbumRepository;
+import ecsimsw.picup.domain.FileResourceRepository;
+import ecsimsw.picup.domain.PictureRepository;
+import ecsimsw.picup.domain.StorageUsage;
+import ecsimsw.picup.domain.StorageUsageRepository;
+import ecsimsw.picup.domain.TokenPayload;
+import ecsimsw.picup.service.AuthTokenService;
+import javax.servlet.http.Cookie;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.amqp.RabbitAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
-import javax.servlet.http.Cookie;
-
-import static ecsimsw.picup.utils.AlbumFixture.USER_ID;
-
 @ActiveProfiles(value = {"storage-api-dev", "storage-core-dev", "auth-dev"})
-@SpringBootTest(classes = {RedisConfig.class})
 @AutoConfigureMockMvc
+@EnableAutoConfiguration(exclude = {RabbitAutoConfiguration.class})
+@SpringBootTest(classes = {RedisConfig.class})
 public class IntegrationApiTestContext {
 
     @Autowired
@@ -34,26 +43,16 @@ public class IntegrationApiTestContext {
     @Autowired
     protected FileResourceRepository fileResourceRepository;
 
-    @Autowired
-    protected AlbumFacadeService albumFacadeService;
-
-    @Autowired
-    protected PictureFacadeService pictureFacadeService;
-
-    @Autowired
-    protected ResourceService resourceService;
-
-    @Autowired
-    protected StorageUsageService storageUsageService;
-
-    @Autowired
-    protected AuthTokenService authTokenService;
+    @MockBean
+    private ConnectionFactory mockRabbitMqConfig;
 
     protected long userId = USER_ID;
     protected Cookie accessCookie;
 
     @BeforeEach
-    public void init() {
+    public void init(
+        @Autowired AuthTokenService authTokenService
+    ) {
         storageUsageRepository.save(new StorageUsage(userId, Long.MAX_VALUE));
         var authToken = authTokenService.issue(new TokenPayload(userId, "USER_NAME"));
         accessCookie = authTokenService.accessTokenCookie(authToken);
@@ -66,6 +65,4 @@ public class IntegrationApiTestContext {
         albumRepository.deleteAll();
         storageUsageRepository.deleteAll();
     }
-
-
 }

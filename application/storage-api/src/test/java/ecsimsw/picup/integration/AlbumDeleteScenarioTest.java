@@ -3,6 +3,10 @@ package ecsimsw.picup.integration;
 import ecsimsw.picup.domain.FileResourceRepository;
 import ecsimsw.picup.domain.ResourceKey;
 import ecsimsw.picup.domain.StorageUsage;
+import ecsimsw.picup.service.AlbumFacadeService;
+import ecsimsw.picup.service.PictureFacadeService;
+import ecsimsw.picup.service.ResourceService;
+import ecsimsw.picup.service.StorageUsageService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -19,6 +23,18 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @DisplayName("앨범 제거 절차 검증")
 public class AlbumDeleteScenarioTest extends IntegrationApiTestContext {
+
+    @Autowired
+    private StorageUsageService storageUsageService;
+
+    @Autowired
+    private ResourceService resourceService;
+
+    @Autowired
+    private AlbumFacadeService albumFacadeService;
+
+    @Autowired
+    protected PictureFacadeService pictureFacadeService;
 
     private long albumId;
     private ResourceKey thumbnail;
