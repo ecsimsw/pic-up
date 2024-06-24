@@ -1,7 +1,7 @@
 export const testParam = {
-    vus: 100,
+    vus: 5000,
     // duration: '10m',
-    iterations: 500,
+    iterations: 5000,
 };
 
 export const serverUrl = "https://www.ecsimsw.com:8082"

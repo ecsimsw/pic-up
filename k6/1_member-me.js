@@ -8,7 +8,7 @@ export const options = testParam
 
 export default function () {
     let loginData = {
-        username: "test-user" + random(0, 99),
+        username: "ecsimsw",
         password: "password"
     };
     http.post(serverUrl + '/api/member/signin', JSON.stringify(loginData), {
