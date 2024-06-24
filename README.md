@@ -25,11 +25,11 @@
 
 ### Stacks
 - Framework : Java 17, Spring boot 2.7, Hibernate, JUnit5, Mokito
-- BE tools : Mysql, Redis, RabbitMQ, H2, Flyway
-- BE libray : S3Mock, Embedded Redis, Thumbnailator, Jcodec
+- BE tools : Mysql, Redis, RabbitMQ, Flyway, Thumbnailator, Jcodec
+- BE dev env : S3Mock, Embedded Redis, H2
 - FE library : Dropzone, lightGallery, video-js
-- On premise : Nginx, Kubernetes, Vault, NFS, Vagrant
-- Cloud : S3, Cloudfront, Route53, Lambda, Terraform
+- Container, VM : Kubernetes, Docker, vagrant
+- Cloud : S3, RDS, Cloudfront, Route53, Lambda, Terraform
 - Monitoring : Grafana, Prometheus, Loki, Promtail
 
 ### 비용
