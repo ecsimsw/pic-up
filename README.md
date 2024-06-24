@@ -3,7 +3,7 @@
 
 ### Application
 
-<img width="550" alt="image" src="https://github.com/ecsimsw/pic-up/assets/46060746/c210c0bc-2bb8-4264-9984-281ace5fefbe">
+<img width="550" alt="image" src="https://github.com/ecsimsw/pic-up/assets/46060746/5745f0ef-fd34-4b39-9115-1a4dbed5b3fc">
 
 - 서버 간 비동기 통신, 이벤트 발행 보장 : [#45](https://github.com/ecsimsw/pic-up/issues/45)
 - 비관적 락의 DB 커넥션 점유 문제 개선, 레디스 분산락 적용 : [#42](https://github.com/ecsimsw/pic-up/issues/42)
@@ -15,7 +15,7 @@
 
 ### Infrastructure
 
-<img width="550" alt="image" src="https://github.com/ecsimsw/pic-up/assets/46060746/cc14bf44-50fe-49da-830a-74c534a9020b">
+<img width="550" alt="image" src="https://github.com/ecsimsw/pic-up/assets/46060746/eebda44e-7555-4425-906e-a135eda905fb">
 
 - 배포 시점에 Vault secret key 주입, Vault kubernetes injector : [#38](https://github.com/ecsimsw/pic-up/issues/38)
 - k8s Rolling update 무중단 배포, 내장 톰캣 Graceful shutdown 동작 원리 : [#37](https://github.com/ecsimsw/pic-up/issues/37)     
