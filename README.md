@@ -1,6 +1,16 @@
 ## Pic-up
 누구나 사용할 수 있는, 가장 쉬운 사진/동영상 앨범 스토리지를 만들고 있습니다.
 
+### Stacks
+- Framework : Java 17, Spring boot 2.7, Hibernate, JUnit5, Mokito
+- DB, MQ : Mysql, Redis, RabbitMQ,
+- BE library : Flyway, Thumbnailator, Jcodec
+- BE dev env : S3Mock, Embedded Redis, H2
+- FE library : Dropzone, lightGallery, video-js
+- Container, VM : Kubernetes, Docker, vagrant
+- Infrastructure : S3, RDS, Cloudfront, Route53, Lambda, Vault, Terraform
+- Monitoring : Grafana, Prometheus, Loki, Promtail
+
 ## 기록
 
 ### [#42](https://github.com/ecsimsw/pic-up/issues/42) 트랜잭션 간 격리, DB 커넥션 점유 시간 개선
@@ -30,7 +40,7 @@ return userLockService.<Long>isolate(
 ### [#45](https://github.com/ecsimsw/pic-up/issues/45) 서버 간 비동기 통신, 이벤트 발행 보장
 - 회원 가입 시 'Member 서버'에서 요청을 받아, 가입 정보를 'Storage 서버'로 전달해야 한다.
 - 사용자는 Storage 서버의 가입 정보 처리를 기다릴 필요가 없어 비동기 방식으로 이벤트를 전달하였다.
-- 처음에는 Http 통신으로 가입 정보를 전달했으나, 수신 실패 시 재시도를 직접 처리해야 하고, 재시도에도 실패시 이벤트가 유실된다는 문제가 있었다.
+- 처음에는 Http 통신으로 가입 정보를 전달했으나, 처리 실패 시 재시도, 타임 아웃를 직접 처리해야 하고 특히 이벤트가 유실될 수 있는 불편함이 있었다.
 - 이에 RabbitMQ를 사용하여 재시도, DeadLetterQueue를 처리함으로 더 안전한 비동기 이벤트 전달을 만들었다고 생각한다.
 
 <img src = "https://github.com/ecsimsw/pic-up/assets/46060746/38631553-ca08-4210-964a-b07608383301" width="620px">
@@ -41,7 +51,7 @@ return userLockService.<Long>isolate(
 - 로직 안에서 MQ의 직접 의존이 없기 때문에 RabbitMQ의 상태 문제로 가입이 실패하지 않는다.
 - 또 DB에 이벤트 내용을 기록하기에 이벤트 유실 문제가 없고, 발행 재시도하여 MQ 상태가 복구되면 MQ에 전달하지 못했던 이벤트 발행을 보장할 수 있었다.
 
-<img src = "https://github.com/ecsimsw/pic-up/assets/46060746/ca33b345-2561-49eb-bbaf-65beff26f8d7" width="620px">
+<img src = "https://github.com/ecsimsw/pic-up/assets/46060746/ca33b345-2561-49eb-bbaf-65beff26f8d7" width="720px">
 
 ### [#31](https://github.com/ecsimsw/pic-up/issues/31) 안전한 파일 제거를 위한 배치 작업
 - 앨범을 제거하면 그 안에 있는 모든 사진, 영상 파일이 삭제된다.
@@ -63,25 +73,36 @@ return userLockService.<Long>isolate(
 - 회원 가입 로직에서 외부 서버 상태에 대한 의존을 제거하여 가입 실패를 최소화하고, 동시에 필수 이벤트는 발행됨을 보장할 수 있었다.
 
 ### [#40](https://github.com/ecsimsw/pic-up/issues/40) 인증된 사용자에게만 자원을 허용하기 위한 CDN URL 암호화
-- CDN으로 사용자 개인 파일을 호스팅했는데 이는 브루트 포스 공격의 대상이 되어, 인증되지 않은 사용자의 자원이 노출될 여지가 있다.
-- CDN URL을 암호화하고 CloudFront에서 이를 검증하여, 기간 외 요청 또는 인증된 사용자 IP 외 요청에 응답 방지한다.
-- 이때 사용자 요청마다 매번 새로 URL을 암호화하게 되면 암호화에 필요한 시간이 소요되고, URL이 달라져 브라우저 컨텐츠 캐싱이 적용되지 않는다.
+- CDN으로 사용자 개인 파일을 캐시하여 서버의 부하를 낮추고 응답 속도를 개선하였다.
+- CDN URL을 임의로 수정하여 다른 사람의 자원을 요청하는 등, 브루트 포스 공격으로 타인의 비공개 파일이 반환되는 문제를 고민하였다.
+- CDN URL을 암호화하는 cdn signed-url 방식으로 기간 외 요청 또는 인증된 사용자 IP 외 요청에 응답 방지한다.
+- RSA, 비대칭 키를 사용하여 인증된 사용자 정보가 포함된 URL을 암호화하고, CDN 제공자에서 이를 검증하여 자원 반환 여부를 결정한다.
+- 만약 사용자 요청마다 매번 새로 URL을 암호화한다면, 매번 암호화된 URL이 달라져 브라우저 컨텐츠 캐싱이 적용되지 않는다.
 - 암호화한 URL을 사용자 별로 캐싱하여 암호화에 걸리는 시간을 피하고, 브라우저 컨텐츠 캐싱이 가능하도록 하여 페이지 로딩 속도 개선할 수 있었다.
 
-<img src = "https://github.com/ecsimsw/pic-up/assets/46060746/41f7c59f-cc1e-451d-a529-805711ea90bd" width="520px">
+<img src = "https://github.com/ecsimsw/pic-up/assets/46060746/48b6f6ba-5e1c-44f9-bf7c-f940af220ffc" width="520px">
 
 ### [#24](https://github.com/ecsimsw/pic-up/issues/24) 업로드 속도 개선, 썸네일 람다
-- Picup에선 파일 업로드시, 사진을 리사이징, 동영상을 캡쳐해여 썸네일을 생성한다.
-- 썸네일 덕에 사용자 파일 목록 조회나 모바일 환경에서 페이지 리소스가 줄어, 페이지 로딩 시간을 크게 개선할 수 있었다.
-- 부하 테스트와 모니터링을 통해, 파일 업로드에 시간이 오래걸리고 메모리 사용량이 많음을 확인했다.
+- 파일 업로드 시 썸네일을 생성하여, 파일 목록 조회나 모바일 환경에서 페이지 리소스가 줄이고 페이지 로딩 시간을 크게 개선할 수 있었다.
+- 반면 서버 응답 속도나 메모리 사용은 많음을 부하 테스트와 모니터링으로 확인했다.
 - S3 pre-signed url을 사용하여 백엔드 서버를 거치지 않고 클라이언트가 직접 S3 파일 업로드 수행하도록 구조 변경했다.
 - S3 업로드 이벤트를 트리거하는 AWS Lambda를 정의하고 썸네일 생성 로직을 추가해, 썸네일 생성 시간을 사용자 업로드 요청 처리 과정에서 분리할 수 있었다.
 - 사진 파일이 백엔드를 거치지 않고 썸네일 생성을 직접 처리하지 않기에, 업로드 응답 시간이 단축되고 서버 메모리 사용률이 크게 개선되었다.
 - 서버의 파일 크기 80%에 해당하는 8MB 크기의 이미지 파일을 기준으로, 작업 전에는 3.5초가 작업 후에는 1.2초로 개선되었다.
 
+<img src = "https://github.com/ecsimsw/pic-up/assets/46060746/760ecf6c-ea61-41ba-85bc-6266bd9c7714" width="620px">
+
 ### [#38](https://github.com/ecsimsw/pic-up/issues/38) 배포 시점에 Vault secret key 주입
+- DB 비밀번호, AWS 키, JWT 키 등 공개되어선 안되는 비밀 값들을 Vault로 관리한다.
+- Pod 실행 시점에 Init container에서 Secret를 환경 변수로 지정한다.
+- 이때 Vault 인증은 Pod의 Service account, 저장은 컨테이너 내부의 임시 메모리 공간을 사용하여 보안을 지킨다.
+- 코드 내에서 Vault 의존, Secret 정보를 제거하여 Vault 설정 변화에 유연하고, 개발자로부터 Secret 키 관리 포인트를 제거할 수 있었다.
+
+<img src = "https://github.com/ecsimsw/pic-up/assets/46060746/27e92c09-da73-4a57-bfe0-685489d115f1" width="520px">
+
 
 ### [#37](https://github.com/ecsimsw/pic-up/issues/37) k8s Rolling update 무중단 배포
+- 
 
 ### [#35](https://github.com/ecsimsw/pic-up/issues/35) DB 쿼리 성능 개선, 인덱스 튜닝과 커서 기반 페이지네이션 전환
 
@@ -91,36 +112,10 @@ return userLockService.<Long>isolate(
 - 이를 위해 Redis는 Embedded Redis를, MQ는 Mockito로 Mocking, DB는 인메모리 DB를 사용하였다.
 - 또, Spring test container 캐시로 가급적 test container가 재사용될 수 있도록 노력하는 것으로 테스트 실행 시간을 줄일 수 있었다.
 
-
-
 ### Infrastructure
 
 <img width="550" alt="image" src="https://github.com/ecsimsw/pic-up/assets/46060746/5a890763-d597-4c1b-8029-e4bd6ea63a33">
 <img width="550" alt="image" src="https://github.com/ecsimsw/pic-up/assets/46060746/eebda44e-7555-4425-906e-a135eda905fb">
-
-
-### Stacks
-- Framework : Java 17, Spring boot 2.7, Hibernate, JUnit5, Mokito
-- BE tools : Mysql, Redis, RabbitMQ, Flyway, Thumbnailator, Jcodec
-- BE dev env : S3Mock, Embedded Redis, H2
-- FE library : Dropzone, lightGallery, video-js
-- Container, VM : Kubernetes, Docker, vagrant
-- Cloud : S3, RDS, Cloudfront, Route53, Lambda, Terraform
-- Monitoring : Grafana, Prometheus, Loki, Promtail
-
-### 비용
-1. Route53
-- Hosted zone : 1개 -> 0.5USD (개당 0.5USD)
-- Query 수 : 30,000 질의 -> 0.01USD (백만 쿼리당 0.4USD)
-- 헬스 체크 : 0.75USD (부가 옵션 X, Non aws endpoint, 0.75USD/Mon)
-2. CloudFront
-- 요청 수 : 24,440 -> 0USD (프리티어, 백만 요청까지)
-- 데이터 전송 크기 : 5.01GB -> 0USD (프리티어, 1024GB까지)
-3. S3
-- 버킷 크기 : 80GB -> 1.84USD (프리티어 5GB까지, 스탠다드 GB 당 0.023 USD)
-- CloudFront 로 데이터 전송 : 0USD (비용 청구 x)
-- S3에서 데이터 송신 : 0GB -> 0USD (GB 당 0.126USD)
-4. 달 예상 비용 : 3.3USD
 
 ### 미리보기
 
