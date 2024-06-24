@@ -57,9 +57,10 @@ return userLockService.<Long>isolate(
 - 앨범을 제거하면 그 안에 있는 모든 사진, 영상 파일이 삭제된다.
 - 사용자가 앨범 안의 파일들이 모두 삭제되는 시간을 대기할 필요없다고 생각하여 비동기로 삭제 처리하게 되었다.
 - 비동기 처리를 위해 또 다른 스레드를 이용할 경우, 요청마다 추가 스레드가 필요하고 스레드 비정상 종료 등 예외 처리가 까다로워 좀 더 안전한 방법을 고민했다.
-- 삭제 로직 안에서 파일을 직접 삭제하지 않고 소프트 딜리트하고 사용자 응답을 마치는 식으로 Transaction outbox pattern으로 구조를 변경했다.
+- 삭제 로직 안에서 파일을 직접 삭제하지 않고, 삭제할 파일을 DB에 표시해두고 사용자 응답을 마치는 식으로 구조를 변경했다.
+- 회원 가입 로직에서 외부 서버 상태에 대한 의존을 제거하여 가입 실패를 최소화하고, 동시에 필수 이벤트는 발행됨을 보장할 수 있었다.
 
-<img width="600" alt="image" src="https://github.com/ecsimsw/pic-up/assets/46060746/46e69a10-a0bf-4bd0-a122-69dfcd3aea99">
+<img width="650" alt="image" src="https://github.com/ecsimsw/pic-up/assets/46060746/46e69a10-a0bf-4bd0-a122-69dfcd3aea99">
 
 - 이후 일정 시간 간격으로 삭제 표시된 파일 내역을 조회하고, 파일을 제거하는 작업을 실행하여 실제 파일을 제거하였다.
 - 작업은 k8s의 cronjob을 사용하여 작업 주기마다 실행했으며, concurrencyPolicy 옵션으로 두개 이상의 작업이 동시에 수행되는 경우를 방지했다.
@@ -70,8 +71,6 @@ return userLockService.<Long>isolate(
 
 <img width="600" alt="image" src="https://github.com/ecsimsw/pic-up/assets/46060746/81f4d86e-44ac-4927-8239-b4b573823e23">
 
-- 회원 가입 로직에서 외부 서버 상태에 대한 의존을 제거하여 가입 실패를 최소화하고, 동시에 필수 이벤트는 발행됨을 보장할 수 있었다.
-
 ### [#40](https://github.com/ecsimsw/pic-up/issues/40) 인증된 사용자에게만 자원을 허용하기 위한 CDN URL 암호화
 - CDN으로 사용자 개인 파일을 캐시하여 서버의 부하를 낮추고 응답 속도를 개선하였다.
 - CDN URL을 임의로 수정하여 다른 사람의 자원을 요청하는 등, 브루트 포스 공격으로 타인의 비공개 파일이 반환되는 문제를 고민하였다.
@@ -80,7 +79,7 @@ return userLockService.<Long>isolate(
 - 만약 사용자 요청마다 매번 새로 URL을 암호화한다면, 매번 암호화된 URL이 달라져 브라우저 컨텐츠 캐싱이 적용되지 않는다.
 - 암호화한 URL을 사용자 별로 캐싱하여 암호화에 걸리는 시간을 피하고, 브라우저 컨텐츠 캐싱이 가능하도록 하여 페이지 로딩 속도 개선할 수 있었다.
 
-<img src = "https://github.com/ecsimsw/pic-up/assets/46060746/48b6f6ba-5e1c-44f9-bf7c-f940af220ffc" width="520px">
+<img src = "https://github.com/ecsimsw/pic-up/assets/46060746/48b6f6ba-5e1c-44f9-bf7c-f940af220ffc" width="620px">
 
 ### [#24](https://github.com/ecsimsw/pic-up/issues/24) 업로드 속도 개선, 썸네일 람다
 - 파일 업로드 시 썸네일을 생성하여, 파일 목록 조회나 모바일 환경에서 페이지 리소스가 줄이고 페이지 로딩 시간을 크게 개선할 수 있었다.
@@ -96,21 +95,32 @@ return userLockService.<Long>isolate(
 - DB 비밀번호, AWS 키, JWT 키 등 공개되어선 안되는 비밀 값들을 Vault로 관리한다.
 - Pod 실행 시점에 Init container에서 Secret를 환경 변수로 지정한다.
 - 이때 Vault 인증은 Pod의 Service account, 저장은 컨테이너 내부의 임시 메모리 공간을 사용하여 보안을 지킨다.
-- 코드 내에서 Vault 의존, Secret 정보를 제거하여 Vault 설정 변화에 유연하고, 개발자로부터 Secret 키 관리 포인트를 제거할 수 있었다.
+- 코드 내에서 모든 Vault 정보가 제거되어 Vault 설정 변화에 유연하고, 개발자로부터 Secret 키 관리 포인트를 제거할 수 있었다.
 
 <img src = "https://github.com/ecsimsw/pic-up/assets/46060746/27e92c09-da73-4a57-bfe0-685489d115f1" width="520px">
 
+### [#35](https://github.com/ecsimsw/pic-up/issues/35) DB 쿼리 성능 개선, 인덱스 튜닝과 커서 기반 페이지네이션 전환
+- Bulk insert와 File insert 방식으로 천만 개의 데이터를 삽입하여 자주 사용되는 쿼리의 성능을 확인했다.
+- 인덱스, 커버링 인덱스를 적용하고 실행 계획으로 적용 결과를 확인했다.
+- OFFSET 기반 페이지네이션에서 커서 기반 페이지네이션으로 방식을 변경하고, 기존 5분대의 조회 시간을 50ms 이내로 개선할 수 있었다.
+```
+SELECT A.TITLE, P.ID, P.DESCRIPTION FROM PICTURE AS P JOIN ALBUM AS A ON P.ALBUMID = A.ID
+                ORDER BY A.TITLE, P.ID
+                LIMIT 10 OFFSET 9000000
+# 10 rows retrieved starting from 1 in 5 m 36 s 581 ms (execution: 5 m 36 s 493 ms, fetching: 88 ms)
+
+SELECT A.TITLE, P.ID, P.DESCRIPTION FROM PICTURE AS P JOIN ALBUM AS A ON P.ALBUMID = A.ID
+                WHERE A.TITLE >= 'WvdVj7GbU' AND P.ID >= 4120335
+                ORDER BY A.TITLE, P.ID LIMIT 10
+# 10 rows retrieved starting from 1 in 44 ms (execution: 11 ms, fetching: 33 ms)
+```
 
 ### [#37](https://github.com/ecsimsw/pic-up/issues/37) k8s Rolling update 무중단 배포
-- 
-
-### [#35](https://github.com/ecsimsw/pic-up/issues/35) DB 쿼리 성능 개선, 인덱스 튜닝과 커서 기반 페이지네이션 전환
-
-### [#30](https://github.com/ecsimsw/pic-up/issues/30) 테스트 환경 구성
-- 통합 테스트 환경 구성에 외부 환경 의존을 제거했다.
-- 예를 들어 Redis, RabbitMQ, DB에 대한 외부 설정이 불필요하도록 하여, 다른 환경 구성없이 테스트가 실행될 수 있도록 하였다.
-- 이를 위해 Redis는 Embedded Redis를, MQ는 Mockito로 Mocking, DB는 인메모리 DB를 사용하였다.
-- 또, Spring test container 캐시로 가급적 test container가 재사용될 수 있도록 노력하는 것으로 테스트 실행 시간을 줄일 수 있었다.
+- k8s deployment의 Rolling update 방식으로 배포한다.
+- 모니터링과 부하테스트를 통해 서비스 운영 도중 배포 또는 스케일 변경 시 다운 타임이 발생하는 것을 확인할 수 있었다.
+- WAS에서 Graceful shutdown을 처리하여 서버 종료 시 처리 중인 요청을 완료 후 종료되도록 설정하였다.
+- Pod container 종료가 LB(svc)의 라우팅 규칙 업데이트를 앞서는 경우, LB에 의해 전달된 요청이 처리되지 못한다.
+- LB(svc)의 라우팅 규칙이 WAS 제거보다 먼저 처리하여 제거된 Container로의 요청 전달이 발생하지 않도록 보장한다.
 
 ### Infrastructure
 
