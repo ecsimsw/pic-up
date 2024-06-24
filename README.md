@@ -65,7 +65,7 @@ return userLockService.<Long>isolate(
 - 이후 일정 시간 간격으로 삭제 표시된 파일 내역을 조회하고, 파일을 제거하는 작업을 실행하여 실제 파일을 제거하였다.
 - 작업은 k8s의 cronjob을 사용하여 작업 주기마다 실행했으며, concurrencyPolicy 옵션으로 두개 이상의 작업이 동시에 수행되는 경우를 방지했다.
 
-<img width="600" alt="image" src="https://github.com/ecsimsw/pic-up/assets/46060746/a50b7fbf-e5dd-4d93-b94f-b7f62f7d2582">
+<img width="650" alt="image" src="https://github.com/ecsimsw/pic-up/assets/46060746/a50b7fbf-e5dd-4d93-b94f-b7f62f7d2582">
 
 - 이때 Entity 파일 등, Storage-api와 Storage-batch에서 공통적으로 사용되는 정보를 공통 모듈로 만들어, 중복 코드를 제거하였다.
 
