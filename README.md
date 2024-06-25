@@ -97,15 +97,28 @@ public void acquire(long userId) {
 
 <img src = "https://github.com/ecsimsw/pic-up/assets/46060746/760ecf6c-ea61-41ba-85bc-6266bd9c7714" width="620px">
 
-### [#38](https://github.com/ecsimsw/pic-up/issues/38) 배포 시점에 Vault secret key 주입
-- DB 비밀번호, AWS 키, JWT 키 등 공개되어선 안되는 비밀 값들을 파일로 관리할 경우 노출의 위험이 있다.
-- 또, 여러 프로젝트나 모듈에서 공통적으로 사용되는 키 값이 바뀌면 관련된 모든 사용처를 추척하여 내용을 바꿔줘야 한다.
-- 이에 비밀 값이나 앱 공통 변수를 Vault에 저장하고, Pod 실행 시점에 Secret를 환경 변수로 지정하였다.
-- 이때 Vault 인증은 Pod의 Service account, 저장은 컨테이너 내부의 임시 메모리 공간을 사용하여 보안을 지킨다.
-- 비밀 값 관리에 용이해졌고, 공통 변수가 변경되면 Secret 하나만 바꾸면 되기에 변경에 유연해졌다.
-- 무엇보다 개발자가 키 관리를 신경쓰지 않고 App 내에서 Vault 의존이 제거되었다.
+### [#47](https://github.com/ecsimsw/pic-up/issues/47) DB Replication 으로 데이터 백업, DB 부하 분산
+- 읽기 전용 Replica를 두어 데이터를 백업하고 DB의 요청을 분산했다.
+- 복제는 Mysql의 비동기 방식을 사용하였다.
+- 동기 방식의 경우 각 노드의 상태에 의존이 생기고, 복제되는 시간을 대기해야 하기에 사용성이 저하된다.
+- Master db, Slave db를 나누고, Transactional의 readOnly 여부에 따라 datasource를 결정하였다.
+- LazyConnectionDataSourceProxy를 사용하여 커넥션 점유를 쿼리 실행 시점으로 미뤄, 불필요한 커넥션 점유와 점유 시간을 줄일 수 있었다.
 
-<img src = "https://github.com/ecsimsw/pic-up/assets/46060746/27e92c09-da73-4a57-bfe0-685489d115f1" width="520px">
+``` java
+public DataSource dataSource() {
+    var determinedDataSource = new AbstractRoutingDataSource {
+        @Override
+        protected Object determineCurrentLookupKey() {
+            var isReadOnly = TransactionSynchronizationManager.isCurrentTransactionReadOnly();
+            if (isReadOnly) {
+                return SLAVE;
+            }
+            return MASTER;
+        }
+    }
+    return new LazyConnectionDataSourceProxy(determinedDataSource);
+}
+```
 
 ### [#35](https://github.com/ecsimsw/pic-up/issues/35) DB 쿼리 성능 개선, 인덱스 튜닝과 커서 기반 페이지네이션 전환
 - Bulk insert와 File insert 방식으로 천만 개의 데이터를 삽입하여 자주 사용되는 쿼리의 성능을 확인했다.
@@ -122,6 +135,16 @@ SELECT A.TITLE, P.ID, P.DESCRIPTION FROM PICTURE AS P JOIN ALBUM AS A ON P.ALBUM
                 ORDER BY A.TITLE, P.ID LIMIT 10
 # 10 rows retrieved starting from 1 in 44 ms (execution: 11 ms, fetching: 33 ms)
 ```
+
+### [#38](https://github.com/ecsimsw/pic-up/issues/38) 배포 시점에 Vault secret key 주입
+- DB 비밀번호, AWS 키, JWT 키 등 공개되어선 안되는 비밀 값들을 파일로 관리할 경우 노출의 위험이 있다.
+- 또, 여러 프로젝트나 모듈에서 공통적으로 사용되는 키 값이 바뀌면 관련된 모든 사용처를 추척하여 내용을 바꿔줘야 한다.
+- 이에 비밀 값이나 앱 공통 변수를 Vault에 저장하고, Pod 실행 시점에 Secret를 환경 변수로 지정하였다.
+- 이때 Vault 인증은 Pod의 Service account, 저장은 컨테이너 내부의 임시 메모리 공간을 사용하여 보안을 지킨다.
+- 비밀 값 관리에 용이해졌고, 공통 변수가 변경되면 Secret 하나만 바꾸면 되기에 변경에 유연해졌다.
+- 무엇보다 개발자가 키 관리를 신경쓰지 않고 App 내에서 Vault 의존이 제거되었다.
+
+<img src = "https://github.com/ecsimsw/pic-up/assets/46060746/27e92c09-da73-4a57-bfe0-685489d115f1" width="520px">
 
 ### [#37](https://github.com/ecsimsw/pic-up/issues/37) k8s Rolling update 무중단 배포
 - k8s deployment의 Rolling update 방식으로 배포한다.
