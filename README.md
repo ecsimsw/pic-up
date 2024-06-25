@@ -57,7 +57,7 @@ public void acquire(long userId) {
 - 또 DB에 이벤트 내용을 기록하기에 유실 문제에서 안전하고, 이벤트 발행 시도를 반복하여 상태가 복구되면 이벤트가 MQ로 전달되어 상태 복구도 가능해졌다.
 - 회원 가입 로직에서 외부 서버 상태에 대한 의존을 제거하여 가입 실패를 최소화하고, 필수 이벤트의 발행을 보장할 수 있는 구조를 만들 수 있었다.
 
-<img src = "https://github.com/ecsimsw/pic-up/assets/46060746/ca33b345-2561-49eb-bbaf-65beff26f8d7" width="720px">
+<img src = "https://github.com/ecsimsw/pic-up/assets/46060746/3dddc915-f7b0-4cf5-8011-5567ad7320a0" width="720px">
 
 ### [#31](https://github.com/ecsimsw/pic-up/issues/31) 안전한 파일 제거를 위한 배치, 모듈 분리
 - 사용자가 서비스를 탈퇴하거나 앨범을 제거하면 그 안의 모든 사진, 영상 파일이 삭제된다.
