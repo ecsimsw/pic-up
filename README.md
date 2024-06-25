@@ -107,7 +107,7 @@ return userLockService.<Long>isolate(
 - Bulk insert와 File insert 방식으로 천만 개의 데이터를 삽입하여 자주 사용되는 쿼리의 성능을 확인했다.
 - 인덱스, 커버링 인덱스를 적용하고 실행 계획으로 적용 결과를 확인했다.
 - OFFSET 기반 페이지네이션에서 커서 기반 페이지네이션으로 방식을 변경하고, 기존 5분대의 조회 시간을 50ms 이내로 개선할 수 있었다.
-```
+``` sql
 SELECT A.TITLE, P.ID, P.DESCRIPTION FROM PICTURE AS P JOIN ALBUM AS A ON P.ALBUMID = A.ID
                 ORDER BY A.TITLE, P.ID
                 LIMIT 10 OFFSET 9000000
