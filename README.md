@@ -169,6 +169,18 @@ SELECT A.TITLE, P.ID, P.DESCRIPTION FROM PICTURE AS P JOIN ALBUM AS A ON P.ALBUM
 - Pod container 종료가 LB(svc)의 라우팅 규칙 업데이트를 앞서는 경우, LB에 의해 전달된 요청이 처리되지 못한다.
 - LB(svc)의 라우팅 규칙이 WAS 제거보다 먼저 처리하여 제거된 Container로의 요청 전달이 발생하지 않도록 보장한다.
 
+``` yaml
+spec:
+  containers:
+    - name: storage-api
+      image: ghcr.io/ecsimsw/picup/storage-api:latest
+      ...
+      lifecycle:
+        preStop:
+          exec:
+            command: [ "sh", "-c", "sleep 10" ]    # Ensure that the IpTable is updated before kubelet kill container.
+```
+
 ## Infrastructure
 
 <img width="550" alt="image" src="https://github.com/ecsimsw/pic-up/assets/46060746/eebda44e-7555-4425-906e-a135eda905fb">
