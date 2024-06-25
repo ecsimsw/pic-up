@@ -1,15 +1,18 @@
 ## Pic-up
 누구나 사용할 수 있는, 가장 쉬운 사진/동영상 앨범 스토리지를 만들고 있습니다.
 
-### Stacks
-- Framework : Java 17, Spring boot 2.7, Hibernate, JUnit5, Mokito
-- DB, MQ : Mysql, Redis, RabbitMQ,
-- BE library : Flyway, Thumbnailator, Jcodec
-- BE dev env : S3Mock, Embedded Redis, H2
+## Architecture
+
+<img src = "https://github.com/ecsimsw/pic-up/assets/46060746/c425dfdb-6642-4ccf-a7ce-aa394765e595" width="620px">
+
+- Language : Java 17
+- Framework : Spring boot 2.7, Hibernate, JUnit5, Mokito
+- DB, MQ : Mysql, Redis, RabbitMQ
+- BE library : Flyway, Thumbnailator, JCodec, S3Mock, Embedded Redis, H2
 - FE library : Dropzone, lightGallery, video-js
-- Container, VM : Kubernetes, Docker, vagrant
-- Infrastructure : S3, RDS, Cloudfront, Route53, Lambda, Vault, Terraform
-- Monitoring : Grafana, Prometheus, Loki, Promtail
+- Container, VM : Kubernetes, Docker, Vagrant
+- Infrastructure : S3, RDS, Cloudfront, Route53, Lambda, Vault
+- Monitoring : Grafana, Prometheus, Loki
 
 ## 기록
 
@@ -95,7 +98,7 @@ return userLockService.<Long>isolate(
 - DB 비밀번호, AWS 키, JWT 키 등 공개되어선 안되는 비밀 값들을 Vault로 관리한다.
 - Pod 실행 시점에 Init container에서 Secret를 환경 변수로 지정한다.
 - 이때 Vault 인증은 Pod의 Service account, 저장은 컨테이너 내부의 임시 메모리 공간을 사용하여 보안을 지킨다.
-- 코드 내에서 모든 Vault 정보가 제거되어 Vault 설정 변화에 유연하고, 개발자로부터 Secret 키 관리 포인트를 제거할 수 있었다.
+- 코드 내에서 모든 Vault 정보가 제거되어 개발자가 Secret 키 관리를 신경쓰지 않아도 된다.
 
 <img src = "https://github.com/ecsimsw/pic-up/assets/46060746/27e92c09-da73-4a57-bfe0-685489d115f1" width="520px">
 
