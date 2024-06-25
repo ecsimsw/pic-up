@@ -8,7 +8,7 @@ repositories {
     mavenCentral()
 }
 
-def rootVersion = '2.0.2'
+def rootVersion = '2.0.3'
 task printRootVersion {
     doLast {
         println "$rootVersion"
