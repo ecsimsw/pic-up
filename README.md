@@ -30,11 +30,15 @@ Thread 2 - 스토리지 사용량 기록 5MB
 - 이때 트랜잭션 범위보다 락 범위를 크게 하여, 트랜잭션 커밋 전에 락이 풀려 그 사이에 다른 트랜잭션이 참여하는 경우가 발생하지 않도록 주의했다.
 - 처음에는 Spring data redis의 기본 Redis client, Lettuce로 스핀-락을 구현했지만 레디스 액세스가 잦았고 락 조회 간격을 잡는 것도 쉽지 않았다.
 - Redis Pub/Sub을 사용한 락을 지원하는 Redisson으로, 레디스 액세스 횟수와 락 대기 시간을 개선할 수 있었다.
+- 사용자 id 해시 값을 redis key로 하여 사용자별 격리를 만들었다. 
 ``` java
-return userLockService.<Long>isolate(
-    userId,
-    () -> pictureFacadeService.upload(userId, albumId, resourceKey)
-);
+public void acquire(long userId) {
+    var lockKey = LOCK_KEY_PREFIX + getIdHash(userId);
+    var locks = redissonClient.getLock(lockKey);
+    if (!locks.tryLock(LOCK_WAIT_TIME, LOCK_TTL, TimeUnit.MILLISECONDS)) {
+        throw new AlbumException("Failed to get lock");
+    }
+}
 ```
 
 ### [#45](https://github.com/ecsimsw/pic-up/issues/45) 서버 간 비동기 통신, 이벤트 발행 보장
