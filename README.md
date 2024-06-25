@@ -19,6 +19,7 @@
 ### [#42](https://github.com/ecsimsw/pic-up/issues/42) 트랜잭션 간 격리, DB 커넥션 점유 시간 개선
 - 동시 업로드 요청 시, 두 번의 갱신 분실 문제로 스토리지 사용량 기록에 오차가 발생했다.
 - 처음에는 조회에 "Select for update"를 사용하여 비관적 락으로 격리했으나, 충돌 시 커넥션을 점유하고 이는 CP의 커넥션 부족으로 이어질 여지가 있었다.
+- 낙관적 락으로 커넥션 점유 문제는 해결할 수 있었지만, DB 액세스가 잦고 재시도 처리를 위한 코드로 코드 가독성이 떨어짐을 느꼈다.
 ```
 # 두개의 스레드에서, 동시에 5MB 파일을 업로드할 때
 Thread 1 - 현재 스토리지 사용량 조회 0MB
@@ -42,16 +43,15 @@ public void acquire(long userId) {
 ```
 
 ### [#45](https://github.com/ecsimsw/pic-up/issues/45) 서버 간 비동기 통신, 이벤트 발행 보장
-- 회원 가입 시 'Member 서버'에서 요청을 받아, 가입 정보를 'Storage 서버'로 전달해야 한다.
-- 사용자가 'Storage 서버'의 처리를 대기하기에 시간이 걸리므로, 가입 정보 전달을 비동기로 처리한다.
+- 회원 가입 시 유저 서버에서 요청을 받아, 가입 정보를 스토리지 서버로 전달해야 한다.
+- 사용자가 스토리지 서버의 처리를 대기하기에 시간이 걸리므로, 가입 정보 전달을 비동기로 처리한다.
 - 처음에는 Http 통신으로 가입 정보를 전달했으나 처리 실패, 타임 아웃, 재시도를 직접 처리해야 헀고, 특히 이벤트가 유실될 수 있는 불편함이 있었다.
 - 이에 RabbitMQ를 사용하여 재시도, DeadLetter를 처리함으로 더 안전한 비동기 이벤트 전달 구조를 만들었다고 생각한다.
 
 <img src = "https://github.com/ecsimsw/pic-up/assets/46060746/38631553-ca08-4210-964a-b07608383301" width="620px">
 
-- 회원 가입 처리 과정에서, RabbitMQ의 서버 상태에 문제가 생기면 가입 전체 실패로 이어지는 문제 발생했다.
-- 가능하면 가입 실패는 최소화하려 노력했고, 외부 서버(RabbitMQ)의 상태 문제로 가입 전체가 실패하는 경우가 없었으면 했다.
-- 그렇다고 RabbitMQ의 서버 상태 이상을 무시하고 정상 가입 처리한다면, 스토리지 서버로 전달해야 하는 가입 이벤트는 유실될 것이다.
+- 가입 로직 안에서 MQ를 직접 의존하니, RabbitMQ 서버 상태에 문제가 가입 전체 실패로 이어졌다.
+- 그렇다고 MQ의 서버 상태 이상을 무시하고 정상 가입 처리한다면, 스토리지 서버로 전달해야 하는 가입 이벤트는 유실될 것이다.
 - 이에 회원 생성 이벤트를 DB에 우선 저장하는 Transaction outbox pattern을 사용했다.
 - 로직 안에서 MQ의 직접 의존이 없기 때문에 RabbitMQ 서버의 상태 문제가 로직의 실패로 이어지지 않는다.
 - 또 DB에 이벤트 내용을 기록하기에 유실 문제에서 안전하고, 이벤트 발행 시도를 반복하여 상태가 복구되면 이벤트가 MQ로 전달되어 상태 복구도 가능해졌다.
@@ -60,9 +60,10 @@ public void acquire(long userId) {
 <img src = "https://github.com/ecsimsw/pic-up/assets/46060746/ca33b345-2561-49eb-bbaf-65beff26f8d7" width="720px">
 
 ### [#31](https://github.com/ecsimsw/pic-up/issues/31) 안전한 파일 제거를 위한 배치, 모듈 분리
-- 앨범을 제거하면 그 안에 있는 모든 사진, 영상 파일이 삭제된다.
-- 사용자가 앨범 안의 파일들이 모두 삭제되는 시간을 대기할 필요없다고 생각하여 비동기로 삭제 처리하게 되었다.
-- 비동기 처리를 위해 또 다른 스레드를 이용할 경우 요청마다 추가 스레드가 필요하고, 스레드 비정상 종료 등 예외처리가 까다로워 보다 안전한 방법을 고민했다.
+- 사용자가 서비스를 탈퇴하거나 앨범을 제거하면 그 안의 모든 사진, 영상 파일이 삭제된다.
+- 사용자가 앨범 안의 파일들이 모두 삭제되는 시간을 대기할 필요없다고 생각하여, 파일 삭제는 사용자 요청 처리 주기 밖으로 한다.
+- 또 다른 스레드를 이용하여 비동기로 작업하는 경우 요청마다 추가 스레드가 필요하고, 스레드 비정상 종료 등 예외처리가 까다로워 보다 안전한 방법을 고민했다.
+- 무엇보다 사용자의 사진, 영상 삭제 트랜잭션은 최대한 안전하게, 꼼꼼한 예외처리로 다루고 싶었다.
 
 <img width="650" alt="image" src="https://github.com/ecsimsw/pic-up/assets/46060746/46e69a10-a0bf-4bd0-a122-69dfcd3aea99">
 
@@ -72,13 +73,13 @@ public void acquire(long userId) {
 
 <img width="650" alt="image" src="https://github.com/ecsimsw/pic-up/assets/46060746/a50b7fbf-e5dd-4d93-b94f-b7f62f7d2582">
 
-- 이때 Entity 파일 등, Storage-api와 Storage-batch에서 공통적으로 사용되는 정보를 공통 모듈로 만들어, 중복 코드를 제거하였다.
+- 이때 Entity 파일 등, Storage-api와 Storage-batch에서 공통적으로 사용되는 정보를 모듈로 분리하여 중복 코드를 제거하였다.
 
 <img width="600" alt="image" src="https://github.com/ecsimsw/pic-up/assets/46060746/81f4d86e-44ac-4927-8239-b4b573823e23">
 
 ### [#40](https://github.com/ecsimsw/pic-up/issues/40) 인증된 사용자에게만 자원을 허용하기 위한 CDN URL 암호화
-- CDN으로 사용자 개인 파일을 캐시하여 서버의 부하를 낮추고 응답 속도를 개선하였다.
-- CDN URL을 임의로 수정하여 다른 사람의 자원을 요청하는 등, 브루트 포스 공격으로 타인의 비공개 파일이 반환되는 문제를 고민하였다.
+- CDN으로 사용자 파일을 캐시하여 서버의 부하를 낮추고 응답 속도를 개선하였다.
+- 이때 악의적인 사용자가 URL을 임의로 수정하여 다른 사람의 자원을 요청할 수 있기에, 브루트 포스 공격을 막을 수 있는 방법을 고민했다.
 - CDN URL을 암호화하는 cdn signed-url 방식으로 기간 외 요청 또는 인증된 사용자 IP 외 요청에 응답 방지한다.
 - RSA 비대칭 키를 사용하여 인증된 사용자 정보가 포함된 URL을 암호화하고, CDN 제공자에서 이를 검증하여 자원 반환 여부를 결정한다.
 - 만약 사용자 요청마다 매번 새로 URL을 암호화한다면, 매번 암호화된 URL이 달라져 브라우저 컨텐츠 캐싱이 적용되지 않는다.
@@ -102,7 +103,7 @@ public void acquire(long userId) {
 - 복제는 Mysql의 비동기 방식을 사용하였다.
 - 동기 방식의 경우 각 노드의 상태에 의존이 생기고, 복제되는 시간을 대기해야 하기에 사용성이 저하된다.
 - Master db, Slave db를 나누고, Transactional의 readOnly 여부에 따라 datasource를 결정하였다.
-- LazyConnectionDataSourceProxy를 사용하여 커넥션 점유를 쿼리 실행 시점으로 미뤄, 불필요한 커넥션 점유와 점유 시간을 줄일 수 있었다.
+- LazyConnectionDataSourceProxy를 사용하여 커넥션 점유를 쿼리 실행 시점으로 미뤄, 불필요한 커넥션 점유 빈도와 점유 시간을 줄일 수 있었다.
 
 ``` java
 public DataSource dataSource() {
@@ -135,6 +136,21 @@ SELECT A.TITLE, P.ID, P.DESCRIPTION FROM PICTURE AS P JOIN ALBUM AS A ON P.ALBUM
                 ORDER BY A.TITLE, P.ID LIMIT 10
 # 10 rows retrieved starting from 1 in 44 ms (execution: 11 ms, fetching: 33 ms)
 ```
+
+### [#36](https://github.com/ecsimsw/pic-up/issues/36) 모니터링과 부하테스트
+- Nginx와 WAS의 리소스 사용량, 응답 속도, 요청 수를 모니터링한다.
+- Promethues로 Spring actuator의 매트릭을 추출, Nginx의 액세스 로그에서 요청 수와 응답 속도를 추출한다.
+- Application 로그를 표시하기 위해 Loki와 Promtail을 사용했다.
+- 로그를 모을 파일 스토리지(홈 서버)을 NFS로 만들고 WAS의 Container 볼륨으로 이 NFS를 사용하는 것으로 여러 WAS에서 발생하는 로그 파일을 한 곳으로 모을 수 있었다.
+
+![image](https://github.com/ecsimsw/pic-up/assets/46060746/558d7027-3bd6-465a-881f-963dc86242c5)
+
+- 부하테스트는 k6를 사용했다.
+- 테스트 케이스를 나열하고, 목표 부하(300명의 유저, 10분)를 기준치 안에 처리할 수 있는지를 확인했다.
+- 평균 응답 속도가 200ms 안팎, 힙 메모리 사용량이 85% 이하로 처리할 수 있는지, GC가 제대로 메모리를 정리하고 있는지를 확인했다.
+- 메모리 요청과 제한을 500Mi으로 하는 컨테이너 2개로 배포 리소스 크기를 결정할 수 있었다.
+
+![image](https://github.com/ecsimsw/pic-up/assets/46060746/679ece19-ec04-4b1c-9409-b4f7b10e7d90)
 
 ### [#38](https://github.com/ecsimsw/pic-up/issues/38) 배포 시점에 Vault secret key 주입
 - DB 비밀번호, AWS 키, JWT 키 등 공개되어선 안되는 비밀 값들을 파일로 관리할 경우 노출의 위험이 있다.
