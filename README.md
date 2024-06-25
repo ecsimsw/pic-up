@@ -130,11 +130,10 @@ SELECT A.TITLE, P.ID, P.DESCRIPTION FROM PICTURE AS P JOIN ALBUM AS A ON P.ALBUM
 - Pod container 종료가 LB(svc)의 라우팅 규칙 업데이트를 앞서는 경우, LB에 의해 전달된 요청이 처리되지 못한다.
 - LB(svc)의 라우팅 규칙이 WAS 제거보다 먼저 처리하여 제거된 Container로의 요청 전달이 발생하지 않도록 보장한다.
 
-### Infrastructure
+## Infrastructure
 
-<img width="550" alt="image" src="https://github.com/ecsimsw/pic-up/assets/46060746/5a890763-d597-4c1b-8029-e4bd6ea63a33">
 <img width="550" alt="image" src="https://github.com/ecsimsw/pic-up/assets/46060746/eebda44e-7555-4425-906e-a135eda905fb">
 
-### 미리보기
+## 미리보기
 
 ![미리보기](https://github.com/ecsimsw/pic-up/assets/46060746/a99d129c-cb66-433d-b680-3960b3fa002f)
