@@ -26,6 +26,6 @@ public class FileStorage {
     }
 
     public String generatePreSignedUrl(String path) {
-        return S3Utils.preSignedUrl(s3Client, S3Config.BUCKET, path, S3Config.PRE_SIGNED_URL_EXPIRATION_MS * 100);
+        return S3Utils.preSignedUrl(s3Client, S3Config.BUCKET, path, S3Config.PRE_SIGNED_URL_EXPIRATION_MS);
     }
 }
