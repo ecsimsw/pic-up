@@ -3,7 +3,7 @@
 
 ## Architecture
 
-<img src = "https://github.com/ecsimsw/pic-up/assets/46060746/c425dfdb-6642-4ccf-a7ce-aa394765e595" width="620px">
+<img src = "https://github.com/ecsimsw/pic-up/assets/46060746/46427127-7aee-4ce1-8b34-7aab15321f0d" width="620px">
 
 - Language : Java 17
 - Framework : Spring boot 2.7, Hibernate, JUnit5, Mokito
