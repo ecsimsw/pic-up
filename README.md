@@ -143,7 +143,7 @@ Promethues로 Spring actuator의 매트릭을 추출, Nginx의 액세스 로그�
 Application 로그를 표시하기 위해 Loki와 Promtail을 사용했다.    
 로그를 모을 파일 스토리지(홈 서버)을 NFS로 만들고 WAS의 Container 볼륨으로 이 NFS를 사용하는 것으로 여러 WAS에서 발생하는 로그 파일을 한곳으로 모을 수 있었다.     
 
-![image](https://github.com/ecsimsw/pic-up/assets/46060746/558d7027-3bd6-465a-881f-963dc86242c5)
+<img src = "https://github.com/ecsimsw/pic-up/assets/46060746/ff6c8713-0344-4474-9a89-e6c8c84af3f3" width="1020px">
 
 부하테스트는 k6를 사용했다.     
 테스트 케이스를 나열하고, 목표 부하(300명의 동시 유저, 10분간 요청 반복)를 기준치 안에 처리할 수 있는지를 확인했다.    
