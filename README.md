@@ -48,7 +48,7 @@ public void acquire(long userId) {
 처음에는 Http 통신으로 가입 정보를 전달했으나 처리 실패, 타임아웃, 재시도를 직접 처리해야 헀고, 특히 이벤트가 유실될 수 있는 불편함이 있었다.      
 이에 RabbitMQ를 사용하여 재시도, DeadLetter를 처리함으로 더 안전한 비동기 이벤트 전달 구조를 만들었다고 생각한다.     
 
-<img src = "https://github.com/ecsimsw/pic-up/assets/46060746/38631553-ca08-4210-964a-b07608383301" width="620px">
+<img src = "https://github.com/ecsimsw/pic-up/assets/46060746/2d33f3a5-f489-43cd-b84c-1171f648bcc2" width="620px">
 
 가입 로직 안에서 MQ를 직접 의존하니, RabbitMQ 서버 상태에 문제가 가입 전체 실패로 이어졌다.    
 그렇다고 MQ의 서버 상태 이상을 무시하고 정상 가입 처리한다면, 스토리지 서버로 전달해야 하는 가입 이벤트는 유실될 것이다.    
