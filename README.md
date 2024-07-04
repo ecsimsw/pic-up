@@ -15,6 +15,10 @@
 - 배포와 인프라 : S3, RDS, Cloudfront, Route53, Lambda, Vault
 - 모니터링 환경 : Grafana, Prometheus, Loki
 
+## 미리보기
+
+![미리보기](https://github.com/ecsimsw/pic-up/assets/46060746/a99d129c-cb66-433d-b680-3960b3fa002f)
+
 ## 요구 사항
 - 회원 가입, 로그인, Refresh token을 사용한 재로그인이 가능하다. 
 - 회원 탈퇴 시 사용자 정보, 파일이 모두 삭제된다. 
@@ -176,6 +180,4 @@ spec:
 
 <img width="550" alt="image" src="https://github.com/ecsimsw/pic-up/assets/46060746/eebda44e-7555-4425-906e-a135eda905fb">
 
-## 미리보기
 
-![미리보기](https://github.com/ecsimsw/pic-up/assets/46060746/a99d129c-cb66-433d-b680-3960b3fa002f)
